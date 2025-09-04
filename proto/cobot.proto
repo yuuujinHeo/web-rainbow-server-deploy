@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package cobot;
+
+service CobotGrpcService {
+    rpc CobotCommand(CobotCommandRequest) returns (CobotCommandResponse);
+}
+
+message CobotCommandRequest {
+    string cobotPort = 1;
+    string command = 2;
+}
+
+message CobotCommandResponse {
+    string cobotPort = 1;
+    string command = 2;
+}

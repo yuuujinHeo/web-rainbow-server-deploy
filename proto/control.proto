@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package control;
+
+//led, 
+service ControlGrpcService {
+    rpc OnOffControl(OnOffControlRequest) returns (OnOffControlResponse);
+    rpc WorkControl(WorkControlRequest) returns (WorkControlResponse);
+    rpc LEDControl(LEDControlRequest) returns (LEDControlResponse);
+    rpc SetSafetyField(SafetyField) returns (SafetyField);
+    rpc GetSafetyField(Empty) returns (SafetyField);
+    rpc ExAccessoryControl(ExAccessoryControlRequest) returns (ExAccessoryControlResponse);
+}
+
+message Empty {
+
+}
+message OnOffControlRequest {
+    string command = 1;
+    bool onoff = 2;
+    optional int32 frequency = 3;
+}
+
+message OnOffControlResponse {
+    string command = 1;
+    bool onoff = 2;
+    optional int32 frequency = 3;
+}
+
+message WorkControlRequest {
+    string command = 1;
+}
+
+message WorkControlResponse {
+    string command = 1;
+}
+
+message LEDControlRequest {
+    string command = 1;
+    bool onoff = 2;
+    optional string color = 3;
+}
+
+message LEDControlResponse {
+    string command = 1;
+    bool onoff = 2;
+    optional string color = 3;
+}
+
+message ExAccessoryControlRequest {
+    string command = 1;
+    optional string pose = 2;
+}
+
+message ExAccessoryControlResponse {
+    string command = 1;
+    optional string pose = 2;
+}
+
+message SafetyField {
+    string safetyField = 1;
+}

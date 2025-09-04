@@ -1,0 +1,8899 @@
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
+/* 0 */,
+/* 1 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/core");
+
+/***/ }),
+/* 2 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/config");
+
+/***/ }),
+/* 3 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/microservices");
+
+/***/ }),
+/* 4 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(5), exports);
+__exportStar(__webpack_require__(25), exports);
+__exportStar(__webpack_require__(28), exports);
+
+
+/***/ }),
+/* 5 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(6), exports);
+
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
+exports.UserMicroservice = __webpack_require__(7);
+exports.AuthMicroservice = __webpack_require__(8);
+exports.AmrMicroservice = __webpack_require__(9);
+exports.RedisMicroservice = __webpack_require__(10);
+exports.ConfigMicroservice = __webpack_require__(11);
+exports.ControlMicroservice = __webpack_require__(12);
+exports.CodeMicroservice = __webpack_require__(13);
+exports.MoveMicroservice = __webpack_require__(14);
+exports.LocalizationMicroservice = __webpack_require__(15);
+exports.NetworkMicroservice = __webpack_require__(16);
+exports.MapMicroservice = __webpack_require__(17);
+exports.OnvifMicroservice = __webpack_require__(18);
+exports.TaskMicroservice = __webpack_require__(19);
+exports.SettingMicroservice = __webpack_require__(20);
+exports.SoundMicroservice = __webpack_require__(21);
+exports.CobotMicroservice = __webpack_require__(22);
+exports.LogMicroservice = __webpack_require__(23);
+exports.UpdateMicroservice = __webpack_require__(24);
+
+
+/***/ }),
+/* 7 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.USER_GRPC_SERVICE_NAME = exports.USER_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.UserGrpcServiceControllerMethods = UserGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "user";
+exports.USER_PACKAGE_NAME = "user";
+function UserGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "readUserList",
+            "readUser",
+            "readUserForLogin",
+            "createUser",
+            "updateUser",
+            "deleteUser",
+            "readUserToken",
+            "createUserToken",
+            "updateUserToken",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("UserGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("UserGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.USER_GRPC_SERVICE_NAME = "UserGrpcService";
+
+
+/***/ }),
+/* 8 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AUTH_GRPC_SERVICE_NAME = exports.AUTH_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.AuthGrpcServiceControllerMethods = AuthGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "auth";
+exports.AUTH_PACKAGE_NAME = "auth";
+function AuthGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["join", "login", "refreshToken"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("AuthGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("AuthGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.AUTH_GRPC_SERVICE_NAME = "AuthGrpcService";
+
+
+/***/ }),
+/* 9 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AMR_GRPC_SERVICE_NAME = exports.AMR_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.AmrGrpcServiceControllerMethods = AmrGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "amr";
+exports.AMR_PACKAGE_NAME = "amr";
+function AmrGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["readAmrList", "readAmr", "createAmr", "updateAmr", "deleteAmr"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.AMR_GRPC_SERVICE_NAME = "AmrGrpcService";
+
+
+/***/ }),
+/* 10 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.RobotType = exports.protobufPackage = void 0;
+exports.RedisSocketCacheGrpcServiceControllerMethods = RedisSocketCacheGrpcServiceControllerMethods;
+exports.RedisRobotCacheGrpcServiceControllerMethods = RedisRobotCacheGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "redis";
+var RobotType;
+(function (RobotType) {
+    RobotType[RobotType["UNKNOWN"] = 0] = "UNKNOWN";
+    RobotType[RobotType["MOBILE"] = 1] = "MOBILE";
+    RobotType[RobotType["MANIPULATOR"] = 2] = "MANIPULATOR";
+    RobotType[RobotType["SENSOR"] = 3] = "SENSOR";
+    RobotType[RobotType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(RobotType || (exports.RobotType = RobotType = {}));
+exports.REDIS_PACKAGE_NAME = "redis";
+function RedisSocketCacheGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "readSocketCache",
+            "readSocketCacheList",
+            "createSocketCache",
+            "updateSocketCache",
+            "deleteSocketCache",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("RedisSocketCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("RedisSocketCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = "RedisSocketCacheGrpcService";
+function RedisRobotCacheGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "readRobotCache",
+            "readRobotCacheList",
+            "createRobotCache",
+            "updateRobotCache",
+            "deleteRobotCache",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("RedisRobotCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("RedisRobotCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = "RedisRobotCacheGrpcService";
+
+
+/***/ }),
+/* 11 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CONFIG_GRPC_SERVICE_NAME = exports.CONFIG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.ConfigGrpcServiceControllerMethods = ConfigGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "config";
+exports.CONFIG_PACKAGE_NAME = "config";
+function ConfigGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getConfig",
+            "setConfig",
+            "getConfigAll",
+            "setConfigs",
+            "deleteConfig",
+            "deleteConfigs",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("ConfigGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("ConfigGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.CONFIG_GRPC_SERVICE_NAME = "ConfigGrpcService";
+
+
+/***/ }),
+/* 12 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "control";
+exports.CONTROL_PACKAGE_NAME = "control";
+function ControlGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "onOffControl",
+            "workControl",
+            "ledControl",
+            "setSafetyField",
+            "getSafetyField",
+            "exAccessoryControl",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
+
+
+/***/ }),
+/* 13 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CODE_GRPC_SERVICE_NAME = exports.CODE_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.CodeGrpcServiceControllerMethods = CodeGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "code";
+exports.CODE_PACKAGE_NAME = "code";
+function CodeGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["readCodeList", "readCode", "createCode", "updateCode", "deleteCode"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("CodeGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("CodeGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.CODE_GRPC_SERVICE_NAME = "CodeGrpcService";
+
+
+/***/ }),
+/* 14 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MOVE_GRPC_SERVICE_NAME = exports.MOVE_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.MoveGrpcServiceControllerMethods = MoveGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "move";
+exports.MOVE_PACKAGE_NAME = "move";
+function MoveGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "moveCommand",
+            "moveGoal",
+            "moveTarget",
+            "moveJog",
+            "movePause",
+            "moveResume",
+            "moveStop",
+            "moveLastGoal",
+            "moveLogLast",
+            "moveLog",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("MoveGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("MoveGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.MOVE_GRPC_SERVICE_NAME = "MoveGrpcService";
+
+
+/***/ }),
+/* 15 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LOCALIZATION_GRPC_SERVICE_NAME = exports.LOCALIZATION_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.LocalizationGrpcServiceControllerMethods = LocalizationGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "localization";
+exports.LOCALIZATION_PACKAGE_NAME = "localization";
+function LocalizationGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["init", "autoInit", "randomInit", "semiAutoInit", "start", "stop"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("LocalizationGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("LocalizationGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.LOCALIZATION_GRPC_SERVICE_NAME = "LocalizationGrpcService";
+
+
+/***/ }),
+/* 16 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NETWORK_GRPC_SERVICE_NAME = exports.NETWORK_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.NetworkGrpcServiceControllerMethods = NetworkGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "network";
+exports.NETWORK_PACKAGE_NAME = "network";
+function NetworkGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getNetwork",
+            "getDevice",
+            "getEthernet",
+            "getWifi",
+            "getBluetooth",
+            "setNetwork",
+            "connectWifi",
+            "getWifiList",
+            "scanWifi",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("NetworkGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("NetworkGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.NETWORK_GRPC_SERVICE_NAME = "NetworkGrpcService";
+
+
+/***/ }),
+/* 17 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MAP_GRPC_SERVICE_NAME = exports.MAP_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.MapGrpcServiceControllerMethods = MapGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "map";
+exports.MAP_PACKAGE_NAME = "map";
+function MapGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getMapList",
+            "getCurrentMap",
+            "getCloud",
+            "saveCloud",
+            "getTopology",
+            "saveTopology",
+            "load",
+            "mapping",
+            "uploadMap",
+            "downloadMap",
+            "publishMap",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("MapGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("MapGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.MAP_GRPC_SERVICE_NAME = "MapGrpcService";
+
+
+/***/ }),
+/* 18 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ONVIF_SERVICE_NAME = exports.ONVIF_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.OnvifServiceControllerMethods = OnvifServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = 'onvif';
+exports.ONVIF_PACKAGE_NAME = 'onvif';
+function OnvifServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ['deviceService', 'mediaService', 'snapshot', 'ptzService', 'deviceIoService', 'eventService'];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)('OnvifService', method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)('OnvifService', method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.ONVIF_SERVICE_NAME = 'OnvifService';
+
+
+/***/ }),
+/* 19 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TASK_GRPC_SERVICE_NAME = exports.TASK_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.TaskGrpcServiceControllerMethods = TaskGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "task";
+exports.TASK_PACKAGE_NAME = "task";
+function TaskGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getTaskState",
+            "getTaskVariables",
+            "task",
+            "getList",
+            "getTask",
+            "saveTask",
+            "deleteTask",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("TaskGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("TaskGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.TASK_GRPC_SERVICE_NAME = "TaskGrpcService";
+
+
+/***/ }),
+/* 20 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SETTING_GRPC_SERVICE_NAME = exports.SETTING_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SettingGrpcServiceControllerMethods = SettingGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "setting";
+exports.SETTING_PACKAGE_NAME = "setting";
+function SettingGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getSetting",
+            "saveSetting",
+            "getPresetList",
+            "createPreset",
+            "deletePreset",
+            "getPreset",
+            "savePreset",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("SettingGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("SettingGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SETTING_GRPC_SERVICE_NAME = "SettingGrpcService";
+
+
+/***/ }),
+/* 21 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SOUND_GRPC_SERVICE_NAME = exports.SOUND_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SoundGrpcServiceControllerMethods = SoundGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "sound";
+exports.SOUND_PACKAGE_NAME = "sound";
+function SoundGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SOUND_GRPC_SERVICE_NAME = "SoundGrpcService";
+
+
+/***/ }),
+/* 22 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.COBOT_GRPC_SERVICE_NAME = exports.COBOT_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.CobotGrpcServiceControllerMethods = CobotGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "cobot";
+exports.COBOT_PACKAGE_NAME = "cobot";
+function CobotGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["cobotCommand"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.COBOT_GRPC_SERVICE_NAME = "CobotGrpcService";
+
+
+/***/ }),
+/* 23 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SEM_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SEMLogGrpcServiceControllerMethods = SEMLogGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "log";
+exports.LOG_PACKAGE_NAME = "log";
+function SEMLogGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getSemAlarmDefine",
+            "postSemAlarmDefine",
+            "deleteSemAlarmDefine",
+            "deleteSemAlarmDefineAll",
+            "getSemAlarmActive",
+            "semAlarm",
+            "deleteSemAlarm",
+            "deleteSemAlarmAll",
+            "getSemAlarmLog",
+            "postSemAlarmLog",
+            "deleteSemAlarmLog",
+            "getSemGeneralLog",
+            "deleteSemGeneralLog",
+            "postSemGeneralLog",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("SEMLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("SEMLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SEM_LOG_GRPC_SERVICE_NAME = "SEMLogGrpcService";
+
+
+/***/ }),
+/* 24 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UPDATE_GRPC_SERVICE_NAME = exports.UPDATE_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.UpdateGrpcServiceControllerMethods = UpdateGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "update";
+exports.UPDATE_PACKAGE_NAME = "update";
+function UpdateGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "testPing",
+            "getNewVersion",
+            "getCurrentVersion",
+            "getReleaseBranch",
+            "getReleaseVersion",
+            "addWebUi",
+            "deleteWebUi",
+            "updateProgram",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("UpdateGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("UpdateGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.UPDATE_GRPC_SERVICE_NAME = "UpdateGrpcService";
+
+
+/***/ }),
+/* 25 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(26), exports);
+
+
+/***/ }),
+/* 26 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcInterceptor = void 0;
+const rxjs_1 = __webpack_require__(27);
+class GrpcInterceptor {
+    intercept(context, next) {
+        const data = context.switchToRpc().getData();
+        const ctx = context.switchToRpc().getContext();
+        const meta = ctx.getMap();
+        const targetClass = context.getClass().name;
+        const targetHandler = context.getHandler().name;
+        const traceId = meta['trace-id'];
+        const clientService = meta['client-service'];
+        const clientClass = meta['client-class'];
+        const clientMethod = meta['client-method'];
+        const from = `${clientService}/${clientClass}/${clientMethod}`;
+        const to = `${targetClass}/${targetHandler}`;
+        const requestTimestamp = new Date();
+        const receivedRequestLog = {
+            type: 'RECEIVED_REQUEST',
+            traceId,
+            from,
+            to,
+            data,
+            timestamp: requestTimestamp.toUTCString(),
+        };
+        return next.handle().pipe((0, rxjs_1.map)((data) => {
+            const responseTimestamp = new Date();
+            const responseTime = `${+responseTimestamp - +requestTimestamp}ms`;
+            const responseLog = {
+                type: 'RETURN_RESPONSE',
+                traceId,
+                from,
+                to,
+                data,
+                responseTime,
+                timestamp: responseTimestamp.toUTCString(),
+            };
+            return data;
+        }));
+    }
+}
+exports.GrpcInterceptor = GrpcInterceptor;
+
+
+/***/ }),
+/* 27 */
+/***/ ((module) => {
+
+module.exports = require("rxjs");
+
+/***/ }),
+/* 28 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(29), exports);
+__exportStar(__webpack_require__(52), exports);
+
+
+/***/ }),
+/* 29 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoggerService = void 0;
+const winston_1 = __webpack_require__(30);
+const DailyRotateFile = __webpack_require__(31);
+const util_1 = __webpack_require__(32);
+const chalk_1 = __webpack_require__(51);
+const fs_1 = __webpack_require__(38);
+const levelColorMap = {
+    error: chalk_1.default.red,
+    warn: chalk_1.default.magenta,
+    info: chalk_1.default.blue,
+    debug: chalk_1.default.white,
+};
+const levelTextMap = {
+    error: 'Error',
+    warn: 'Warn',
+    info: 'Info',
+    debug: 'Debug',
+};
+function formatLogMessage(message) {
+    try {
+        if (message.includes('items:')) {
+            return message;
+        }
+        const jsonRegex = /:\s*(\[.*?\]|\{.*?\})/g;
+        return message.replace(jsonRegex, (match, jsonStr) => {
+            try {
+                const data = JSON.parse(jsonStr);
+                const formatted = formatDataRecursive(data);
+                return `: ${formatted}`;
+            }
+            catch {
+                return match;
+            }
+        });
+    }
+    catch {
+        return message;
+    }
+}
+function formatDataRecursive(data) {
+    if (Array.isArray(data)) {
+        if (data.length <= 4) {
+            const items = data.map((item) => {
+                if (typeof item === 'object' && item !== null) {
+                    return formatDataRecursive(item);
+                }
+                return cleanJsonString(JSON.stringify(item));
+            });
+            return `[${items.join(', ')}]`;
+        }
+        else {
+            const items = data.slice(0, 4).map((item) => {
+                if (typeof item === 'object' && item !== null) {
+                    return formatDataRecursive(item);
+                }
+                return cleanJsonString(JSON.stringify(item));
+            });
+            return `[${data.length} items: [${items.join(', ')}]...]`;
+        }
+    }
+    if (typeof data === 'object' && data !== null) {
+        const formatted = { ...data };
+        for (const [key, value] of Object.entries(formatted)) {
+            if (Array.isArray(value)) {
+                formatted[key] = formatDataRecursive(value);
+            }
+            else if (typeof value === 'object' && value !== null) {
+                formatted[key] = formatDataRecursive(value);
+            }
+        }
+        return cleanJsonString(JSON.stringify(formatted));
+    }
+    return cleanJsonString(JSON.stringify(data));
+}
+function cleanJsonString(jsonStr) {
+    return jsonStr.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
+const customFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelColor = levelColorMap[level] || chalk_1.default.white;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatches = message.match(/\[([^\]]+)\]/g);
+        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
+        let logtext = message.replace(/\[[^\]]+\]/g, '').trim();
+        logtext = formatLogMessage(logtext);
+        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
+    }
+    return '';
+});
+const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatches = message.match(/\[([^\]]+)\]/g);
+        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
+        const logtext = message.replace(/\[[^\]]+\]/g, '').trim();
+        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
+    }
+});
+const loggers = new Map();
+class LoggerService {
+    constructor(service) {
+        const logPath = '/data/log/' + service;
+        if (!(0, fs_1.existsSync)(logPath)) {
+            (0, fs_1.mkdirSync)(logPath, { recursive: true });
+        }
+        chalk_1.default.level = 3;
+        this.logger = (0, winston_1.createLogger)({
+            level: 'debug',
+            transports: [
+                new DailyRotateFile({
+                    filename: logPath + '/%DATE%.log',
+                    datePattern: 'YYYY-MM-DD',
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
+                }),
+                new winston_1.transports.Console({
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), customFormat),
+                }),
+            ],
+        });
+    }
+    static get(service) {
+        if (!loggers.has(service)) {
+            loggers.set(service, new LoggerService(service));
+        }
+        return loggers.get(service);
+    }
+    error(str) {
+        this.logger.error(str);
+    }
+    warn(str) {
+        this.logger.warn(str);
+    }
+    info(str) {
+        this.logger.info(str);
+    }
+    debug(str) {
+        this.logger.debug(str);
+    }
+}
+exports.LoggerService = LoggerService;
+
+
+/***/ }),
+/* 30 */
+/***/ ((module) => {
+
+module.exports = require("winston");
+
+/***/ }),
+/* 31 */
+/***/ ((module) => {
+
+module.exports = require("winston-daily-rotate-file");
+
+/***/ }),
+/* 32 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
+var url_util_1 = __webpack_require__(33);
+Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
+var date_util_1 = __webpack_require__(35);
+Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
+var file_util_1 = __webpack_require__(37);
+Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
+var parse_util_1 = __webpack_require__(48);
+Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
+var crypto_util_1 = __webpack_require__(49);
+Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
+var validation_util_1 = __webpack_require__(50);
+Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
+
+
+/***/ }),
+/* 33 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UrlUtil = void 0;
+const uuid_1 = __webpack_require__(34);
+class UrlUtil {
+    static generateUUID() {
+        return (0, uuid_1.v4)();
+    }
+}
+exports.UrlUtil = UrlUtil;
+
+
+/***/ }),
+/* 34 */
+/***/ ((module) => {
+
+module.exports = require("uuid");
+
+/***/ }),
+/* 35 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DateUtil = void 0;
+const date_fns_1 = __webpack_require__(36);
+class DateUtil {
+    static toDatetimeString(date) {
+        return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
+    }
+    static getTimeString() {
+        return new Date().getTime().toString();
+    }
+    static convertTargetsToDatetimeString(param, targets) {
+        const sParam = { ...param };
+        targets.forEach((target) => {
+            if (sParam[target]) {
+                sParam[target] = DateUtil.toDatetimeString(new Date(sParam[target]));
+            }
+        });
+        return sParam;
+    }
+    static formatDate(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return (`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
+    }
+    static formatDateKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}-${obj.month}-${obj.day} ${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeYearKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}`;
+    }
+    static formatTimeMonthKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.month}`;
+    }
+    static formatTimeDayKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.day}`;
+    }
+    static formatTimeHourKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}`;
+    }
+    static formatTimeMinuteKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.minute}`;
+    }
+    static formatTimeSecondKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.second}`;
+    }
+}
+exports.DateUtil = DateUtil;
+
+
+/***/ }),
+/* 36 */
+/***/ ((module) => {
+
+module.exports = require("date-fns");
+
+/***/ }),
+/* 37 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FileUtil = void 0;
+const fs = __webpack_require__(38);
+const path = __webpack_require__(39);
+const unzipper = __webpack_require__(40);
+const il = __webpack_require__(41);
+const uuid_1 = __webpack_require__(34);
+const archiver_1 = __webpack_require__(42);
+const csv = __webpack_require__(43);
+const zlib_1 = __webpack_require__(44);
+const common_1 = __webpack_require__(4);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const microservices_1 = __webpack_require__(3);
+class FileUtil {
+    static checkBasePath() {
+        this.basePath = '';
+    }
+    static async getFile(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(this.basePath, filePath, filename);
+            if (!fs.existsSync(fileFullPath)) {
+                throw new Error(`File not found: ${fileFullPath}`);
+            }
+            return await fs.promises.readFile(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async getFileAt(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(filePath, filename);
+            return fs.existsSync(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async uploadFile(fileBuffer, filename) {
+        try {
+            this.checkBasePath();
+            const uniqueName = `${(0, uuid_1.v4)()}${path.extname(filename)}`;
+            const filePath = path.join(this.basePath, uniqueName);
+            fs.writeFileSync(filePath, fileBuffer);
+            return { filePath: filePath, fileName: uniqueName };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async downloadFile(filename, compress) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            const fileExtension = path.extname(filename);
+            if (!fs.existsSync(filePath)) {
+                throw new Error(`File not found: ${filePath}`);
+            }
+            if (compress && fileExtension.toUpperCase() !== '.ZIP') {
+                const outputPath = path.join(this.basePath, filename.substring(0, filename.lastIndexOf(fileExtension)));
+                await this.compressFile(filePath, outputPath);
+                const fileContent = await fs.promises.readFile(outputPath);
+                await fs.promises.unlink(outputPath);
+                return fileContent;
+            }
+            return await fs.promises.readFile(filePath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async deleteFile(filename) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async compressFile(filePath, outputPath, outputName) {
+        try {
+            this.checkBasePath();
+            const compressPath = outputName ? path.join(this.basePath, `${outputName}.zip`) : outputPath;
+            const output = fs.createWriteStream(compressPath);
+            const archive = (0, archiver_1.default)('zip', {
+                zlib: { level: 9 },
+            });
+            archive.pipe(output);
+            archive.directory(filePath, false);
+            await archive.finalize();
+            return compressPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async decompressFile(filePath, outputPath) {
+        try {
+            this.checkBasePath();
+            if (!outputPath) {
+                outputPath = filePath.substring(0, filePath.indexOf(path.extname(filePath)));
+            }
+            if (!fs.existsSync(outputPath)) {
+                await fs.promises.mkdir(outputPath, { recursive: true });
+            }
+            const directory = await unzipper.Open.file(filePath);
+            for (const entry of directory.files) {
+                const entryPath = entry.isUnicode ? entry.path : il.decode(entry.pathBuffer, 'euc-kr');
+                const fullPath = path.join(outputPath, entryPath);
+                if (entry.type === 'File') {
+                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+                    const readStream = entry.stream();
+                    const writeStream = fs.createWriteStream(fullPath);
+                    readStream.pipe(writeStream);
+                    await new Promise((resolve, reject) => {
+                        writeStream.on('finish', () => resolve);
+                        writeStream.on('error', reject);
+                    });
+                }
+                else {
+                    await fs.promises.mkdir(fullPath, { recursive: true });
+                }
+            }
+            return outputPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async readCSV(path) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!fs.existsSync(path)) {
+                    reject(new rpc_code_exception_1.RpcCodeException('파일이 존재하지 않습니다', constant_1.GrpcCode.NotFound));
+                }
+                fs.accessSync(path, fs.constants.R_OK);
+                const results = [];
+                fs.createReadStream(path)
+                    .pipe(csv.parse({
+                    skip_empty_lines: true,
+                    skip_records_with_error: true,
+                }))
+                    .on('data', (row) => {
+                    results.push(row);
+                })
+                    .on('error', (error) => {
+                    common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
+                    reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                })
+                    .on('end', () => {
+                    common_1.LoggerService.get('util').debug(`[File] readCSV : done (length : ${results.length})`);
+                    resolve(results);
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async readCSVPipe(path, res) {
+        return new Promise((resolve, reject) => {
+            try {
+                fs.open(path, 'r', (err) => {
+                    if (err) {
+                        reject(new rpc_code_exception_1.RpcCodeException('파일을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound));
+                    }
+                    else {
+                        res.setHeader('Content-Type', 'text/csv');
+                        res.setHeader('Content-Encoding', 'gzip');
+                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv.gz"');
+                        const fileStream = fs.createReadStream(path);
+                        const gzip = (0, zlib_1.createGzip)();
+                        fileStream
+                            .pipe(gzip)
+                            .pipe(res)
+                            .on('finish', () => {
+                            common_1.LoggerService.get('util').debug(`[File] readCSVPipe : done`);
+                            resolve();
+                        })
+                            .on('error', (error) => {
+                            common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
+                            reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                        });
+                    }
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async saveCSV(path, data) {
+        try {
+            const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
+            if (data === undefined || data.length === 0) {
+                common_1.LoggerService.get('util').error(`[File] saveCSV : data 값이 없습니다`);
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            fs.writeFileSync(path, csvData);
+            common_1.LoggerService.get('util').debug(`[File] saveCSV : done (path : ${path})`);
+            return;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            common_1.LoggerService.get('util').error(`[File] saveCSV : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJson(dir) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(dir, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${dir})`, constant_1.GrpcCode.NotFound);
+            }
+            const filecontent = fs.readFileSync(dir, 'utf-8');
+            return JSON.parse(filecontent);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            common_1.LoggerService.get('util').error(`[File] readJson : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJSONPipe(path, res) {
+        try {
+            if (path === undefined || path === '') {
+                throw new rpc_code_exception_1.RpcCodeException('path 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(path, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${path})`, constant_1.GrpcCode.NotFound);
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Encoding', 'gzip');
+            res.setHeader('Content-Disposition', 'attachment; filename="topo.json.gz"');
+            const fileStream = fs.createReadStream(path);
+            const gzip = (0, zlib_1.createGzip)();
+            fileStream.pipe(gzip).pipe(res);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            common_1.LoggerService.get('util').error(`[File] readJSONPipe : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async saveJson(dir, data) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (data === undefined || data === '' || JSON.stringify(data) === '') {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            fs.mkdirSync(path.dirname(dir), { recursive: true });
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+            fs.writeFileSync(dir, JSON.stringify(data, null, 2));
+            return;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            common_1.LoggerService.get('util').error(`[File] saveJson : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+}
+exports.FileUtil = FileUtil;
+
+
+/***/ }),
+/* 38 */
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 39 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 40 */
+/***/ ((module) => {
+
+module.exports = require("unzipper");
+
+/***/ }),
+/* 41 */
+/***/ ((module) => {
+
+module.exports = require("iconv-lite");
+
+/***/ }),
+/* 42 */
+/***/ ((module) => {
+
+module.exports = require("archiver");
+
+/***/ }),
+/* 43 */
+/***/ ((module) => {
+
+module.exports = require("csv");
+
+/***/ }),
+/* 44 */
+/***/ ((module) => {
+
+module.exports = require("zlib");
+
+/***/ }),
+/* 45 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcCodeException = void 0;
+const microservices_1 = __webpack_require__(3);
+class RpcCodeException extends microservices_1.RpcException {
+    constructor(details, statusCode) {
+        super({ details: details, code: statusCode });
+        this.statusCode = statusCode;
+    }
+}
+exports.RpcCodeException = RpcCodeException;
+
+
+/***/ }),
+/* 46 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(47), exports);
+
+
+/***/ }),
+/* 47 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcCode = void 0;
+var GrpcCode;
+(function (GrpcCode) {
+    GrpcCode[GrpcCode["OK"] = 0] = "OK";
+    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
+    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
+    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
+    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
+    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
+    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
+    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
+    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
+    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
+    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
+    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
+    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
+    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
+    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
+    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
+    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
+    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
+})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
+
+
+/***/ }),
+/* 48 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ParseUtil = void 0;
+class ParseUtil {
+    static errorToJson(error) {
+        try {
+            if (error instanceof Error) {
+                const errorJson = {
+                    name: error.name,
+                    message: JSON.stringify(error.message),
+                };
+                if (error['error'] && error['error'].details) {
+                    errorJson['details'] = error['error'].details;
+                    errorJson['code'] = error['error'].code;
+                }
+                return JSON.stringify(errorJson);
+            }
+            else {
+                const json = JSON.parse(error);
+                return JSON.stringify(json);
+            }
+        }
+        catch (err) {
+            return JSON.stringify(err);
+        }
+    }
+    static stringToCamelCase(str) {
+        return str.toLowerCase().replace(/([-_][a-z])/gi, (group) => {
+            return group.toUpperCase().replace('-', '').replace('_', '');
+        });
+    }
+    static stringifyAllValues(obj) {
+        for (const key in obj) {
+            if (typeof obj[key] === 'object') {
+                this.stringifyAllValues(obj[key]);
+            }
+            else {
+                obj[key] = String(obj[key]);
+            }
+        }
+        return obj;
+    }
+}
+exports.ParseUtil = ParseUtil;
+
+
+/***/ }),
+/* 49 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CryptoUtil = void 0;
+class CryptoUtil {
+}
+exports.CryptoUtil = CryptoUtil;
+
+
+/***/ }),
+/* 50 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = void 0;
+class ValidationUtil {
+    static isEmpty(param) {
+        if (param === undefined || param === null) {
+            return true;
+        }
+        switch (true) {
+            case Array.isArray(param):
+                return param.length === 0 || param.every((item) => this.isEmpty(item));
+            case typeof param === 'object':
+                return Object.keys(param).length === 0;
+            case typeof param === 'string':
+                return param.trim().length === 0;
+            case typeof param === 'number':
+                return isNaN(param);
+            case typeof param === 'boolean':
+                return false;
+            default:
+                return true;
+        }
+    }
+    static isNotEmpty(param) {
+        return !this.isEmpty(param);
+    }
+}
+exports.ValidationUtil = ValidationUtil;
+
+
+/***/ }),
+/* 51 */
+/***/ ((module) => {
+
+module.exports = require("chalk");
+
+/***/ }),
+/* 52 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
+
+
+/***/ }),
+/* 53 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapModule = void 0;
+const common_1 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const typeorm_1 = __webpack_require__(55);
+const map_grpc_controller_1 = __webpack_require__(56);
+const map_service_1 = __webpack_require__(57);
+const map_postgres_adapter_1 = __webpack_require__(66);
+const map_socketio_adapter_1 = __webpack_require__(69);
+const map_entity_1 = __webpack_require__(67);
+const map_mqtt_controller_1 = __webpack_require__(79);
+const config_1 = __webpack_require__(2);
+const pg_1 = __webpack_require__(85);
+const constant_1 = __webpack_require__(70);
+const map_pending_service_1 = __webpack_require__(77);
+const map_file_adapter_1 = __webpack_require__(86);
+let MapModule = class MapModule {
+};
+exports.MapModule = MapModule;
+exports.MapModule = MapModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            typeorm_1.TypeOrmModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => {
+                    await ensureMapDatabase();
+                    return {
+                        type: 'postgres',
+                        url: configService.get('POSTGRES_URL') + '/map',
+                        autoLoadEntities: true,
+                        synchronize: true,
+                    };
+                },
+            }),
+            typeorm_1.TypeOrmModule.forFeature([map_entity_1.Map]),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.SOCKETIO_SERVICE,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.MQTT,
+                            options: {
+                                url: configService.get('MQTT_URL'),
+                            },
+                        }),
+                    },
+                ],
+            }),
+        ],
+        controllers: [map_grpc_controller_1.MapGrpcInputController, map_mqtt_controller_1.MapMqttInputController],
+        providers: [
+            map_service_1.MapService,
+            map_pending_service_1.MapPendingResponseService,
+            {
+                provide: 'DatabaseOutputPort',
+                useClass: map_postgres_adapter_1.MapPostgresAdapter,
+            },
+            {
+                provide: 'SlamnavOutputPort',
+                useClass: map_socketio_adapter_1.MapSocketIOAdapter,
+            },
+            {
+                provide: 'MapFileOutputPort',
+                useClass: map_file_adapter_1.MapFileAdapter,
+            },
+        ],
+    })
+], MapModule);
+async function ensureMapDatabase() {
+    const client = new pg_1.Client({
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '7000'),
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || 'postgres',
+        database: 'postgres',
+    });
+    try {
+        await client.connect();
+        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'map'");
+        if (result.rows.length === 0) {
+            await client.query('CREATE DATABASE map');
+            console.log('🎉 map 데이터베이스 생성 완료');
+        }
+        else {
+            console.log('✅ map 데이터베이스 이미 존재');
+        }
+    }
+    catch (error) {
+        console.warn('⚠️ semlog DB 생성 실패:', error.message);
+    }
+    finally {
+        await client.end();
+    }
+}
+
+
+/***/ }),
+/* 54 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/common");
+
+/***/ }),
+/* 55 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/typeorm");
+
+/***/ }),
+/* 56 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapGrpcInputController = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const map_service_1 = __webpack_require__(57);
+let MapGrpcInputController = class MapGrpcInputController {
+    constructor(mapService) {
+        this.mapService = mapService;
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    mapping(request) {
+        return this.mapService.mappingRequest(request);
+    }
+    getMapList() {
+        return this.mapService.getMapList();
+    }
+    getCloud(request) {
+        return this.mapService.getCloud(request);
+    }
+    saveCloud(request) {
+        return this.mapService.saveCloud(request);
+    }
+    getTopology(request) {
+        return this.mapService.getTopology(request);
+    }
+    saveTopology(request) {
+        return this.mapService.saveTopology(request);
+    }
+    uploadMap(request, metadata) {
+        return this.mapService.uploadMap(request);
+    }
+    downloadMap(request, metadata) {
+        return this.mapService.downloadMap(request);
+    }
+    publishMap(request, metadata) {
+        return this.mapService.publishMap(request);
+    }
+    getCurrentMap() {
+        throw new microservices_1.RpcException('구현되지 않은 기능입니다.');
+    }
+    load(request) {
+        return this.mapService.loadRequest(request);
+    }
+};
+exports.MapGrpcInputController = MapGrpcInputController;
+exports.MapGrpcInputController = MapGrpcInputController = __decorate([
+    (0, common_2.Controller)(),
+    common_1.MapMicroservice.MapGrpcServiceControllerMethods(),
+    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
+    __metadata("design:paramtypes", [typeof (_a = typeof map_service_1.MapService !== "undefined" && map_service_1.MapService) === "function" ? _a : Object])
+], MapGrpcInputController);
+
+
+/***/ }),
+/* 57 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapService = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const map_database_output_port_1 = __webpack_require__(58);
+const map_slamnav_output_port_1 = __webpack_require__(59);
+const map_command_domain_1 = __webpack_require__(60);
+const microservices_1 = __webpack_require__(3);
+const fs_1 = __webpack_require__(38);
+const path_1 = __webpack_require__(39);
+const util_1 = __webpack_require__(32);
+const FormData = __webpack_require__(61);
+const zip_util_1 = __webpack_require__(62);
+const axios_1 = __webpack_require__(64);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const map_file_output_port_1 = __webpack_require__(65);
+let MapService = class MapService {
+    constructor(databaseOutput, slamnavOutput, mapFileOutput) {
+        this.databaseOutput = databaseOutput;
+        this.slamnavOutput = slamnavOutput;
+        this.mapFileOutput = mapFileOutput;
+        this.slamnav_connection = false;
+        this.loggerService = common_1.LoggerService.get('host');
+        this.serviceName = 'MAP';
+        console.log(process.env.DATA_DIR);
+    }
+    async getMapList() {
+        let command = null;
+        try {
+            this.loggerService.debug(`[APP] getMapList`);
+            command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getMapList });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            const entries = await this.mapFileOutput.readMapList({});
+            this.loggerService.debug(`[APP] getMapList : 경로 내 Map 폴더 개수 = ${entries.list.length} (${command.path})`);
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return entries;
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            this.loggerService.error(`[APP] getMapList : ${util_1.ParseUtil.errorToJson(error)}`);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('파일을 읽는 도중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getCloud(request) {
+        let command = null;
+        try {
+            this.loggerService.debug(`[APP] getCloud : ${JSON.stringify(request)})`);
+            command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getCloud, ...request });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            if (!(0, fs_1.existsSync)(command.path)) {
+                throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
+            }
+            const csvData = await util_1.FileUtil.readCSV(command.path);
+            const cloud = csvData.map((e) => ({ row: e }));
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return { ...request, cloud };
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            this.loggerService.error(`[Map] getCloud : ${util_1.ParseUtil.errorToJson(error)}`);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('Cloud를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async saveCloud(request) {
+        let command = null;
+        try {
+            this.loggerService.debug(`[Map] saveCloud : ${JSON.stringify(request)})`);
+            command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getCloud, ...request, cloud: request.cloud.map((row) => row.row) });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            const list = request.cloud.map((row) => row.row);
+            await util_1.FileUtil.saveCSV(command.path, list);
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return request;
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            this.loggerService.error(`[Map] saveCloud : ${util_1.ParseUtil.errorToJson(error)}`);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('Cloud를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async saveTopology(request) {
+        let command = null;
+        try {
+            this.loggerService.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
+            command = new map_command_domain_1.MapCommandModel({
+                command: map_command_domain_1.MapCommand.saveTopo,
+                topo: request.data,
+                mapName: request.mapName,
+                fileName: request.fileName,
+            });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            const jsonData = JSON.parse(JSON.stringify(request.data));
+            await util_1.FileUtil.saveJson(command.path, jsonData);
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return request;
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] saveTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('Topology를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getTopology(request) {
+        let command = null;
+        try {
+            this.loggerService.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
+            command = new map_command_domain_1.MapCommandModel({
+                command: map_command_domain_1.MapCommand.getTopo,
+                mapName: request.mapName,
+                fileName: request.fileName,
+            });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            if (!(0, fs_1.existsSync)(command.path)) {
+                throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
+            }
+            const jsonData = await util_1.FileUtil.readJson(command.path);
+            const data = JSON.parse(JSON.stringify(jsonData));
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return { ...request, data };
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('Topology를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async uploadMap(request) {
+        let zipPath = '';
+        let command = null;
+        try {
+            this.loggerService.debug(`[Map] uploadMap : ${JSON.stringify(request)})`);
+            command = new map_command_domain_1.MapCommandModel({ ...request, command: map_command_domain_1.MapCommand.uploadMap });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            const mapPath = command.path;
+            const newMapPath = command.newPath;
+            zipPath = `${newMapPath}.zip`;
+            if (!(0, fs_1.existsSync)(mapPath)) {
+                throw new rpc_code_exception_1.RpcCodeException(`${command.mapName} 이름의 맵폴더가 존재하지 않습니다. ${mapPath}`, constant_1.GrpcCode.NotFound);
+            }
+            await zip_util_1.ZipUtil.zipFolder(mapPath, zipPath);
+            this.loggerService.debug(`[Map] uploadMap : zip success (${zipPath}, ${(0, path_1.basename)(zipPath)})`);
+            const zipStream = (0, fs_1.createReadStream)(zipPath);
+            const formData = new FormData();
+            formData.append('file', zipStream, { filename: (0, path_1.basename)(zipPath) });
+            formData.append('deleteZipAt', 'Y');
+            const url = process.env.FRS_URL + '/api/maps/frs-map/upload';
+            this.loggerService.debug(`[Map] uploadMap : POST frs (${url})`);
+            const response = await axios_1.default.post(url, formData);
+            this.loggerService.debug(`[Map] uploadMap : Response from FRS (${JSON.stringify(response.data)})`);
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return {
+                mapName: command.mapName,
+                newMapName: command.newMapName,
+            };
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException) {
+                throw error;
+            }
+            if (error.response.data.message) {
+                this.loggerService.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                throw new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError);
+            }
+            this.loggerService.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+            throw new rpc_code_exception_1.RpcCodeException('맵을 업로드할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+        finally {
+            if (zipPath !== '' && (0, fs_1.existsSync)(zipPath)) {
+                (0, fs_1.unlinkSync)(zipPath);
+            }
+        }
+    }
+    async downloadMap(request) {
+        return new Promise(async (resolve, reject) => {
+            let zipPath = '';
+            let command = null;
+            try {
+                this.loggerService.info(`[Map] downloadMap ================================`);
+                command = new map_command_domain_1.MapCommandModel({
+                    mapName: request.fileName,
+                    isForce: request.isForce,
+                    newMapName: request.newMapName,
+                    command: map_command_domain_1.MapCommand.downloadMap,
+                });
+                const result = await this.databaseOutput.save(command);
+                command.assignId(result.id.toString());
+                command.checkVariables();
+                const url = process.env.FRS_URL + '/api/maps/frs-map/download';
+                this.loggerService.debug(`[Map] downloadMap : POST frs (${url}, ${command.mapName})`);
+                const response = await axios_1.default.get(url, {
+                    responseType: 'stream',
+                    params: {
+                        fileDetailFlNm: command.mapName,
+                    },
+                });
+                const newMapPath = command.newPath;
+                zipPath = `${newMapPath}.zip`;
+                if (!command.isForce && (0, fs_1.existsSync)(newMapPath)) {
+                    throw new rpc_code_exception_1.RpcCodeException('이미 동일한 이름의 맵이 존재합니다.', constant_1.GrpcCode.AlreadyExists);
+                }
+                this.loggerService.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
+                const fileStream = (0, fs_1.createWriteStream)(zipPath);
+                response.data.pipe(fileStream);
+                this.loggerService.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
+                fileStream.on('finish', async () => {
+                    this.loggerService.info(`[Map] downloadMap: Download(Zip) Done ${zipPath}`);
+                    this.loggerService.info(`[Map] downloadMap: UnZip ${zipPath} -> ${newMapPath}`);
+                    await zip_util_1.ZipUtil.unzipFolder(zipPath, newMapPath);
+                    this.loggerService.debug(`[Map] downloadMap : Zip Done`);
+                });
+                command.statusChange(map_command_domain_1.CommandStatus.success);
+                await this.databaseOutput.update(command);
+                resolve({
+                    fileName: command.mapName,
+                    newMapName: command.newMapName,
+                    isForce: command.isForce,
+                });
+            }
+            catch (error) {
+                if (command) {
+                    command.statusChange(map_command_domain_1.CommandStatus.fail);
+                    await this.databaseOutput.update(command);
+                }
+                if (error instanceof microservices_1.RpcException) {
+                    reject(error);
+                }
+                if (error.response?.data?.message) {
+                    this.loggerService.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError));
+                }
+                this.loggerService.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error)}`);
+                reject(new rpc_code_exception_1.RpcCodeException('맵을 다운로드할 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+            finally {
+                if (zipPath !== '' && (0, fs_1.existsSync)(zipPath)) {
+                    (0, fs_1.unlinkSync)(zipPath);
+                }
+            }
+        });
+    }
+    async publishMap(request) {
+        return new Promise(async (resolve, reject) => {
+            let zipPath = '';
+            let command = null;
+            try {
+                this.loggerService.info(`[Map] publishMap ================================`);
+                command = new map_command_domain_1.MapCommandModel({
+                    mapName: request.fileName,
+                    isForce: request.isForce,
+                    newMapName: request.newMapName,
+                    command: map_command_domain_1.MapCommand.downloadMap,
+                });
+                const result = await this.databaseOutput.save(command);
+                command.assignId(result.id.toString());
+                command.checkVariables();
+                zipPath = (0, path_1.join)('/data/temp', request.fileName);
+                const mapPath = command.newPath;
+                if (!(0, fs_1.existsSync)(zipPath)) {
+                    throw new rpc_code_exception_1.RpcCodeException(`파일을 저장하지 못했습니다. ${zipPath}`, constant_1.GrpcCode.NotFound);
+                }
+                if ((0, fs_1.existsSync)(mapPath) && !request.isForce) {
+                    throw new rpc_code_exception_1.RpcCodeException('동일한 이름의 맵이 이미 존재합니다.', constant_1.GrpcCode.AlreadyExists);
+                }
+                this.loggerService.info(`[Map] publishMap: UnZip ${zipPath} -> ${mapPath}`);
+                await zip_util_1.ZipUtil.unzipFolder(zipPath, mapPath);
+                this.loggerService.debug(`[Map] publishMap : Zip Done`);
+                command.statusChange(map_command_domain_1.CommandStatus.success);
+                await this.databaseOutput.update(command);
+                resolve({
+                    fileName: command.mapName,
+                    newMapName: command.newMapName,
+                    isForce: command.isForce,
+                });
+            }
+            catch (error) {
+                console.error(error);
+                if (command) {
+                    command.statusChange(map_command_domain_1.CommandStatus.fail);
+                    await this.databaseOutput.update(command);
+                }
+                if (error instanceof microservices_1.RpcException) {
+                    reject(error);
+                }
+                if (error.response?.data?.message) {
+                    this.loggerService.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError));
+                }
+                this.loggerService.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error)}`);
+                reject(new rpc_code_exception_1.RpcCodeException('맵을 다운로드할 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+            finally {
+                if (zipPath !== '' && (0, fs_1.existsSync)(zipPath)) {
+                    (0, fs_1.unlinkSync)(zipPath);
+                }
+            }
+        });
+    }
+    async loadRequest(request) {
+        let command = null;
+        try {
+            this.loggerService.info(`[Map] loadRequest : ${JSON.stringify(command)}`);
+            command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.loadMap, mapName: request.mapName });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            const resp = await this.slamnavOutput.loadRequest(command);
+            this.loggerService.info(`[Map] LoadMap Response : ${JSON.stringify(resp)}`);
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            this.loggerService.info(`[Map] LoadMap DB Update : ${result?.id.toString()}`);
+            return resp;
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException) {
+                throw error;
+            }
+            throw new rpc_code_exception_1.RpcCodeException('맵을 로드할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async mappingRequest(request) {
+        let command = null;
+        try {
+            this.loggerService.info(`[Map] mappingRequest : ${JSON.stringify(command)}`);
+            command = new map_command_domain_1.MapCommandModel({ command: request.command, mapName: request.mapName });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            if (!(0, fs_1.existsSync)(command.path)) {
+                throw new rpc_code_exception_1.RpcCodeException(`${command.mapName} 이름의 맵폴더가 존재하지 않습니다.`, constant_1.GrpcCode.NotFound);
+            }
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            const resp = await this.slamnavOutput.mappingRequest(command);
+            this.loggerService.info(`[Map] Mapping Response : ${JSON.stringify(resp)}`);
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            this.loggerService.info(`[Map] Mapping DB Update : ${result?.id.toString()}`);
+            return resp;
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException) {
+                throw error;
+            }
+            throw new rpc_code_exception_1.RpcCodeException('맵을 로드할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async loadResponse(response) {
+        this.loggerService.info(`[Map] loadResponse : ${JSON.stringify(response)}`);
+        const dbmodel = await this.databaseOutput.getNodebyId(response.id);
+        if (dbmodel) {
+            const model = new map_command_domain_1.MapCommandModel(dbmodel);
+            model.assignId(dbmodel.id);
+            model.statusChange(response.result);
+            await this.databaseOutput.update(model);
+            this.loggerService.info(`[Map] loadResponse : ${model.id}, ${model.status}`);
+        }
+    }
+    async mappingResponse(response) {
+        this.loggerService.info(`[Map] mappingResponse : ${JSON.stringify(response)}`);
+        const dbmodel = await this.databaseOutput.getNodebyId(response.id);
+        if (dbmodel) {
+            const model = new map_command_domain_1.MapCommandModel(dbmodel);
+            model.assignId(dbmodel.id);
+            model.statusChange(response.result);
+            await this.databaseOutput.update(model);
+            this.loggerService.info(`[Map] mappingResponse : ${model.id}, ${model.status}`);
+        }
+    }
+    async parseMapList(path) {
+        try {
+            const list = [];
+            const entries = (0, fs_1.readdirSync)(path, { withFileTypes: true });
+            for (const entry of entries) {
+                if (entry.isDirectory()) {
+                    const fullPath = path + '/' + entry.name;
+                    const stats = (0, fs_1.statSync)(fullPath);
+                    const model = {
+                        fileName: entry.name,
+                        updateAt: util_1.DateUtil.formatDateKST(stats.mtime),
+                        cloudFiles: [],
+                        topoFiles: [],
+                    };
+                    const files = (0, fs_1.readdirSync)(fullPath, { withFileTypes: true });
+                    for (const file of files) {
+                        if (file.name.split('.')[1] === 'csv' && file.name.includes('cloud')) {
+                            model.cloudFiles.push({
+                                fileName: file.name,
+                                createAt: util_1.DateUtil.formatDateKST(stats.mtime),
+                                updateAt: util_1.DateUtil.formatDateKST(stats.mtime),
+                                fileType: file.name.split('.')[1],
+                            });
+                        }
+                        else if (file.name.split('.')[1] === 'json' && file.name.includes('topo')) {
+                            model.topoFiles.push({
+                                fileName: file.name,
+                                createAt: util_1.DateUtil.formatDateKST(stats.mtime),
+                                updateAt: util_1.DateUtil.formatDateKST(stats.mtime),
+                                fileType: file.name.split('.')[1],
+                            });
+                        }
+                    }
+                    if (model.cloudFiles.length > 0 || model.topoFiles.length > 0) {
+                        list.push(model);
+                    }
+                }
+            }
+            return { list: list };
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] parseMapList : ${util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('맵 리스트를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    slamConnect() {
+        this.loggerService.debug(`[Map] Slamnav Connected`);
+        this.slamnav_connection = true;
+    }
+    slamDisconnect() {
+        this.loggerService.debug(`[Map] Slamnav Disonnected`);
+        this.slamnav_connection = false;
+    }
+};
+exports.MapService = MapService;
+exports.MapService = MapService = __decorate([
+    __param(0, (0, common_2.Inject)('DatabaseOutputPort')),
+    __param(1, (0, common_2.Inject)('SlamnavOutputPort')),
+    __param(2, (0, common_2.Inject)('MapFileOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof map_database_output_port_1.MapDatabaseOutputPort !== "undefined" && map_database_output_port_1.MapDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof map_slamnav_output_port_1.MapSlamnavOutputPort !== "undefined" && map_slamnav_output_port_1.MapSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof map_file_output_port_1.MapFileOutputPort !== "undefined" && map_file_output_port_1.MapFileOutputPort) === "function" ? _c : Object])
+], MapService);
+
+
+/***/ }),
+/* 58 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 59 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 60 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapCommandModel = exports.MapCommand = exports.CommandStatus = void 0;
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const microservices_1 = __webpack_require__(3);
+const path_1 = __webpack_require__(39);
+var CommandStatus;
+(function (CommandStatus) {
+    CommandStatus["pending"] = "pending";
+    CommandStatus["accept"] = "accept";
+    CommandStatus["reject"] = "reject";
+    CommandStatus["fail"] = "fail";
+    CommandStatus["success"] = "success";
+    CommandStatus["canceled"] = "canceled";
+    CommandStatus["unknown"] = "unknown";
+})(CommandStatus || (exports.CommandStatus = CommandStatus = {}));
+var MapCommand;
+(function (MapCommand) {
+    MapCommand["uploadMap"] = "upload";
+    MapCommand["downloadMap"] = "download";
+    MapCommand["publishMap"] = "publish";
+    MapCommand["getMapList"] = "list";
+    MapCommand["getCloud"] = "getCloud";
+    MapCommand["saveCloud"] = "saveCloud";
+    MapCommand["getTopo"] = "getTopo";
+    MapCommand["saveTopo"] = "saveTopo";
+    MapCommand["loadMap"] = "loadMap";
+    MapCommand["loadTopo"] = "loadTopo";
+    MapCommand["mappingStart"] = "mappingStart";
+    MapCommand["mappingStop"] = "mappingStop";
+    MapCommand["mappingSave"] = "mappingSave";
+    MapCommand["mappingReload"] = "mappingReload";
+})(MapCommand || (exports.MapCommand = MapCommand = {}));
+class MapCommandModel {
+    constructor(param) {
+        this.command = param.command;
+        this.mapName = param.mapName;
+        this.fileName = param.fileName;
+        this.newMapName = param.newMapName;
+        this.isForce = param.isForce;
+        this.status = CommandStatus.pending;
+        this.path = this.getMapsDir();
+        this.cloud = param.cloud;
+        this.topo = param.topo;
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    getMapsDir(mapName, fileName) {
+        const paths = ['/data/maps'];
+        if (mapName)
+            paths.push(mapName);
+        if (fileName)
+            paths.push(fileName);
+        return (0, path_1.join)(...paths);
+    }
+    statusChange(status) {
+        if (!this.id) {
+            throw new microservices_1.RpcException('ID가 없습니다');
+        }
+        const parseStatus = this.parseStatus(status);
+        this.status = parseStatus;
+    }
+    checkVariables() {
+        switch (this.command) {
+            case MapCommand.uploadMap:
+            case MapCommand.downloadMap:
+            case MapCommand.publishMap: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.newMapName === undefined || this.newMapName === '') {
+                    this.newMapName = this.mapName;
+                }
+                this.path = this.getMapsDir(this.mapName);
+                this.newPath = this.getMapsDir(this.newMapName);
+                break;
+            }
+            case MapCommand.getMapList: {
+                this.path = this.getMapsDir();
+                break;
+            }
+            case MapCommand.getTopo: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName === undefined || this.fileName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('fileName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName.split('.').length === 2) {
+                    if (this.fileName.split('.')[1] !== 'json') {
+                        throw new rpc_code_exception_1.RpcCodeException(`읽을 수 없는 확장자입니다. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                    }
+                }
+                else {
+                    throw new rpc_code_exception_1.RpcCodeException(`확장자를 입력해주세요. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName, this.fileName);
+                break;
+            }
+            case MapCommand.getCloud: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName === undefined || this.fileName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('fileName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName.split('.').length === 2) {
+                    if (this.fileName.split('.')[1] !== 'csv') {
+                        throw new rpc_code_exception_1.RpcCodeException(`읽을 수 없는 확장자입니다. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                    }
+                }
+                else {
+                    throw new rpc_code_exception_1.RpcCodeException(`확장자를 입력해주세요. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.cloud === undefined || this.cloud.length === 0) {
+                    throw new rpc_code_exception_1.RpcCodeException(`cloud 데이터가 없습니다.`, constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName, this.fileName);
+                break;
+            }
+            case MapCommand.saveCloud: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException(`mapName 값이 없습니다.`, constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName === undefined || this.fileName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException(`fileName 값이 없습니다.`, constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName.split('.').length === 2) {
+                    if (this.fileName.split('.')[1] !== 'csv') {
+                        throw new rpc_code_exception_1.RpcCodeException(`읽을 수 없는 확장자입니다. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                    }
+                }
+                else {
+                    throw new rpc_code_exception_1.RpcCodeException(`확장자를 입력해주세요. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                }
+                if (!this.cloud || this.cloud.length === 0) {
+                    throw new rpc_code_exception_1.RpcCodeException(`cloud 데이터가 없습니다.`, constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName, this.fileName);
+                break;
+            }
+            case MapCommand.saveTopo: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName === undefined || this.fileName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('fileName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fileName.split('.').length === 2) {
+                    if (this.fileName.split('.')[1] !== 'json') {
+                        throw new rpc_code_exception_1.RpcCodeException(`읽을 수 없는 확장자입니다. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                    }
+                }
+                else {
+                    throw new rpc_code_exception_1.RpcCodeException(`확장자를 입력해주세요. (fileName = ${this.fileName})`, constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.topo === undefined || this.topo.length === 0) {
+                    throw new rpc_code_exception_1.RpcCodeException(`topo 데이터가 없습니다.`, constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName, this.fileName);
+                break;
+            }
+            case MapCommand.loadMap: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName);
+                break;
+            }
+            case MapCommand.loadTopo: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName, this.fileName);
+                break;
+            }
+        }
+    }
+    parseStatus(value) {
+        if (Object.values(CommandStatus).includes(value)) {
+            return value;
+        }
+        return CommandStatus.unknown;
+    }
+}
+exports.MapCommandModel = MapCommandModel;
+
+
+/***/ }),
+/* 61 */
+/***/ ((module) => {
+
+module.exports = require("form-data");
+
+/***/ }),
+/* 62 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ZipUtil = void 0;
+const AdmZip = __webpack_require__(63);
+const fs_1 = __webpack_require__(38);
+const path_1 = __webpack_require__(39);
+const logger_1 = __webpack_require__(28);
+const microservices_1 = __webpack_require__(3);
+class ZipUtil {
+    static async zipFolder(sourcePath, zipPath) {
+        try {
+            logger_1.LoggerService.get('util').info(`[ZIP] zipFolder: ${sourcePath} -> ${zipPath}`);
+            const zip = new AdmZip();
+            const addFilesRecursively = async (folderPath, zipFolderPath = '') => {
+                const files = (0, fs_1.readdirSync)(folderPath);
+                files.forEach((file) => {
+                    const filePath = (0, path_1.join)(folderPath, file);
+                    const stat = (0, fs_1.statSync)(filePath);
+                    if (stat.isDirectory()) {
+                        addFilesRecursively(filePath, (0, path_1.join)(zipFolderPath, file));
+                    }
+                    else {
+                        zip.addLocalFile(filePath, zipFolderPath);
+                    }
+                });
+            };
+            addFilesRecursively(sourcePath);
+            zip.writeZip(zipPath);
+            logger_1.LoggerService.get('util').info(`[ZIP] zipFolder: successfully done ${sourcePath} -> ${zipPath}`);
+            return true;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            logger_1.LoggerService.get('util').error(`[ZIP] zipFolder: ${(0, logger_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('파일을 압축할 수 없습니다.');
+        }
+    }
+    static async unzipFolder(zipPath, targetPath) {
+        try {
+            logger_1.LoggerService.get('util').info(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}`);
+            const zip = new AdmZip(zipPath);
+            if (!(0, fs_1.existsSync)(targetPath)) {
+                (0, fs_1.mkdirSync)(targetPath, { recursive: true });
+            }
+            zip.extractAllTo(targetPath, true);
+            logger_1.LoggerService.get('util').info(`[ZIP] unzipFoler: successfully done ${zipPath} -> ${targetPath}`);
+            return true;
+        }
+        catch (error) {
+            logger_1.LoggerService.get('util').error(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}, ${(0, logger_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('파일을 압축 해제할 수 없습니다.');
+        }
+    }
+}
+exports.ZipUtil = ZipUtil;
+
+
+/***/ }),
+/* 63 */
+/***/ ((module) => {
+
+module.exports = require("adm-zip");
+
+/***/ }),
+/* 64 */
+/***/ ((module) => {
+
+module.exports = require("axios");
+
+/***/ }),
+/* 65 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 66 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapPostgresAdapter = void 0;
+const typeorm_1 = __webpack_require__(55);
+const map_entity_1 = __webpack_require__(67);
+const typeorm_2 = __webpack_require__(68);
+const common_1 = __webpack_require__(4);
+const microservices_1 = __webpack_require__(3);
+const parse_util_1 = __webpack_require__(48);
+let MapPostgresAdapter = class MapPostgresAdapter {
+    constructor(commandRepository) {
+        this.commandRepository = commandRepository;
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    async getNodebyId(id) {
+        try {
+            return await this.commandRepository.findOneBy({ id });
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+        }
+    }
+    async save(command) {
+        try {
+            this.loggerService.debug(`[Map] DB save: ${JSON.stringify(command)}`);
+            const { cloud, ...dbData } = command;
+            return await this.commandRepository.save(dbData);
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+        }
+    }
+    async update(command) {
+        try {
+            this.loggerService.debug(`[Map] DB update: ${JSON.stringify(command)}`);
+            const { cloud, ...dbData } = command;
+            await this.commandRepository.update(command.id, dbData);
+            return await this.commandRepository.findOneBy({ id: command.id });
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+        }
+    }
+};
+exports.MapPostgresAdapter = MapPostgresAdapter;
+exports.MapPostgresAdapter = MapPostgresAdapter = __decorate([
+    __param(0, (0, typeorm_1.InjectRepository)(map_entity_1.Map)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
+], MapPostgresAdapter);
+
+
+/***/ }),
+/* 67 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Map = void 0;
+const typeorm_1 = __webpack_require__(68);
+let Map = class Map {
+};
+exports.Map = Map;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Map.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Map.prototype, "command", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Map.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "mapName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "newMapName", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Map.prototype, "path", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "fileName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], Map.prototype, "isForce", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "message", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Map.prototype, "createAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Map.prototype, "updateAt", void 0);
+__decorate([
+    (0, typeorm_1.VersionColumn)(),
+    __metadata("design:type", Number)
+], Map.prototype, "version", void 0);
+exports.Map = Map = __decorate([
+    (0, typeorm_1.Entity)()
+], Map);
+
+
+/***/ }),
+/* 68 */
+/***/ ((module) => {
+
+module.exports = require("typeorm");
+
+/***/ }),
+/* 69 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapSocketIOAdapter = void 0;
+const common_1 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const common_2 = __webpack_require__(4);
+const constant_1 = __webpack_require__(70);
+const map_pending_service_1 = __webpack_require__(77);
+let MapSocketIOAdapter = class MapSocketIOAdapter {
+    constructor(mqttService, pendingService) {
+        this.mqttService = mqttService;
+        this.pendingService = pendingService;
+        this.loggerService = common_2.LoggerService.get('host');
+    }
+    async mappingRequest(request) {
+        this.loggerService.debug(`[Map] moveRequest : ${JSON.stringify(request)}`);
+        const response = this.waitForResponse(request.id);
+        this.mqttService.emit('mappingRequest', request);
+        const resp = await response;
+        this.loggerService.debug(`[Map] moveResponse : ${JSON.stringify(resp)}`);
+        return resp;
+    }
+    async loadRequest(request) {
+        this.loggerService.debug(`[Map] loadRequest : ${JSON.stringify(request)}`);
+        const response = this.waitForResponse(request.id);
+        this.mqttService.emit('loadRequest', request);
+        const resp = await response;
+        this.loggerService.debug(`[Map] loadResponse : ${JSON.stringify(resp)}`);
+        return resp;
+    }
+    async waitForResponse(id) {
+        return new Promise((resolve, reject) => {
+            this.pendingService.pendingResponses.set(id, {
+                resolve,
+                reject,
+                received: [],
+            });
+        });
+    }
+};
+exports.MapSocketIOAdapter = MapSocketIOAdapter;
+exports.MapSocketIOAdapter = MapSocketIOAdapter = __decorate([
+    __param(0, (0, common_1.Inject)(constant_1.SOCKETIO_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof map_pending_service_1.MapPendingResponseService !== "undefined" && map_pending_service_1.MapPendingResponseService) === "function" ? _b : Object])
+], MapSocketIOAdapter);
+
+
+/***/ }),
+/* 70 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.message = exports.environment = void 0;
+__exportStar(__webpack_require__(71), exports);
+__exportStar(__webpack_require__(72), exports);
+exports.environment = __webpack_require__(73);
+exports.message = __webpack_require__(75);
+
+
+/***/ }),
+/* 71 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.COBOT_SERVICE = exports.CODE_SERVICE = exports.TASK_SERVICE = exports.MQTT_BROKER = exports.SOUND_SERVICE = exports.EXTERNAL_ACCESSORY_SERVICE = exports.SOCKETIO_SERVICE = exports.REDIS_SERVICE = exports.HOST_SERVER = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.LOG_SERVICE = exports.FILE_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.SLAMNAV_SERVICE = exports.SETTING_SERVICE = exports.CONTROL_SERVICE = exports.CONFIG_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.AUTH_SERVICE = 'AUTH_SERVICE';
+exports.USER_SERVICE = 'USER_SERVICE';
+exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
+exports.ROLE_SERVICE = 'ROLE_SERVICE';
+exports.GROUP_SERVICE = 'GROUP_SERVICE';
+exports.AMR_SERVICE = 'AMR_SERVICE';
+exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
+exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
+exports.SETTING_SERVICE = 'SETTING_SERVICE';
+exports.SLAMNAV_SERVICE = 'SLAMNAV_SERVICE';
+exports.MOVE_SERVICE = 'MOVE_SERVICE';
+exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
+exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
+exports.FILE_SERVICE = 'FILE_SERVICE';
+exports.LOG_SERVICE = 'LOG_SERVICE';
+exports.MAP_SERVICE = 'MAP_SERVICE';
+exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
+exports.HOST_SERVER = 'HOST_SERVER';
+exports.REDIS_SERVICE = 'REDIS_SERVICE';
+exports.SOCKETIO_SERVICE = 'SOCKETIO_SERVICE';
+exports.EXTERNAL_ACCESSORY_SERVICE = 'EXTERNAL_ACCESSORY_SERVICE';
+exports.SOUND_SERVICE = 'SOUND_SERVICE';
+exports.MQTT_BROKER = 'MQTT_BROKER';
+exports.TASK_SERVICE = 'TASK_SERVICE';
+exports.CODE_SERVICE = 'CODE_SERVICE';
+exports.COBOT_SERVICE = 'COBOT_SERVICE';
+
+
+/***/ }),
+/* 72 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 73 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(74), exports);
+
+
+/***/ }),
+/* 74 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SYSTEM = void 0;
+exports.SYSTEM = {
+    INTERACTIVE: {
+        FMS: 'FMS',
+        FRS: 'FRS',
+        ACS: 'ACS',
+        IMS: 'IMS',
+    },
+    CONTROL: {
+        RRS: 'RRS',
+    },
+    CONNECTION: {
+        CLIENT: 'CLIENT',
+        AMR: 'AMR',
+    },
+};
+
+
+/***/ }),
+/* 75 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(76), exports);
+
+
+/***/ }),
+/* 76 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SUCCESS_MESSAGES = exports.ERROR_MESSAGE = void 0;
+exports.ERROR_MESSAGE = {
+    USER: {
+        ID_REQUIRED: '사용자 아이디는 필수입니다.',
+        NOT_FOUND: '사용자를 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
+        INVALID_PASSWORD: '비밀번호가 올바르지 않습니다.',
+    },
+    ROBOT: {
+        SERIAL_REQUIRED: '로봇 시리얼은 필수입니다.',
+        NOT_FOUND: '로봇을 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 로봇입니다.',
+    },
+    AUTH: {
+        TOKEN_REQUIRED: '인증 토큰이 필요합니다.',
+        TOKEN_INVALID: '유효하지 않은 토큰입니다.',
+        TOKEN_EXPIRED: '토큰이 만료되었습니다.',
+        UNAUTHORIZED: '인증이 필요합니다.',
+        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
+    },
+    CODE: {
+        NOT_FOUND: '코드를 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 코드입니다.',
+    },
+    SOCKET: {
+        NOT_FOUND: 'Socket정보를 찾을 수 없습니다.',
+    },
+    MAP: {
+        NOT_FOUND: '맵을 찾을 수 없습니다.',
+        INVALID_FORMAT: '올바르지 않은 맵 형식입니다.',
+        SAVE_FAILED: '맵 저장에 실패했습니다.',
+    },
+    COMMON: {
+        BAD_REQUEST: '잘못된 요청입니다.',
+        INTERNAL_SERVER_ERROR: '서버 내부 오류가 발생했습니다.',
+        VALIDATION_FAILED: '유효성 검사에 실패했습니다.',
+        FORBIDDEN: '권한이 없습니다.',
+    },
+};
+exports.SUCCESS_MESSAGES = {
+    USER: {
+        CREATED: '사용자가 성공적으로 생성되었습니다.',
+        UPDATED: '사용자 정보가 성공적으로 업데이트되었습니다.',
+        DELETED: '사용자가 성공적으로 삭제되었습니다.',
+    },
+    MAP: {
+        SAVED: '맵이 성공적으로 저장되었습니다.',
+        LOADED: '맵이 성공적으로 로드되었습니다.',
+        UPDATED: '맵이 성공적으로 업데이트되었습니다.',
+    },
+};
+
+
+/***/ }),
+/* 77 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapPendingResponseService = void 0;
+const pending_util_1 = __webpack_require__(78);
+const common_1 = __webpack_require__(54);
+let MapPendingResponseService = class MapPendingResponseService extends pending_util_1.PendingResponseUtil {
+};
+exports.MapPendingResponseService = MapPendingResponseService;
+exports.MapPendingResponseService = MapPendingResponseService = __decorate([
+    (0, common_1.Injectable)()
+], MapPendingResponseService);
+
+
+/***/ }),
+/* 78 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PendingResponseUtil = void 0;
+const common_1 = __webpack_require__(54);
+let PendingResponseUtil = class PendingResponseUtil {
+    constructor() {
+        this.pendingResponses = new Map();
+    }
+};
+exports.PendingResponseUtil = PendingResponseUtil;
+exports.PendingResponseUtil = PendingResponseUtil = __decorate([
+    (0, common_1.Injectable)()
+], PendingResponseUtil);
+
+
+/***/ }),
+/* 79 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapMqttInputController = void 0;
+const common_1 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const map_service_1 = __webpack_require__(57);
+const map_pending_service_1 = __webpack_require__(77);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const common_2 = __webpack_require__(4);
+const mapping_dto_1 = __webpack_require__(80);
+const load_dto_1 = __webpack_require__(83);
+let MapMqttInputController = class MapMqttInputController {
+    constructor(mapService, pendingService) {
+        this.mapService = mapService;
+        this.pendingService = pendingService;
+        this.loggerService = common_2.LoggerService.get('host');
+    }
+    getConnect() {
+        this.loggerService.info(`[Map] slam Connected`);
+        this.mapService.slamConnect();
+    }
+    getDisconnect() {
+        this.loggerService.warn(`[Map] slam Disconnected`);
+        this.mapService.slamDisconnect();
+        this.pendingService.pendingResponses.forEach((resp) => {
+            resp.reject(new rpc_code_exception_1.RpcCodeException('SLAMNAV 연결이 끊어졌습니다', constant_1.GrpcCode.InternalError));
+        });
+        this.pendingService.pendingResponses.clear();
+    }
+    getMoveResponse(data) {
+        const { id } = data;
+        const listener = this.pendingService.pendingResponses.get(id);
+        if (listener) {
+            listener.received.push(data);
+            listener.resolve(data);
+            this.pendingService.pendingResponses.delete(id);
+        }
+        else {
+            this.mapService.mappingResponse(data);
+        }
+    }
+    getLoadResponse(data) {
+        const { id } = data;
+        const listener = this.pendingService.pendingResponses.get(id);
+        if (listener) {
+            listener.received.push(data);
+            listener.resolve(data);
+            this.pendingService.pendingResponses.delete(id);
+        }
+        else {
+            this.mapService.loadResponse(data);
+        }
+    }
+};
+exports.MapMqttInputController = MapMqttInputController;
+__decorate([
+    (0, microservices_1.MessagePattern)('con:slamnav'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MapMqttInputController.prototype, "getConnect", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('slam-disconnect'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MapMqttInputController.prototype, "getDisconnect", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('mappingResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof mapping_dto_1.MappingResponseSlamnav !== "undefined" && mapping_dto_1.MappingResponseSlamnav) === "function" ? _c : Object]),
+    __metadata("design:returntype", void 0)
+], MapMqttInputController.prototype, "getMoveResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('loadResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _d : Object]),
+    __metadata("design:returntype", void 0)
+], MapMqttInputController.prototype, "getLoadResponse", null);
+exports.MapMqttInputController = MapMqttInputController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof map_service_1.MapService !== "undefined" && map_service_1.MapService) === "function" ? _a : Object, typeof (_b = typeof map_pending_service_1.MapPendingResponseService !== "undefined" && map_pending_service_1.MapPendingResponseService) === "function" ? _b : Object])
+], MapMqttInputController);
+
+
+/***/ }),
+/* 80 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingResponseDto = exports.MappingRequestDto = exports.Description = void 0;
+const swagger_1 = __webpack_require__(81);
+const class_validator_1 = __webpack_require__(82);
+const util_1 = __webpack_require__(32);
+const map_command_domain_1 = __webpack_require__(60);
+var Description;
+(function (Description) {
+    Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
+    Description["COMMAND"] = "\uC2E4\uD589\uD560 \uBA85\uB839";
+    Description["MAPNAME"] = "\uB85C\uB4DC(\uC800\uC7A5)\uD560 \uB9F5 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.";
+    Description["FILE"] = "\uC800\uC7A5\uD560 \uD30C\uC77C\uC758 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694. \uD655\uC7A5\uC790\uB97C \uD3EC\uD568\uD558\uC5EC \uC785\uB825\uD558\uC138\uC694.";
+    Description["EXTENSION"] = "\uB85C\uB4DC(\uC800\uC7A5)\uD560 \uD30C\uC77C\uC758 \uD655\uC7A5\uC790\uB97C \uC785\uB825\uD558\uC138\uC694. cloud\uC758 \uACBD\uC6B0 \uD604\uC7AC csv\uB9CC \uC9C0\uC6D0\uD558\uBA70 topology\uB294 \uD604\uC7AC json \uD615\uC2DD\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.";
+    Description["MAPPING_NAME"] = "\uC0C8\uB85C \uC0DD\uC131\uD55C \uB9F5\uC758 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.";
+    Description["RESULT"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC5D0 \uB300\uD55C \uACB0\uACFC\uC785\uB2C8\uB2E4. accept, reject, success, fail \uB4F1 \uBA85\uB839\uC5D0 \uB300\uD574 \uB2E4\uC591\uD55C \uAC12\uC774 \uC874\uC7AC\uD569\uB2C8\uB2E4.";
+    Description["MESSAGE"] = "result\uAC12\uC774 reject, fail \uC778 \uACBD\uC6B0 SLAMNAV\uC5D0\uC11C \uBCF4\uB0B4\uB294 \uBA54\uC2DC\uC9C0 \uC785\uB2C8\uB2E4.";
+    Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
+    Description["TOPO"] = "\uC800\uC7A5\uD560 \uD1A0\uD3F4\uB85C\uC9C0 \uD615\uC2DD\uC744 \uB9DE\uCDB0 \uC785\uB825\uD558\uC138\uC694.";
+})(Description || (exports.Description = Description = {}));
+class MappingRequestDto {
+}
+exports.MappingRequestDto = MappingRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.COMMAND,
+        example: map_command_domain_1.MapCommand.mappingSave,
+        enum: [map_command_domain_1.MapCommand.mappingSave, map_command_domain_1.MapCommand.mappingReload, map_command_domain_1.MapCommand.mappingStart, map_command_domain_1.MapCommand.mappingStop],
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MappingRequestDto.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MAPNAME,
+        example: 'Test',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MappingRequestDto.prototype, "mapName", void 0);
+class MappingResponseDto extends MappingRequestDto {
+}
+exports.MappingResponseDto = MappingResponseDto;
+class MappingResponseSlamnav extends MappingResponseDto {
+}
+exports.MappingResponseSlamnav = MappingResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ID,
+        example: 'Test',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MappingResponseSlamnav.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MappingResponseSlamnav.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MappingResponseSlamnav.prototype, "message", void 0);
+class MappingResponseFrs {
+}
+exports.MappingResponseFrs = MappingResponseFrs;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'FRS 연결 시 사용하는 로봇 시리얼 번호',
+        example: util_1.UrlUtil.generateUUID(),
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MappingResponseFrs.prototype, "robotSerial", void 0);
+
+
+/***/ }),
+/* 81 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/swagger");
+
+/***/ }),
+/* 82 */
+/***/ ((module) => {
+
+module.exports = require("class-validator");
+
+/***/ }),
+/* 83 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = void 0;
+const swagger_1 = __webpack_require__(81);
+const class_validator_1 = __webpack_require__(82);
+const util_1 = __webpack_require__(32);
+const description_1 = __webpack_require__(84);
+const map_command_domain_1 = __webpack_require__(60);
+var Description;
+(function (Description) {
+    Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
+    Description["COMMAND"] = "\uC2E4\uD589\uD560 \uBA85\uB839";
+    Description["MAPNAME"] = "\uB85C\uB4DC(\uC800\uC7A5)\uD560 \uB9F5 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.";
+    Description["FILE"] = "\uC800\uC7A5\uD560 \uD30C\uC77C\uC758 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694. \uD655\uC7A5\uC790\uB97C \uD3EC\uD568\uD558\uC5EC \uC785\uB825\uD558\uC138\uC694.";
+    Description["EXTENSION"] = "\uB85C\uB4DC(\uC800\uC7A5)\uD560 \uD30C\uC77C\uC758 \uD655\uC7A5\uC790\uB97C \uC785\uB825\uD558\uC138\uC694. cloud\uC758 \uACBD\uC6B0 \uD604\uC7AC csv\uB9CC \uC9C0\uC6D0\uD558\uBA70 topology\uB294 \uD604\uC7AC json \uD615\uC2DD\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.";
+    Description["MAPPING_NAME"] = "\uC0C8\uB85C \uC0DD\uC131\uD55C \uB9F5\uC758 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.";
+    Description["RESULT"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC5D0 \uB300\uD55C \uACB0\uACFC\uC785\uB2C8\uB2E4. accept, reject, success, fail \uB4F1 \uBA85\uB839\uC5D0 \uB300\uD574 \uB2E4\uC591\uD55C \uAC12\uC774 \uC874\uC7AC\uD569\uB2C8\uB2E4.";
+    Description["MESSAGE"] = "result\uAC12\uC774 reject, fail \uC778 \uACBD\uC6B0 SLAMNAV\uC5D0\uC11C \uBCF4\uB0B4\uB294 \uBA54\uC2DC\uC9C0 \uC785\uB2C8\uB2E4.";
+    Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
+    Description["TOPO"] = "\uC800\uC7A5\uD560 \uD1A0\uD3F4\uB85C\uC9C0 \uD615\uC2DD\uC744 \uB9DE\uCDB0 \uC785\uB825\uD558\uC138\uC694.";
+})(Description || (Description = {}));
+class LoadRequestDto {
+}
+exports.LoadRequestDto = LoadRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.COMMAND,
+        example: map_command_domain_1.MapCommand.loadMap,
+        enum: map_command_domain_1.MapCommand,
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], LoadRequestDto.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MAPNAME,
+        example: 'Large',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], LoadRequestDto.prototype, "mapName", void 0);
+class LoadResponseDto extends LoadRequestDto {
+}
+exports.LoadResponseDto = LoadResponseDto;
+class LoadResponseSlamnav extends LoadResponseDto {
+}
+exports.LoadResponseSlamnav = LoadResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ID,
+        example: util_1.UrlUtil.generateUUID(),
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], LoadResponseSlamnav.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], LoadResponseSlamnav.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], LoadResponseSlamnav.prototype, "message", void 0);
+class LoadResponseFrs {
+}
+exports.LoadResponseFrs = LoadResponseFrs;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: description_1.FrsDescription.ROBOT_SERIAL,
+        example: util_1.UrlUtil.generateUUID(),
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], LoadResponseFrs.prototype, "robotSerial", void 0);
+
+
+/***/ }),
+/* 84 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FrsDescription = void 0;
+var FrsDescription;
+(function (FrsDescription) {
+    FrsDescription["COMMAND"] = "";
+    FrsDescription["ROBOT_SERIAL"] = "\uB85C\uBD07\uC2DC\uB9AC\uC5BC uuid. \uB85C\uBD07\uC5D0 \uC800\uC7A5\uB41C \uACE0\uC720\uD55C \uBC88\uD638\uB85C FRS\uC5D0 \uB4F1\uB85D \uC2DC \uC0AC\uC6A9\uB428.";
+    FrsDescription["ROBOT_NAME"] = "\uB85C\uBD07 \uC774\uB984. \uCD08\uAE30\uC5D0 robotSerial\uACFC \uB3D9\uC77C\uD55C \uAC12\uC73C\uB85C \uC124\uC815\uB418\uBA70 \uBCC0\uACBD \uAC00\uB2A5";
+})(FrsDescription || (exports.FrsDescription = FrsDescription = {}));
+
+
+/***/ }),
+/* 85 */
+/***/ ((module) => {
+
+module.exports = require("pg");
+
+/***/ }),
+/* 86 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapFileAdapter = void 0;
+const microservices_1 = __webpack_require__(3);
+const common_1 = __webpack_require__(4);
+const util_1 = __webpack_require__(32);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const fs_1 = __webpack_require__(38);
+const path_1 = __webpack_require__(39);
+class MapFileAdapter {
+    constructor() {
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    async readMapList(request) {
+        try {
+            const files = (0, fs_1.readdirSync)(this.mapPath, { withFileTypes: true });
+            const list = [];
+            files.map((file) => {
+                const filePath = (0, path_1.join)(this.mapPath, file.name);
+                const stat = (0, fs_1.statSync)(filePath);
+                list.push({
+                    fileName: file.name,
+                    fileType: file.isFile() ? 'file' : 'directory',
+                    createAt: util_1.DateUtil.formatDateKST(stat.birthtime),
+                    updateAt: util_1.DateUtil.formatDateKST(stat.mtime),
+                    cloudFiles: [],
+                    topoFiles: [],
+                });
+            });
+            return {
+                list: list,
+            };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[File] readFileList : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('리스트를 읽어올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    onModuleInit() {
+        this.mapPath = '/data/maps';
+    }
+}
+exports.MapFileAdapter = MapFileAdapter;
+
+
+/***/ }),
+/* 87 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SettingModule = void 0;
+const common_1 = __webpack_require__(54);
+const setting_service_1 = __webpack_require__(88);
+const config_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(3);
+const setting_grpc_controller_1 = __webpack_require__(89);
+const constant_1 = __webpack_require__(70);
+let SettingModule = class SettingModule {
+};
+exports.SettingModule = SettingModule;
+exports.SettingModule = SettingModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: constant_1.MQTT_BROKER,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.MQTT,
+                        options: {
+                            url: configService.get('MQTT_URL'),
+                        },
+                    }),
+                },
+            ]),
+        ],
+        controllers: [setting_grpc_controller_1.SettingGrpcInputController],
+        providers: [setting_service_1.SettingService],
+    })
+], SettingModule);
+
+
+/***/ }),
+/* 88 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SettingService = void 0;
+const Path = __webpack_require__(39);
+const fs = __webpack_require__(38);
+const common_1 = __webpack_require__(4);
+const microservices_1 = __webpack_require__(3);
+const file_util_1 = __webpack_require__(37);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+class SettingService {
+    constructor() {
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    getDiretoryPath(type) {
+        return Path.join(process.env.HOME, 'slamnav2', 'config', type);
+    }
+    getSettingPath(type) {
+        return Path.join(process.env.HOME, 'slamnav2', 'config', type, 'config.json');
+    }
+    getPresetPath(type, name) {
+        if (name.split('.').length === 1) {
+            name = name + '.json';
+        }
+        if (!name.startsWith('preset_')) {
+            name = 'preset_' + name;
+        }
+        return Path.join(process.env.HOME, 'slamnav2', 'config', type, name);
+    }
+    async getSetting(request) {
+        try {
+            if (request.type === undefined || request.type === '') {
+                this.loggerService.error(`[SETTING] getSetting : type 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const path = this.getSettingPath(request.type);
+            if (!fs.existsSync(path)) {
+                this.loggerService.error(`[SETTING] getSetting : ${request.type}에 해당하는 세팅파일이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException(`${request.type}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
+            }
+            const data = await file_util_1.FileUtil.readJson(path);
+            const parsedData = await this.transformSettingToJson(data);
+            return { ...request, data: JSON.stringify(parsedData) };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[SETTING] getSetting : ${(0, common_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('세팅을 불러오던 중 에러가 발생했습니다.');
+        }
+    }
+    async saveSetting(request) {
+        try {
+            this.loggerService.info(`[Setting] saveSetting : ${JSON.stringify(request)}`);
+            if (request.type === undefined || request.type === '') {
+                this.loggerService.error(`[SETTING] saveSetting : type 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.data === undefined || request.data === '') {
+                this.loggerService.error(`[SETTING] saveSetting : data 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const jsonData = JSON.parse(request.data);
+            if (typeof jsonData !== 'object' || jsonData === null) {
+                this.loggerService.error(`[SETTING] saveSetting : ${request.data}는 JSON 형식이 아닙니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('data 값을 파싱할 수 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const newData = await this.convertNumbersToStrings(jsonData);
+            const path = this.getSettingPath(request.type);
+            fs.mkdirSync(Path.dirname(path));
+            const orinData = await this.transformSettingToJson(await file_util_1.FileUtil.readJson(path));
+            const mergeData = await this.deepMerge(orinData, newData);
+            const finalData = await this.transformSettingToFile(mergeData);
+            await file_util_1.FileUtil.saveJson(path, finalData);
+            return {
+                type: request.type,
+                data: JSON.stringify(mergeData),
+            };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[SETTING] saveSetting : ${(0, common_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('세팅을 저장하던 중 에러가 발생했습니다.');
+        }
+    }
+    async getPreset(request) {
+        this.loggerService.info(`[Setting] getPreset : ${JSON.stringify(request)}`);
+        try {
+            if (request.type === undefined || request.type === '') {
+                this.loggerService.error(`[SETTING] getPreset : type 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.name === undefined || request.name === '') {
+                this.loggerService.error(`[SETTING] getPreset : name 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const path = this.getPresetPath(request.type, request.name);
+            if (!fs.existsSync(path)) {
+                this.loggerService.error(`[SETTING] getPreset : ${path} is not exists`);
+                throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.name}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
+            }
+            const data = await file_util_1.FileUtil.readJson(path);
+            return { ...request, data: JSON.stringify(data) };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('프리셋을 읽던 중 에러가 발생했습니다.');
+        }
+    }
+    async deletePreset(request) {
+        try {
+            this.loggerService.info(`[Setting] deletePreset : ${JSON.stringify(request)}`);
+            if (request.type === undefined || request.type === '') {
+                this.loggerService.error(`[SETTING] deletePreset : type 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.name === undefined || request.name === '') {
+                this.loggerService.error(`[SETTING] deletePreset : name 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const path = this.getPresetPath(request.type, request.name);
+            if (!fs.existsSync(path)) {
+                this.loggerService.error(`[SETTING] getPreset : ${path} is not exists`);
+                throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.name}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
+            }
+            await file_util_1.FileUtil.deleteFile(path);
+            return request;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('프리셋을 읽던 중 에러가 발생했습니다.');
+        }
+    }
+    async createPreset(request) {
+        try {
+            this.loggerService.info(`[Setting] createPreset : ${JSON.stringify(request)}`);
+            if (request.type === undefined || request.type === '') {
+                this.loggerService.error(`[SETTING] createPreset : type 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.name === undefined || request.name === '') {
+                this.loggerService.error(`[SETTING] createPreset : name 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (isNaN(parseInt(request.name))) {
+                this.loggerService.error(`[SETTING] createPreset : name 값이 숫자가 아닙니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 숫자가 아닙니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const path = this.getPresetPath(request.type, request.name);
+            if (fs.existsSync(path)) {
+                this.loggerService.error(`[SETTING] createPreset : ${path} 파일이 이미 존재합니다.`);
+                throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.name}에 해당하는 세팅파일이 이미 존재합니다.`, constant_1.GrpcCode.AlreadyExists);
+            }
+            const tempData = {
+                LIMIT_V: '1.0',
+                LIMIT_W: '45.0',
+                LIMIT_V_ACC: '0.3',
+                LIMIT_V_DCC: '0.1',
+                LIMIT_W_ACC: '180.0',
+                LIMIT_PIVOT_W: '45.0',
+                ST_V: '0.05',
+                ED_V: '0.05',
+                DRIVE_T: '0.0',
+                DRIVE_H: '4.0',
+                DRIVE_A: '0.8',
+                DRIVE_B: '0.05',
+                DRIVE_L: '0.3',
+                DRIVE_K: '0.8',
+                DRIVE_EPS: '0.3',
+            };
+            await file_util_1.FileUtil.saveJson(path, JSON.stringify(tempData));
+            return { ...request, data: JSON.stringify(tempData) };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('프리셋을 읽던 중 에러가 발생했습니다.');
+        }
+    }
+    async savePreset(request) {
+        try {
+            this.loggerService.info(`[Setting] savePreset : ${JSON.stringify(request)}`);
+            if (request.type === undefined || request.type === '') {
+                this.loggerService.error(`[SETTING] savePreset : type 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.name === undefined || request.name === '') {
+                this.loggerService.error(`[SETTING] savePreset : name 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.data === undefined || request.data === '') {
+                this.loggerService.error(`[SETTING] savePreset : data 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const jsonData = JSON.parse(request.data);
+            if (typeof jsonData !== 'object' || jsonData === null) {
+                this.loggerService.error(`[SETTING] savePreset : ${request.data}는 JSON 형식이 아닙니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('data 값을 파싱할 수 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const newData = await this.convertNumbersToStrings(jsonData);
+            const path = this.getSettingPath(request.type);
+            fs.mkdirSync(Path.dirname(path));
+            const orinData = await this.transformSettingToJson(await file_util_1.FileUtil.readJson(path));
+            const mergeData = await this.deepMerge(orinData, newData);
+            const finalData = await this.transformSettingToFile(mergeData);
+            await file_util_1.FileUtil.saveJson(path, finalData);
+            return { ...request, data: JSON.stringify(mergeData) };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[SETTING] savePreset : ${(0, common_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('프리셋을 저장하던 중 에러가 발생했습니다.');
+        }
+    }
+    async getPresetList(request) {
+        try {
+            if (request.type === undefined || request.type === '') {
+                this.loggerService.error(`[SETTING] getPresetList : type 값이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const path = this.getDiretoryPath(request.type);
+            if (!fs.existsSync(path)) {
+                this.loggerService.error(`[SETTING] getPresetList : ${path} 경로가 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException(`${request.type}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.InvalidArgument);
+            }
+            const files = await fs.promises.readdir(path, { withFileTypes: true });
+            console.debug(files);
+            const list = [];
+            for (const file of files) {
+                if (!file.isDirectory()) {
+                    if (file.name.startsWith('preset_') && file.name.split('.').length === 2) {
+                        const name = parseInt(file.name.split('.')[0].split('_')[1]);
+                        const newname = 'preset_' + name + '.json';
+                        if (file.name == newname) {
+                            list.push(name);
+                        }
+                    }
+                }
+            }
+            return { ...request, list: list };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Setting] getPresetList : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async convertNumbersToStrings(obj) {
+        const entries = await Promise.all(Object.entries(obj).map(async ([key, value]) => [
+            key,
+            typeof value === 'number'
+                ? value.toString()
+                : typeof value === 'object' && value !== null
+                    ? await this.convertNumbersToStrings(value)
+                    : value,
+        ]));
+        return Object.fromEntries(entries);
+    }
+    async transformSettingToJson(data) {
+        if (data != undefined) {
+            const new_default = {
+                ...data.default,
+                LIDAR_TF_B_X: data.default.LIDAR_TF_B ? data.default.LIDAR_TF_B.split(',')[0] : 0,
+                LIDAR_TF_B_Y: data.default.LIDAR_TF_B ? data.default.LIDAR_TF_B.split(',')[1] : 0,
+                LIDAR_TF_B_Z: data.default.LIDAR_TF_B ? data.default.LIDAR_TF_B.split(',')[2] : 0,
+                LIDAR_TF_B_RX: data.default.LIDAR_TF_B ? data.default.LIDAR_TF_B.split(',')[3] : 0,
+                LIDAR_TF_B_RY: data.default.LIDAR_TF_B ? data.default.LIDAR_TF_B.split(',')[4] : 0,
+                LIDAR_TF_B_RZ: data.default.LIDAR_TF_B ? data.default.LIDAR_TF_B.split(',')[5] : 0,
+                LIDAR_TF_F_X: data.default.LIDAR_TF_F ? data.default.LIDAR_TF_F.split(',')[0] : 0,
+                LIDAR_TF_F_Y: data.default.LIDAR_TF_F ? data.default.LIDAR_TF_F.split(',')[1] : 0,
+                LIDAR_TF_F_Z: data.default.LIDAR_TF_F ? data.default.LIDAR_TF_F.split(',')[2] : 0,
+                LIDAR_TF_F_RX: data.default.LIDAR_TF_F ? data.default.LIDAR_TF_F.split(',')[3] : 0,
+                LIDAR_TF_F_RY: data.default.LIDAR_TF_F ? data.default.LIDAR_TF_F.split(',')[4] : 0,
+                LIDAR_TF_F_RZ: data.default.LIDAR_TF_F ? data.default.LIDAR_TF_F.split(',')[5] : 0,
+            };
+            const new_cam = {
+                ...data.cam,
+                CAM_TF_0_X: data.cam.CAM_TF_0 ? data.cam.CAM_TF_0.split(',')[0] : 0,
+                CAM_TF_0_Y: data.cam.CAM_TF_0 ? data.cam.CAM_TF_0.split(',')[1] : 0,
+                CAM_TF_0_Z: data.cam.CAM_TF_0 ? data.cam.CAM_TF_0.split(',')[2] : 0,
+                CAM_TF_0_RX: data.cam.CAM_TF_0 ? data.cam.CAM_TF_0.split(',')[3] : 0,
+                CAM_TF_0_RY: data.cam.CAM_TF_0 ? data.cam.CAM_TF_0.split(',')[4] : 0,
+                CAM_TF_0_RZ: data.cam.CAM_TF_0 ? data.cam.CAM_TF_0.split(',')[5] : 0,
+                CAM_TF_1_X: data.cam.CAM_TF_1 ? data.cam.CAM_TF_1.split(',')[0] : 0,
+                CAM_TF_1_Y: data.cam.CAM_TF_1 ? data.cam.CAM_TF_1.split(',')[1] : 0,
+                CAM_TF_1_Z: data.cam.CAM_TF_1 ? data.cam.CAM_TF_1.split(',')[2] : 0,
+                CAM_TF_1_RX: data.cam.CAM_TF_1 ? data.cam.CAM_TF_1.split(',')[3] : 0,
+                CAM_TF_1_RY: data.cam.CAM_TF_1 ? data.cam.CAM_TF_1.split(',')[4] : 0,
+                CAM_TF_1_RZ: data.cam.CAM_TF_1 ? data.cam.CAM_TF_1.split(',')[5] : 0,
+            };
+            const newdata = { ...data, default: new_default, cam: new_cam };
+            console.log(newdata);
+            return newdata;
+        }
+        else {
+            return {};
+        }
+    }
+    async transformSettingToFile(data) {
+        if (data != undefined) {
+            if (data.default) {
+                const lidar_tf_b = (data.default.LIDAR_TF_B_X ? data.default.LIDAR_TF_B_X : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_B_Y ? data.default.LIDAR_TF_B_Y : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_B_Z ? data.default.LIDAR_TF_B_Z : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_B_RX ? data.default.LIDAR_TF_B_RX : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_B_RY ? data.default.LIDAR_TF_B_RY : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_B_RZ ? data.default.LIDAR_TF_B_RZ : '0');
+                const lidar_tf_f = (data.default.LIDAR_TF_F_X ? data.default.LIDAR_TF_F_X : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_F_Y ? data.default.LIDAR_TF_F_Y : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_F_Z ? data.default.LIDAR_TF_F_Z : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_F_RX ? data.default.LIDAR_TF_F_RX : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_F_RY ? data.default.LIDAR_TF_F_RY : '0') +
+                    ',' +
+                    (data.default.LIDAR_TF_F_RZ ? data.default.LIDAR_TF_F_RZ : '0');
+                const newdefault = {
+                    ...data.default,
+                    LIDAR_TF_B: lidar_tf_b,
+                    LIDAR_TF_F: lidar_tf_f,
+                };
+                data = await {
+                    ...data,
+                    default: {
+                        ...data.default,
+                        LIDAR_TF_B: lidar_tf_b,
+                        LIDAR_TF_F: lidar_tf_f,
+                    },
+                };
+            }
+            if (data.cam) {
+                const camera_tf_0 = (data.cam.CAM_TF_0_X ? data.cam.CAM_TF_0_X : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_0_Y ? data.cam.CAM_TF_0_Y : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_0_Z ? data.cam.CAM_TF_0_Z : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_0_RX ? data.cam.CAM_TF_0_RX : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_0_RY ? data.cam.CAM_TF_0_RY : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_0_RZ ? data.cam.CAM_TF_0_RZ : '0');
+                const camera_tf_1 = (data.cam.CAM_TF_1_X ? data.cam.CAM_TF_1_X : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_1_Y ? data.cam.CAM_TF_1_Y : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_1_Z ? data.cam.CAM_TF_1_Z : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_1_RX ? data.cam.CAM_TF_1_RX : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_1_RY ? data.cam.CAM_TF_1_RY : '0') +
+                    ',' +
+                    (data.cam.CAM_TF_1_RZ ? data.cam.CAM_TF_1_RZ : '0');
+                data = {
+                    ...data,
+                    cam: { ...data.cam, CAM_TF_0: camera_tf_0, CAM_TF_1: camera_tf_1 },
+                };
+            }
+            return data;
+        }
+        else {
+            return {};
+        }
+    }
+    async mergeArrayByKey(oldArray, newArray, key) {
+        const mergedArray = [...oldArray];
+        newArray.forEach((newItem) => {
+            const index = mergedArray.findIndex((oldItem) => oldItem[key] === newItem[key]);
+            if (index > -1) {
+                mergedArray[index] = { ...mergedArray[index], ...newItem };
+            }
+            else {
+                mergedArray.push(newItem);
+            }
+        });
+        return mergedArray;
+    }
+    async deepMerge(oldData, newData) {
+        const result = { ...oldData };
+        for (const key in newData) {
+            if (Array.isArray(newData[key])) {
+                result[key] = this.mergeArrayByKey(oldData[key] || [], newData[key], 'number');
+            }
+            else if (typeof newData[key] === 'object' && !Array.isArray(newData[key])) {
+                result[key] = await this.deepMerge(oldData[key] || {}, newData[key]);
+            }
+            else {
+                result[key] = newData[key];
+            }
+        }
+        return result;
+    }
+}
+exports.SettingService = SettingService;
+
+
+/***/ }),
+/* 89 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SettingGrpcInputController = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const setting_service_1 = __webpack_require__(88);
+let SettingGrpcInputController = class SettingGrpcInputController {
+    constructor(settingService) {
+        this.settingService = settingService;
+    }
+    getSetting(request, metadata) {
+        return this.settingService.getSetting(request);
+    }
+    saveSetting(request, metadata) {
+        return this.settingService.saveSetting(request);
+    }
+    getPresetList(request, metadata) {
+        return this.settingService.getPresetList(request);
+    }
+    createPreset(request, metadata) {
+        return this.settingService.createPreset(request);
+    }
+    deletePreset(request, metadata) {
+        return this.settingService.deletePreset(request);
+    }
+    getPreset(request, metadata) {
+        return this.settingService.getPreset(request);
+    }
+    savePreset(request, metadata) {
+        return this.settingService.savePreset(request);
+    }
+};
+exports.SettingGrpcInputController = SettingGrpcInputController;
+exports.SettingGrpcInputController = SettingGrpcInputController = __decorate([
+    (0, common_2.Controller)(),
+    common_1.SettingMicroservice.SettingGrpcServiceControllerMethods(),
+    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
+    __metadata("design:paramtypes", [typeof (_a = typeof setting_service_1.SettingService !== "undefined" && setting_service_1.SettingService) === "function" ? _a : Object])
+], SettingGrpcInputController);
+
+
+/***/ }),
+/* 90 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoundModule = void 0;
+const common_1 = __webpack_require__(54);
+const config_1 = __webpack_require__(2);
+const typeorm_1 = __webpack_require__(55);
+const pg_1 = __webpack_require__(85);
+const sound_entity_1 = __webpack_require__(91);
+const sound_grpc_controller_1 = __webpack_require__(92);
+const sound_service_1 = __webpack_require__(93);
+const sound_play_sound_adapter_1 = __webpack_require__(95);
+let SoundModule = class SoundModule {
+};
+exports.SoundModule = SoundModule;
+exports.SoundModule = SoundModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            typeorm_1.TypeOrmModule.forFeature([sound_entity_1.Sound]),
+            typeorm_1.TypeOrmModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => {
+                    await ensureSoundDatabase();
+                    return {
+                        type: 'postgres',
+                        url: configService.get('POSTGRES_URL') + '/sound',
+                        autoLoadEntities: true,
+                        synchronize: true,
+                    };
+                },
+            }),
+        ],
+        controllers: [sound_grpc_controller_1.SoundGrpcController],
+        providers: [
+            sound_service_1.SoundService,
+            {
+                provide: 'SoundOutputPort',
+                useClass: sound_play_sound_adapter_1.SoundPlaySoundAdapter,
+            },
+        ],
+    })
+], SoundModule);
+async function ensureSoundDatabase() {
+    const client = new pg_1.Client({
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '7000'),
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || 'postgres',
+        database: 'postgres',
+    });
+    try {
+        await client.connect();
+        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'sound'");
+        if (result.rows.length === 0) {
+            await client.query('CREATE DATABASE sound');
+            console.log('🎉 sound 데이터베이스 생성 완료');
+        }
+        else {
+            console.log('✅ sound 데이터베이스 이미 존재');
+        }
+    }
+    catch (error) {
+        console.warn('⚠️ semlog DB 생성 실패:', error.message);
+    }
+    finally {
+        await client.end();
+    }
+}
+
+
+/***/ }),
+/* 91 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Sound = void 0;
+const typeorm_1 = __webpack_require__(68);
+let Sound = class Sound {
+};
+exports.Sound = Sound;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], Sound.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Sound.prototype, "command", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Sound.prototype, "fileName", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Sound.prototype, "result", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Sound.prototype, "message", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Sound.prototype, "createAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Sound.prototype, "updateAt", void 0);
+__decorate([
+    (0, typeorm_1.VersionColumn)(),
+    __metadata("design:type", Number)
+], Sound.prototype, "version", void 0);
+exports.Sound = Sound = __decorate([
+    (0, typeorm_1.Entity)()
+], Sound);
+
+
+/***/ }),
+/* 92 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoundGrpcController = void 0;
+const common_1 = __webpack_require__(4);
+const grpc_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(54);
+const sound_service_1 = __webpack_require__(93);
+let SoundGrpcController = class SoundGrpcController {
+    constructor(soundService) {
+        this.soundService = soundService;
+    }
+    getPlaying(request, metadata) {
+        return this.soundService.getPlaying();
+    }
+    play(request, metadata) {
+        return this.soundService.playSound(request);
+    }
+    stop(request, metadata) {
+        return this.soundService.stopSound();
+    }
+    list(request, metadata) {
+        return this.soundService.getSoundList();
+    }
+    delete(request, metadata) {
+        return this.soundService.deleteSoundFile(request);
+    }
+};
+exports.SoundGrpcController = SoundGrpcController;
+exports.SoundGrpcController = SoundGrpcController = __decorate([
+    (0, common_2.Controller)(),
+    grpc_1.SoundMicroservice.SoundGrpcServiceControllerMethods(),
+    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
+    __metadata("design:paramtypes", [typeof (_a = typeof sound_service_1.SoundService !== "undefined" && sound_service_1.SoundService) === "function" ? _a : Object])
+], SoundGrpcController);
+
+
+/***/ }),
+/* 93 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoundService = void 0;
+const logger_1 = __webpack_require__(28);
+const common_1 = __webpack_require__(54);
+const sound_output_port_1 = __webpack_require__(94);
+const microservices_1 = __webpack_require__(3);
+const fs_1 = __webpack_require__(38);
+const path_1 = __webpack_require__(39);
+let SoundService = class SoundService {
+    constructor(soundOutput) {
+        this.soundOutput = soundOutput;
+        this.loggerService = logger_1.LoggerService.get('host');
+    }
+    getPlaying() {
+        return this.soundOutput.getPlaying();
+    }
+    async playSound(request) {
+        try {
+            if (process.env.HOST_OS !== 'linux') {
+                throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+            }
+            if (request.fileName === undefined || request.fileName === '') {
+                throw new microservices_1.RpcException('name 값이 없습니다.');
+            }
+            if (request.volume === undefined) {
+                throw new microservices_1.RpcException('volume 값이 없습니다.');
+            }
+            if (request.volume < 0 || request.volume > 100) {
+                throw new microservices_1.RpcException(`volume 값의 범위가 기준을 벗어납니다. (값 : ${request.volume}, 기준 : 0 ~ 100%)`);
+            }
+            if (request.repeatCount < 1) {
+                request.repeatCount = 1;
+            }
+            const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
+            if (!(0, fs_1.existsSync)(path)) {
+                this.loggerService.error(`[Sound] playSound : 경로의 파일이 존재하지 않습니다. ${path}`);
+                throw new microservices_1.RpcException(`경로의 파일이 존재하지 않습니다. ${request.fileName}`);
+            }
+            return this.soundOutput.play(request);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Sound] playSound : ${(0, logger_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('파일을 플레이할 수 없습니다.');
+        }
+    }
+    async stopSound() {
+        if (process.env.HOST_OS !== 'linux') {
+            throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+        }
+        return this.soundOutput.stop();
+    }
+    async getSoundList() {
+        try {
+            if (process.env.HOST_OS !== 'linux') {
+                throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+            }
+            const path = (0, path_1.join)(process.cwd(), 'public', 'sound');
+            const files = (0, fs_1.readdirSync)(path, { withFileTypes: true });
+            const list = [];
+            files.map((file) => {
+                if (file.isFile() && file.name.split('.')[1] === 'mp3') {
+                    list.push(file.name);
+                }
+            });
+            return { list };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Sound] getSoundList : ${(0, logger_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('리스트를 가져올 수 없습니다.');
+        }
+    }
+    async deleteSoundFile(request) {
+        try {
+            if (process.env.HOST_OS !== 'linux') {
+                throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+            }
+            if (request.fileName === undefined || request.fileName === '') {
+                throw new microservices_1.RpcException('name 값이 없습니다.');
+            }
+            const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
+            if (!(0, fs_1.existsSync)(path)) {
+                throw new microservices_1.RpcException(`파일이 존재하지 않습니다. ( name : ${request.fileName} )`);
+            }
+            (0, fs_1.unlinkSync)(path);
+            return request;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Sound] deleteSoundFile : ${(0, logger_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('파일을 삭제할 수 없습니다.');
+        }
+    }
+};
+exports.SoundService = SoundService;
+exports.SoundService = SoundService = __decorate([
+    __param(0, (0, common_1.Inject)('SoundOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof sound_output_port_1.SoundOutputPort !== "undefined" && sound_output_port_1.SoundOutputPort) === "function" ? _a : Object])
+], SoundService);
+
+
+/***/ }),
+/* 94 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 95 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoundPlaySoundAdapter = void 0;
+const common_1 = __webpack_require__(4);
+const fs_1 = __webpack_require__(38);
+const PlaySound = __webpack_require__(96);
+const microservices_1 = __webpack_require__(3);
+const child_process_1 = __webpack_require__(97);
+const path_1 = __webpack_require__(39);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+class SoundPlaySoundAdapter {
+    constructor() {
+        this.player = PlaySound();
+        this.repeatCount = 0;
+        this.curPlaying = null;
+        this.curPlayingInfo = null;
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    getPlaying() {
+        if (this.curPlayingInfo) {
+            return this.curPlayingInfo;
+        }
+        return {
+            fileName: '',
+            volume: 0,
+            repeatCount: 0,
+            isWaitUntilDone: false,
+        };
+    }
+    async play(request) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
+                this.loggerService.debug(`[Sound] Play: ${path}`);
+                if (!(0, fs_1.existsSync)(path)) {
+                    reject(new microservices_1.RpcException(`경로의 파일이 존재하지 않습니다. ${path}`));
+                }
+                if (this.curPlaying) {
+                    this.loggerService.info(`[Sound] Play: Stop cur Playing`);
+                    await this.stopPlaying();
+                }
+                this.curPlayingInfo = request;
+                if (!request.isWaitUntilDone) {
+                    this.loggerService.info(`[Sound] Play: Play Start without Wait`);
+                    resolve(request);
+                }
+                for (var i = 0; i < request.repeatCount; i++) {
+                    await this.playSync(path, request.volume);
+                }
+                this.loggerService.info(`[Sound] Play: Play Wait Done`);
+                this.stopPlaying();
+                resolve(request);
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    reject(error);
+                this.loggerService.error(`[Sound] Play: ${(0, common_1.errorToJson)(error)}`);
+                reject(new microservices_1.RpcException('파일을 플레이할 수 없습니다.'));
+            }
+        });
+    }
+    async stop() {
+        try {
+            this.loggerService.info(`[Sound] Stop`);
+            if (!this.curPlaying) {
+                this.loggerService.warn(`[Sound] Stop: curPlaying is null`);
+                throw new microservices_1.RpcException('실행중인 플레이가 없습니다.');
+            }
+            await this.stopPlaying();
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
+            throw new microservices_1.RpcException('플레이를 종료할 수 없습니다.');
+        }
+    }
+    async playSync(path, volume) {
+        return new Promise((resolve, reject) => {
+            this.loggerService.debug(`[Sound] playSync: ${path}, ${volume}`);
+            this.curPlaying = this.player.play(path, { mplayer: ['-ao', 'pulse', '-volume', volume] }, (err) => {
+                if (err) {
+                    if (typeof err === 'number' && err === 1) {
+                        this.loggerService.error(`[Sound] Play: Code 1`);
+                        reject(new rpc_code_exception_1.RpcCodeException('플레이가 중지되었습니다.', constant_1.GrpcCode.InternalError));
+                    }
+                    else {
+                        console.error(err);
+                        this.loggerService.error(`[Sound] Play: ${(0, common_1.errorToJson)(err)}`);
+                        reject(new microservices_1.RpcException('파일을 플레이할 수 없습니다.'));
+                    }
+                }
+                resolve();
+            });
+        });
+    }
+    async stopPlaying() {
+        this.repeatCount = 0;
+        try {
+            (0, child_process_1.execSync)('pkill -x mplayer', { stdio: 'ignore' });
+        }
+        catch (error) {
+            this.loggerService.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
+        }
+        this.curPlaying = null;
+        this.curPlayingInfo = null;
+    }
+}
+exports.SoundPlaySoundAdapter = SoundPlaySoundAdapter;
+
+
+/***/ }),
+/* 96 */
+/***/ ((module) => {
+
+module.exports = require("play-sound");
+
+/***/ }),
+/* 97 */
+/***/ ((module) => {
+
+module.exports = require("child_process");
+
+/***/ }),
+/* 98 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateModule = void 0;
+const common_1 = __webpack_require__(54);
+const config_1 = __webpack_require__(2);
+const typeorm_1 = __webpack_require__(55);
+const microservices_1 = __webpack_require__(3);
+const pg_1 = __webpack_require__(85);
+const update_command_entity_1 = __webpack_require__(99);
+const update_grpc_controller_1 = __webpack_require__(101);
+const update_service_1 = __webpack_require__(102);
+const update_sh_adapter_1 = __webpack_require__(110);
+const update_socketio_adapter_1 = __webpack_require__(111);
+const constant_1 = __webpack_require__(70);
+const update_pending_service_1 = __webpack_require__(112);
+const update_database_adapter_1 = __webpack_require__(113);
+const mongoose_1 = __webpack_require__(100);
+const update_version_entity_1 = __webpack_require__(115);
+const update_log_entity_1 = __webpack_require__(116);
+let UpdateModule = class UpdateModule {
+};
+exports.UpdateModule = UpdateModule;
+exports.UpdateModule = UpdateModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            typeorm_1.TypeOrmModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => {
+                    await ensureHostDatabase();
+                    return {
+                        type: 'postgres',
+                        url: configService.get('POSTGRES_URL') + '/host',
+                        autoLoadEntities: true,
+                        synchronize: true,
+                        logging: configService.get('NODE_ENV') === 'development',
+                    };
+                },
+            }),
+            typeorm_1.TypeOrmModule.forFeature([update_version_entity_1.UpdateVersion]),
+            mongoose_1.MongooseModule.forFeature([
+                {
+                    name: update_command_entity_1.UpdateCommand.name,
+                    schema: update_command_entity_1.UpdateCommandSchema,
+                },
+                {
+                    name: update_log_entity_1.UpdateLog.name,
+                    schema: update_log_entity_1.UpdateLogSchema,
+                },
+            ]),
+            mongoose_1.MongooseModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: (configService) => ({
+                    uri: configService.get('MONGO_URL'),
+                }),
+            }),
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: constant_1.MQTT_BROKER,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.MQTT,
+                        options: {
+                            url: configService.get('MQTT_URL'),
+                        },
+                    }),
+                },
+            ]),
+        ],
+        controllers: [update_grpc_controller_1.UpdateGrpcController],
+        providers: [
+            config_1.ConfigService,
+            update_service_1.UpdateService,
+            update_pending_service_1.UpdatePendingResponseService,
+            {
+                provide: 'updateDatabaseOutputPort',
+                useClass: update_database_adapter_1.UpdateDatabaseAdapter,
+            },
+            {
+                provide: 'updateShOutputPort',
+                useClass: update_sh_adapter_1.UpdateShAdapter,
+            },
+            {
+                provide: 'updateSlamnavOutputPort',
+                useClass: update_socketio_adapter_1.UpdateSocketioAdapter,
+            },
+        ],
+    })
+], UpdateModule);
+async function ensureHostDatabase() {
+    const client = new pg_1.Client({
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '7000'),
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || 'postgres',
+        database: 'postgres',
+    });
+    try {
+        await client.connect();
+        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'host'");
+        if (result.rows.length === 0) {
+            await client.query('CREATE DATABASE host');
+            console.log('🎉 host 데이터베이스 생성 완료');
+        }
+        else {
+            console.log('✅ host 데이터베이스 이미 존재');
+        }
+    }
+    catch (error) {
+        console.warn('⚠️ host DB 생성 실패:', error.message);
+    }
+    finally {
+        await client.end();
+    }
+}
+
+
+/***/ }),
+/* 99 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateCommandSchema = exports.UpdateCommand = void 0;
+const mongoose_1 = __webpack_require__(100);
+let UpdateCommand = class UpdateCommand {
+};
+exports.UpdateCommand = UpdateCommand;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "_id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "command", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "status", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "software", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "branch", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "version", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], UpdateCommand.prototype, "hotfix", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "token", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "message", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ array: true, nullable: true, required: false }),
+    __metadata("design:type", Array)
+], UpdateCommand.prototype, "appNames", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateCommand.prototype, "fo", void 0);
+exports.UpdateCommand = UpdateCommand = __decorate([
+    (0, mongoose_1.Schema)()
+], UpdateCommand);
+exports.UpdateCommandSchema = mongoose_1.SchemaFactory.createForClass(UpdateCommand);
+exports.UpdateCommandSchema.set('timestamps', true);
+
+
+/***/ }),
+/* 100 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/mongoose");
+
+/***/ }),
+/* 101 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateGrpcController = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const update_service_1 = __webpack_require__(102);
+let UpdateGrpcController = class UpdateGrpcController {
+    constructor(updateService) {
+        this.updateService = updateService;
+    }
+    getCurrentVersion(request, metadata) {
+        return this.updateService.getCurrentVersion(request);
+    }
+    testPing(request, metadata) {
+        return this.updateService.testPing(request);
+    }
+    getNewVersion(request, metadata) {
+        return this.updateService.getNewVersion(request);
+    }
+    getReleaseBranch(request, metadata) {
+        return this.updateService.getReleaseAppsBranches(request);
+    }
+    getReleaseVersion(request, metadata) {
+        return this.updateService.getReleaseAppsVersionList(request);
+    }
+    addWebUi(request, metadata) {
+        throw new Error('Method not implemented.');
+    }
+    deleteWebUi(request, metadata) {
+        throw new Error('Method not implemented.');
+    }
+    updateProgram(request, metadata) {
+        return this.updateService.updateProgram(request);
+    }
+};
+exports.UpdateGrpcController = UpdateGrpcController;
+exports.UpdateGrpcController = UpdateGrpcController = __decorate([
+    (0, common_2.Controller)(),
+    common_1.UpdateMicroservice.UpdateGrpcServiceControllerMethods(),
+    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
+    __metadata("design:paramtypes", [typeof (_a = typeof update_service_1.UpdateService !== "undefined" && update_service_1.UpdateService) === "function" ? _a : Object])
+], UpdateGrpcController);
+
+
+/***/ }),
+/* 102 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateService = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const net = __webpack_require__(103);
+const child_process_1 = __webpack_require__(97);
+const common_3 = __webpack_require__(54);
+const config_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(3);
+const crypto = __webpack_require__(104);
+const fs_1 = __webpack_require__(38);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const os_1 = __webpack_require__(105);
+const path_1 = __webpack_require__(39);
+const update_domain_1 = __webpack_require__(106);
+const update_slamnav_output_port_1 = __webpack_require__(107);
+const update_database_output_port_1 = __webpack_require__(108);
+const map_command_domain_1 = __webpack_require__(60);
+const update_sh_output_port_1 = __webpack_require__(109);
+let UpdateService = class UpdateService {
+    constructor(configService, updateShOutputPort, updateSlamnavOutputPort, updateDatabaseOutputPort) {
+        this.configService = configService;
+        this.updateShOutputPort = updateShOutputPort;
+        this.updateSlamnavOutputPort = updateSlamnavOutputPort;
+        this.updateDatabaseOutputPort = updateDatabaseOutputPort;
+        this.loggerService = common_1.LoggerService.get('host');
+        if (!this.configService) {
+            throw new Error('ConfigService가 주입되지 않았습니다.');
+        }
+    }
+    onModuleInit() {
+        console.log(this.configService.get('RELEASE_REPO_URL'));
+    }
+    async checkRepositoryAccess() {
+        try {
+            console.log(this.configService.get('RELEASE_REPO_URL'));
+            this.loggerService.debug(`[UPDATE] checkRepositoryAccess URL : ${this.configService.get('RELEASE_REPO_URL')}`);
+            const response = await fetch(this.configService.get('RELEASE_REPO_URL'));
+            if (!response.ok) {
+                throw new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.FailedPrecondition);
+            }
+            return response.ok;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[UPDATE] checkRepositoryAccess : ${(0, common_1.errorToJson)(error)}}`);
+            throw new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async testPing(request) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (!net.isIP(request.target)) {
+                    reject(new rpc_code_exception_1.RpcCodeException('올바르지 않은 ip 형식입니다.', common_3.HttpStatus.BAD_REQUEST));
+                }
+                const stdout = (0, child_process_1.execSync)(`ping -c 1 ${request.target}`);
+                resolve({
+                    target: request.target,
+                    message: '요청에 성공했습니다.',
+                    stdout: stdout.toString(),
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    reject(error);
+                this.loggerService.error(`[UPDATE] pingSendToTarget : ${error}`);
+                reject(new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    async getNewVersion(request) {
+        let model;
+        try {
+            this.loggerService.info(`[UPDATE] getNewVersion : ${JSON.stringify(request)}`);
+            model = new update_domain_1.UpdateModel({
+                ...request,
+                command: update_domain_1.UpdateCommand.GetNewVersion,
+            });
+            const updateCommand = await this.updateDatabaseOutputPort.save(model);
+            model.assignId(updateCommand._id);
+            model.checkVariables();
+            await this.checkRepositoryAccess();
+            const newVersionUrl = `${this.configService.get('RELEASE_REPO_RAW_URL')}/${model.branch}/${model.software}/version.json`;
+            this.loggerService.debug(`[UPDATE] getNewVersion URL : ${newVersionUrl}`);
+            const newVersionData = await fetch(newVersionUrl);
+            const newVersionDataJson = await newVersionData.json();
+            model.version = newVersionDataJson.new_version;
+            model.hotfix = newVersionDataJson.hotfix;
+            model.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.updateDatabaseOutputPort.update(model);
+            await this.updateDatabaseOutputPort.setNewVersion(model);
+            this.loggerService.debug(`[UPDATE] getNewVersion Data : ${JSON.stringify(newVersionDataJson)}`);
+            return { ...model, software: model.software };
+        }
+        catch (error) {
+            if (model) {
+                model.message = error.error.details;
+                model.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.updateDatabaseOutputPort.update(model);
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.loggerService.error(`[UPDATE] getNewVersion : ${error}`);
+            throw new rpc_code_exception_1.RpcCodeException(`[${request.software}] ${request.branch} 브랜치의 version.json 파일을 찾을 수 없습니다.`, common_3.HttpStatus.NOT_FOUND);
+        }
+    }
+    async getCurrentVersion(request) {
+        let model;
+        try {
+            model = new update_domain_1.UpdateModel({
+                command: update_domain_1.UpdateCommand.GetCurrentVersion,
+                software: request.software,
+            });
+            const updateCommand = await this.updateDatabaseOutputPort.save(model);
+            model.assignId(updateCommand._id);
+            model.checkVariables();
+            let resp;
+            if (model.software === update_domain_1.SoftwareName.RRS) {
+                resp = await this.getRrsCurrentVersion(model.software);
+            }
+            else if (model.software === update_domain_1.SoftwareName.SLAMNAV) {
+                resp = await this.updateSlamnavOutputPort.getVersion(model);
+            }
+            else if (model.software === update_domain_1.SoftwareName.RRS_UI) {
+                throw new rpc_code_exception_1.RpcCodeException(`미 구현된 기능입니다. ${request.software}`, constant_1.GrpcCode.Unimplemented);
+            }
+            else {
+                throw new rpc_code_exception_1.RpcCodeException(`검색 불가능한 소프트웨어입니다. ${request.software}`, constant_1.GrpcCode.InvalidArgument);
+            }
+            model.version = resp.version;
+            model.branch = resp.branch;
+            model.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.updateDatabaseOutputPort.update(model);
+            await this.updateDatabaseOutputPort.setCurrentVersion(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.message = error.error.details;
+                model.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.updateDatabaseOutputPort.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[UPDATE] getCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getRrsCurrentVersion(software) {
+        try {
+            const versionPath = (0, path_1.join)((0, os_1.homedir)(), software, 'version.json');
+            if (!(0, fs_1.existsSync)(versionPath)) {
+                this.loggerService.error(`[UPDATE] getRrsCurrentVersion : ${versionPath} 파일을 찾을 수 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            const versionData = (0, fs_1.readFileSync)(versionPath, 'utf-8');
+            const parsedVersionData = JSON.parse(versionData);
+            const branch = await this.getRrsCurrentBranch();
+            return { version: parsedVersionData.current, software: software, branch: branch };
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.loggerService.error(`[UPDATE] getRrsCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getRrsCurrentBranch() {
+        try {
+            const branchPath = (0, path_1.join)((0, os_1.homedir)(), 'rrs-env.conf');
+            if (!(0, fs_1.existsSync)(branchPath)) {
+                this.loggerService.error(`[UPDATE] getRrsCurrentBranch : ${branchPath} 파일을 찾을 수 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException('브랜치를 가져올 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            const branchData = (0, fs_1.readFileSync)(branchPath, 'utf-8').split('=')[1];
+            return branchData.trim().replace(/^"|"$/g, '');
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.loggerService.error(`[UPDATE] getRrsCurrentBranch : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('브랜치를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getReleaseAppsBranches(request) {
+        let model;
+        try {
+            model = new update_domain_1.UpdateModel({
+                command: update_domain_1.UpdateCommand.GetReleaseBranch,
+                token: request.token,
+                pageNo: request.pageNo,
+                pageSize: request.pageSize,
+            });
+            const updateCommand = await this.updateDatabaseOutputPort.save(model);
+            model.assignId(updateCommand._id);
+            model.checkVariables();
+            const url = `https://api.github.com/repos/rainbow-mobile/rainbow-release-apps/branches`;
+            this.loggerService.debug(`[UPDATE] getReleaseAppsBranches URL : ${url}`);
+            await this.checkRepositoryAccess();
+            const res = await fetch(url, {
+                headers: {
+                    Authorization: `Basic ${this.decryptToken(model.token)}`,
+                },
+            });
+            const startIndex = (model.pageNo - 1) * model.pageSize;
+            const endIndex = startIndex + model.pageSize;
+            const resJson = await res.json();
+            const list = resJson.slice(startIndex, endIndex);
+            this.loggerService.debug(`[UPDATE] getReleaseAppsBranches Data : ${JSON.stringify(list)}`);
+            return { list: list, pageSize: model.pageSize, totalCount: resJson.length, totalPage: Math.ceil(resJson.length / model.pageSize) };
+        }
+        catch (error) {
+            if (model) {
+                model.message = error.error.details;
+                model.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.updateDatabaseOutputPort.update(model);
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.loggerService.error(`[UPDATE] getReleaseAppsBranches : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('브랜치를 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    decryptToken(base64Payload) {
+        const keyStr = 'RAINBOW_GITHUB_API_TOKEN';
+        const key = crypto.createHash('sha256').update(keyStr).digest();
+        const payloadBuffer = Buffer.from(base64Payload, 'base64');
+        const iv = payloadBuffer.slice(0, 16);
+        const encrypted = payloadBuffer.slice(16);
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        let decrypted = decipher.update(encrypted, undefined, 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
+    }
+    async getReleaseAppsVersionList(request) {
+        let model;
+        try {
+            model = new update_domain_1.UpdateModel({
+                command: update_domain_1.UpdateCommand.GetReleaseVersion,
+                token: request.token,
+                branch: request.branch,
+                software: request.software,
+            });
+            const updateCommand = await this.updateDatabaseOutputPort.save(model);
+            model.assignId(updateCommand._id);
+            model.checkVariables();
+            const url = `https://api.github.com/repos/rainbow-mobile/rainbow-release-apps/contents/${model.software}?ref=${model.branch}`;
+            this.loggerService.debug(`[UPDATE] getReleaseAppsVersionList URL : ${url}`);
+            await this.checkRepositoryAccess();
+            const res = await fetch(url, {
+                headers: {
+                    Authorization: `Basic ${this.decryptToken(model.token)}`,
+                },
+                method: 'GET',
+            });
+            const resJson = await res.json();
+            this.loggerService.debug(`[UPDATE] getReleaseAppsVersionList Data Length : ${resJson.length}`);
+            return { list: resJson };
+        }
+        catch (error) {
+            if (model) {
+                model.message = error.error.details;
+                model.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.updateDatabaseOutputPort.update(model);
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.loggerService.error(`[UPDATE] getReleaseAppsVersionList : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('버전을 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async updateProgram(request) {
+        try {
+            if (request.software === undefined || request.software === null || request.software === '') {
+                throw new rpc_code_exception_1.RpcCodeException('소프트웨어 종류를 입력해주세요.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.branch === undefined || request.branch === null || request.branch === '') {
+                request.branch = 'main';
+            }
+            const updateModel = new update_domain_1.UpdateModel({
+                command: 'update',
+                branch: request.branch,
+                version: request.version,
+            });
+            if (request.software.toLowerCase().includes('rrs') || request.software.toLowerCase().includes('server')) {
+                return this.updateShOutputPort.updateRRS(updateModel);
+            }
+            else if (request.software.toLowerCase().includes('slamnav')) {
+            }
+            else {
+                throw new rpc_code_exception_1.RpcCodeException(`검색 불가능한 소프트웨어입니다. ${request.software}`, constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.loggerService.error(`[UPDATE] updateProgram : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('프로그램을 업데이트할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+};
+exports.UpdateService = UpdateService;
+exports.UpdateService = UpdateService = __decorate([
+    (0, common_2.Injectable)(),
+    __param(1, (0, common_2.Inject)('updateShOutputPort')),
+    __param(2, (0, common_2.Inject)('updateSlamnavOutputPort')),
+    __param(3, (0, common_2.Inject)('updateDatabaseOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof update_sh_output_port_1.UpdateShOutputPort !== "undefined" && update_sh_output_port_1.UpdateShOutputPort) === "function" ? _b : Object, typeof (_c = typeof update_slamnav_output_port_1.UpdateSlamnavOutputPort !== "undefined" && update_slamnav_output_port_1.UpdateSlamnavOutputPort) === "function" ? _c : Object, typeof (_d = typeof update_database_output_port_1.UpdateDatabaseOutputPort !== "undefined" && update_database_output_port_1.UpdateDatabaseOutputPort) === "function" ? _d : Object])
+], UpdateService);
+
+
+/***/ }),
+/* 103 */
+/***/ ((module) => {
+
+module.exports = require("net");
+
+/***/ }),
+/* 104 */
+/***/ ((module) => {
+
+module.exports = require("crypto");
+
+/***/ }),
+/* 105 */
+/***/ ((module) => {
+
+module.exports = require("os");
+
+/***/ }),
+/* 106 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateModel = exports.SoftwareName = exports.UpdateCommand = void 0;
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+var CommandStatus;
+(function (CommandStatus) {
+    CommandStatus["pending"] = "pending";
+    CommandStatus["accepted"] = "accepted";
+    CommandStatus["rejected"] = "rejected";
+    CommandStatus["fail"] = "fail";
+    CommandStatus["unknown"] = "unknown";
+})(CommandStatus || (CommandStatus = {}));
+var UpdateCommand;
+(function (UpdateCommand) {
+    UpdateCommand["Update"] = "update";
+    UpdateCommand["GetCurrentVersion"] = "getCurrentVersion";
+    UpdateCommand["GetNewVersion"] = "getNewVersion";
+    UpdateCommand["GetReleaseVersion"] = "getReleaseVersion";
+    UpdateCommand["GetReleaseBranch"] = "getReleaseBranch";
+    UpdateCommand["AddWebUi"] = "addWebUi";
+    UpdateCommand["DeleteWebUi"] = "deleteWebUi";
+})(UpdateCommand || (exports.UpdateCommand = UpdateCommand = {}));
+var SoftwareName;
+(function (SoftwareName) {
+    SoftwareName["RRS"] = "web_robot_server";
+    SoftwareName["SLAMNAV"] = "slamnav2";
+    SoftwareName["RRS_UI"] = "web-rainbow-ui";
+})(SoftwareName || (exports.SoftwareName = SoftwareName = {}));
+class UpdateModel {
+    constructor(param) {
+        this.command = param.command;
+        this.status = CommandStatus.pending;
+        this.software = param.software;
+        this.branch = param.branch;
+        this.version = param.version;
+        this.token = param.token;
+        this.appNames = param.appNames;
+        this.fo = param.fo;
+        this.pageNo = param.pageNo;
+        this.pageSize = param.pageSize;
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    statusChange(status) {
+        this.status = status;
+    }
+    checkVariables() {
+        switch (this.command) {
+            case UpdateCommand.Update: {
+                this.software = this.checkSoftwareName(this.software);
+                if (this.branch === undefined || this.branch === '') {
+                    this.branch = 'main';
+                }
+                if (this.version === undefined || this.version === '') {
+                    this.version = 'latest';
+                }
+                break;
+            }
+            case UpdateCommand.GetCurrentVersion: {
+                this.software = this.checkSoftwareName(this.software);
+                break;
+            }
+            case UpdateCommand.GetNewVersion: {
+                this.software = this.checkSoftwareName(this.software);
+                console.log('->', this.software);
+                if (this.branch === undefined || this.branch === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('branch 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            case UpdateCommand.GetReleaseVersion: {
+                this.software = this.checkSoftwareName(this.software);
+                if (this.token === undefined || this.token === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('token 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            case UpdateCommand.GetReleaseBranch: {
+                if (this.token === undefined || this.token === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('token 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.pageNo === undefined || this.pageNo === 0) {
+                    this.pageNo = 1;
+                }
+                if (this.pageSize === undefined || this.pageSize === 0) {
+                    this.pageSize = 10;
+                }
+                break;
+            }
+            case UpdateCommand.AddWebUi: {
+                if (this.appNames === undefined || this.appNames.length === 0) {
+                    throw new rpc_code_exception_1.RpcCodeException('appNames 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.appNames.map((appName) => {
+                    if (appName === undefined || appName === '') {
+                        throw new rpc_code_exception_1.RpcCodeException('appNames 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
+                });
+                if (this.branch === undefined || this.branch === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('branch 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.fo === undefined || this.fo === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('fo 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            case UpdateCommand.DeleteWebUi: {
+                if (this.appNames === undefined || this.appNames.length === 0) {
+                    throw new rpc_code_exception_1.RpcCodeException('appNames 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.appNames.map((appName) => {
+                    if (appName === undefined || appName === '') {
+                        throw new rpc_code_exception_1.RpcCodeException('appNames 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
+                });
+                break;
+            }
+            default: {
+                throw new rpc_code_exception_1.RpcCodeException(`알 수 없는 command(${this.command})입니다.`, constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+    }
+    checkSoftwareName(software) {
+        if (software === undefined || software === '') {
+            throw new rpc_code_exception_1.RpcCodeException('software 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+        }
+        if (software.toLowerCase().includes('rrs') || software.toLowerCase().includes('server')) {
+            return SoftwareName.RRS;
+        }
+        if (software.toLowerCase().includes('ui')) {
+            return SoftwareName.RRS_UI;
+        }
+        if (software.toLowerCase().includes('slam')) {
+            return SoftwareName.SLAMNAV;
+        }
+        throw new rpc_code_exception_1.RpcCodeException(`알 수 없는 software(${software})입니다.`, constant_1.GrpcCode.InvalidArgument);
+    }
+}
+exports.UpdateModel = UpdateModel;
+
+
+/***/ }),
+/* 107 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 108 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 109 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 110 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateShAdapter = void 0;
+const common_1 = __webpack_require__(4);
+const rpc_code_exception_1 = __webpack_require__(45);
+const grpc_code_constant_1 = __webpack_require__(47);
+const child_process_1 = __webpack_require__(97);
+const fs_1 = __webpack_require__(38);
+const os_1 = __webpack_require__(105);
+const path_1 = __webpack_require__(39);
+class UpdateShAdapter {
+    constructor(configService) {
+        this.configService = configService;
+        this.loggerService = common_1.LoggerService.get('host');
+        this.deployKitDir = (0, path_1.join)((0, os_1.homedir)(), 'rainbow-deploy-kit');
+    }
+    async updateRRS(request) {
+        const updateScript = (0, path_1.join)(this.deployKitDir, 'rrs-server', 'rrs-update.sh');
+        if (!(0, fs_1.existsSync)(updateScript)) {
+            this.loggerService.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
+            throw new rpc_code_exception_1.RpcCodeException(`rrs-update.sh 파일을 찾을 수 없습니다.`, grpc_code_constant_1.GrpcCode.NotFound);
+        }
+        (0, child_process_1.execSync)('git pull', {
+            cwd: this.deployKitDir,
+            stdio: 'pipe',
+        });
+        (0, child_process_1.execSync)(`nohup bash ${updateScript} --mode=${request.branch || 'main'} --version=${request.version} > /tmp/rrs-update.log 2>&1 &`);
+        return { software: 'rrs', branch: request.branch, version: request.version, result: 'true', message: '' };
+    }
+}
+exports.UpdateShAdapter = UpdateShAdapter;
+
+
+/***/ }),
+/* 111 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateSocketioAdapter = void 0;
+const microservices_1 = __webpack_require__(3);
+const common_1 = __webpack_require__(4);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const common_2 = __webpack_require__(54);
+const constant_2 = __webpack_require__(70);
+const update_pending_service_1 = __webpack_require__(112);
+let UpdateSocketioAdapter = class UpdateSocketioAdapter {
+    constructor(mqttService, pendingService) {
+        this.mqttService = mqttService;
+        this.pendingService = pendingService;
+        this.loggerService = common_1.LoggerService.get('update');
+    }
+    async updateSLAMNAV(request) {
+        try {
+            this.loggerService.debug(`[Update] updateSLAMNAV : ${JSON.stringify(request)}`);
+            const response = this.waitForResponse(request.id);
+            this.mqttService.emit('updateRequest', request);
+            const resp = await response;
+            this.loggerService.debug(`[Update] updateSLAMNAV Response : ${JSON.stringify(resp)}`);
+            return resp;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[UPDATE] updateSLAMNAV : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV 업데이트 실패', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getVersion(request) {
+        try {
+            this.loggerService.debug(`[Update] getVersion : ${JSON.stringify(request)}`);
+            const response = this.waitForResponse(request.id, 1000);
+            this.mqttService.emit('swVersionInfo', request);
+            const resp = await response;
+            this.loggerService.debug(`[Update] getVersion Response : ${JSON.stringify(resp)}`);
+            return resp;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[UPDATE] getVersion : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async waitForResponse(id, timeoutMs) {
+        return new Promise((resolve, reject) => {
+            let timeout;
+            if (timeoutMs) {
+                timeout = setTimeout(() => {
+                    this.pendingService.pendingResponses.delete(id);
+                    this.loggerService.error(`[UPDATE] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_1.GrpcCode.DeadlineExceeded));
+                }, timeoutMs);
+            }
+            this.pendingService.pendingResponses.set(id, {
+                resolve: (value) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    resolve(value);
+                },
+                reject: (error) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    reject(error);
+                },
+                received: [],
+            });
+        });
+    }
+};
+exports.UpdateSocketioAdapter = UpdateSocketioAdapter;
+exports.UpdateSocketioAdapter = UpdateSocketioAdapter = __decorate([
+    __param(0, (0, common_2.Inject)(constant_2.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof update_pending_service_1.UpdatePendingResponseService !== "undefined" && update_pending_service_1.UpdatePendingResponseService) === "function" ? _b : Object])
+], UpdateSocketioAdapter);
+
+
+/***/ }),
+/* 112 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdatePendingResponseService = void 0;
+const pending_util_1 = __webpack_require__(78);
+const common_1 = __webpack_require__(54);
+let UpdatePendingResponseService = class UpdatePendingResponseService extends pending_util_1.PendingResponseUtil {
+};
+exports.UpdatePendingResponseService = UpdatePendingResponseService;
+exports.UpdatePendingResponseService = UpdatePendingResponseService = __decorate([
+    (0, common_1.Injectable)()
+], UpdatePendingResponseService);
+
+
+/***/ }),
+/* 113 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateDatabaseAdapter = void 0;
+const mongoose_1 = __webpack_require__(100);
+const mongoose_2 = __webpack_require__(114);
+const common_1 = __webpack_require__(4);
+const typeorm_1 = __webpack_require__(55);
+const microservices_1 = __webpack_require__(3);
+const parse_util_1 = __webpack_require__(48);
+const typeorm_2 = __webpack_require__(68);
+const util_1 = __webpack_require__(32);
+const update_command_entity_1 = __webpack_require__(99);
+const update_version_entity_1 = __webpack_require__(115);
+let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
+    constructor(Repository, VersionRepository) {
+        this.Repository = Repository;
+        this.VersionRepository = VersionRepository;
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    async getVersion(software, branch) {
+        try {
+            return await this.VersionRepository.findOne({ where: { software, branch } });
+        }
+        catch (error) {
+            this.loggerService.error(`[Move] DB getVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+        }
+    }
+    async setCurrentVersion(model) {
+        try {
+            const version = await this.getVersion(model.software, model.branch);
+            console.log('----------------->', version);
+            if (!version) {
+                console.log('-----------------> save ', model.branch);
+                const created = await this.VersionRepository.save(this.VersionRepository.create({ software: model.software, branch: model.branch, currentVersion: model.version }));
+                return created;
+            }
+            else {
+                await this.VersionRepository.update(version.id, { currentVersion: model.version });
+                return await this.VersionRepository.findOne({ where: { id: version.id } });
+            }
+        }
+        catch (error) {
+            this.loggerService.error(`[Move] DB setCurrentVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+        }
+    }
+    async setNewVersion(model) {
+        try {
+            const version = await this.getVersion(model.software, model.branch);
+            if (!version) {
+                const created = await this.VersionRepository.save(this.VersionRepository.create({ software: model.software, branch: model.branch, newVersion: model.version }));
+                return created;
+            }
+            else {
+                await this.VersionRepository.update(version.id, { newVersion: model.version });
+                return await this.VersionRepository.findOne({ where: { id: version.id } });
+            }
+        }
+        catch (error) {
+            this.loggerService.error(`[Move] DB setNewVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+        }
+    }
+    async getNodebyId(id) {
+        try {
+            return await this.Repository.findById(id).lean();
+        }
+        catch (error) {
+            this.loggerService.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+        }
+    }
+    async save(model) {
+        try {
+            const _id = util_1.UrlUtil.generateUUID();
+            return await this.Repository.create({ ...model, _id });
+        }
+        catch (error) {
+            this.loggerService.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+        }
+    }
+    async update(model) {
+        try {
+            return await this.Repository.findByIdAndUpdate(model.id, model).lean();
+        }
+        catch (error) {
+            this.loggerService.error(`[Move] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+        }
+    }
+};
+exports.UpdateDatabaseAdapter = UpdateDatabaseAdapter;
+exports.UpdateDatabaseAdapter = UpdateDatabaseAdapter = __decorate([
+    __param(0, (0, mongoose_1.InjectModel)(update_command_entity_1.UpdateCommand.name)),
+    __param(1, (0, typeorm_1.InjectRepository)(update_version_entity_1.UpdateVersion)),
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
+], UpdateDatabaseAdapter);
+
+
+/***/ }),
+/* 114 */
+/***/ ((module) => {
+
+module.exports = require("mongoose");
+
+/***/ }),
+/* 115 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateVersion = void 0;
+const typeorm_1 = __webpack_require__(68);
+let UpdateVersion = class UpdateVersion {
+};
+exports.UpdateVersion = UpdateVersion;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    __metadata("design:type", String)
+], UpdateVersion.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UpdateVersion.prototype, "software", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateVersion.prototype, "branch", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateVersion.prototype, "currentVersion", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], UpdateVersion.prototype, "newVersion", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], UpdateVersion.prototype, "createAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], UpdateVersion.prototype, "updateAt", void 0);
+exports.UpdateVersion = UpdateVersion = __decorate([
+    (0, typeorm_1.Entity)()
+], UpdateVersion);
+
+
+/***/ }),
+/* 116 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateLogSchema = exports.UpdateLog = void 0;
+const mongoose_1 = __webpack_require__(100);
+let UpdateLog = class UpdateLog {
+};
+exports.UpdateLog = UpdateLog;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateLog.prototype, "_id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateLog.prototype, "status", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateLog.prototype, "software", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateLog.prototype, "branch", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], UpdateLog.prototype, "version", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", Boolean)
+], UpdateLog.prototype, "hotfix", void 0);
+exports.UpdateLog = UpdateLog = __decorate([
+    (0, mongoose_1.Schema)()
+], UpdateLog);
+exports.UpdateLogSchema = mongoose_1.SchemaFactory.createForClass(UpdateLog);
+exports.UpdateLogSchema.set('timestamps', true);
+
+
+/***/ }),
+/* 117 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkModule = void 0;
+const common_1 = __webpack_require__(54);
+const network_grpc_controller_1 = __webpack_require__(118);
+const network_service_1 = __webpack_require__(119);
+const microservices_1 = __webpack_require__(3);
+const config_1 = __webpack_require__(2);
+const constant_1 = __webpack_require__(70);
+const network_nmcli_adapter_1 = __webpack_require__(123);
+const network_mongo_adapter_1 = __webpack_require__(125);
+const network_mqtt_controller_1 = __webpack_require__(127);
+const network_command_entity_1 = __webpack_require__(126);
+const mongoose_1 = __webpack_require__(100);
+let NetworkModule = class NetworkModule {
+};
+exports.NetworkModule = NetworkModule;
+exports.NetworkModule = NetworkModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            mongoose_1.MongooseModule.forFeature([
+                {
+                    name: network_command_entity_1.NetworkCommand.name,
+                    schema: network_command_entity_1.NetworkCommandSchema,
+                },
+            ]),
+            mongoose_1.MongooseModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: (configService) => ({
+                    uri: configService.get('MONGO_URL'),
+                }),
+            }),
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: constant_1.MQTT_BROKER,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.MQTT,
+                        options: {
+                            url: configService.get('MQTT_URL'),
+                        },
+                    }),
+                },
+            ]),
+        ],
+        controllers: [network_grpc_controller_1.NetworkGrpcInputController, network_mqtt_controller_1.NetworkMqttController],
+        providers: [
+            network_service_1.NetworkService,
+            {
+                provide: 'NetworkOutputPort',
+                useClass: network_nmcli_adapter_1.NetworkNmcliAdapter,
+            },
+            {
+                provide: 'NetworkDatabaseOutputPort',
+                useClass: network_mongo_adapter_1.NetworkMongoAdapter,
+            },
+        ],
+    })
+], NetworkModule);
+
+
+/***/ }),
+/* 118 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkGrpcInputController = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const network_service_1 = __webpack_require__(119);
+let NetworkGrpcInputController = class NetworkGrpcInputController {
+    constructor(networkService) {
+        this.networkService = networkService;
+    }
+    getEthernet(request, metadata) {
+        return this.networkService.getEthernet();
+    }
+    getWifi(request, metadata) {
+        return this.networkService.getWifi();
+    }
+    getDevice(request, metadata) {
+        return this.networkService.getDevice(request.device);
+    }
+    getBluetooth(request, metadata) {
+        return this.networkService.getBluetooth();
+    }
+    getNetwork(request, metadata) {
+        return this.networkService.getNetwork();
+    }
+    setNetwork(request, metadata) {
+        return this.networkService.setNetwork(request);
+    }
+    connectWifi(request, metadata) {
+        return this.networkService.connectWifi(request);
+    }
+    getWifiList(request, metadata) {
+        return this.networkService.getWifiList();
+    }
+    scanWifi(request, metadata) {
+        return this.networkService.wifiScan();
+    }
+};
+exports.NetworkGrpcInputController = NetworkGrpcInputController;
+exports.NetworkGrpcInputController = NetworkGrpcInputController = __decorate([
+    (0, common_2.Controller)(),
+    common_1.NetworkMicroservice.NetworkGrpcServiceControllerMethods(),
+    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
+    __metadata("design:paramtypes", [typeof (_a = typeof network_service_1.NetworkService !== "undefined" && network_service_1.NetworkService) === "function" ? _a : Object])
+], NetworkGrpcInputController);
+
+
+/***/ }),
+/* 119 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkService = void 0;
+const common_1 = __webpack_require__(4);
+const parse_util_1 = __webpack_require__(48);
+const common_2 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const constant_1 = __webpack_require__(70);
+const network_output_port_1 = __webpack_require__(120);
+const network_database_output_port_1 = __webpack_require__(121);
+const network_domain_1 = __webpack_require__(122);
+let NetworkService = class NetworkService {
+    constructor(mqttMicroservice, networkOutput, networkDatabase) {
+        this.mqttMicroservice = mqttMicroservice;
+        this.networkOutput = networkOutput;
+        this.networkDatabase = networkDatabase;
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    onModuleInit() {
+        this.ready();
+    }
+    ready() {
+        this.mqttMicroservice.emit('ready:network', {});
+    }
+    async getNetwork() {
+        let model;
+        try {
+            this.loggerService.info(`[Network] getNetwork ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getNetwork });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.getNetwork();
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+        }
+    }
+    async getEthernet() {
+        let model;
+        try {
+            this.loggerService.info(`[Network] getEthernet ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getEthernet });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.getEthernet();
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+        }
+    }
+    async getWifi() {
+        let model;
+        try {
+            this.loggerService.info(`[Network] getWifi ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getWifi });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.getWifi();
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+        }
+    }
+    async getBluetooth() {
+        let model;
+        try {
+            this.loggerService.info(`[Network] getBluetooth ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getBluetooth });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.getBluetooth();
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+        }
+    }
+    async getDevice(device) {
+        let model;
+        try {
+            this.loggerService.info(`[Network] getDevice ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getDevice, device: device });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.getDevice(model);
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+        }
+    }
+    async setNetwork(request) {
+        let model;
+        try {
+            this.loggerService.info(`[Network] setNetwork ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.setNetwork, ...request });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.setNetwork(model);
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 수정할 수 없습니다.');
+        }
+    }
+    async connectWifi(request) {
+        let model;
+        try {
+            this.loggerService.info(`[Network] connectWifi ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.connectWifi, ...request });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.connectWifi(model);
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] connectWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('와이파이 연결에 실패했습니다.');
+        }
+    }
+    async wifiScan() {
+        let model;
+        try {
+            this.loggerService.info(`[Network] wifiScan ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.wifiScan });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.wifiScan();
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] wifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('와이파이 스캔에 실패했습니다.');
+        }
+    }
+    async getWifiList() {
+        let model;
+        try {
+            this.loggerService.info(`[Network] getWifiList ================================`);
+            model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getWifiList });
+            const db = await this.networkDatabase.save(model);
+            model.assignId(db._id);
+            model.checkVariables();
+            const resp = await this.networkOutput.getWifiList();
+            model.statusChange(network_domain_1.NetworkStatus.success);
+            await this.networkDatabase.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.statusChange(network_domain_1.NetworkStatus.fail);
+                model.message = error.error.details;
+                await this.networkDatabase.update(model);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getWifiList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('와이파이 목록을 가져올 수 없습니다.');
+        }
+    }
+};
+exports.NetworkService = NetworkService;
+exports.NetworkService = NetworkService = __decorate([
+    (0, common_2.Controller)(),
+    __param(0, (0, common_2.Inject)(constant_1.MQTT_BROKER)),
+    __param(1, (0, common_2.Inject)('NetworkOutputPort')),
+    __param(2, (0, common_2.Inject)('NetworkDatabaseOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof network_output_port_1.NetworkOutputPort !== "undefined" && network_output_port_1.NetworkOutputPort) === "function" ? _b : Object, typeof (_c = typeof network_database_output_port_1.NetworkDatabaseOutputPort !== "undefined" && network_database_output_port_1.NetworkDatabaseOutputPort) === "function" ? _c : Object])
+], NetworkService);
+
+
+/***/ }),
+/* 120 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 121 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 122 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkModel = exports.NetworkCommand = exports.NetworkStatus = void 0;
+const constant_1 = __webpack_require__(46);
+const rpc_code_exception_1 = __webpack_require__(45);
+var NetworkStatus;
+(function (NetworkStatus) {
+    NetworkStatus["pending"] = "pending";
+    NetworkStatus["accepted"] = "accept";
+    NetworkStatus["rejected"] = "reject";
+    NetworkStatus["success"] = "success";
+    NetworkStatus["fail"] = "fail";
+    NetworkStatus["cancelled"] = "cancelled";
+    NetworkStatus["unknown"] = "unknown";
+})(NetworkStatus || (exports.NetworkStatus = NetworkStatus = {}));
+var NetworkCommand;
+(function (NetworkCommand) {
+    NetworkCommand["getNetwork"] = "getNetwork";
+    NetworkCommand["getEthernet"] = "getEthernet";
+    NetworkCommand["getWifi"] = "getWifi";
+    NetworkCommand["getBluetooth"] = "getBluetooth";
+    NetworkCommand["getDevice"] = "getDevice";
+    NetworkCommand["setNetwork"] = "setNetwork";
+    NetworkCommand["connectWifi"] = "connectWifi";
+    NetworkCommand["wifiScan"] = "wifiScan";
+    NetworkCommand["getWifiList"] = "getWifiList";
+})(NetworkCommand || (exports.NetworkCommand = NetworkCommand = {}));
+class NetworkModel {
+    constructor(param) {
+        this.status = NetworkStatus.pending;
+        this.command = param.command;
+        this.device = param.device;
+        this.name = param.name;
+        this.dhcp = param.dhcp;
+        this.address = param.address;
+        this.gateway = param.gateway;
+        this.mask = param.mask;
+        this.dns = param.dns;
+        this.ssid = param.ssid;
+        this.password = param.password;
+    }
+    assignId(id) {
+        this.id = id;
+        this.message = '';
+    }
+    statusChange(status) {
+        this.status = status;
+    }
+    checkVariables() {
+        if (this.command === NetworkCommand.getNetwork) {
+            if (this.status === undefined) {
+                this.status = NetworkStatus.pending;
+            }
+        }
+        else if (this.command === NetworkCommand.getEthernet) {
+        }
+        else if (this.command === NetworkCommand.getWifi) {
+        }
+        else if (this.command === NetworkCommand.getBluetooth) {
+        }
+        else if (this.command === NetworkCommand.getDevice) {
+            if (this.device === undefined || this.device === null || this.device === '') {
+                throw new rpc_code_exception_1.RpcCodeException('device 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+            }
+        }
+        else if (this.command === NetworkCommand.setNetwork) {
+            if (this.device === undefined || this.device === null || this.device === '') {
+                throw new rpc_code_exception_1.RpcCodeException('device 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+            }
+            if (this.name === undefined || this.name === null || this.name === '') {
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+            }
+            if (this.dhcp === undefined || this.dhcp === null) {
+                throw new rpc_code_exception_1.RpcCodeException('dhcp 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+            }
+            if (this.dhcp === false) {
+                if (this.address === undefined || this.address === null || this.address === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('address 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+                }
+                if (this.gateway === undefined || this.gateway === null || this.gateway === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('gateway 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+                }
+                if (this.mask === undefined || this.mask === null || this.mask === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mask 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+                }
+                if (this.dns === undefined || this.dns === null) {
+                    throw new rpc_code_exception_1.RpcCodeException('dns 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+                }
+            }
+        }
+        else if (this.command === NetworkCommand.connectWifi) {
+            if (this.ssid === undefined || this.ssid === null || this.ssid === '') {
+                throw new rpc_code_exception_1.RpcCodeException('ssid 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+            }
+            if (this.password === undefined || this.password === null || this.password === '') {
+                throw new rpc_code_exception_1.RpcCodeException('password 값이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+            }
+        }
+        else if (this.command === NetworkCommand.wifiScan) {
+        }
+        else if (this.command === NetworkCommand.getWifiList) {
+        }
+        else {
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 명령이 존재하지 않습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+}
+exports.NetworkModel = NetworkModel;
+
+
+/***/ }),
+/* 123 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkNmcliAdapter = void 0;
+const service_logger_1 = __webpack_require__(29);
+const wifi = __webpack_require__(124);
+const microservices_1 = __webpack_require__(3);
+const parse_util_1 = __webpack_require__(48);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
+const child_process_1 = __webpack_require__(97);
+class NetworkNmcliAdapter {
+    constructor() {
+        this.loggerService = service_logger_1.LoggerService.get('host');
+        this.curEthernet = [];
+        this.curWifi = [];
+        this.curBluetooth = [];
+        wifi.init({
+            iface: null,
+        });
+    }
+    async getNetwork() {
+        try {
+            await this.nmcliDeviceShow();
+            const wifi_detail = await this.getCurrentWifi();
+            for (let i = 0; i < wifi_detail.length; i++) {
+                if (this.curWifi.length > 0) {
+                    if (wifi_detail[i].iface === this.curWifi[0].device)
+                        this.curWifi[0].signalLevel = wifi_detail[i].signalLevel;
+                    this.curWifi[0].quality = wifi_detail[i].quality;
+                    this.curWifi[0].security = wifi_detail[i].security;
+                }
+            }
+            return {
+                Ethernet: this.curEthernet,
+                Wifi: this.curWifi[0],
+            };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getEthernet() {
+        try {
+            if (this.curEthernet.length == 0) {
+                await this.nmcliDeviceShow();
+            }
+            return {
+                Ethernet: this.curEthernet,
+            };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getWifi() {
+        try {
+            if (this.curWifi.length == 0) {
+                await this.nmcliConnectionShow();
+            }
+            const wifi_detail = await this.getCurrentWifi();
+            for (let i = 0; i < wifi_detail.length; i++) {
+                if (this.curWifi.length > 0) {
+                    if (wifi_detail[i].iface === this.curWifi[0].device)
+                        this.curWifi[0].signalLevel = wifi_detail[i].signalLevel;
+                    this.curWifi[0].quality = wifi_detail[i].quality;
+                    this.curWifi[0].security = wifi_detail[i].security;
+                }
+            }
+            return this.curWifi[0];
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getBluetooth() {
+        try {
+            if (this.curBluetooth.length == 0) {
+                await this.nmcliDeviceShow();
+            }
+            return this.curBluetooth[0];
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getDevice(model) {
+        try {
+            const data = (0, child_process_1.execSync)('nmcli device show ' + model.device).toString();
+            const json = await this.parseNMCLI(data);
+            if (json.type == 'wifi') {
+                const wifi_detail = await this.getCurrentWifi();
+                for (let i = 0; i < wifi_detail.length; i++) {
+                    if (wifi_detail[i].iface === json.device)
+                        json.signalLevel = wifi_detail[i].signalLevel;
+                    json.quality = wifi_detail[i].quality;
+                    json.security = wifi_detail[i].security;
+                }
+            }
+            return json;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async setNetwork(model) {
+        try {
+            let cmd;
+            if (model.dhcp) {
+                cmd = `nmcli con modify '${model.name}' ipv4.method auto`;
+                this.loggerService.info(`[Network] SET Network DHCP : ${model.name}`);
+            }
+            else {
+                let dns_str = '"';
+                for (let i = 0; i < model.dns.length; i++) {
+                    dns_str += model.dns[i] + ' ';
+                }
+                dns_str += '"';
+                cmd =
+                    "nmcli con modify '" +
+                        model.name +
+                        "' ipv4.addresses " +
+                        model.address +
+                        '/' +
+                        model.mask +
+                        ' ipv4.gateway ' +
+                        model.gateway +
+                        ' ipv4.dns ' +
+                        dns_str +
+                        ' ipv4.method manual';
+                this.loggerService.info(`[Network] SET Network Manual : ${model.name} -> ${cmd}, ${JSON.stringify(model)}`);
+            }
+            (0, child_process_1.execSync)(cmd);
+            (0, child_process_1.execSync)(`nmcli con up ${model.name}`);
+            return {
+                device: model.device,
+                name: model.name,
+                dhcp: model.dhcp,
+                address: model.address,
+                gateway: model.gateway,
+                mask: model.mask,
+                dns: model.dns,
+            };
+        }
+        catch (error) {
+            this.loggerService.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 수정할 수 없습니다.');
+        }
+    }
+    async connectWifi(model) {
+        try {
+            let cmd_line;
+            if (model.password == undefined || model.password == '') {
+                cmd_line = 'nmcli dev wifi connect "' + model.ssid + '"';
+            }
+            else {
+                cmd_line = 'nmcli dev wifi connect "' + model.ssid + '" password "' + model.password + '"';
+            }
+            this.loggerService.info(`[Network] Connect Wifi : ${cmd_line}, ${JSON.stringify(model)}`);
+            (0, child_process_1.execSync)('nmcli dev wifi rescan');
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const data = (0, child_process_1.execSync)(cmd_line);
+            this.loggerService.info(`[Network] Connect Wifi Response: ${data}`);
+            if (data.includes('successfully')) {
+                return { ssid: model.ssid };
+            }
+            else if (data.includes('Secrets were required')) {
+                throw new microservices_1.RpcException('비밀번호가 틀렸습니다.');
+            }
+            else {
+                throw new microservices_1.RpcException(data);
+            }
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException) {
+                throw error;
+            }
+            const errorStr = parse_util_1.ParseUtil.errorToJson(error);
+            this.loggerService.warn(`[Network] Connect Wifi: ${errorStr}`);
+            if (errorStr.includes('Secrets were required')) {
+                throw new microservices_1.RpcException('비밀번호가 틀렸습니다.');
+            }
+            else if (errorStr.includes('No network with SSID')) {
+                throw new microservices_1.RpcException('SSID를 찾을 수 없습니다.');
+            }
+            else if (errorStr.includes('property is invalid')) {
+                throw new microservices_1.RpcException('비밀번호가 틀렸습니다.');
+            }
+            throw new microservices_1.RpcException(error.message);
+        }
+    }
+    async wifiScan() {
+        try {
+            (0, child_process_1.execSync)('nmcli dev wifi rescan');
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            return this.getWifiList();
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException) {
+                throw error;
+            }
+            throw new microservices_1.RpcException('와이파이 목록을 가져올 수 없습니다.');
+        }
+    }
+    getWifiList() {
+        return new Promise((resolve, reject) => {
+            wifi.scan((error, networks) => {
+                if (error) {
+                    this.loggerService.error(`[Network] WifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                    return reject(new microservices_1.RpcException('와이파이 목록을 가져올 수 없습니다.'));
+                }
+                const wifiMap = new Map();
+                for (const net of networks) {
+                    if (!net.ssid)
+                        continue;
+                    const existing = wifiMap.get(net.ssid);
+                    if (!existing || net.quality > existing.quality) {
+                        wifiMap.set(net.ssid, { ...net });
+                    }
+                }
+                resolve({ list: Array.from(wifiMap.values()) });
+            });
+        });
+    }
+    async getCurrentWifi() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                wifi.getCurrentConnections((error, networks) => {
+                    if (error) {
+                        this.loggerService.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                        reject();
+                    }
+                    else {
+                        this.loggerService.debug(`[Network] getCurrentWifi: ${JSON.stringify(networks)}`);
+                        resolve(networks);
+                    }
+                });
+            }
+            catch (error) {
+                this.loggerService.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async nmcliDeviceShow() {
+        try {
+            const data = (0, child_process_1.execSync)('nmcli device show').toString();
+            this.curEthernet = [];
+            this.curWifi = [];
+            this.curBluetooth = [];
+            const networks = data.split(/\n\s*\n/);
+            for (const i in networks) {
+                const json = await this.parseNMCLI(networks[i]);
+                if (json.type == 'ethernet') {
+                    this.curEthernet.push({ ...json });
+                }
+                else if (json.type == 'wifi') {
+                    this.curWifi.push({ ...json });
+                }
+                else if (json.type == 'bt') {
+                    this.curBluetooth.push({ ...json });
+                }
+            }
+        }
+        catch (error) {
+            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+        }
+    }
+    async nmcliConnectionShow() {
+        try {
+            const result = (0, child_process_1.execSync)('nmcli connection show --active').toString();
+            let ActiveWifi = null;
+            let ActiveEthernet = null;
+            let ActiveBluetooth = null;
+            result.split('\n').map((line) => {
+                if (!line.startsWith('NAME ') && line != '') {
+                    if (line.includes('wifi')) {
+                        ActiveWifi = line.split('  ')[0];
+                    }
+                    else if (line.includes('ethernet')) {
+                        ActiveEthernet = line.split('  ')[0];
+                    }
+                    else if (line.includes('bt')) {
+                        ActiveBluetooth = line.split('  ')[0];
+                    }
+                }
+            });
+            if (ActiveWifi) {
+                this.curWifi = [];
+                this.curWifi.push(await this.getConnectionInfo(ActiveWifi));
+            }
+            if (ActiveEthernet) {
+                this.curEthernet = [];
+                this.curEthernet.push(await this.getConnectionInfo(ActiveEthernet));
+            }
+            if (ActiveBluetooth) {
+                this.curBluetooth = [];
+                this.curBluetooth.push(await this.getConnectionInfo(ActiveBluetooth));
+            }
+        }
+        catch (error) {
+            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+        }
+    }
+    async getConnectionInfo(name) {
+        const data = (0, child_process_1.execSync)(`nmcli connection show '${name}'`).toString();
+        const info = {
+            name: name,
+            type: '',
+            device: '',
+            mask: '',
+            gateway: '',
+            address: '',
+            state: '',
+            dhcp: false,
+            hwAddr: '',
+            dns: [],
+        };
+        data.split('\n').map((line) => {
+            if (line.startsWith('IP4.GATEWAY')) {
+                info.gateway = line.split(' ')[line.split(' ').length - 1];
+            }
+            else if (line.startsWith('IP4.ADDRESS')) {
+                const address = line.split(' ')[line.split(' ').length - 1];
+                info.address = address.split('/')[0];
+                info.mask = address.split('/')[1];
+            }
+            else if (line.startsWith('ipv4.method')) {
+                if (line.includes('auto')) {
+                    info.dhcp = true;
+                }
+                else {
+                    info.dhcp = false;
+                }
+            }
+            else if (line.startsWith('IP4.DNS')) {
+                info.dns.push(line.split(' ')[line.split(' ').length - 1]);
+            }
+            else if (line.startsWith('GENERAL.DEVICE')) {
+                info.device = line.split(' ')[line.split(' ').length - 1];
+            }
+            else if (line.startsWith('GENERAL.TYPE')) {
+                info.type = line.split(' ')[line.split(' ').length - 1];
+            }
+            else if (line.startsWith('GENERAL.HWADDR')) {
+                info.hwAddr = line.split(' ')[line.split(' ').length - 1];
+            }
+            else if (line.startsWith('GENERAL.STATE')) {
+                info.state = line.split(' ')[line.split(' ').length - 1];
+            }
+        });
+        return info;
+    }
+    async parseNMCLI(inputString) {
+        try {
+            const network = {
+                address: '',
+                gateway: '',
+                dns: [],
+                mask: '',
+            };
+            inputString.split('\n').forEach((line) => {
+                const split_str = line.split(':');
+                const keyWithValue = split_str.shift()?.trim();
+                let value;
+                if (split_str.length > 1) {
+                    let string = '';
+                    while (split_str.length > 0) {
+                        const st = split_str.shift()?.trim();
+                        string += st + ':';
+                    }
+                    value = string.slice(0, -1);
+                }
+                else if (split_str.length == 0) {
+                    value = '';
+                }
+                else {
+                    value = split_str.shift()?.trim();
+                }
+                if (keyWithValue == 'GENERAL.DEVICE') {
+                    network.device = value;
+                }
+                else if (keyWithValue == 'GENERAL.TYPE') {
+                    network.type = value;
+                }
+                else if (keyWithValue == 'GENERAL.HWADDR') {
+                    network.hwAddr = value;
+                }
+                else if (keyWithValue == 'GENERAL.STATE') {
+                    network.state = value;
+                }
+                else if (keyWithValue == 'GENERAL.CONNECTION') {
+                    network.name = value;
+                }
+                else if (keyWithValue == 'IP4.ADDRESS[1]') {
+                    network.address = value.split('/')[0];
+                    network.mask = value.split('/')[1];
+                }
+                else if (keyWithValue == 'IP4.GATEWAY') {
+                    network.gateway = value;
+                }
+                else if (keyWithValue?.includes('IP4.DNS')) {
+                    network.dns.push(value);
+                }
+            });
+            return network;
+        }
+        catch (error) {
+            this.loggerService.error(`[Network] parseNMCLI: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('네트워크 정보를 파싱할 수 없습니다.');
+        }
+    }
+}
+exports.NetworkNmcliAdapter = NetworkNmcliAdapter;
+
+
+/***/ }),
+/* 124 */
+/***/ ((module) => {
+
+module.exports = require("node-wifi");
+
+/***/ }),
+/* 125 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkMongoAdapter = void 0;
+const mongoose_1 = __webpack_require__(100);
+const mongoose_2 = __webpack_require__(114);
+const common_1 = __webpack_require__(4);
+const microservices_1 = __webpack_require__(3);
+const parse_util_1 = __webpack_require__(48);
+const util_1 = __webpack_require__(32);
+const network_command_entity_1 = __webpack_require__(126);
+let NetworkMongoAdapter = class NetworkMongoAdapter {
+    constructor(Repository) {
+        this.Repository = Repository;
+        this.loggerService = common_1.LoggerService.get('host');
+    }
+    async getNodebyId(id) {
+        try {
+            return await this.Repository.findById(id).lean();
+        }
+        catch (error) {
+            this.loggerService.error(`[Network] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+        }
+    }
+    async save(model) {
+        try {
+            const _id = util_1.UrlUtil.generateUUID();
+            return await this.Repository.create({ ...model, _id });
+        }
+        catch (error) {
+            this.loggerService.error(`[Network] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+        }
+    }
+    async update(move) {
+        try {
+            return await this.Repository.findByIdAndUpdate(move.id, move).lean();
+        }
+        catch (error) {
+            this.loggerService.error(`[Network] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+        }
+    }
+};
+exports.NetworkMongoAdapter = NetworkMongoAdapter;
+exports.NetworkMongoAdapter = NetworkMongoAdapter = __decorate([
+    __param(0, (0, mongoose_1.InjectModel)(network_command_entity_1.NetworkCommand.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+], NetworkMongoAdapter);
+
+
+/***/ }),
+/* 126 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkCommandSchema = exports.NetworkCommand = void 0;
+const mongoose_1 = __webpack_require__(100);
+let NetworkCommand = class NetworkCommand {
+};
+exports.NetworkCommand = NetworkCommand;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], NetworkCommand.prototype, "command", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], NetworkCommand.prototype, "status", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], NetworkCommand.prototype, "_id", void 0);
+exports.NetworkCommand = NetworkCommand = __decorate([
+    (0, mongoose_1.Schema)()
+], NetworkCommand);
+exports.NetworkCommandSchema = mongoose_1.SchemaFactory.createForClass(NetworkCommand);
+exports.NetworkCommandSchema.set('timestamps', true);
+
+
+/***/ }),
+/* 127 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkMqttController = void 0;
+const constant_1 = __webpack_require__(70);
+const common_1 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const network_service_1 = __webpack_require__(119);
+let NetworkMqttController = class NetworkMqttController {
+    constructor(mqttMicroservice, networkService) {
+        this.mqttMicroservice = mqttMicroservice;
+        this.networkService = networkService;
+    }
+    async readyNetwork(data) {
+        this.networkService.ready();
+    }
+};
+exports.NetworkMqttController = NetworkMqttController;
+__decorate([
+    (0, microservices_1.MessagePattern)('ready:network'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NetworkMqttController.prototype, "readyNetwork", null);
+exports.NetworkMqttController = NetworkMqttController = __decorate([
+    (0, common_1.Controller)(),
+    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof network_service_1.NetworkService !== "undefined" && network_service_1.NetworkService) === "function" ? _b : Object])
+], NetworkMqttController);
+
+
+/***/ }),
+/* 128 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifModule = void 0;
+const common_1 = __webpack_require__(54);
+const onvif_api_controller_1 = __webpack_require__(129);
+const onvif_device_service_1 = __webpack_require__(135);
+const onvif_ptz_service_1 = __webpack_require__(138);
+const onvif_media_service_1 = __webpack_require__(132);
+const onvif_event_service_1 = __webpack_require__(141);
+const onvif_deviceio_service_1 = __webpack_require__(140);
+const microservices_1 = __webpack_require__(3);
+const common_2 = __webpack_require__(4);
+const path_1 = __webpack_require__(39);
+const onvif_mqtt_controller_1 = __webpack_require__(142);
+const constant_1 = __webpack_require__(70);
+const config_1 = __webpack_require__(2);
+const onvif_pending_service_1 = __webpack_require__(143);
+let OnvifModule = class OnvifModule {
+};
+exports.OnvifModule = OnvifModule;
+exports.OnvifModule = OnvifModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        name: constant_1.NETWORK_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.NetworkMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/network.proto'),
+                                url: configService.get('NETWORK_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.CONFIG_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.ConfigMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/config.proto'),
+                                url: configService.get('CONFIG_GRPC_URL'),
+                            },
+                        }),
+                    },
+                ],
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.MQTT_BROKER,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.MQTT,
+                            options: {
+                                url: configService.get('MQTT_URL'),
+                            },
+                        }),
+                    },
+                ],
+            }),
+        ],
+        controllers: [onvif_api_controller_1.OnvifApiController, onvif_mqtt_controller_1.OnvifMqttController],
+        providers: [onvif_device_service_1.OnvifDeviceService, onvif_pending_service_1.OnvifPendingService, onvif_ptz_service_1.OnvifPtzService, onvif_media_service_1.OnvifMediaService, onvif_event_service_1.OnvifEventService, onvif_deviceio_service_1.OnvifDeviceIOService],
+    })
+], OnvifModule);
+
+
+/***/ }),
+/* 129 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifApiController = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const xml2js = __webpack_require__(130);
+const express_1 = __webpack_require__(131);
+const onvif_media_service_1 = __webpack_require__(132);
+const onvif_device_service_1 = __webpack_require__(135);
+const fs_1 = __webpack_require__(38);
+const onvif_ptz_service_1 = __webpack_require__(138);
+const onvif_deviceio_service_1 = __webpack_require__(140);
+const onvif_event_service_1 = __webpack_require__(141);
+const parse_util_1 = __webpack_require__(48);
+let OnvifApiController = class OnvifApiController {
+    constructor(mediaService, deviceService, ptzService, deviceIOService, eventService) {
+        this.mediaService = mediaService;
+        this.deviceService = deviceService;
+        this.ptzService = ptzService;
+        this.deviceIOService = deviceIOService;
+        this.eventService = eventService;
+        this.isPlatformLinux = false;
+        this.loggerService = common_1.LoggerService.get('onvif');
+        if (process.env.HOST_OS === 'Linux') {
+            this.isPlatformLinux = true;
+        }
+    }
+    async testHello() {
+        return this.deviceService.hello();
+    }
+    async DeviceService(body, req, res) {
+        console.log('?');
+        const parser = new xml2js.Parser({
+            explicitArray: false,
+            tagNameProcessors: [xml2js.processors.stripPrefix],
+        });
+        parser.parseString(body, async (err, result) => {
+            if (err) {
+                this.loggerService.error(`[Onvif] Request Device Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐임');
+                return;
+            }
+            const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
+            this.loggerService.info(`[Onvif] Request Device Service : ${methodName}, ${JSON.stringify(result)}`);
+            let responseXml;
+            if (methodName == 'GetSystemDateAndTime') {
+                responseXml = await this.deviceService.responseSystemDateAndTime();
+            }
+            else if (methodName == 'GetCapabilities') {
+                responseXml = await this.deviceService.responseCapabilities(req.socket.remoteAddress);
+            }
+            else if (methodName == 'SetSystemDateAndTime') {
+                responseXml = await this.deviceService.setSystemDateAndTime();
+            }
+            else if (methodName == 'GetServiceCapabilities') {
+                responseXml = await this.deviceService.responseCapabilities(req.socket.remoteAddress);
+            }
+            else if (methodName == 'GetServices') {
+                responseXml = await this.deviceService.responseServices(req.socket.remoteAddress);
+            }
+            else if (methodName == 'GetDeviceInformation') {
+                responseXml = await this.deviceService.responseDeviceInformation();
+            }
+            else if (methodName == 'GetScopes') {
+                responseXml = await this.deviceService.responseScopes();
+            }
+            else if (methodName == 'GetNetworkInterfaces') {
+                responseXml = await this.deviceService.responseNetworkInterfaces(req.socket.remoteAddress);
+            }
+            else if (methodName == 'GetDNS') {
+                responseXml = await this.deviceService.responseDNS(req.socket.remoteAddress);
+            }
+            else if (methodName == 'GetHostname') {
+                responseXml = await this.deviceService.responseHostname();
+            }
+            else if (methodName == 'GetNetworkProtocols') {
+                responseXml = await this.deviceService.responseNetworkProtocols();
+            }
+            else if (methodName == 'GetDiscoveryMode') {
+                responseXml = await this.deviceService.responseDiscoveryMode();
+            }
+            else if (methodName == 'GetNetworkDefaultGateway') {
+                responseXml = await this.deviceService.responseDefaultGateway(req.socket.remoteAddress);
+            }
+            else if (methodName == 'GetNTP') {
+                responseXml = await this.deviceService.responseNTP();
+            }
+            if (responseXml) {
+                res.set('Content-Type', 'application/soap+xml');
+                res.send(responseXml);
+            }
+            else {
+                this.loggerService.error(`[Onvif] methodName not matching ${methodName}`);
+                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐임??');
+            }
+        });
+    }
+    async MediaService(body, req, res) {
+        console.error('media_service : ', JSON.stringify(body));
+        const parser = new xml2js.Parser({
+            explicitArray: false,
+            tagNameProcessors: [xml2js.processors.stripPrefix],
+        });
+        parser.parseString(body, async (err, result) => {
+            if (err) {
+                this.loggerService.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐냐고??');
+                return;
+            }
+            const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
+            this.loggerService.info(`[Onvif] Request Media Service : ${methodName}, ${JSON.stringify(result)}`);
+            let responseXml;
+            if (methodName == 'GetProfiles') {
+                responseXml = await this.mediaService.responseMediaProfiles();
+            }
+            else if (methodName == 'GetStreamUri') {
+                responseXml = await this.mediaService.responseStreamUri(req.socket.remoteAddress);
+            }
+            else if (methodName == 'GetVideoSources') {
+                responseXml = await this.mediaService.responseVideoSources();
+            }
+            else if (methodName == 'GetAudioSources') {
+                responseXml = await this.mediaService.responseAudioSources();
+            }
+            else if (methodName == 'GetSnapshotUri') {
+                responseXml = await this.mediaService.responseSnapshotUri(req.socket.remoteAddress);
+            }
+            else if (methodName == 'GetProfile') {
+                responseXml = await this.mediaService.responseMediaProfile();
+            }
+            else if (methodName == 'GetNodes') {
+                console.log('error?!');
+            }
+            else if (methodName == 'GetVideoSourceConfiguration') {
+                responseXml = await this.mediaService.responseVideoSourceConfiguration();
+            }
+            if (responseXml) {
+                res.set('Content-Type', 'application/soap+xml');
+                res.send(responseXml);
+            }
+            else {
+                this.loggerService.error(`[Onvif] methodName not matching ${methodName}`);
+                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐임????');
+            }
+        });
+    }
+    async getSnapshot(res) {
+        try {
+            this.loggerService.info(`[Onvif] getSnapshot`);
+            const data = (0, fs_1.readFileSync)('/root/snapshot.jpg');
+            this.loggerService.info(`[Onvif] getSnapshot : Done`);
+            res.setHeader('Content-Type', 'image/jpeg');
+            res.send(data);
+        }
+        catch (error) {
+            this.loggerService.error(`[Onvif] getSnapshot : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            res.status(500).send('Error reading snapshot');
+            return;
+        }
+    }
+    async PTZService(body, req, res) {
+        console.error('ptz_service : ', JSON.stringify(body));
+        const parser = new xml2js.Parser({
+            explicitArray: false,
+            tagNameProcessors: [xml2js.processors.stripPrefix],
+        });
+        parser.parseString(body, async (err, result) => {
+            if (err) {
+                this.loggerService.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐꼬냐고');
+                return;
+            }
+            const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
+            this.loggerService.info(`[Onvif] Request PTZ Service : ${methodName}, ${JSON.stringify(result)}`);
+            let responseXml;
+            if (methodName == 'ContinuousMove') {
+                const token = result['Envelope']['Body']['ContinuousMove']['ProfileToken'];
+                if (result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']) {
+                    const x = result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']['$'].x;
+                    const y = result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']['$'].y;
+                    this.loggerService.info(`[Onvif] PTZ Move PanTilt : ${token}, Velocity(${x}, ${y})`);
+                }
+                else if (result['Envelope']['Body']['ContinuousMove']['Velocity']['Zoom']) {
+                    const velocity = result['Envelope']['Body']['ContinuousMove']['Velocity']['Zoom']['$'].x;
+                    this.loggerService.info(`[Onvif] PTZ Move Zoom : ${token}, Velocity(${velocity})`);
+                }
+                responseXml = await this.ptzService.responsePtzMove('<ptz:ContinuousMoveResponse/>');
+            }
+            else if (methodName == 'RelativeMove') {
+                const token = result['Envelope']['Body']['RelativeMove']['ProfileToken'];
+                const pantilt = result['Envelope']['Body']['RelativeMove']['Translation']['PanTilt']?.['$'];
+                const zoom = result['Envelope']['Body']['RelativeMove']['Translation']['Zoom']?.['$'];
+                const pantilt_vel = result['Envelope']['Body']['RelativeMove']['Speed']?.['PanTilt']?.['$'];
+                const zoom_vel = result['Envelope']['Body']['RelativeMove']['Speed']?.['Zoom']?.['$'];
+                this.loggerService.info(`[Onvif] PTZ Move RelativeMove : ${token}, PanTilt(${pantilt?.x},${pantilt?.y}), Zoom(${zoom?.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
+                responseXml = await this.ptzService.responsePtzMove('<ptz:RelativeMoveResponse/>');
+            }
+            else if (methodName == 'AbsoluteMove') {
+                const token = result['Envelope']['Body']['AbsoluteMove']['ProfileToken'];
+                const pantilt = result['Envelope']['Body']['AbsoluteMove']['Position']['PanTilt']['$'];
+                const zoom = result['Envelope']['Body']['AbsoluteMove']['Position']['Zoom']['$'];
+                const pantilt_vel = result['Envelope']['Body']['AbsoluteMove']['Speed']?.['PanTilt']?.['$'];
+                const zoom_vel = result['Envelope']['Body']['AbsoluteMove']['Speed']?.['Zoom']?.['$'];
+                this.loggerService.info(`[Onvif] PTZ Move AbsoluteMove : ${token}, PanTilt(${pantilt.x},${pantilt.y}), Zoom(${zoom.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
+                responseXml = await this.ptzService.responsePtzMove('<ptz:AbsoluteMoveResponse/>');
+            }
+            else if (methodName == 'Stop') {
+                const token = result['Envelope']['Body']['Stop']['ProfileToken'];
+                const pantilt = result['Envelope']['Body']['Stop']['PanTilt'];
+                const zoom = result['Envelope']['Body']['Stop']['Zoom'];
+                this.loggerService.info(`[Onvif] PTZ Move Stop : ${token}, PanTilt(${pantilt}), Zoom(${zoom})`);
+                responseXml = await this.ptzService.responsePtzMove('<ptz:StopResponse/>');
+            }
+            else if (methodName == 'GotoHomePosition') {
+                const token = result['Envelope']['Body']['GotoHomePosition']['ProfileToken'];
+                this.loggerService.info(`[Onvif] PTZ Move GotoHomePosition : ${token}`);
+            }
+            else if (methodName == 'SetHomePosition') {
+                const token = result['Envelope']['Body']['SetHomePosition']['ProfileToken'];
+                this.loggerService.info(`[Onvif] PTZ Move SetHomePosition : ${token}`);
+            }
+            else if (methodName == 'SetPreset') {
+                const token = result['Envelope']['Body']['SetPreset']['ProfileToken'];
+                const name = result['Envelope']['Body']['SetPreset']['PresetName'];
+                this.loggerService.info(`[Onvif] PTZ Move SetPreset : ${token}, ${name}`);
+            }
+            if (responseXml) {
+                res.set('Content-Type', 'application/soap+xml');
+                res.send(responseXml);
+            }
+            else {
+                this.loggerService.error(`[Onvif] methodName not matching ${methodName}`);
+                res.status(common_2.HttpStatus.BAD_REQUEST).send('머머');
+            }
+        });
+    }
+};
+exports.OnvifApiController = OnvifApiController;
+__decorate([
+    (0, common_2.Post)('hello'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OnvifApiController.prototype, "testHello", null);
+__decorate([
+    (0, common_2.Post)('device_service'),
+    (0, common_2.UsePipes)(new common_2.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
+    __param(0, (0, common_2.RawBody)()),
+    __param(1, (0, common_2.Req)()),
+    __param(2, (0, common_2.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_f = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _f : Object, typeof (_g = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _g : Object]),
+    __metadata("design:returntype", Promise)
+], OnvifApiController.prototype, "DeviceService", null);
+__decorate([
+    (0, common_2.Post)('media_service'),
+    (0, common_2.UsePipes)(new common_2.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
+    __param(0, (0, common_2.RawBody)()),
+    __param(1, (0, common_2.Req)()),
+    __param(2, (0, common_2.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_h = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _h : Object, typeof (_j = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _j : Object]),
+    __metadata("design:returntype", Promise)
+], OnvifApiController.prototype, "MediaService", null);
+__decorate([
+    (0, common_2.Get)('snapshot.jpg'),
+    __param(0, (0, common_2.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_k = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _k : Object]),
+    __metadata("design:returntype", Promise)
+], OnvifApiController.prototype, "getSnapshot", null);
+__decorate([
+    (0, common_2.Post)('ptz_service'),
+    (0, common_2.UsePipes)(new common_2.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
+    __param(0, (0, common_2.RawBody)()),
+    __param(1, (0, common_2.Req)()),
+    __param(2, (0, common_2.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_l = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _l : Object, typeof (_m = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _m : Object]),
+    __metadata("design:returntype", Promise)
+], OnvifApiController.prototype, "PTZService", null);
+exports.OnvifApiController = OnvifApiController = __decorate([
+    (0, common_2.Controller)('onvif'),
+    __metadata("design:paramtypes", [typeof (_a = typeof onvif_media_service_1.OnvifMediaService !== "undefined" && onvif_media_service_1.OnvifMediaService) === "function" ? _a : Object, typeof (_b = typeof onvif_device_service_1.OnvifDeviceService !== "undefined" && onvif_device_service_1.OnvifDeviceService) === "function" ? _b : Object, typeof (_c = typeof onvif_ptz_service_1.OnvifPtzService !== "undefined" && onvif_ptz_service_1.OnvifPtzService) === "function" ? _c : Object, typeof (_d = typeof onvif_deviceio_service_1.OnvifDeviceIOService !== "undefined" && onvif_deviceio_service_1.OnvifDeviceIOService) === "function" ? _d : Object, typeof (_e = typeof onvif_event_service_1.OnvifEventService !== "undefined" && onvif_event_service_1.OnvifEventService) === "function" ? _e : Object])
+], OnvifApiController);
+
+
+/***/ }),
+/* 130 */
+/***/ ((module) => {
+
+module.exports = require("xml2js");
+
+/***/ }),
+/* 131 */
+/***/ ((module) => {
+
+module.exports = require("express");
+
+/***/ }),
+/* 132 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifMediaService = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const rxjs_1 = __webpack_require__(27);
+const parse_util_1 = __webpack_require__(48);
+const constant_1 = __webpack_require__(70);
+const template_1 = __webpack_require__(133);
+const wsdl_util_1 = __webpack_require__(134);
+const os_1 = __webpack_require__(105);
+let OnvifMediaService = class OnvifMediaService {
+    constructor(configMicroservice) {
+        this.configMicroservice = configMicroservice;
+        this.loggerService = common_1.LoggerService.get('onvif');
+        this.ONVIF_PORT = 3005;
+        this.CONFIG = {
+            Name: '',
+            Width: '0',
+            Height: '0',
+        };
+    }
+    async onModuleInit() {
+        this.configService = this.configMicroservice.getService('ConfigGrpcService');
+        this.CONFIG.Name = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_name' }))).value ?? '';
+        this.CONFIG.Width = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_width' }))).value ?? '';
+        this.CONFIG.Height = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_height' }))).value ?? '';
+        this.loggerService.info(`[Media] get Config : ${JSON.stringify(this.CONFIG)}`);
+    }
+    async responseMediaProfiles() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.Profiles];
+                query = query.replace(/__NAME__/g, this.CONFIG.Name);
+                query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
+                query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
+                console.log(query);
+                this.loggerService.debug(`[Media] GetProfilesResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Media] GetProfilesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseMediaProfile() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.Profile];
+                query = query.replace(/__NAME__/g, this.CONFIG.Name);
+                query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
+                query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
+                this.loggerService.debug(`[Media] GetProfileResponse`);
+                console.log(query);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Media] GetProfileResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseVideoSourceConfiguration() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.VideoSourceConfiguration];
+                query = query.replace(/__NAME__/g, this.CONFIG.Name);
+                query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
+                query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
+                this.loggerService.debug(`[Media] GetVideoSourceConfigurationResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Media] GetVideoSourceConfigurationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseVideoSources() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.VideoSources];
+                query = query.replace(/__NAME__/g, this.CONFIG.Name);
+                query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
+                query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
+                this.loggerService.debug(`[Media] GetVideoSourcesResponse`);
+                console.log(query);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Media] GetVideoSourcesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseAudioSources() {
+        throw new Error('미구현된 기능입니다.');
+    }
+    async responseSnapshotUri(_ip) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.SnapShotURI];
+                query = query.replace('__SNAPSHOT_URI__', wsdl_util_1.WsdlUtil.getXaddrs('snapshot.jpg', (0, os_1.networkInterfaces)()));
+                console.log(query);
+                this.loggerService.debug(`[Media] GetSnapshotUriResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Media] GetSnapshotUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseStreamUri(_ip) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.StreamURI];
+                const ip = wsdl_util_1.WsdlUtil.getLocalIp(_ip, (0, os_1.networkInterfaces)());
+                query = query.replace('__RTSP_URI__', wsdl_util_1.WsdlUtil.getStream(ip, this.CONFIG.Name));
+                this.loggerService.debug(`[Media] GetStreamUriResponse`);
+                console.log(query);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Media] GetStreamUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+};
+exports.OnvifMediaService = OnvifMediaService;
+exports.OnvifMediaService = OnvifMediaService = __decorate([
+    __param(0, (0, common_2.Inject)(constant_1.CONFIG_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+], OnvifMediaService);
+
+
+/***/ }),
+/* 133 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MediaWSDLTemplate = exports.MediaWSDL = void 0;
+var MediaWSDL;
+(function (MediaWSDL) {
+    MediaWSDL["Profile"] = "profile";
+    MediaWSDL["Profiles"] = "profiles";
+    MediaWSDL["SnapShotURI"] = "snapshoturi";
+    MediaWSDL["StreamURI"] = "streamuri";
+    MediaWSDL["VideoSourceConfiguration"] = "videosourceconfiguration";
+    MediaWSDL["VideoSources"] = "videosources";
+})(MediaWSDL || (exports.MediaWSDL = MediaWSDL = {}));
+exports.MediaWSDLTemplate = {
+    profile: `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:trt="http://www.onvif.org/ver10/media/wsdl"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:tt="http://www.onvif.org/ver10/schema"
+                >
+    <soap:Body>
+        <trt:GetProfileResponse>
+            <trt:Profile token="__NAME__">
+                <tt:Name>__NAME__</tt:Name>
+                <tt:VideoSourceConfiguration xsi:type="tt:VideoSourceConfiguration" token="vscfg0">
+                    <tt:Name>vscfg0</tt:Name>
+                    <tt:UseCount>1</tt:UseCount>
+                    <tt:SourceToken>vidsrc0</tt:SourceToken>
+                    <tt:Bounds height="__HEIGHT__" width="__WIDTH__" y="0" x="0"></tt:Bounds>
+                </tt:VideoSourceConfiguration>
+                <tt:VideoEncoderConfiguration xsi:type="tt:VideoEncoderConfiguration" token="__NAME__">
+                    <tt:Name>Main stream encoder</tt:Name>
+                    <tt:UseCount>1</tt:UseCount>
+                    <tt:Encoding>H264</tt:Encoding>
+                    <tt:Resolution>
+                        <tt:Width>__WIDTH__</tt:Width>
+                        <tt:Height>__HEIGHT__</tt:Height>
+                    </tt:Resolution>
+                    <tt:Quality>8</tt:Quality>
+                    <tt:RateControl>
+                        <tt:FrameRateLimit>5</tt:FrameRateLimit>
+                        <tt:EncodingInterval>1</tt:EncodingInterval>
+                        <tt:BitrateLimit>1000</tt:BitrateLimit>
+                    </tt:RateControl>
+                    <tt:H264>
+                        <tt:GovLength>30</tt:GovLength>
+                        <tt:H264Profile>High</tt:H264Profile>
+                    </tt:H264>
+                    <tt:SessionTimeout>PT60S</tt:SessionTimeout>
+                </tt:VideoEncoderConfiguration>
+                <tt:PTZConfiguration token="ptzcfg0">
+                    <tt:Name>PTZ Config</tt:Name>
+                    <tt:UseCount>1</tt:UseCount>
+                    <tt:NodeToken>ptznode0</tt:NodeToken>
+                    <tt:DefaultAbsolutePantTiltPositionSpace>http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace</tt:DefaultAbsolutePantTiltPositionSpace>
+                    <tt:DefaultAbsoluteZoomPositionSpace>http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace</tt:DefaultAbsoluteZoomPositionSpace>
+                    <tt:DefaultRelativePanTiltTranslationSpace>http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace</tt:DefaultRelativePanTiltTranslationSpace>
+                    <tt:DefaultRelativeZoomTranslationSpace>http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace</tt:DefaultRelativeZoomTranslationSpace>
+                    <tt:DefaultContinuousPanTiltVelocitySpace>http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace</tt:DefaultContinuousPanTiltVelocitySpace>
+                    <tt:DefaultContinuousZoomVelocitySpace>http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace</tt:DefaultContinuousZoomVelocitySpace>
+                    <tt:DefaultPTZSpeed>
+                        <tt:PanTilt space="http://www.onvif.org/ver10/tptz/PanTiltSpaces/GenericSpeedSpace" y="1" x="1"></tt:PanTilt>
+                        <tt:Zoom space="http://www.onvif.org/ver10/tptz/ZoomSpaces/ZoomGenericSpeedSpace" x="1"></tt:Zoom>
+                    </tt:DefaultPTZSpeed>
+                    <tt:DefaultPTZTimeout>PT60S</tt:DefaultPTZTimeout>
+                </tt:PTZConfiguration>
+            </trt:Profile>
+        </trt:GetProfileResponse>
+    </soap:Body>
+</soap:Envelope> `,
+    profiles: `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:trt="http://www.onvif.org/ver10/media/wsdl"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:tt="http://www.onvif.org/ver10/schema"
+                >
+    <soap:Body>
+        <trt:GetProfilesResponse>
+            <trt:Profiles token="__NAME__">
+                <tt:Name>__NAME__</tt:Name>
+                <tt:VideoSourceConfiguration xsi:type="tt:VideoSourceConfiguration" token="vscfg0">
+                    <tt:Name>vscfg0</tt:Name>
+                    <tt:UseCount>1</tt:UseCount>
+                    <tt:SourceToken>vidsrc0</tt:SourceToken>
+                    <tt:Bounds height="__HEIGHT__" width="__WIDTH__" y="0" x="0"></tt:Bounds>
+                </tt:VideoSourceConfiguration>
+                <tt:VideoEncoderConfiguration xsi:type="tt:VideoEncoderConfiguration" token="cam0">
+                    <tt:Name>Main stream encoder</tt:Name>
+                    <tt:UseCount>1</tt:UseCount>
+                    <tt:Encoding>H264</tt:Encoding>
+                    <tt:Resolution>
+                        <tt:Width>__WIDTH__</tt:Width>
+                        <tt:Height>__HEIGHT__</tt:Height>
+                    </tt:Resolution>
+                    <tt:Quality>8</tt:Quality>
+                    <tt:RateControl>
+                        <tt:FrameRateLimit>5</tt:FrameRateLimit>
+                        <tt:EncodingInterval>1</tt:EncodingInterval>
+                        <tt:BitrateLimit>1000</tt:BitrateLimit>
+                    </tt:RateControl>
+                    <tt:H264>
+                        <tt:GovLength>30</tt:GovLength>
+                        <tt:H264Profile>High</tt:H264Profile>
+                    </tt:H264>
+                    <tt:SessionTimeout>PT60S</tt:SessionTimeout>
+                </tt:VideoEncoderConfiguration>
+                <tt:PTZConfiguration token="ptzcfg0">
+                    <tt:Name>PTZ Config</tt:Name>
+                    <tt:UseCount>1</tt:UseCount>
+                    <tt:NodeToken>ptznode0</tt:NodeToken>
+                    <tt:DefaultAbsolutePantTiltPositionSpace>http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace</tt:DefaultAbsolutePantTiltPositionSpace>
+                    <tt:DefaultAbsoluteZoomPositionSpace>http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace</tt:DefaultAbsoluteZoomPositionSpace>
+                    <tt:DefaultRelativePanTiltTranslationSpace>http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace</tt:DefaultRelativePanTiltTranslationSpace>
+                    <tt:DefaultRelativeZoomTranslationSpace>http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace</tt:DefaultRelativeZoomTranslationSpace>
+                    <tt:DefaultContinuousPanTiltVelocitySpace>http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace</tt:DefaultContinuousPanTiltVelocitySpace>
+                    <tt:DefaultContinuousZoomVelocitySpace>http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace</tt:DefaultContinuousZoomVelocitySpace>
+                    <tt:DefaultPTZSpeed>
+                        <tt:PanTilt space="http://www.onvif.org/ver10/tptz/PanTiltSpaces/GenericSpeedSpace" y="1" x="1"></tt:PanTilt>
+                        <tt:Zoom space="http://www.onvif.org/ver10/tptz/ZoomSpaces/ZoomGenericSpeedSpace" x="1"></tt:Zoom>
+                    </tt:DefaultPTZSpeed>
+                    <tt:DefaultPTZTimeout>PT60S</tt:DefaultPTZTimeout>
+                </tt:PTZConfiguration>
+            </trt:Profiles>
+        </trt:GetProfilesResponse>
+    </soap:Body>
+</soap:Envelope> `,
+    snapshoturi: `<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:tt="http://www.onvif.org/ver10/schema"
+                   xmlns:tds="http://www.onvif.org/ver10/media/wsdl">
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+    <tds:GetSnapshotUriResponse>
+      <tds:MediaUri>
+        <tt:Uri>
+          __SNAPSHOT_URI__
+        </tt:Uri>
+        <tt:Timeout>PT60S</tt:Timeout>
+      </tds:MediaUri>
+    </tds:GetSnapshotUriResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+`,
+    streamuri: `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:trt="http://www.onvif.org/ver10/media/wsdl"
+               xmlns:tt="http://www.onvif.org/ver10/schema"
+               >
+    <soap:Body>
+        <trt:GetStreamUriResponse>
+            <trt:MediaUri>
+                <tt:Uri>
+                    __RTSP_URI__
+                </tt:Uri>
+                <tt:InvalidAfterConnect>false</tt:InvalidAfterConnect>
+                <tt:InvalidAfterReboot>false</tt:InvalidAfterReboot>
+                <tt:Timeout>PT60S</tt:Timeout>
+            </trt:MediaUri>
+        </trt:GetStreamUriResponse>
+    </soap:Body>
+</soap:Envelope>
+`,
+    videosourceconfiguration: `<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope"
+                   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                   xmlns:trt="http://www.onvif.org/ver10/media/wsdl">
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+  <GetVideoSourceConfigurationResponse>
+  <Configuration token="vscfg0">
+    <Name>Camera1</Name>
+    <UseCount>1</UseCount>
+    <SourceToken>__NAME__</SourceToken>
+    <Bounds x="0" y="0" width="__WIDTH__" height="__HEIGHT__"/>
+  </Configuration>
+</GetVideoSourceConfigurationResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+`,
+    videosources: `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Body>
+        <GetVideoSourcesResponse xmlns="http://www.onvif.org/ver10/media/wsdl">
+            <VideoSources token="vidsrc0">
+                <Resolution>
+                    <Width>__WIDTH__</Width>
+                    <Height>__HEIGHT__</Height>
+                </Resolution>
+                <FrameRate>30</FrameRate>
+                <Imaging>
+                    <BacklightCompensation>
+                        <Mode>ON</Mode>
+                        <Level>2.5</Level>
+                    </BacklightCompensation>
+                    <Brightness>50</Brightness>
+                    <Contrast>75</Contrast>
+                    <Exposure>
+                        <Mode>AUTO</Mode>
+                        <MinExposureTime>1</MinExposureTime>
+                        <MaxExposureTime>33</MaxExposureTime>
+                    </Exposure>
+                </Imaging>
+            </VideoSources>
+        </GetVideoSourcesResponse>
+    </soap:Body>
+</soap:Envelope>
+`,
+};
+
+
+/***/ }),
+/* 134 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WsdlUtil = void 0;
+class WsdlUtil {
+    static generateInstanceId() {
+        return Math.floor(10000000 + Math.random() * 90000000).toString();
+    }
+    static getScopeQuery(scope) {
+        return `<tds:Scopes>
+                    <tt:ScopeItem>${scope}</tt:ScopeItem>
+                </tds:Scopes>`;
+    }
+    static getXaddrs(url, interfaces) {
+        let xaddrs = '';
+        WsdlUtil.getLocalIps(interfaces).map((ip) => {
+            xaddrs += WsdlUtil.getXaddr(ip, url) + ' ';
+        });
+        return xaddrs;
+    }
+    static getXaddr(ip, url) {
+        if (ip.includes('::ffff:')) {
+            ip = ip.split('::ffff:')[1];
+        }
+        return 'http://' + ip + `:3002/onvif/` + url;
+    }
+    static getStream(ip, url) {
+        if (ip.includes('::ffff:')) {
+            ip = ip.split('::ffff:')[1];
+        }
+        return 'rtsp://' + ip + ':8554/' + url;
+    }
+    static getLocalIp(clientIp, interfaces) {
+        if (clientIp.includes('::ffff:')) {
+            clientIp = clientIp.split('::ffff:')[1];
+        }
+        for (const iface of Object.values(interfaces)) {
+            for (const config of iface || []) {
+                if (config.family === 'IPv4' && !config.internal) {
+                    if (clientIp.startsWith(config.address.substring(0, config.address.lastIndexOf('.')))) {
+                        return config.address;
+                    }
+                }
+            }
+        }
+        return '127.0.0.1';
+    }
+    static getLocalIps(interfaces) {
+        const ips = [];
+        for (const name of Object.keys(interfaces)) {
+            for (const net of interfaces[name]) {
+                if (net.family === 'IPv4' && !net.internal) {
+                    if (name.includes('docker') || name.startsWith('br-') || net.address.startsWith('172.17.') || net.address.startsWith('172.18.')) {
+                    }
+                    else {
+                        ips.push(net.address);
+                    }
+                }
+            }
+        }
+        return ips;
+    }
+}
+exports.WsdlUtil = WsdlUtil;
+
+
+/***/ }),
+/* 135 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifDeviceService = void 0;
+const common_1 = __webpack_require__(4);
+const dgram = __webpack_require__(136);
+const xml2js = __webpack_require__(130);
+const common_2 = __webpack_require__(54);
+const os_1 = __webpack_require__(105);
+const microservices_1 = __webpack_require__(3);
+const rxjs_1 = __webpack_require__(27);
+const date_util_1 = __webpack_require__(35);
+const parse_util_1 = __webpack_require__(48);
+const constant_1 = __webpack_require__(70);
+const template_1 = __webpack_require__(137);
+const wsdl_util_1 = __webpack_require__(134);
+const url_util_1 = __webpack_require__(33);
+let OnvifDeviceService = class OnvifDeviceService {
+    constructor(networkMicroservice, configMicroservice) {
+        this.networkMicroservice = networkMicroservice;
+        this.configMicroservice = configMicroservice;
+        this.loggerService = common_1.LoggerService.get('onvif');
+        this.messageNum = 0;
+        this.MULTICAST_ADDRESS = '239.255.255.250';
+        this.PORT = 3702;
+        this.ONVIF_PORT = 3005;
+        this.CONFIG = {
+            Serial: '',
+            Manufacturer: '',
+            Model: '',
+            Version: '',
+            HardwareID: '',
+        };
+    }
+    async initConfig() {
+        this.loggerService.debug(`[Device] InitConfig --------------------------`);
+        this.configService = this.configMicroservice.getService('ConfigGrpcService');
+        this.CONFIG.Serial = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_serial' }))).value ?? '';
+        this.CONFIG.Manufacturer = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_manufacturer' }))).value ?? '';
+        this.CONFIG.Model = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_model' }))).value ?? '';
+        this.CONFIG.Version = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_version' }))).value ?? '';
+        this.CONFIG.HardwareID = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_hardware_id' }))).value ?? '';
+        this.loggerService.info(`[Device] get Config : ${JSON.stringify(this.CONFIG)}`);
+        this.initMulticast();
+    }
+    async initNetwork() {
+        this.loggerService.debug(`[Device] initNetwork --------------------------`);
+        this.networkService = this.networkMicroservice.getService('NetworkGrpcService');
+        this.initMulticast();
+    }
+    async initMulticast() {
+        if (this.networkService && this.configService) {
+            this.loggerService.debug(`[Device] initMulticast --------------------------`);
+            this.server = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+            this.server.on('message', (msg, rinfo) => {
+                try {
+                    const parser = new xml2js.Parser({
+                        explicitArray: false,
+                        tagNameProcessors: [xml2js.processors.stripPrefix],
+                    });
+                    parser.parseString(msg, (err, result) => {
+                        if (err) {
+                            console.log('Error parsing XML:', err);
+                            return;
+                        }
+                        if (result['Envelope'] &&
+                            result['Envelope']['Body'] &&
+                            result['Envelope']['Header'] &&
+                            result['Envelope']['Header']['MessageID']) {
+                            if (result['Envelope']['Body']['Probe'] && JSON.stringify(result['Envelope']['Body']['Probe']['Types']).includes('Device')) {
+                                this.loggerService.debug(`[Device] Probe Message Read : ${rinfo.address}`);
+                                this.responseProbe(result, rinfo);
+                            }
+                        }
+                    });
+                }
+                catch (error) {
+                    console.error(error);
+                }
+            });
+            this.server.bind(this.PORT, '0.0.0.0', () => {
+                this.server.setMulticastLoopback(false);
+                this.server.addMembership(this.MULTICAST_ADDRESS);
+                this.loggerService.info(`[Device] ONVIF listening on ${this.MULTICAST_ADDRESS}:${this.PORT}`);
+                this.hello();
+            });
+        }
+    }
+    async onModuleInit() {
+        this.instanceId = wsdl_util_1.WsdlUtil.generateInstanceId();
+        this.initConfig();
+        this.initNetwork();
+    }
+    async hello() {
+        let helloMsg = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.HELLO];
+        const messageId = url_util_1.UrlUtil.generateUUID();
+        helloMsg = helloMsg.replace('__MESSAGE_ID__', messageId);
+        helloMsg = helloMsg.replace('__ADDRESS__', this.CONFIG.Serial);
+        helloMsg = helloMsg.replace('__INSTANCE_ID__', this.instanceId);
+        helloMsg = helloMsg.replace('__MESSAGE_NUMBER__', (++this.messageNum).toString());
+        const xaddrs = wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)());
+        helloMsg = helloMsg.replace('__XADDRS__', xaddrs);
+        this.loggerService.info(`[Device] Hello: Serial(${this.CONFIG.Serial}) MessageID(${messageId}), Xaddrs(${xaddrs})`);
+        this.server.send(helloMsg, 0, helloMsg.length, this.PORT, this.MULTICAST_ADDRESS, (err) => {
+            if (err) {
+                this.loggerService.error(`[Device] Hello: ${parse_util_1.ParseUtil.errorToJson(err)}`);
+            }
+        });
+    }
+    async responseProbe(message, rinfo) {
+        let probeMatchMsg = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.ProbeMatches];
+        const messageId = url_util_1.UrlUtil.generateUUID();
+        probeMatchMsg = probeMatchMsg.replace('__MESSAGE_ID__', messageId);
+        const relatesTo = message['Envelope']['Header']['MessageID'];
+        probeMatchMsg = probeMatchMsg.replace('__RELATES_TO__', relatesTo);
+        probeMatchMsg = probeMatchMsg.replace('__INSTANCE_ID__', this.instanceId);
+        probeMatchMsg = probeMatchMsg.replace('__MESSAGE_NUMBER__', (++this.messageNum).toString());
+        probeMatchMsg = probeMatchMsg.replace('__ADDRESS__', this.CONFIG.Serial);
+        const deviceXaddrs = wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)());
+        probeMatchMsg = probeMatchMsg.replace('__DEVICE_XADDRS__', deviceXaddrs);
+        this.loggerService.info(`[Device] ProbeMatches : Serial(${this.CONFIG.Serial}), MessageID(${messageId}), RelatesTo(${relatesTo}), Xaddrs(${deviceXaddrs})`);
+        const messageBuffer = Buffer.from(probeMatchMsg, 'utf-8');
+        this.server.send(messageBuffer, 0, messageBuffer.length, rinfo.port, rinfo.address, (err) => {
+            if (err)
+                console.log('Error sending response:', err);
+        });
+    }
+    async responseSystemDateAndTime() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.DateAndTime];
+                const nowTime = new Date();
+                query = query.replace('__YEAR_UTC__', nowTime.getUTCFullYear().toString());
+                query = query.replace('__MONTH_UTC__', (nowTime.getUTCMonth() + 1).toString());
+                query = query.replace('__DAY_UTC__', nowTime.getUTCDate().toString());
+                query = query.replace('__HOUR_UTC__', nowTime.getUTCHours().toString());
+                query = query.replace('__MINUTE_UTC__', nowTime.getUTCMinutes().toString());
+                query = query.replace('__SECOND_UTC__', nowTime.getUTCSeconds().toString());
+                query = query.replace('__TIMEZONE__', 'KoreaStandardTime-9');
+                query = query.replace('__YEAR__', date_util_1.DateUtil.formatTimeYearKST(nowTime));
+                query = query.replace('__MONTH__', date_util_1.DateUtil.formatTimeMonthKST(nowTime));
+                query = query.replace('__DAY__', date_util_1.DateUtil.formatTimeDayKST(nowTime));
+                query = query.replace('__HOUR__', date_util_1.DateUtil.formatTimeHourKST(nowTime));
+                query = query.replace('__MINUTE__', date_util_1.DateUtil.formatTimeMinuteKST(nowTime));
+                query = query.replace('__SECOND__', date_util_1.DateUtil.formatTimeSecondKST(nowTime));
+                this.loggerService.debug(`[Device] GetSystemDateAndTimeResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetSystemDateAndTimeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async setSystemDateAndTime() {
+        throw new Error('미구현된 기능입니다.');
+    }
+    async responseCapabilities(_ip) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.Capabilities];
+                query = query.replace('__DEVICE_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)()));
+                query = query.replace('__MEDIA_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('media_service', (0, os_1.networkInterfaces)()));
+                query = query.replace('__EVENTS_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('events_service', (0, os_1.networkInterfaces)()));
+                query = query.replace('__PTZ_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('ptz_service', (0, os_1.networkInterfaces)()));
+                query = query.replace('__DEVICE_IO_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('deviceio_service', (0, os_1.networkInterfaces)()));
+                this.loggerService.info(`[Device] GetCapabilitiesResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetCapabilitiesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseDeviceInformation() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.DeviceInformation];
+                query = query.replace('__MANUFACTURER__', this.CONFIG.Manufacturer);
+                query = query.replace('__MODEL__', this.CONFIG.Model);
+                query = query.replace('__FIRMWARE__VERSION__', this.CONFIG.Version);
+                query = query.replace('__SERIAL_NUMBER__', this.CONFIG.Serial);
+                query = query.replace('__HARDWARE_ID__', this.CONFIG.HardwareID);
+                this.loggerService.debug(`[Device] GetDeviceInformationResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetDeviceInformationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseScopes() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.Scopes];
+                let scopes_query = '';
+                scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://www.onvif.org/type/video_encoder');
+                scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://www.onvif.org/type/ptz');
+                scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://www.onvif.org/type/Network_Video_Transmitter');
+                scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://www.onvif.org/location/country/Korea');
+                scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://www.onvif.org/name/' + this.CONFIG.Serial);
+                scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://onvif://www.onvif.org/Profile/Streaming');
+                query = query.replace('__SCOPES__', scopes_query);
+                this.loggerService.debug(`[Device] GetScopeResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetScopeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseNetworkInterfaces(_ip) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.NetworkInterfaces];
+                if (this.currentWifi) {
+                    query = query.replace('__NAME__', this.currentWifi.name);
+                    query = query.replace('__HW_ADDRESS__', this.currentWifi.hwAddr);
+                    query = query.replace('__IPV4__', this.currentWifi.address);
+                    query = query.replace('__IPV4_DHCP__', this.currentWifi.address);
+                    query = query.replace('__IS_DHCP__', this.currentWifi.dhcp ? 'true' : 'false');
+                    query = query.replace(/__IPV4_SUBNET__/g, this.currentWifi.mask);
+                }
+                this.loggerService.info(`[Device] NetworkInterfaces: ${query}`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] NetworkInterfaces : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseDNS(_ip) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.DNS];
+                if (this.currentWifi) {
+                    let dns_query = '';
+                    for (let i = 0; i < this.currentWifi.dns.length; i++) {
+                        dns_query += `<DNS${i + 1}>${this.currentWifi.dns[i]}</DNS${i + 1}>` + '\n';
+                    }
+                    query = query.replace('__DNS__', dns_query);
+                }
+                this.loggerService.debug(`[Device] GetDNSResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetDNSResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseNTP() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.NTP];
+                this.loggerService.debug(`[Device] GETNTPResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetNTPResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseDefaultGateway(_ip) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.DefaultGateway];
+                if (this.currentWifi) {
+                    query = query.replace('__GATEWAY__', this.currentWifi.gateway);
+                }
+                this.loggerService.debug(`[Device] GetDefaultGatewayResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetDefaultGatewayResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseDiscoveryMode() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.DeiscoveryMode];
+                this.loggerService.debug(`[Device] GetDiscoveryModeResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetDiscoveryModeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseNetworkProtocols() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.NetworkProtocols];
+                this.loggerService.debug(`[Device] GetNetworkProtocolsResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetNetworkProtocolsResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseHostname() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.HostName];
+                if (this.currentWifi) {
+                    query = query.replace('__DHCP__', this.currentWifi.dhcp ? 'true' : 'false');
+                    query = query.replace('__NAME__', (0, os_1.hostname)());
+                }
+                this.loggerService.debug(`[Device] GetHostnameResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetHostnameResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseServices(_ip) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.Services];
+                query = query.replace('__DEVICE_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)()));
+                query = query.replace('__MEDIA_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('media_service', (0, os_1.networkInterfaces)()));
+                query = query.replace('__PTZ_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('ptz_service', (0, os_1.networkInterfaces)()));
+                this.loggerService.debug(`[Device] GetServicesResponse`);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Device] GetServicesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+};
+exports.OnvifDeviceService = OnvifDeviceService;
+exports.OnvifDeviceService = OnvifDeviceService = __decorate([
+    __param(0, (0, common_2.Inject)(constant_1.NETWORK_SERVICE)),
+    __param(1, (0, common_2.Inject)(constant_1.CONFIG_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object])
+], OnvifDeviceService);
+
+
+/***/ }),
+/* 136 */
+/***/ ((module) => {
+
+module.exports = require("dgram");
+
+/***/ }),
+/* 137 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkWSDLTemplate = exports.DeviceWSDLTemplate = exports.DeviceWSDL = void 0;
+var DeviceWSDL;
+(function (DeviceWSDL) {
+    DeviceWSDL["HELLO"] = "hello";
+    DeviceWSDL["ProbeMatches"] = "probematches";
+    DeviceWSDL["Capabilities"] = "capabilities";
+    DeviceWSDL["DateAndTime"] = "dateandtime";
+    DeviceWSDL["DeviceInformation"] = "deviceinformation";
+    DeviceWSDL["DeiscoveryMode"] = "discoverymode";
+    DeviceWSDL["Scopes"] = "scopes";
+    DeviceWSDL["Services"] = "services";
+    DeviceWSDL["NetworkInterfaces"] = "networkinterfaces";
+    DeviceWSDL["DefaultGateway"] = "defaultgateway";
+    DeviceWSDL["DNS"] = "dns";
+    DeviceWSDL["HostName"] = "hostname";
+    DeviceWSDL["NetworkProtocols"] = "networkprotocols";
+    DeviceWSDL["NTP"] = "ntp";
+})(DeviceWSDL || (exports.DeviceWSDL = DeviceWSDL = {}));
+exports.DeviceWSDLTemplate = {
+    hello: `<soap:Envelope 
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+    xmlns:wsd="http://schemas.xmlsoap.org/ws/2005/04/discovery"
+    xmlns:wsdp="http://schemas.xmlsoap.org/ws/2006/02/devprof"
+    xmlns:tdn="http://www.onvif.org/ver10/network/wsdl"
+>
+    <soap:Header>
+        <wsa:To>urn:schemas-xmlsoap-org:ws:2005:04:discovery</wsa:To>
+        <wsa:Action>http://schemas.xmlsoap.org/ws/2005/04/discovery/Hello</wsa:Action>
+        <wsa:MessageID>urn:uuid:__MESSAGE_ID__</wsa:MessageID>
+        <wsa:ReplyTo>
+            <wsa:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</wsa:Address>
+        </wsa:ReplyTo>
+        <wsd:AppSequence InstanceId="__INSTANCE_ID__" MessageNumber="__MESSAGE_NUMBER__"></wsd:AppSequence>
+    </soap:Header>
+    <soap:Body>
+        <wsd:Hello>
+            <wsa:EndpointReference>
+                <wsa:Address>urn:__ADDRESS__</wsa:Address>
+            </wsa:EndpointReference>
+            <wsd:Types>wsdp:Device tdn:NetworkVideoTransmitter</wsd:Types>
+            <wsd:Scopes>onvif://www.onvif.org/name onvif://www.onvif.org/Profile/Streaming</wsd:Scopes>
+            <wsd:XAddrs>__XADDRS__</wsd:XAddrs>
+            <wsd:MetadataVersion>1</wsd:MetadataVersion>
+        </wsd:Hello>
+    </soap:Body>
+</soap:Envelope>`,
+    probematches: `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+    xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery"
+    xmlns:tt="http://www.onvif.org/ver10/schema"
+    xmlns:tds="http://www.onvif.org/ver10/device/wsdl"
+    xmlns:trt="http://www.onvif.org/ver10/media/wsdl"
+    xmlns:dn="http://www.onvif.org/ver10/network/wsdl">
+    <soap:Header>
+        <wsa:To>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</wsa:To>
+        <wsa:Action>http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches</wsa:Action>
+        <wsa:MessageID>urn:uuid:__MESSAGE_ID__</wsa:MessageID>
+        <wsa:RelatesTo>__RELATES_TO__</wsa:RelatesTo>
+        <d:AppSequence InstanceId="__INSTANCE_ID__" MessageNumber="__MESSAGE_NUMBER__"></d:AppSequence>
+    </soap:Header>
+    <soap:Body>
+        <d:ProbeMatches>
+            <d:ProbeMatch>
+                <wsa:EndpointReference>
+                    <wsa:Address>urn:__ADDRESS__</wsa:Address>
+                </wsa:EndpointReference>
+                <d:Types>
+                    tds:Device dn:NetworkVideoTransmitter
+                </d:Types>
+                <d:XAddrs>
+                    __DEVICE_XADDRS__
+                </d:XAddrs>
+                <d:Scopes>onvif://www.onvif.org/type/NetworkVideoTransmitter</d:Scopes>
+                <d:MetadataVersion>1</d:MetadataVersion>
+            </d:ProbeMatch>
+        </d:ProbeMatches>
+    </soap:Body>
+</soap:Envelope>`,
+    capabilities: `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:tds="http://www.onvif.org/ver10/device/wsdl"
+    xmlns:tt="http://www.onvif.org/ver10/schema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soap:Body>
+        <tds:GetCapabilitiesResponse>
+            <tds:Capabilities xsi:type="tt:Capabilities">
+                <tt:Analytics xsi:type="tt:AnalyticsCapabilities">
+                </tt:Analytics>
+                <tt:Device>
+                    <tt:XAddr>__DEVICE_SERVICE__</tt:XAddr>
+                </tt:Device>
+                <tt:Media xsi:type="tt:MediaCapabilities">
+                    <tt:XAddr>__MEDIA_SERVICE__</tt:XAddr>
+                    <tt:StreamingCapabilities xsi:type="tt:RealTimeStreamingCapabilities">
+                        <tt:RTPMulticast>false</tt:RTPMulticast>
+                        <tt:RTP_TCP>true</tt:RTP_TCP>
+                        <tt:RTP_RTSP_TCP>true</tt:RTP_RTSP_TCP>
+                    </tt:StreamingCapabilities>
+                </tt:Media>
+                <tt:Event xsi:type="tt:EventCapabilities">
+                    <tt:XAddr>__EVENTS_SERVICE__</tt:XAddr>
+                </tt:Event>
+                <tt:PTZ>
+                    <tt:XAddr>__PTZ_SERVICE__</tt:XAddr>
+                </tt:PTZ>
+                <tt:DeviceIO>
+                    <tt:XAddr>__DEVICE_IO_SERVICE__</tt:XAddr>
+                </tt:DeviceIO>
+            </tds:Capabilities>
+        </tds:GetCapabilitiesResponse>
+    </soap:Body>
+</soap:Envelope>`,
+    dateandtime: `<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:tt="http://www.onvif.org/ver10/schema"
+    xmlns:tds="http://www.onvif.org/ver10/device/wsdl"
+>
+    <s:Body>
+        <tds:GetSystemDateAndTimeResponse>
+            <tds:SystemDateAndTime>
+                <tt:UTCDateTime>
+                    <tt:Date>
+                        <tt:Year>__YEAR_UTC__</tt:Year>
+                        <tt:Month>__MONTH_UTC__</tt:Month>
+                        <tt:Day>__DAY_UTC__</tt:Day>
+                    </tt:Date>
+                    <tt:Time>
+                        <tt:Hour>__HOUR_UTC__</tt:Hour>
+                        <tt:Minute>__MINUTE_UTC__</tt:Minute>
+                        <tt:Second>__SECOND_UTC__</tt:Second>
+                    </tt:Time>
+                </tt:UTCDateTime>
+                <tt:LocalDateTime>
+                    <tt:Date>
+                        <tt:Year>__YEAR__</tt:Year>
+                        <tt:Month>__MONTH__</tt:Month>
+                        <tt:Day>__DAY__</tt:Day>
+                    </tt:Date>
+                    <tt:Time>
+                        <tt:Hour>__HOUR__</tt:Hour>
+                        <tt:Minute>__MINUTE__</tt:Minute>
+                        <tt:Second>__SECOND__</tt:Second>
+                    </tt:Time>
+                </tt:LocalDateTime>
+                <tt:TimeZone>
+                    <tt:TZ>__TIMEZONE__</tt:TZ>
+                </tt:TimeZone>
+            </tds:SystemDateAndTime>
+        </tds:GetSystemDateAndTimeResponse>
+    </s:Body>
+</s:Envelope>`,
+    deviceinformation: `<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+    <s:Header/>
+    <s:Body>
+        <GetDeviceInformationResponse xmlns="http://www.onvif.org/ver10/device/wsdl">
+            <Manufacturer>__MANUFACTURER__</Manufacturer>
+            <Model>__MODEL__</Model>
+            <FirmwareVersion>__FIRMWARE__VERSION__</FirmwareVersion>
+            <SerialNumber>__SERIAL_NUMBER__</SerialNumber>
+            <HardwareId>__HARDWARE_ID__</HardwareId>
+        </GetDeviceInformationResponse>
+    </s:Body>
+</s:Envelope>`,
+    discoverymode: `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"  
+               xmlns:tds="http://www.onvif.org/ver10/device/wsdl">
+    <soap:Body>
+        <tds:GetDiscoveryModeResponse>
+            <tds:DiscoveryMode>Multicast</tds:DiscoveryMode>
+        </tds:GetDiscoveryModeResponse>
+    </soap:Body>
+</soap:Envelope>`,
+    scopes: `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:tt="http://www.onvif.org/ver10/schema"
+    xmlns:tds="http://www.onvif.org/ver10/device/wsdl">
+  <soap:Body>
+    <tds:GetScopesResponse>
+      __SCOPES__
+    </tds:GetScopesResponse>
+  </soap:Body>
+</soap:Envelope>`,
+    services: `<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"
+xmlns:enc="http://www.w3.org/2003/05/soap-encoding"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:xop="http://www.w3.org/2004/08/xop/include"
+xmlns:tds="http://www.onvif.org/ver10/device/wsdl"
+xmlns:tt="http://www.onvif.org/ver10/schema">
+    <env:Header>
+    </env:Header>
+    <env:Body>
+        <tds:GetServicesResponse>
+            <tds:Service>
+                <tds:Namespace>http://www.onvif.org/ver10/device/wsdl</tds:Namespace>
+                <tds:XAddr>
+                    __DEVICE_XADDRS__
+                </tds:XAddr>
+                <tds:Capabilities>
+                    <tds:Capabilities>
+                        <tds:Network IPFilter="false" ZeroConfiguration="true"
+                        IPVersion6="false" DynDNS="false" Dot11Configuration="false"
+                        HostnameFromDHCP="false" NTP="0" />
+                        <tds:Security TLS1.0="false" TLS1.1="false" TLS1.2="false"
+                        OnboardKeyGeneration="false" AccessPolicyConfig="false" DefaultAccessPolicy="false"
+                        Dot1X="false" RemoteUserHandling="false" X.509Token="false" SAMLToken="false"
+                        KerberosToken="false" UsernameToken="false" HttpDigest="false" RELToken="false" />
+                        <tds:System DiscoveryResolve="true" DiscoveryBye="true"
+                        RemoteDiscovery="false" SystemBackup="false" SystemLogging="false"
+                        FirmwareUpgrade="true" HttpFirmwareUpgrade="false" HttpSystemBackup="false"
+                        HttpSystemLogging="false" HttpSupportInformation="false" />
+                        <tds:Misc AuxiliaryCommands="" />
+                    </tds:Capabilities>
+                </tds:Capabilities>
+                <tds:Version>
+                    <tt:Major>2</tt:Major>
+                    <tt:Minor>20</tt:Minor>
+                </tds:Version>
+            </tds:Service>
+            <tds:Media>
+                <tds:Namespace>http://www.onvif.org/ver10/media/wsdl</tds:Namespace>
+                <tds:XAddr>
+                    __MEDIA_XADDRS__
+                </tds:XAddr>
+                <!-- <tds:Capabilities>
+                    <trt:Capabilities xmlns:trt="http://www.onvif.org/ver10/media/wsdl"
+                    SnapshotUri="true" Rotation="false">
+                    <trt:ProfileCapabilities MaximumNumberOfProfiles="10" />
+                    <trt:StreamingCapabilities RTPMulticast="true" RTP_TCP="false"
+                    RTP_RTSP_TCP="true" NonAggregateControl="true" />
+                    </trt:Capabilities>
+                </tds:Capabilities> -->
+                <tds:Version>
+                    <tt:Major>2</tt:Major>
+                    <tt:Minor>20</tt:Minor>
+                </tds:Version>
+            </tds:Media>
+            <tds:PTZ>
+                <tds:Namespace>http://www.onvif.org/ver20/ptz/wsdl</tds:Namespace>
+                <tds:XAddr>
+                    __PTZ_XADDRS__
+                </tds:XAddr>
+                <tds:Capabilities>
+                    <tptz:Capabilities xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl"
+                    EFlip="false" Reverse="false" />
+                </tds:Capabilities>
+                <tds:Version>
+                    <tt:Major>2</tt:Major>
+                    <tt:Minor>20</tt:Minor>
+                </tds:Version>
+            </tds:PTZ>
+            <tds:Event>
+                <tds:Namespace>http://www.onvif.org/ver10/events/wsdl</tds:Namespace>
+                <tds:XAddr>
+                    __EVENT_XADDRS__
+                </tds:XAddr>
+                <tds:Capabilities>
+                    <tev:Capabilities xmlns:tev="http://www.onvif.org/ver10/events/wsdl"
+                    WSSubscriptionPolicySupport="false" WSPullPointSupport="false"
+                    WSPausableSubscription="false" />
+                </tds:Capabilities>
+                <tds:Version>
+                    <tt:Major>2</tt:Major>
+                    <tt:Minor>20</tt:Minor>
+                </tds:Version>
+            </tds:Event>
+            <tds:Service>
+                <tds:Namespace>http://www.onvif.org/ver20/imaging/wsdl</tds:Namespace>
+                <tds:XAddr>
+                    __IMAGING_XADDRS__
+                </tds:XAddr>
+                <tds:Capabilities>
+                    <timg:Capabilities xmlns:timg="http://www.onvif.org/ver20/imaging/wsdl"
+                    ImageStabilization="false" />
+                </tds:Capabilities>
+                <tds:Version>
+                    <tt:Major>2</tt:Major>
+                    <tt:Minor>20</tt:Minor>
+                </tds:Version>
+            </tds:Service>
+            <tds:Service>
+                <tds:Namespace>http://www.onvif.org/ver10/deviceIO/wsdl</tds:Namespace>
+                <tds:XAddr>
+                    __DEVICEIO_XADDRS__
+                </tds:XAddr>
+                <tds:Capabilities>
+                    <tmd:Capabilities xmlns:tmd="http://www.onvif.org/ver10/deviceIO/wsdl"
+                    VideoSources="1" VideoOutputs="0" AudioSources="1" AudioOutputs="1" RelayOutputs="0"
+                    SerialPorts="0" DigitalInputs="0" />
+                </tds:Capabilities>
+                <tds:Version>
+                    <tt:Major>2</tt:Major>
+                    <tt:Minor>20</tt:Minor>
+                </tds:Version>
+            </tds:Service>
+        </tds:GetServicesResponse>
+    </env:Body>
+</env:Envelope>`,
+};
+exports.NetworkWSDLTemplate = {
+    defaultgateway: `<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:tt="http://www.onvif.org/ver10/schema"
+    xmlns:tds="http://www.onvif.org/ver10/device/wsdl">
+  <s:Header/>
+  <s:Body>
+    <tds:GetNetworkDefaultGatewayResponse >
+      <tds:NetworkGateway>
+        <tt:IPv4Address>__GATEWAY__</tt:IPv4Address>
+      </tds:NetworkGateway>
+    </tds:GetNetworkDefaultGatewayResponse>
+  </s:Body>
+</s:Envelope>`,
+    dns: `<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+  <s:Header/>
+  <s:Body>
+    <GetDNSResponse xmlns="http://www.onvif.org/ver10/device/wsdl">
+      <DNS>
+        <FromDHCP>false</FromDHCP>
+        <DNSManual>
+          __DNS__
+        </DNSManual>
+      </DNS>
+    </GetDNSResponse>
+  </s:Body>
+</s:Envelope>`,
+    hostname: `<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+    <s:Body>
+        <GetHostnameResponse xmlns="http://www.onvif.org/ver10/device/wsdl">
+            <HostnameInformation>
+                <FromDHCP>__DHCP__</FromDHCP>
+                <Name>__NAME__</Name>
+            </HostnameInformation>
+        </GetHostnameResponse>
+    </s:Body>
+</s:Envelope>
+`,
+    networkinterfaces: `<soap:Envelope 
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope"  
+    xmlns:tt="http://www.onvif.org/ver10/schema"
+    xmlns:tds="http://www.onvif.org/ver10/device/wsdl">
+  <soap:Body>
+    <tds:GetNetworkInterfacesResponse>
+      <tds:NetworkInterfaces>
+        <tt:Enabled>true</tt:Enabled>
+        <tt:Info>
+            <tt:Name>__NAME__</tt:Name>
+            <tt:HwAddress>__HW_ADDRESS__</tt:HwAddress>
+            <tt:MTU>1500</tt:MTU>
+        </tt:Info>
+        <tt:IPv4>
+            <tt:Enabled>true</tt:Enabled>
+            <tt:Config>
+                <tt:Manual>
+                    <tt:Address>__IPV4__</tt:Address>
+                    <tt:PrefixLength>__IPV4_SUBNET__</tt:PrefixLength>
+                </tt:Manual>
+                <tt:FromDHCP>
+                    <tt:Address>__IPV4_DHCP__</tt:Address>
+                    <tt:PrefixLength>__IPV4_SUBNET__</tt:PrefixLength>
+                </tt:FromDHCP>
+                <tt:DHCP>__IS_DHCP__</tt:DHCP>
+            </tt:Config>
+        </tt:IPv4>
+    </tds:NetworkInterfaces>
+    </tds:GetNetworkInterfacesResponse>
+  </soap:Body>
+</soap:Envelope>
+`,
+    networkprotocols: `<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+  <s:Header/>
+  <s:Body>
+    <tds:GetNetworkProtocolsResponse xmlns:tds="http://www.onvif.org/ver10/device/wsdl">
+      <tds:NetworkProtocols>
+        <tds:NetworkProtocol>
+          <tt:Protocol>TCP</tt:Protocol>
+          <tt:Port>3005</tt:Port>
+        </tds:NetworkProtocol>
+    </tds:GetNetworkProtocolsResponse>
+  </s:Body>
+</s:Envelope>
+`,
+    ntp: `<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:tt="http://www.onvif.org/ver10/schema"
+    xmlns:tds="http://www.onvif.org/ver10/device/wsdl">
+  <s:Header/>
+  <s:Body>
+    <tds:GetNTPResponse >
+      <tds:NTP>
+        <tt:Enabled>false</tt:Enabled>
+        <tt:NetworkTimeProtocol>
+          <tt:Server>
+            <tt:Address>time.example.com</tt:Address>
+            <tt:Port>123</tt:Port>
+          </tt:Server>
+          <tt:UpdateInterval>3600</tt:UpdateInterval>
+        </tt:NetworkTimeProtocol>
+      </tds:NTP>
+    </tds:GetNTPResponse>
+  </s:Body>
+</s:Envelope>
+`,
+};
+
+
+/***/ }),
+/* 138 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifPtzService = void 0;
+const common_1 = __webpack_require__(4);
+const parse_util_1 = __webpack_require__(48);
+const template_1 = __webpack_require__(139);
+class OnvifPtzService {
+    constructor() {
+        this.loggerService = common_1.LoggerService.get('onvif');
+    }
+    async responsePtzMove(title) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let query = template_1.PTZWSDLTemplate[template_1.PTZWSDL.Move];
+                query = query.replace('__RESPONSE_TITLE__', title);
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Ptz] responsePTZContinousMove : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+    async responseSetPreset() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const query = template_1.PTZWSDLTemplate[template_1.PTZWSDL.SetPreset];
+                resolve(Buffer.from(query, 'utf-8'));
+            }
+            catch (error) {
+                this.loggerService.error(`[Ptz] responseSetPreset : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                reject();
+            }
+        });
+    }
+}
+exports.OnvifPtzService = OnvifPtzService;
+
+
+/***/ }),
+/* 139 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PTZWSDLTemplate = exports.PTZWSDL = void 0;
+var PTZWSDL;
+(function (PTZWSDL) {
+    PTZWSDL["Move"] = "move";
+    PTZWSDL["SetPreset"] = "setpreset";
+})(PTZWSDL || (exports.PTZWSDL = PTZWSDL = {}));
+exports.PTZWSDLTemplate = {
+    move: `<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope"
+                   xmlns:ptz="http://www.onvif.org/ver20/ptz/wsdl">
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+    __RESPONSE_TITLE__
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>`,
+    setpreset: `<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope"
+                   xmlns:wsdl="http://www.onvif.org/ver20/ptz/wsdl">
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+    <wsdl:SetPresetResponse>
+      <wsdl:PresetToken>Preset_1</wsdl:PresetToken>
+    </wsdl:SetPresetResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+`,
+};
+
+
+/***/ }),
+/* 140 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifDeviceIOService = void 0;
+class OnvifDeviceIOService {
+}
+exports.OnvifDeviceIOService = OnvifDeviceIOService;
+
+
+/***/ }),
+/* 141 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifEventService = void 0;
+class OnvifEventService {
+}
+exports.OnvifEventService = OnvifEventService;
+
+
+/***/ }),
+/* 142 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifMqttController = void 0;
+const common_1 = __webpack_require__(54);
+const microservices_1 = __webpack_require__(3);
+const onvif_device_service_1 = __webpack_require__(135);
+const constant_1 = __webpack_require__(70);
+let OnvifMqttController = class OnvifMqttController {
+    constructor(mqttMicroservice, deviceService) {
+        this.mqttMicroservice = mqttMicroservice;
+        this.deviceService = deviceService;
+        this.mqttMicroservice.emit('check-config', {});
+        this.mqttMicroservice.emit('check-network', {});
+    }
+    async readyConfig() {
+        this.deviceService.initConfig();
+    }
+    async readyNetwork() {
+        this.deviceService.initNetwork();
+    }
+};
+exports.OnvifMqttController = OnvifMqttController;
+__decorate([
+    (0, microservices_1.MessagePattern)('ready:config'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OnvifMqttController.prototype, "readyConfig", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('ready:network'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OnvifMqttController.prototype, "readyNetwork", null);
+exports.OnvifMqttController = OnvifMqttController = __decorate([
+    (0, common_1.Controller)(),
+    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof onvif_device_service_1.OnvifDeviceService !== "undefined" && onvif_device_service_1.OnvifDeviceService) === "function" ? _b : Object])
+], OnvifMqttController);
+
+
+/***/ }),
+/* 143 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OnvifPendingService = void 0;
+const pending_util_1 = __webpack_require__(78);
+const common_1 = __webpack_require__(54);
+let OnvifPendingService = class OnvifPendingService extends pending_util_1.PendingResponseUtil {
+};
+exports.OnvifPendingService = OnvifPendingService;
+exports.OnvifPendingService = OnvifPendingService = __decorate([
+    (0, common_1.Injectable)()
+], OnvifPendingService);
+
+
+/***/ }),
+/* 144 */
+/***/ ((module) => {
+
+module.exports = require("body-parser");
+
+/***/ }),
+/* 145 */
+/***/ ((module) => {
+
+module.exports = require("express-xml-bodyparser");
+
+/***/ })
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __webpack_require__(1);
+const config_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(3);
+const common_1 = __webpack_require__(4);
+const path_1 = __webpack_require__(39);
+const map_module_1 = __webpack_require__(53);
+const setting_module_1 = __webpack_require__(87);
+const sound_module_1 = __webpack_require__(90);
+const update_module_1 = __webpack_require__(98);
+const network_module_1 = __webpack_require__(117);
+const onvif_module_1 = __webpack_require__(128);
+const bodyParser = __webpack_require__(144);
+const xmlParser = __webpack_require__(145);
+const common_2 = __webpack_require__(54);
+async function bootstrap() {
+    console.log('🚀 호스트 서버 시작...');
+    const mapModule = await core_1.NestFactory.create(map_module_1.MapModule);
+    const config = mapModule.get(config_1.ConfigService);
+    mapModule.connectMicroservice({
+        transport: microservices_1.Transport.GRPC,
+        options: {
+            package: common_1.MapMicroservice.protobufPackage,
+            protoPath: (0, path_1.join)(process.cwd(), 'proto/map.proto'),
+            url: config.getOrThrow('MAP_GRPC_URL'),
+            maxReceiveMessageLength: 100 * 1024 * 1024,
+            maxSendMessageLength: 100 * 1024 * 1024,
+        },
+    });
+    mapModule.connectMicroservice({
+        transport: microservices_1.Transport.MQTT,
+        options: {
+            url: config.getOrThrow('MQTT_URL'),
+            clientId: 'microservice-map',
+        },
+    });
+    await mapModule.init();
+    await mapModule.startAllMicroservices();
+    const settingModule = await core_1.NestFactory.create(setting_module_1.SettingModule);
+    settingModule.connectMicroservice({
+        transport: microservices_1.Transport.GRPC,
+        options: {
+            package: common_1.SettingMicroservice.protobufPackage,
+            protoPath: (0, path_1.join)(process.cwd(), 'proto/setting.proto'),
+            url: config.getOrThrow('SETTING_GRPC_URL'),
+        },
+    });
+    settingModule.connectMicroservice({
+        transport: microservices_1.Transport.MQTT,
+        options: {
+            url: config.getOrThrow('MQTT_URL'),
+            clientId: 'microservice-setting',
+        },
+    });
+    await settingModule.init();
+    await settingModule.startAllMicroservices();
+    const soundModule = await core_1.NestFactory.create(sound_module_1.SoundModule);
+    soundModule.connectMicroservice({
+        transport: microservices_1.Transport.GRPC,
+        options: {
+            package: common_1.SoundMicroservice.protobufPackage,
+            protoPath: (0, path_1.join)(process.cwd(), 'proto/sound.proto'),
+            url: config.getOrThrow('SOUND_GRPC_URL'),
+        },
+    });
+    soundModule.connectMicroservice({
+        transport: microservices_1.Transport.MQTT,
+        options: {
+            url: config.getOrThrow('MQTT_URL'),
+            clientId: 'microservice-sound',
+        },
+    });
+    await soundModule.init();
+    await soundModule.startAllMicroservices();
+    const updateModule = await core_1.NestFactory.create(update_module_1.UpdateModule);
+    updateModule.connectMicroservice({
+        transport: microservices_1.Transport.GRPC,
+        options: {
+            package: common_1.UpdateMicroservice.protobufPackage,
+            protoPath: (0, path_1.join)(process.cwd(), 'proto/update.proto'),
+            url: config.getOrThrow('UPDATE_GRPC_URL'),
+        },
+    });
+    updateModule.connectMicroservice({
+        transport: microservices_1.Transport.MQTT,
+        options: {
+            url: config.getOrThrow('MQTT_URL'),
+            clientId: 'microservice-update',
+        },
+    });
+    await updateModule.init();
+    await updateModule.startAllMicroservices();
+    const networkModule = await core_1.NestFactory.create(network_module_1.NetworkModule);
+    networkModule.connectMicroservice({
+        transport: microservices_1.Transport.GRPC,
+        options: {
+            package: common_1.NetworkMicroservice.protobufPackage,
+            protoPath: (0, path_1.join)(process.cwd(), 'proto/network.proto'),
+            url: config.getOrThrow('NETWORK_GRPC_URL'),
+        },
+    });
+    networkModule.connectMicroservice({
+        transport: microservices_1.Transport.MQTT,
+        options: {
+            url: config.getOrThrow('MQTT_URL'),
+            clientId: 'microservice-network',
+        },
+    });
+    await networkModule.init();
+    await networkModule.startAllMicroservices();
+    const onvifModule = await core_1.NestFactory.create(onvif_module_1.OnvifModule);
+    onvifModule.use(bodyParser.json({ limit: '50mb' }));
+    onvifModule.use(xmlParser());
+    onvifModule.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    onvifModule.useGlobalPipes(new common_2.ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+    }));
+    onvifModule.connectMicroservice({
+        transport: microservices_1.Transport.MQTT,
+        options: {
+            url: process.env.MQTT_URL,
+            clientId: 'gateway-rrs-onvif',
+        },
+    });
+    await onvifModule.init();
+    await onvifModule.startAllMicroservices();
+    await onvifModule.listen(process.env.RRS_ONVIF_PORT, '0.0.0.0');
+}
+bootstrap().catch((error) => {
+    console.error('❌ 호스트 서버 시작 실패:', error);
+    process.exit(1);
+});
+
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=main.js.map

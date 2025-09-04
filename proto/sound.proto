@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sound;
+
+service SoundGrpcService {
+    rpc Play(PlayRequest) returns (PlayResponse);
+    rpc Stop(Empty) returns (Empty);
+    rpc List(Empty) returns (ListResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc GetPlaying(Empty) returns (PlayResponse);
+}
+
+message Empty {}
+message PlayRequest {
+    string fileName = 1;
+    int32 volume = 2;
+    int32 repeatCount = 3;
+    bool isWaitUntilDone = 4;
+}
+
+message PlayResponse {
+    string fileName = 1;
+    int32 volume = 2;
+    int32 repeatCount = 3;
+    bool isWaitUntilDone = 4;
+}
+
+message ListResponse {
+    repeated string list = 1;
+}
+
+message DeleteRequest {
+    string fileName = 1;
+}
+
+message DeleteResponse {
+    string fileName = 1;
+}

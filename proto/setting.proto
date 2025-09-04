@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package setting;
+
+service SettingGrpcService {
+    rpc GetSetting(SettingRequest) returns (SettingResponse);
+    rpc SaveSetting(SettingRequest) returns (SettingResponse);
+    rpc GetPresetList(PresetListRequest) returns (PresetListResponse);
+    rpc CreatePreset(PresetRequest) returns (PresetResponse);
+    rpc DeletePreset(PresetRequest) returns (PresetResponse);
+    rpc GetPreset(PresetRequest) returns (PresetResponse);
+    rpc SavePreset(PresetRequest) returns (PresetResponse);
+}
+
+message SettingRequest {
+    string type = 1;
+    optional string data = 2;
+}
+
+message SettingResponse {
+    string type = 1;
+    optional string data = 2;
+}
+
+message PresetListRequest {
+    string type = 1;
+}
+
+message PresetListResponse {
+    string type = 1;
+    repeated string list = 2;
+}
+
+message PresetRequest {
+    string type = 1;
+    string name = 2;
+    optional string data = 3;
+}
+
+message PresetResponse {
+    string type = 1;
+    string name = 2;
+    optional string data = 3;
+}

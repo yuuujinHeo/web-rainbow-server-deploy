@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package update;
+
+////////// -------------------------------- Update Service
+service UpdateGrpcService {
+  rpc TestPing(TestPingRequest) returns (TestPingResponse);
+  rpc GetNewVersion(GetNewVersionRequest) returns (GetNewVersionResponse);
+  rpc GetCurrentVersion(GetCurrentVersionRequest) returns (GetCurrentVersionResponse);
+  rpc GetReleaseBranch(GetReleaseBranchRequest) returns (GetReleaseBranchResponse);
+  rpc GetReleaseVersion(GetReleaseVersionRequest) returns (GetReleaseVersionResponse);
+  rpc AddWebUI(AddWebUIRequest) returns (AddWebUIResponse);
+  rpc DeleteWebUI(DeleteWebUIRequest) returns (DeleteWebUIResponse);
+  rpc UpdateProgram(UpdateProgramRequest) returns (UpdateProgramResponse);
+}
+
+message TestPingRequest {
+  string target = 1;
+}
+
+message TestPingResponse {
+  string target = 1;
+  optional string message = 2;
+  optional string stdout = 3;
+}
+
+message GetNewVersionRequest {
+  string software = 1;
+  optional string branch = 2;
+}
+
+message GetNewVersionResponse {
+  string software = 1;
+  optional string branch = 2;
+  optional string version = 3;
+  optional bool hotfix = 4;
+}
+
+message GetCurrentVersionRequest {
+    string software = 1;
+}
+
+message GetCurrentVersionResponse {
+    string software = 1;
+    string version = 2;
+    string branch = 3;
+}
+
+message GetReleaseBranchRequest {
+  string token = 1;
+  optional int32 pageNo = 2;
+  optional int32 pageSize = 3; 
+}
+
+message Commit {
+  string sha = 1;
+  string url = 2;
+  string name = 3;
+  bool protected = 4;
+}
+
+message Branch {
+  Commit commit = 1;
+  string name = 2;
+  bool protected = 3;
+}
+
+message GetReleaseBranchResponse {
+  repeated Branch list = 1;
+  optional int32 pageSize = 2;
+  optional int32 totalCount = 3;
+  optional int32 totalPage = 4;
+}
+
+message GetReleaseVersionRequest {
+  string software = 1;
+  string token = 2;
+  optional string branch = 3;
+}
+
+message VersionLinks {
+  string self = 1;
+  string html = 2;
+  string git = 3;
+}
+message ReleaseVersion {
+  string name = 1;
+  string path = 2;
+  string sha = 3;
+  string url = 4;
+  int64 size = 5;
+  string download_url = 6;
+  VersionLinks _links = 7;
+}
+message GetReleaseVersionResponse {
+  repeated ReleaseVersion list = 1;
+}
+
+message AddWebUIRequest {
+  repeated string appNames = 1;
+  optional string branch = 2;
+  optional string fo = 3;
+}
+message AddWebUIResponse {
+  repeated string appNames = 1;
+  optional string branch = 2;
+  optional string fo = 3;
+}
+message DeleteWebUIRequest {
+  repeated string appNames = 1;
+}
+message DeleteWebUIResponse {
+  repeated string appNames = 1;
+}
+message UpdateProgramRequest {
+  string software = 1;
+  string branch = 2;
+  optional string version = 3;
+}
+
+message UpdateProgramResponse {
+  string software = 1;
+  string branch = 2;
+  optional string version = 3;
+  string result = 4;
+  optional string message = 5;
+}

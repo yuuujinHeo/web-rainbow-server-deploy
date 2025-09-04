@@ -1,0 +1,173 @@
+syntax = "proto3";
+
+package redis;
+
+service RedisSocketCacheGrpcService {
+  rpc ReadSocketCache(ReadSocketCacheRequest) returns (ReadSocketCacheResponse);
+  rpc ReadSocketCacheList(ReadSocketCacheRequest) returns (ReadSocketCacheListResponse);
+  rpc CreateSocketCache(CreateSocketCacheRequest) returns (CreateSocketCacheResponse);
+  rpc UpdateSocketCache(UpdateSocketCacheRequest) returns (UpdateSocketCacheResponse);
+  rpc DeleteSocketCache(DeleteSocketCacheRequest) returns (DeleteSocketCacheResponse);
+}
+
+service RedisRobotCacheGrpcService {
+  rpc ReadRobotCache(ReadRobotCacheRequest) returns (ReadRobotCacheResponse);
+  rpc ReadRobotCacheList(ReadRobotCacheRequest) returns (ReadRobotCacheListResponse);
+  rpc CreateRobotCache(CreateRobotCacheRequest) returns (CreateRobotCacheResponse);
+  rpc UpdateRobotCache(UpdateRobotCacheRequest) returns (UpdateRobotCacheResponse);
+  rpc DeleteRobotCache(DeleteRobotCacheRequest) returns (DeleteRobotCacheResponse);
+}
+
+enum RobotType {
+  UNKNOWN = 0;
+  MOBILE = 1;
+  MANIPULATOR = 2;
+  SENSOR = 3;
+}
+
+message CreateRobotCacheRequest {
+  RobotType robotType = 1;
+  string robotSerial = 2;
+  optional string robotName = 3;
+  optional string robotIpAddress = 4;
+  optional string robotUri = 5;
+  string robotApproveYn = 6;
+}
+
+message CreateRobotCacheResponse {
+  RobotType robotType = 1;
+  string robotSerial = 2;
+  string robotName = 3;
+  string robotIpAddress = 4;
+  string robotUri = 5;
+  string robotApproveYn = 6;
+}
+
+message UpdateRobotCacheRequest {
+  RobotType robotType = 1;
+  string robotSerial = 2;
+  optional Robot robot = 3;
+
+  message Robot {
+    optional RobotType robotType = 1;
+    optional string robotSerial = 2;
+    optional string robotName = 3;
+    optional string robotIpAddress = 4;
+    optional string robotUri = 5;
+    optional string robotApproveYn = 6;
+  }
+}
+
+message UpdateRobotCacheResponse {
+  RobotType robotType = 1;
+  string robotSerial = 2;
+  string robotName = 3;
+  string robotIpAddress = 4;
+  string robotUri = 5;
+  string robotApproveYn = 6;
+}
+
+message ReadRobotCacheRequest {
+  optional RobotType robotType = 1;
+  optional string robotSerial = 2;
+  optional string robotName = 3;
+  optional string robotIpAddress = 4;
+  optional string robotUri = 5;
+  optional string robotApproveYn = 6;
+}
+
+message ReadRobotCacheResponse {
+  RobotType robotType = 1;
+  string robotSerial = 2;
+  string robotName = 3;
+  string robotIpAddress = 4;
+  string robotUri = 5;
+  string robotApproveYn = 6;
+}
+
+message ReadRobotCacheListResponse {
+  repeated Robot data = 1;
+
+  message Robot {
+    RobotType robotType = 1;
+    string robotSerial = 2;
+    string robotName = 3;
+    string robotIpAddress = 4;
+    string robotUri = 5;
+    string robotApproveYn = 6;
+  }
+}
+
+message DeleteRobotCacheRequest {
+  RobotType robotType = 1;
+  string robotSerial = 2;
+}
+
+message DeleteRobotCacheResponse {
+  RobotType robotType = 1;
+  string robotSerial = 2;
+  string robotName = 3;
+  string robotIpAddress = 4;
+  string robotUri = 5;
+  string robotApproveYn = 6;
+}
+
+message CreateSocketCacheRequest {
+  string socketKey = 1;
+  optional string socketType = 2;
+  optional string socketValue = 3;
+}
+
+message CreateSocketCacheResponse {
+  string socketKey = 1;
+  string socketType = 2;
+  string socketValue = 3;
+}
+
+message UpdateSocketCacheRequest {
+  string socketKey = 1;
+  optional Socket socket = 2;
+
+  message Socket {
+    optional string socketType = 1;
+    optional string socketKey = 2;
+    optional string socketValue = 3;
+  }
+}
+
+message UpdateSocketCacheResponse {
+  string socketKey = 1;
+  string socketType = 2;
+  string socketValue = 3;
+}
+
+message ReadSocketCacheRequest {
+  optional string socketKey = 1;
+  optional string socketType = 2;
+}
+
+message ReadSocketCacheResponse {
+  string socketKey = 1;
+  string socketType = 2;
+  string socketValue = 3;
+}
+
+message ReadSocketCacheListResponse {
+  repeated Socket data = 1;
+
+  message Socket {
+    optional string socketType = 1;
+    optional string socketKey = 2;
+    optional string socketValue = 3;
+  }
+}
+
+message DeleteSocketCacheRequest {
+  string socketKey = 1;
+}
+
+message DeleteSocketCacheResponse {
+  string socketType = 1;
+  string socketKey = 2;
+  string socketValue = 3;
+}
