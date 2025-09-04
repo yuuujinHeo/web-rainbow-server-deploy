@@ -94,7 +94,7 @@ exports.TaskModule = TaskModule = __decorate([
                             options: {
                                 package: grpc_1.ControlMicroservice.protobufPackage,
                                 protoPath: (0, path_1.join)(process.cwd(), 'proto/control.proto'),
-                                url: configService.get('CONTROL_URL'),
+                                url: configService.get('CONTROL_GRPC_URL'),
                             },
                         }),
                     },
@@ -106,7 +106,7 @@ exports.TaskModule = TaskModule = __decorate([
                             options: {
                                 package: grpc_1.MoveMicroservice.protobufPackage,
                                 protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
-                                url: configService.get('MOVE_URL'),
+                                url: configService.get('MOVE_GRPC_URL'),
                             },
                         }),
                     },
@@ -3827,7 +3827,7 @@ async function bootstrap() {
         options: {
             package: common_1.TaskMicroservice.protobufPackage,
             protoPath: (0, path_1.join)(process.cwd(), 'proto/task.proto'),
-            url: config.get('TASK_URL'),
+            url: config.get('TASK_GRPC_URL'),
         },
     });
     taskModule.connectMicroservice({

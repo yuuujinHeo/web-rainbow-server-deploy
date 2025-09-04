@@ -114,7 +114,7 @@ exports.ControlApiModule = ControlApiModule = __decorate([
                         options: {
                             package: common_2.ControlMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/control.proto'),
-                            url: configService.get('CONTROL_URL'),
+                            url: configService.get('CONTROL_GRPC_URL'),
                         },
                     }),
                 },
@@ -126,7 +126,7 @@ exports.ControlApiModule = ControlApiModule = __decorate([
                         options: {
                             package: common_2.CobotMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/cobot.proto'),
-                            url: configService.get('COBOT_URL'),
+                            url: configService.get('COBOT_GRPC_URL'),
                         },
                     }),
                 },
@@ -2833,7 +2833,7 @@ exports.LocalizationApiModule = LocalizationApiModule = __decorate([
                         options: {
                             package: common_2.LocalizationMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/localization.proto'),
-                            url: configService.get('LOCALIZATION_URL'),
+                            url: configService.get('LOCALIZATION_GRPC_URL'),
                         },
                     }),
                 },
@@ -3317,7 +3317,7 @@ exports.NetworkApiModule = NetworkApiModule = __decorate([
                         options: {
                             package: common_2.NetworkMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/network.proto'),
-                            url: configService.get('NETWORK_URL'),
+                            url: configService.get('NETWORK_GRPC_URL'),
                         },
                     }),
                 },
@@ -4952,7 +4952,7 @@ exports.SettingApiModule = SettingApiModule = __decorate([
                         options: {
                             package: common_2.SettingMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/setting.proto'),
-                            url: configService.get('SETTING_URL'),
+                            url: configService.get('SETTING_GRPC_URL'),
                         },
                     }),
                 },
@@ -7038,7 +7038,7 @@ exports.MoveApiModule = MoveApiModule = __decorate([
                         options: {
                             package: common_2.MoveMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
-                            url: configService.get('MOVE_URL'),
+                            url: configService.get('MOVE_GRPC_URL'),
                         },
                     }),
                 },
@@ -8116,7 +8116,7 @@ exports.TaskApiModule = TaskApiModule = __decorate([
                         options: {
                             package: common_2.TaskMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/task.proto'),
-                            url: configService.get('TASK_URL'),
+                            url: configService.get('TASK_GRPC_URL'),
                         },
                     }),
                 },
@@ -8688,7 +8688,7 @@ exports.MapApiModule = MapApiModule = __decorate([
                         options: {
                             package: grpc_1.MapMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/map.proto'),
-                            url: configService.get('MAP_URL'),
+                            url: configService.get('MAP_GRPC_URL'),
                             maxReceiveMessageLength: 10 * 1024 * 1024,
                             maxSendMessageLength: 10 * 1024 * 1024,
                         },
@@ -10338,7 +10338,7 @@ exports.SoundApiModule = SoundApiModule = __decorate([
                         options: {
                             package: common_1.SoundMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/sound.proto'),
-                            url: configService.get('SOUND_URL'),
+                            url: configService.get('SOUND_GRPC_URL'),
                         },
                     }),
                 },
@@ -11491,7 +11491,7 @@ exports.UpdateApiModule = UpdateApiModule = __decorate([
                         options: {
                             package: common_2.UpdateMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/update.proto'),
-                            url: configService.get('UPDATE_URL'),
+                            url: configService.get('UPDATE_GRPC_URL'),
                         },
                     }),
                 },
@@ -14603,7 +14603,7 @@ exports.RobotSocketModule = RobotSocketModule = __decorate([
                             options: {
                                 package: common_2.ControlMicroservice.protobufPackage,
                                 protoPath: (0, path_1.join)(process.cwd(), 'proto/control.proto'),
-                                url: configService.get('CONTROL_URL'),
+                                url: configService.get('CONTROL_GRPC_URL'),
                             },
                         }),
                     },
@@ -14615,7 +14615,7 @@ exports.RobotSocketModule = RobotSocketModule = __decorate([
                             options: {
                                 package: common_2.MoveMicroservice.protobufPackage,
                                 protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
-                                url: configService.get('MOVE_URL'),
+                                url: configService.get('MOVE_GRPC_URL'),
                             },
                         }),
                     },
@@ -17424,7 +17424,7 @@ async function bootstrap() {
     apiModule.useGlobalFilters(new grpc_to_http_filter_1.GrpcToHttpFilter());
     apiModule.useGlobalInterceptors(new api_interceptor_1.APILogInterceptor());
     console.log('----------------->', process.env.RELEASE_REPO_URL);
-    console.log('----------------->', process.env.CONTROL_URL);
+    console.log('----------------->', process.env.CONTROL_GRPC_URL);
     const swaggerConfig = new swagger_1.DocumentBuilder().setTitle('WEB RRS API').setDescription('WEB (RRS) APIs').setVersion('1.0').build();
     console.log(process.env.RRS_API_PORT);
     const document = swagger_1.SwaggerModule.createDocument(apiModule, swaggerConfig);

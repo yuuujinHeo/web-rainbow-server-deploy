@@ -3319,7 +3319,7 @@ async function bootstrap() {
         options: {
             package: proto_1.LogMicroservice.protobufPackage,
             protoPath: (0, path_1.join)(process.cwd(), 'proto/log.proto'),
-            url: config.get('LOG_URL'),
+            url: config.get('LOG_GRPC_URL'),
         },
     });
     await semLogModule.init();
