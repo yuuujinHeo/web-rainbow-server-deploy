@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
 import { UrlUtil } from '@app/common/util';
 import { FrsDescription } from '@app/common/model/dto/description';
-import { MapCommand } from 'apps/host/src/map/domain/map-command.domain';
 
 enum Description {
   ID = '요청한 명령의 ID값입니다. request시 자동 생성됩니다.',
@@ -17,6 +16,22 @@ enum Description {
   TOPO = '저장할 토폴로지 형식을 맞춰 입력하세요.',
 }
 
+export enum MapCommand {
+  uploadMap = 'upload',
+  downloadMap = 'download',
+  publishMap = 'publish',
+  getMapList = 'list',
+  getCloud = 'getCloud',
+  saveCloud = 'saveCloud',
+  getTopo = 'getTopo',
+  saveTopo = 'saveTopo',
+  loadMap = 'loadMap',
+  loadTopo = 'loadTopo',
+  mappingStart = 'mappingStart',
+  mappingStop = 'mappingStop',
+  mappingSave = 'mappingSave',
+  mappingReload = 'mappingReload',
+}
 export class LoadRequestDto {
   @ApiProperty({
     description: Description.COMMAND,

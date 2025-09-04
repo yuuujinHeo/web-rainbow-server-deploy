@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
 import { Expose } from 'class-transformer';
 import { UrlUtil } from '@app/common/util';
-import { MapCommand } from 'apps/host/src/map/domain/map-command.domain';
-
+import { MapCommand } from './load.dto';
 export enum Description {
   ID = '요청한 명령의 ID값입니다. request시 자동 생성됩니다.',
   COMMAND = '실행할 명령',
