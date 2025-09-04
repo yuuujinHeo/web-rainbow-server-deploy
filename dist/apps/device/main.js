@@ -5483,12 +5483,18 @@ async function bootstrap() {
     console.log('----------------->', process.env.COBOT_URL);
     const controlModule = await core_1.NestFactory.create(control_module_1.ControlModule);
     const config = controlModule.get(config_1.ConfigService);
+    console.log('----------------->', config.get('CONTROL_GRPC_URL'));
+    console.log('----------------->', config.get('MQTT_URL'));
+    console.log('----------------->', config.get('LOCALIZATION_GRPC_URL'));
+    console.log('----------------->', config.get('MOVE_GRPC_URL'));
+    console.log('----------------->', config.get('NETWORK_GRPC_URL'));
+    console.log('----------------->', config.get('COBOT_GRPC_URL'));
     controlModule.connectMicroservice({
         transport: microservices_1.Transport.GRPC,
         options: {
             package: common_1.ControlMicroservice.protobufPackage,
             protoPath: (0, path_1.join)(process.cwd(), 'proto/control.proto'),
-            url: config.get('CONTROL_URL'),
+            url: config.get('CONTROL_GRPC_URL'),
         },
     });
     controlModule.connectMicroservice({
@@ -5506,7 +5512,7 @@ async function bootstrap() {
         options: {
             package: common_1.LocalizationMicroservice.protobufPackage,
             protoPath: (0, path_1.join)(process.cwd(), 'proto/localization.proto'),
-            url: config.get('LOCALIZATION_URL'),
+            url: config.get('LOCALIZATION_GRPC_URL'),
         },
     });
     localizationModule.connectMicroservice({
@@ -5524,7 +5530,7 @@ async function bootstrap() {
         options: {
             package: common_1.MoveMicroservice.protobufPackage,
             protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
-            url: config.get('MOVE_URL'),
+            url: config.get('MOVE_GRPC_URL'),
         },
     });
     moveModule.connectMicroservice({
