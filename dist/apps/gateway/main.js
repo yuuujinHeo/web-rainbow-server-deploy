@@ -9634,7 +9634,7 @@ exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingRes
 const swagger_1 = __webpack_require__(57);
 const class_validator_1 = __webpack_require__(60);
 const util_1 = __webpack_require__(36);
-const map_command_domain_1 = __webpack_require__(114);
+const load_dto_1 = __webpack_require__(123);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
@@ -9654,8 +9654,8 @@ exports.MappingRequestDto = MappingRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.COMMAND,
-        example: map_command_domain_1.MapCommand.mappingSave,
-        enum: [map_command_domain_1.MapCommand.mappingSave, map_command_domain_1.MapCommand.mappingReload, map_command_domain_1.MapCommand.mappingStart, map_command_domain_1.MapCommand.mappingStop],
+        example: load_dto_1.MapCommand.mappingSave,
+        enum: [load_dto_1.MapCommand.mappingSave, load_dto_1.MapCommand.mappingReload, load_dto_1.MapCommand.mappingStart, load_dto_1.MapCommand.mappingStop],
         required: true,
     }),
     (0, class_validator_1.IsString)(),
@@ -10201,12 +10201,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = void 0;
+exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = exports.MapCommand = void 0;
 const swagger_1 = __webpack_require__(57);
 const class_validator_1 = __webpack_require__(60);
 const util_1 = __webpack_require__(36);
 const description_1 = __webpack_require__(78);
-const map_command_domain_1 = __webpack_require__(114);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
@@ -10220,14 +10219,31 @@ var Description;
     Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
     Description["TOPO"] = "\uC800\uC7A5\uD560 \uD1A0\uD3F4\uB85C\uC9C0 \uD615\uC2DD\uC744 \uB9DE\uCDB0 \uC785\uB825\uD558\uC138\uC694.";
 })(Description || (Description = {}));
+var MapCommand;
+(function (MapCommand) {
+    MapCommand["uploadMap"] = "upload";
+    MapCommand["downloadMap"] = "download";
+    MapCommand["publishMap"] = "publish";
+    MapCommand["getMapList"] = "list";
+    MapCommand["getCloud"] = "getCloud";
+    MapCommand["saveCloud"] = "saveCloud";
+    MapCommand["getTopo"] = "getTopo";
+    MapCommand["saveTopo"] = "saveTopo";
+    MapCommand["loadMap"] = "loadMap";
+    MapCommand["loadTopo"] = "loadTopo";
+    MapCommand["mappingStart"] = "mappingStart";
+    MapCommand["mappingStop"] = "mappingStop";
+    MapCommand["mappingSave"] = "mappingSave";
+    MapCommand["mappingReload"] = "mappingReload";
+})(MapCommand || (exports.MapCommand = MapCommand = {}));
 class LoadRequestDto {
 }
 exports.LoadRequestDto = LoadRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.COMMAND,
-        example: map_command_domain_1.MapCommand.loadMap,
-        enum: map_command_domain_1.MapCommand,
+        example: MapCommand.loadMap,
+        enum: MapCommand,
         required: true,
     }),
     (0, class_validator_1.IsString)(),
