@@ -5475,6 +5475,12 @@ const localization_module_1 = __webpack_require__(81);
 const config_1 = __webpack_require__(80);
 const move_module_1 = __webpack_require__(95);
 async function bootstrap() {
+    console.log('----------------->', process.env.CONTROL_URL);
+    console.log('----------------->', process.env.MQTT_URL);
+    console.log('----------------->', process.env.LOCALIZATION_URL);
+    console.log('----------------->', process.env.MOVE_URL);
+    console.log('----------------->', process.env.NETWORK_URL);
+    console.log('----------------->', process.env.COBOT_URL);
     const controlModule = await core_1.NestFactory.create(control_module_1.ControlModule);
     const config = controlModule.get(config_1.ConfigService);
     controlModule.connectMicroservice({
