@@ -13940,7 +13940,6 @@ const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const lodash_1 = __webpack_require__(164);
 const constant_1 = __webpack_require__(65);
-const parse_util_1 = __webpack_require__(53);
 let SlamnavService = class SlamnavService {
     constructor(mqttMicroservice) {
         this.mqttMicroservice = mqttMicroservice;
@@ -13974,7 +13973,7 @@ let SlamnavService = class SlamnavService {
         this.slamnav?.emit('mappingRequest', data);
     }
     controlRequest(data) {
-        this.slamnav?.emit('controlRequest', parse_util_1.ParseUtil.stringifyAllValues(data));
+        this.slamnav?.emit('controlRequest', data);
     }
     loadRequest(data) {
         this.slamnav?.emit('loadRequest', data);
