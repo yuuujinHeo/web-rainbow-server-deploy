@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
 import { UrlUtil } from '@app/common/util';
 import { FrsDescription } from '@app/common/model/dto/description';
+import { Expose } from 'class-transformer';
 
 enum Description {
   ID = '요청한 명령의 ID값입니다. request시 자동 생성됩니다.',
@@ -32,6 +33,7 @@ export enum MapCommand {
   mappingSave = 'mappingSave',
   mappingReload = 'mappingReload',
 }
+
 export class LoadRequestDto {
   @ApiProperty({
     description: Description.COMMAND,
@@ -56,6 +58,17 @@ export class LoadRequestDto {
 
 export class LoadResponseDto extends LoadRequestDto {}
 
+export class LoadRequestSlamnav extends LoadRequestDto {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  id: string;
+}
 export class LoadResponseSlamnav extends LoadResponseDto {
   @ApiProperty({
     description: Description.ID,

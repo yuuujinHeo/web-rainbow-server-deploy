@@ -10,6 +10,7 @@ service ControlGrpcService {
     rpc SetSafetyField(SafetyField) returns (SafetyField);
     rpc GetSafetyField(Empty) returns (SafetyField);
     rpc ExAccessoryControl(ExAccessoryControlRequest) returns (ExAccessoryControlResponse);
+    rpc SafetyIoControl(SafetyIoControlRequest) returns (SafetyIoControlResponse);
 }
 
 message Empty {
@@ -59,4 +60,20 @@ message ExAccessoryControlResponse {
 
 message SafetyField {
     string safetyField = 1;
+}
+
+message McuDio {
+    repeated int32 channel = 1;
+}
+
+message SafetyIoControlRequest {
+    string command = 1;
+    repeated McuDio mcuDio = 2;
+}
+
+message SafetyIoControlResponse {
+    string command = 1;
+    repeated McuDio mcu_dio = 2;
+    string result = 3;
+    optional string message = 4;
 }

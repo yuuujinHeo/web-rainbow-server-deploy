@@ -191,6 +191,19 @@ export class MoveTargetCommandDto {
 
 export class MoveResponseDto extends MoveRequestDto {}
 
+export class MoveRequestSlamnav extends MoveRequestDto {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @Type(() => String)
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  id: string;
+}
+
 export class MoveResponseSlamnav extends MoveResponseDto {
   @ApiProperty({
     description: Description.ID,

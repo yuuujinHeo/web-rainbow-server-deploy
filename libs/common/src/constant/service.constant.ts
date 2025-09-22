@@ -32,3 +32,5 @@ export const TASK_SERVICE = 'TASK_SERVICE';
 export const CODE_SERVICE = 'CODE_SERVICE';
 
 export const COBOT_SERVICE = 'COBOT_SERVICE';
+
+export const TCP_SERVICE = 'TCP_SERVICE';

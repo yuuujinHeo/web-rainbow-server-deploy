@@ -14,6 +14,8 @@ service MapGrpcService {
     rpc UploadMap(UploadMapRequest) returns (UploadMapResponse);
     rpc DownloadMap(DownloadMapRequest) returns (DownloadMapResponse);
     rpc PublishMap(PublishMapRequest) returns (PublishMapResponse);
+    rpc GetMapTileExist(GetMapTileRequest) returns (GetMapTilesExistResponse);
+    rpc GetMapTile(GetMapTileRequest) returns (GetMapTileResponse);
 }
 
 message Empty {}
@@ -40,6 +42,7 @@ message FileInfo {
   optional string createAt = 2;
   optional string updateAt = 3;
   optional string fileType = 4;
+  optional int32 fileSize = 5;
 }
 message MapInfo {
   string fileName = 1;
@@ -69,7 +72,7 @@ message GetMapListResponse {
     repeated MapInfo list = 1;
 }
 message GetCurrentMapResponse {
-    string name = 1;
+    string mapName = 1;
 }
 
 //--Cloud
@@ -169,4 +172,19 @@ message PublishMapResponse {
     string fileName = 1;
     string newMapName = 2;
     bool isForce = 3;
+}
+
+message GetMapTilesExistResponse {
+    bool exist = 1;
+}
+
+message GetMapTileRequest {
+    string mapName = 1;
+    optional float z = 2;
+    optional float x = 3;
+    optional float y = 4;
+}
+
+message GetMapTileResponse {
+    bytes data = 1;
 }

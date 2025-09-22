@@ -60,6 +60,22 @@ export interface SafetyField {
   safetyField: string;
 }
 
+export interface McuDio {
+  channel: number[];
+}
+
+export interface SafetyIoControlRequest {
+  command: string;
+  mcuDio: McuDio[];
+}
+
+export interface SafetyIoControlResponse {
+  command: string;
+  mcuDio: McuDio[];
+  result: string;
+  message?: string | undefined;
+}
+
 export const CONTROL_PACKAGE_NAME = "control";
 
 /** led, */
@@ -76,6 +92,8 @@ export interface ControlGrpcServiceClient {
   getSafetyField(request: Empty, metadata?: Metadata): Observable<SafetyField>;
 
   exAccessoryControl(request: ExAccessoryControlRequest, metadata?: Metadata): Observable<ExAccessoryControlResponse>;
+
+  safetyIoControl(request: SafetyIoControlRequest, metadata?: Metadata): Observable<SafetyIoControlResponse>;
 }
 
 /** led, */
@@ -107,6 +125,11 @@ export interface ControlGrpcServiceController {
     request: ExAccessoryControlRequest,
     metadata?: Metadata,
   ): Promise<ExAccessoryControlResponse> | Observable<ExAccessoryControlResponse> | ExAccessoryControlResponse;
+
+  safetyIoControl(
+    request: SafetyIoControlRequest,
+    metadata?: Metadata,
+  ): Promise<SafetyIoControlResponse> | Observable<SafetyIoControlResponse> | SafetyIoControlResponse;
 }
 
 export function ControlGrpcServiceControllerMethods() {
@@ -118,6 +141,7 @@ export function ControlGrpcServiceControllerMethods() {
       "setSafetyField",
       "getSafetyField",
       "exAccessoryControl",
+      "safetyIoControl",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

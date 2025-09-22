@@ -335,13 +335,20 @@ export class FileUtil {
         throw new RpcCodeException('data 값이 없습니다.', GrpcCode.InvalidArgument);
       }
 
-      /// 3) 경로 생성
-      fs.mkdirSync(path.dirname(dir), { recursive: true });
+      console.log('--------------------------------------');
+      console.log(dir);
+
+      if (!fs.existsSync(path.dirname(dir))) {
+        fs.mkdirSync(path.dirname(dir), { recursive: true });
+      }
 
       /// 4) 파일 형식 JSON으로 변환
       if (typeof data === 'string') {
         data = JSON.parse(data);
       }
+
+      /// 4) 기존 파일 백업
+      fs.renameSync(dir, `${dir}.bak`);
 
       /// 5) 파일 작성
       fs.writeFileSync(dir, JSON.stringify(data, null, 2));

@@ -6,10 +6,13 @@ export enum ControlCommand {
   lidarOnOff = 'lidarOnOff',
   pathOnOff = 'pathOnOff',
   motorOnOff = 'motorOnOff',
+  safetyFieldControl = 'safetyFieldControl',
   setSafetyField = 'setSafetyField',
   getSafetyField = 'getSafetyField',
+  resetSafetyField = 'resetSafetyField',
   footMove = 'footMove',
   footStop = 'footStop',
+  safetyIoControl = 'safetyIoControl',
 }
 
 export enum LEDColor {

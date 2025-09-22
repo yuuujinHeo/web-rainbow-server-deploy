@@ -70,6 +70,18 @@ export class LocalizationRequestDto {
   rz?: number;
 }
 
+export class LocalizationRequestSlamnav extends LocalizationRequestDto {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  id: string;
+}
+
 export class LocalizationResponseDto extends LocalizationRequestDto {}
 
 export class LocalizationResponseSlamnav extends LocalizationResponseDto {

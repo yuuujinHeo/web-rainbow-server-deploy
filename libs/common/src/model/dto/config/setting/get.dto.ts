@@ -41,7 +41,6 @@ export class SaveSettingRequestDto {
   type: string;
 
   @ApiProperty({ description: Description.Data, example: SettingDto })
-  @IsString()
   @Expose()
   data: SettingDto;
 }

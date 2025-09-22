@@ -97,10 +97,10 @@ const customFormat = format.printf(({ timestamp, level, message }) => {
   if (typeof message === 'string') {
     const contextTag = message ? chalk.yellow(`[${message}]`) : '';
     // 카테고리 태그만 추출 (배열의 []는 제외)
-    const categoryMatches = message.match(/\[([^\]]+)\]/g);
+    const categoryMatches = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/g);
     const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
     // 카테고리 태그만 제거하고 배열의 []는 보존
-    let logtext = message.replace(/\[[^\]]+\]/g, '').trim();
+    let logtext = message.replace(/\[(?!['"])[A-Za-z0-9 _-]+\]/g, '').trim();
 
     // 배열 데이터 축소 처리
     logtext = formatLogMessage(logtext);

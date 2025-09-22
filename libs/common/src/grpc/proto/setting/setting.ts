@@ -11,9 +11,24 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "setting";
 
+export interface Empty {
+}
+
 export interface SettingRequest {
   type: string;
   data?: string | undefined;
+}
+
+export interface SaveSettingRequest {
+  type: string;
+  key: string;
+  value: string;
+}
+
+export interface SaveSettingResponse {
+  type: string;
+  key: string;
+  value: string;
 }
 
 export interface SettingResponse {
@@ -32,49 +47,72 @@ export interface PresetListResponse {
 
 export interface PresetRequest {
   type: string;
-  name: string;
+  preset: string;
   data?: string | undefined;
 }
 
 export interface PresetResponse {
   type: string;
-  name: string;
+  preset: string;
   data?: string | undefined;
 }
 
 export const SETTING_PACKAGE_NAME = "setting";
 
 export interface SettingGrpcServiceClient {
+  getType(request: Empty, metadata?: Metadata): Observable<SettingResponse>;
+
   getSetting(request: SettingRequest, metadata?: Metadata): Observable<SettingResponse>;
 
-  saveSetting(request: SettingRequest, metadata?: Metadata): Observable<SettingResponse>;
+  saveSetting(request: SaveSettingRequest, metadata?: Metadata): Observable<SaveSettingResponse>;
+
+  saveSettingAll(request: SettingRequest, metadata?: Metadata): Observable<SettingResponse>;
+
+  /**  */
 
   getPresetList(request: PresetListRequest, metadata?: Metadata): Observable<PresetListResponse>;
+
+  getPreset(request: PresetRequest, metadata?: Metadata): Observable<PresetResponse>;
 
   createPreset(request: PresetRequest, metadata?: Metadata): Observable<PresetResponse>;
 
   deletePreset(request: PresetRequest, metadata?: Metadata): Observable<PresetResponse>;
 
-  getPreset(request: PresetRequest, metadata?: Metadata): Observable<PresetResponse>;
-
   savePreset(request: PresetRequest, metadata?: Metadata): Observable<PresetResponse>;
 }
 
 export interface SettingGrpcServiceController {
+  getType(
+    request: Empty,
+    metadata?: Metadata,
+  ): Promise<SettingResponse> | Observable<SettingResponse> | SettingResponse;
+
   getSetting(
     request: SettingRequest,
     metadata?: Metadata,
   ): Promise<SettingResponse> | Observable<SettingResponse> | SettingResponse;
 
   saveSetting(
+    request: SaveSettingRequest,
+    metadata?: Metadata,
+  ): Promise<SaveSettingResponse> | Observable<SaveSettingResponse> | SaveSettingResponse;
+
+  saveSettingAll(
     request: SettingRequest,
     metadata?: Metadata,
   ): Promise<SettingResponse> | Observable<SettingResponse> | SettingResponse;
+
+  /**  */
 
   getPresetList(
     request: PresetListRequest,
     metadata?: Metadata,
   ): Promise<PresetListResponse> | Observable<PresetListResponse> | PresetListResponse;
+
+  getPreset(
+    request: PresetRequest,
+    metadata?: Metadata,
+  ): Promise<PresetResponse> | Observable<PresetResponse> | PresetResponse;
 
   createPreset(
     request: PresetRequest,
@@ -82,11 +120,6 @@ export interface SettingGrpcServiceController {
   ): Promise<PresetResponse> | Observable<PresetResponse> | PresetResponse;
 
   deletePreset(
-    request: PresetRequest,
-    metadata?: Metadata,
-  ): Promise<PresetResponse> | Observable<PresetResponse> | PresetResponse;
-
-  getPreset(
     request: PresetRequest,
     metadata?: Metadata,
   ): Promise<PresetResponse> | Observable<PresetResponse> | PresetResponse;
@@ -100,12 +133,14 @@ export interface SettingGrpcServiceController {
 export function SettingGrpcServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
+      "getType",
       "getSetting",
       "saveSetting",
+      "saveSettingAll",
       "getPresetList",
+      "getPreset",
       "createPreset",
       "deletePreset",
-      "getPreset",
       "savePreset",
     ];
     for (const method of grpcMethods) {

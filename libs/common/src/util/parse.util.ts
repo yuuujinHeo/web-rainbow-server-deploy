@@ -1,3 +1,5 @@
+import { SystemStat } from '../model/dto/device/cobot/cobot.system-stat.dto';
+
 export class ParseUtil {
   static errorToJson(error) {
     try {

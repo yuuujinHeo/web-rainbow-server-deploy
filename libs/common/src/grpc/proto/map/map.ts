@@ -37,6 +37,7 @@ export interface FileInfo {
   createAt?: string | undefined;
   updateAt?: string | undefined;
   fileType?: string | undefined;
+  fileSize?: number | undefined;
 }
 
 export interface MapInfo {
@@ -69,7 +70,7 @@ export interface GetMapListResponse {
 }
 
 export interface GetCurrentMapResponse {
-  name: string;
+  mapName: string;
 }
 
 /**
@@ -183,6 +184,21 @@ export interface PublishMapResponse {
   isForce: boolean;
 }
 
+export interface GetMapTilesExistResponse {
+  exist: boolean;
+}
+
+export interface GetMapTileRequest {
+  mapName: string;
+  z?: number | undefined;
+  x?: number | undefined;
+  y?: number | undefined;
+}
+
+export interface GetMapTileResponse {
+  data: Uint8Array;
+}
+
 export const MAP_PACKAGE_NAME = "map";
 
 export interface MapGrpcServiceClient {
@@ -207,6 +223,10 @@ export interface MapGrpcServiceClient {
   downloadMap(request: DownloadMapRequest, metadata?: Metadata): Observable<DownloadMapResponse>;
 
   publishMap(request: PublishMapRequest, metadata?: Metadata): Observable<PublishMapResponse>;
+
+  getMapTileExist(request: GetMapTileRequest, metadata?: Metadata): Observable<GetMapTilesExistResponse>;
+
+  getMapTile(request: GetMapTileRequest, metadata?: Metadata): Observable<GetMapTileResponse>;
 }
 
 export interface MapGrpcServiceController {
@@ -261,6 +281,16 @@ export interface MapGrpcServiceController {
     request: PublishMapRequest,
     metadata?: Metadata,
   ): Promise<PublishMapResponse> | Observable<PublishMapResponse> | PublishMapResponse;
+
+  getMapTileExist(
+    request: GetMapTileRequest,
+    metadata?: Metadata,
+  ): Promise<GetMapTilesExistResponse> | Observable<GetMapTilesExistResponse> | GetMapTilesExistResponse;
+
+  getMapTile(
+    request: GetMapTileRequest,
+    metadata?: Metadata,
+  ): Promise<GetMapTileResponse> | Observable<GetMapTileResponse> | GetMapTileResponse;
 }
 
 export function MapGrpcServiceControllerMethods() {
@@ -277,6 +307,8 @@ export function MapGrpcServiceControllerMethods() {
       "uploadMap",
       "downloadMap",
       "publishMap",
+      "getMapTileExist",
+      "getMapTile",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

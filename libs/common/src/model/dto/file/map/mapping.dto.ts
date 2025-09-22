@@ -40,6 +40,18 @@ export class MappingRequestDto {
 
 export class MappingResponseDto extends MappingRequestDto {}
 
+export class MappingRequestSlamnav extends MappingRequestDto {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  id: string;
+}
+
 export class MappingResponseSlamnav extends MappingResponseDto {
   @ApiProperty({
     description: Description.ID,

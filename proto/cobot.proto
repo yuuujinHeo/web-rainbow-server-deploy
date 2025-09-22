@@ -3,15 +3,113 @@ syntax = "proto3";
 package cobot;
 
 service CobotGrpcService {
+    //연결
+    rpc CobotConnect(CobotConnectRequest) returns (CobotConnectResponse);
+    rpc CobotDisconnect(CobotDisconnectRequest) returns (CobotDisconnectResponse);
+    rpc CobotConnectCommand(CobotConnectCommandRequest) returns (CobotConnectCommandResponse);
+    rpc CobotConnectData(CobotConnectDataRequest) returns (CobotConnectDataResponse);
+    rpc CobotDisConnectCommand(CobotConnectCommandRequest) returns (CobotConnectCommandResponse);
+    rpc CobotDisConnectData(CobotConnectDataRequest) returns (CobotConnectDataResponse);
+    rpc GetConnectState(GetConnectStateRequest) returns (GetConnectStateResponse);
+
+    //명령
     rpc CobotCommand(CobotCommandRequest) returns (CobotCommandResponse);
+    rpc CobotProgram(CobotProgramRequest) returns (CobotProgramResponse);
+    rpc GetCobotData(GetCobotDataRequest) returns (GetCobotDataResponse);
+    rpc CobotModeChange(CobotModeChangeRequest) returns (CobotModeChangeResponse);
+}
+
+
+message CobotModeChangeRequest {
+    string cobotId = 1;
+    string mode = 2;
+}
+
+message CobotModeChangeResponse {
+    string cobotId = 1;
+    string mode = 2;
+    string command = 3;
+}
+message CobotDisconnectRequest {
+    string cobotId = 1;
+}
+
+message CobotDisconnectResponse {
+    string cobotId = 1;
+    string ipAddress = 2;
+    bool commandConnected = 3;
+    bool dataConnected = 4;
+}
+
+message CobotProgramRequest {
+    string cobotId = 1;
+    string command = 2;
+    string programName = 3;
+}
+
+message CobotProgramResponse {
+    string cobotId = 1;
+    string command = 2;
+    string programName = 3;
+}
+
+message CobotConnectRequest {
+    string cobotId = 1;
+    string ipAddress = 2;
+}
+
+message CobotConnectResponse {
+    string cobotId = 1;
+    string ipAddress = 2;
+    bool commandConnected = 3;
+    bool dataConnected = 4;
+}
+
+message CobotConnectCommandRequest {
+    string cobotId = 1;
+}
+
+message CobotConnectCommandResponse {
+    string cobotId = 1;
+    bool commandConnected = 2;
+}
+
+message CobotConnectDataRequest {
+    string cobotId = 1;
+}
+
+message CobotConnectDataResponse {
+    string cobotId = 1;
+    bool dataConnected = 2;
+}
+
+
+message GetConnectStateRequest {
+    string cobotId = 1;
+}
+
+message GetConnectStateResponse {
+    string cobotId = 1;
+    bool commandConnected = 2;
+    bool dataConnected = 3;
 }
 
 message CobotCommandRequest {
-    string cobotPort = 1;
+    string cobotId = 1;
     string command = 2;
 }
 
 message CobotCommandResponse {
-    string cobotPort = 1;
+    string cobotId = 1;
     string command = 2;
+}
+
+message GetCobotDataRequest {
+    string cobotId = 1;
+    optional string command = 2;
+}
+
+message GetCobotDataResponse {
+   string cobotId = 1;
+   optional string data = 2; 
 }

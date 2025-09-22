@@ -5,4 +5,7 @@ export enum MoveCommand {
   moveJog = 'jog',
   movePause = 'pause',
   moveResume = 'resume',
+  moveXLinear = 'xLinear',
+  movecircular = 'circular',
+  moveRotate = 'rotate',
 }

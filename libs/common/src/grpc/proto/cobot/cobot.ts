@@ -11,32 +11,212 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "cobot";
 
+export interface CobotModeChangeRequest {
+  cobotId: string;
+  mode: string;
+}
+
+export interface CobotModeChangeResponse {
+  cobotId: string;
+  mode: string;
+  command: string;
+}
+
+export interface CobotDisconnectRequest {
+  cobotId: string;
+}
+
+export interface CobotDisconnectResponse {
+  cobotId: string;
+  ipAddress: string;
+  commandConnected: boolean;
+  dataConnected: boolean;
+}
+
+export interface CobotProgramRequest {
+  cobotId: string;
+  command: string;
+  programName: string;
+}
+
+export interface CobotProgramResponse {
+  cobotId: string;
+  command: string;
+  programName: string;
+}
+
+export interface CobotConnectRequest {
+  cobotId: string;
+  ipAddress: string;
+}
+
+export interface CobotConnectResponse {
+  cobotId: string;
+  ipAddress: string;
+  commandConnected: boolean;
+  dataConnected: boolean;
+}
+
+export interface CobotConnectCommandRequest {
+  cobotId: string;
+}
+
+export interface CobotConnectCommandResponse {
+  cobotId: string;
+  commandConnected: boolean;
+}
+
+export interface CobotConnectDataRequest {
+  cobotId: string;
+}
+
+export interface CobotConnectDataResponse {
+  cobotId: string;
+  dataConnected: boolean;
+}
+
+export interface GetConnectStateRequest {
+  cobotId: string;
+}
+
+export interface GetConnectStateResponse {
+  cobotId: string;
+  commandConnected: boolean;
+  dataConnected: boolean;
+}
+
 export interface CobotCommandRequest {
-  cobotPort: string;
+  cobotId: string;
   command: string;
 }
 
 export interface CobotCommandResponse {
-  cobotPort: string;
+  cobotId: string;
   command: string;
+}
+
+export interface GetCobotDataRequest {
+  cobotId: string;
+  command?: string | undefined;
+}
+
+export interface GetCobotDataResponse {
+  cobotId: string;
+  data?: string | undefined;
 }
 
 export const COBOT_PACKAGE_NAME = "cobot";
 
 export interface CobotGrpcServiceClient {
+  /** 연결 */
+
+  cobotConnect(request: CobotConnectRequest, metadata?: Metadata): Observable<CobotConnectResponse>;
+
+  cobotDisconnect(request: CobotDisconnectRequest, metadata?: Metadata): Observable<CobotDisconnectResponse>;
+
+  cobotConnectCommand(
+    request: CobotConnectCommandRequest,
+    metadata?: Metadata,
+  ): Observable<CobotConnectCommandResponse>;
+
+  cobotConnectData(request: CobotConnectDataRequest, metadata?: Metadata): Observable<CobotConnectDataResponse>;
+
+  cobotDisConnectCommand(
+    request: CobotConnectCommandRequest,
+    metadata?: Metadata,
+  ): Observable<CobotConnectCommandResponse>;
+
+  cobotDisConnectData(request: CobotConnectDataRequest, metadata?: Metadata): Observable<CobotConnectDataResponse>;
+
+  getConnectState(request: GetConnectStateRequest, metadata?: Metadata): Observable<GetConnectStateResponse>;
+
+  /** 명령 */
+
   cobotCommand(request: CobotCommandRequest, metadata?: Metadata): Observable<CobotCommandResponse>;
+
+  cobotProgram(request: CobotProgramRequest, metadata?: Metadata): Observable<CobotProgramResponse>;
+
+  getCobotData(request: GetCobotDataRequest, metadata?: Metadata): Observable<GetCobotDataResponse>;
+
+  cobotModeChange(request: CobotModeChangeRequest, metadata?: Metadata): Observable<CobotModeChangeResponse>;
 }
 
 export interface CobotGrpcServiceController {
+  /** 연결 */
+
+  cobotConnect(
+    request: CobotConnectRequest,
+    metadata?: Metadata,
+  ): Promise<CobotConnectResponse> | Observable<CobotConnectResponse> | CobotConnectResponse;
+
+  cobotDisconnect(
+    request: CobotDisconnectRequest,
+    metadata?: Metadata,
+  ): Promise<CobotDisconnectResponse> | Observable<CobotDisconnectResponse> | CobotDisconnectResponse;
+
+  cobotConnectCommand(
+    request: CobotConnectCommandRequest,
+    metadata?: Metadata,
+  ): Promise<CobotConnectCommandResponse> | Observable<CobotConnectCommandResponse> | CobotConnectCommandResponse;
+
+  cobotConnectData(
+    request: CobotConnectDataRequest,
+    metadata?: Metadata,
+  ): Promise<CobotConnectDataResponse> | Observable<CobotConnectDataResponse> | CobotConnectDataResponse;
+
+  cobotDisConnectCommand(
+    request: CobotConnectCommandRequest,
+    metadata?: Metadata,
+  ): Promise<CobotConnectCommandResponse> | Observable<CobotConnectCommandResponse> | CobotConnectCommandResponse;
+
+  cobotDisConnectData(
+    request: CobotConnectDataRequest,
+    metadata?: Metadata,
+  ): Promise<CobotConnectDataResponse> | Observable<CobotConnectDataResponse> | CobotConnectDataResponse;
+
+  getConnectState(
+    request: GetConnectStateRequest,
+    metadata?: Metadata,
+  ): Promise<GetConnectStateResponse> | Observable<GetConnectStateResponse> | GetConnectStateResponse;
+
+  /** 명령 */
+
   cobotCommand(
     request: CobotCommandRequest,
     metadata?: Metadata,
   ): Promise<CobotCommandResponse> | Observable<CobotCommandResponse> | CobotCommandResponse;
+
+  cobotProgram(
+    request: CobotProgramRequest,
+    metadata?: Metadata,
+  ): Promise<CobotProgramResponse> | Observable<CobotProgramResponse> | CobotProgramResponse;
+
+  getCobotData(
+    request: GetCobotDataRequest,
+    metadata?: Metadata,
+  ): Promise<GetCobotDataResponse> | Observable<GetCobotDataResponse> | GetCobotDataResponse;
+
+  cobotModeChange(
+    request: CobotModeChangeRequest,
+    metadata?: Metadata,
+  ): Promise<CobotModeChangeResponse> | Observable<CobotModeChangeResponse> | CobotModeChangeResponse;
 }
 
 export function CobotGrpcServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["cobotCommand"];
+    const grpcMethods: string[] = [
+      "cobotConnect",
+      "cobotDisconnect",
+      "cobotConnectCommand",
+      "cobotConnectData",
+      "cobotDisConnectCommand",
+      "cobotDisConnectData",
+      "getConnectState",
+      "cobotCommand",
+      "cobotProgram",
+      "getCobotData",
+      "cobotModeChange",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);

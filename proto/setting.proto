@@ -3,18 +3,37 @@ syntax = "proto3";
 package setting;
 
 service SettingGrpcService {
+    rpc GetType(Empty) returns (SettingResponse);
     rpc GetSetting(SettingRequest) returns (SettingResponse);
-    rpc SaveSetting(SettingRequest) returns (SettingResponse);
+    rpc SaveSetting(SaveSettingRequest) returns (SaveSettingResponse);
+    rpc SaveSettingAll(SettingRequest) returns (SettingResponse);
+    //
     rpc GetPresetList(PresetListRequest) returns (PresetListResponse);
+    rpc GetPreset(PresetRequest) returns (PresetResponse);
     rpc CreatePreset(PresetRequest) returns (PresetResponse);
     rpc DeletePreset(PresetRequest) returns (PresetResponse);
-    rpc GetPreset(PresetRequest) returns (PresetResponse);
     rpc SavePreset(PresetRequest) returns (PresetResponse);
+}
+
+message Empty {
+
 }
 
 message SettingRequest {
     string type = 1;
     optional string data = 2;
+}
+
+message SaveSettingRequest {
+    string type = 1;
+    string key = 2;
+    string value = 3;
+}
+
+message SaveSettingResponse {
+    string type = 1;
+    string key = 2;
+    string value = 3;
 }
 
 message SettingResponse {
@@ -33,12 +52,12 @@ message PresetListResponse {
 
 message PresetRequest {
     string type = 1;
-    string name = 2;
+    string preset = 2;
     optional string data = 3;
 }
 
 message PresetResponse {
     string type = 1;
-    string name = 2;
+    string preset = 2;
     optional string data = 3;
 }

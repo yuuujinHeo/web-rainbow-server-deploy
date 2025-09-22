@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, IsString, Length } from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { ControlCommand, LEDColor } from './type/control.type';
 import { UrlUtil } from '@app/common/util';
 
@@ -14,6 +14,7 @@ enum Description {
   FREQ = '기능에 따라 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
   ROBOT_SERIAL = '로봇 시리얼 번호',
   SAFETY_FIELD = '안전 필드 설정. 사전에 설정된 안전필드 ID값을 입력하세요',
+  MCU_DIO = 'MCU DIO 제어. 0번 핀부터 7번 핀까지 순서대로 입력하세요. 예로 [0,0,0,0,0,1,1,1] 은 0번 핀부터 7번 핀까지 순서대로 0,0,0,0,0,1,1,1 로 제어합니다.',
 }
 
 export class ControlRequestDto {
@@ -61,6 +62,18 @@ export class ControlRequestDto {
   frequency?: number;
 
   @ApiProperty({
+    description: Description.MCU_DIO,
+    example: [
+      [0, 0, 0, 0, 0, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0],
+    ],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  mcu_dio?: number[][];
+
+  @ApiProperty({
     description: Description.SAFETY_FIELD,
     example: '1',
     required: false,
@@ -72,6 +85,18 @@ export class ControlRequestDto {
 }
 
 export class ControlResponseDto extends ControlRequestDto {}
+
+export class ControlRequestSlamnav extends ControlRequestDto {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  id: string;
+}
 
 export class ControlResponseSlamnav extends ControlResponseDto {
   @ApiProperty({
@@ -230,8 +255,8 @@ export class OnOffResponseDto {
 
 export class WorkRequestDto {
   @ApiProperty({
-    description: '실행할 Command를 입력하세요. 현재 사용가능한 Command는 dockRequest, undockRequest, randomSeq가 있습니다.',
-    example: 'dockRequest',
+    description: '실행할 Command를 입력하세요. 현재 사용가능한 Command는 dock, undock, randomSeq가 있습니다.',
+    example: 'dock',
     required: true,
   })
   @IsString()
@@ -241,7 +266,7 @@ export class WorkRequestDto {
 }
 
 export class WorkResponseDto {
-  @ApiProperty({ description: '실행한 명령', example: 'dockRequest' })
+  @ApiProperty({ description: '실행한 명령', example: 'dock' })
   @IsString()
   @Expose()
   command: string;

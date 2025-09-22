@@ -115,7 +115,8 @@ export class GetTopologyRequestDto extends PaginationRequest {
   @ApiProperty({
     example: '',
     required: false,
-    description: '노드 타입',
+    description: '노드 타입. 사전에 지정된 타입만 조회가능하며 해당 타입값을 입력한 경우, 해당 타입만 조회합니다.',
+    enum: ['GOAL', 'ROUTE', 'INIT'],
   })
   nodeType?: string;
 
@@ -133,7 +134,8 @@ export class GetTopologyRequestDto extends PaginationRequest {
   @ApiProperty({
     example: 'id',
     required: false,
-    description: '정렬옵션',
+    enum: ['id', 'name'],
+    description: '정렬옵션. id 또는 name 값을 기준으로 정렬합니다.',
   })
   sortOption?: string;
 }
