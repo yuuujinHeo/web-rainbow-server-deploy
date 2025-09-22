@@ -5764,6 +5764,7 @@ __decorate([
     }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "preset", void 0);
@@ -5771,12 +5772,14 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5784,6 +5787,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5795,6 +5799,7 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5806,6 +5811,7 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5817,7 +5823,7 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "vy", void 0);
@@ -5828,8 +5834,8 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "wz", void 0);
 class MoveGoalCommandDto {
@@ -5857,6 +5863,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5875,6 +5882,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5882,25 +5890,25 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "z", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.RZ, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "rz", void 0);
 class MoveResponseDto extends MoveRequestDto {
@@ -5915,9 +5923,8 @@ __decorate([
         example: util_1.UrlUtil.generateUUID(),
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
 ], MoveRequestSlamnav.prototype, "id", void 0);
@@ -7146,10 +7153,10 @@ __decorate([
     (0, common_2.Get)('cloud'),
     (0, swagger_1.ApiOperation)({
         summary: '맵 클라우드 데이터 요청',
-        description: '맵 클라우드 데이터를 요청합니다. gzip으로 압축된 형태로 전송되며 크기가 큰 경우 swagger 에서는 UI가 멈추거나 에러가 날 수 있습니다.',
+        description: '맵 클라우드 데이터를 요청합니다.',
     }),
     (0, swagger_1.ApiOkResponse)({
-        description: '맵 클라우드 데이터 요청 성공 (gzip 압축)',
+        description: '맵 클라우드 데이터 요청 성공',
         type: map_dto_1.GetCloudResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
@@ -10184,6 +10191,7 @@ exports.ResponseWebUIAppDeleteDto = exports.ResponseWebUIAppAddDto = exports.Web
 const pagination_1 = __webpack_require__(104);
 const util_1 = __webpack_require__(37);
 const swagger_1 = __webpack_require__(58);
+const class_transformer_1 = __webpack_require__(60);
 const class_validator_1 = __webpack_require__(61);
 var Description;
 (function (Description) {
@@ -10345,6 +10353,7 @@ __decorate([
 ], ResponseReleaseVersionInfoDto.prototype, "sha", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiPropertyOptional)({
         description: 'version size',
@@ -11213,6 +11222,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CloseTcpServerResponseDto = exports.CloseTcpServerRequestDto = exports.CreateTcpServerResponseDto = exports.CreateTcpServerRequestDto = exports.GetCobotTcpServerResponseDto = exports.TcpServerInfoDto = exports.GetCobotTcpServerRequestDto = exports.GetConnectStateResponseDto = exports.GetConnectStateRequestDto = exports.CobotConnectServerResponseDto = exports.CobotConnectServerRequestDto = exports.CobotConnectResponseDto = exports.CobotConnectRequestDto = exports.CobotResponseDto = exports.CobotRequestDto = exports.CobotModeResponseDto = exports.CobotModeRequestDto = exports.CobotProgramResponseDto = exports.CobotProgramRequestDto = exports.CobotCommandResponseDto = exports.CobotCommandRequestDto = exports.CobotCommand = exports.CobotDataRequestCommand = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
+const class_transformer_1 = __webpack_require__(60);
 exports.CobotDataRequestCommand = 'request_data';
 var CobotCommand;
 (function (CobotCommand) {
@@ -11396,6 +11406,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsBoolean)(),
+    (0, class_transformer_1.Type)(() => Boolean),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Boolean)
 ], GetConnectStateResponseDto.prototype, "commandConnected", void 0);
@@ -11406,6 +11417,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsBoolean)(),
+    (0, class_transformer_1.Type)(() => Boolean),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Boolean)
 ], GetConnectStateResponseDto.prototype, "dataConnected", void 0);
@@ -11419,6 +11431,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], GetCobotTcpServerRequestDto.prototype, "port", void 0);
@@ -11452,6 +11465,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], TcpServerInfoDto.prototype, "clients", void 0);
@@ -11471,6 +11485,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsArray)(),
+    (0, class_transformer_1.Type)(() => TcpServerInfoDto),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Array)
 ], GetCobotTcpServerResponseDto.prototype, "servers", void 0);
@@ -11484,6 +11499,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateTcpServerRequestDto.prototype, "port", void 0);
@@ -11497,6 +11513,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Type)(() => String),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateTcpServerResponseDto.prototype, "createAt", void 0);
@@ -11510,6 +11527,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CloseTcpServerRequestDto.prototype, "port", void 0);
@@ -11523,6 +11541,7 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CloseTcpServerResponseDto.prototype, "clients", void 0);
@@ -11658,6 +11677,7 @@ let TcpApiController = class TcpApiController {
         return this.tcpApiService.GetCobotTcpServer();
     }
     async createTcpServer(body) {
+        console.log(body);
         return this.tcpApiService.createTcpServer(body);
     }
     async closeTcpServer(body) {

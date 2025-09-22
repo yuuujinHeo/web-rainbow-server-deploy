@@ -1,2 +1,4 @@
 mosquitto/data
 postgres/data
+mongo
+log

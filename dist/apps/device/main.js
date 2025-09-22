@@ -5124,6 +5124,7 @@ __decorate([
     }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "preset", void 0);
@@ -5131,12 +5132,14 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5144,6 +5147,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5155,6 +5159,7 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5166,6 +5171,7 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5177,7 +5183,7 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "vy", void 0);
@@ -5188,8 +5194,8 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "wz", void 0);
 class MoveGoalCommandDto {
@@ -5217,6 +5223,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5235,6 +5242,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -5242,25 +5250,25 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "z", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.RZ, example: 0 }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "rz", void 0);
 class MoveResponseDto extends MoveRequestDto {
@@ -5275,9 +5283,8 @@ __decorate([
         example: util_1.UrlUtil.generateUUID(),
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
 ], MoveRequestSlamnav.prototype, "id", void 0);
