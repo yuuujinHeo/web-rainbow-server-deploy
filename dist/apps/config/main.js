@@ -34,8 +34,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(4), exports);
-__exportStar(__webpack_require__(24), exports);
-__exportStar(__webpack_require__(27), exports);
+__exportStar(__webpack_require__(25), exports);
+__exportStar(__webpack_require__(28), exports);
 
 
 /***/ }),
@@ -67,7 +67,7 @@ __exportStar(__webpack_require__(5), exports);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
+exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
 exports.UserMicroservice = __webpack_require__(6);
 exports.AuthMicroservice = __webpack_require__(7);
 exports.AmrMicroservice = __webpack_require__(8);
@@ -86,6 +86,7 @@ exports.SoundMicroservice = __webpack_require__(20);
 exports.CobotMicroservice = __webpack_require__(21);
 exports.LogMicroservice = __webpack_require__(22);
 exports.UpdateMicroservice = __webpack_require__(23);
+exports.TcpMicroservice = __webpack_require__(24);
 
 
 /***/ }),
@@ -301,6 +302,7 @@ function ControlGrpcServiceControllerMethods() {
             "setSafetyField",
             "getSafetyField",
             "exAccessoryControl",
+            "safetyIoControl",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -474,6 +476,8 @@ function MapGrpcServiceControllerMethods() {
             "uploadMap",
             "downloadMap",
             "publishMap",
+            "getMapTileExist",
+            "getMapTile",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -567,12 +571,14 @@ exports.SETTING_PACKAGE_NAME = "setting";
 function SettingGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
+            "getType",
             "getSetting",
             "saveSetting",
+            "saveSettingAll",
             "getPresetList",
+            "getPreset",
             "createPreset",
             "deletePreset",
-            "getPreset",
             "savePreset",
         ];
         for (const method of grpcMethods) {
@@ -630,7 +636,19 @@ exports.protobufPackage = "cobot";
 exports.COBOT_PACKAGE_NAME = "cobot";
 function CobotGrpcServiceControllerMethods() {
     return function (constructor) {
-        const grpcMethods = ["cobotCommand"];
+        const grpcMethods = [
+            "cobotConnect",
+            "cobotDisconnect",
+            "cobotConnectCommand",
+            "cobotConnectData",
+            "cobotDisConnectCommand",
+            "cobotDisConnectData",
+            "getConnectState",
+            "cobotCommand",
+            "cobotProgram",
+            "getCobotData",
+            "cobotModeChange",
+        ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
             (0, microservices_1.GrpcMethod)("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);
@@ -727,6 +745,34 @@ exports.UPDATE_GRPC_SERVICE_NAME = "UpdateGrpcService";
 
 /***/ }),
 /* 24 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TCP_GRPC_SERVICE_NAME = exports.TCP_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.TcpGrpcServiceControllerMethods = TcpGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(2);
+exports.protobufPackage = "tcp";
+exports.TCP_PACKAGE_NAME = "tcp";
+function TcpGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["getServerState", "openServer", "closeServer"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("TcpGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("TcpGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.TCP_GRPC_SERVICE_NAME = "TcpGrpcService";
+
+
+/***/ }),
+/* 25 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -745,17 +791,17 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(25), exports);
+__exportStar(__webpack_require__(26), exports);
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrpcInterceptor = void 0;
-const rxjs_1 = __webpack_require__(26);
+const rxjs_1 = __webpack_require__(27);
 class GrpcInterceptor {
     intercept(context, next) {
         const data = context.switchToRpc().getData();
@@ -798,13 +844,13 @@ exports.GrpcInterceptor = GrpcInterceptor;
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ ((module) => {
 
 module.exports = require("rxjs");
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -823,22 +869,22 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(28), exports);
-__exportStar(__webpack_require__(51), exports);
+__exportStar(__webpack_require__(29), exports);
+__exportStar(__webpack_require__(52), exports);
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoggerService = void 0;
-const winston_1 = __webpack_require__(29);
-const DailyRotateFile = __webpack_require__(30);
-const util_1 = __webpack_require__(31);
-const chalk_1 = __webpack_require__(50);
-const fs_1 = __webpack_require__(37);
+const winston_1 = __webpack_require__(30);
+const DailyRotateFile = __webpack_require__(31);
+const util_1 = __webpack_require__(32);
+const chalk_1 = __webpack_require__(51);
+const fs_1 = __webpack_require__(38);
 const levelColorMap = {
     error: chalk_1.default.red,
     warn: chalk_1.default.magenta,
@@ -916,9 +962,9 @@ const customFormat = winston_1.format.printf(({ timestamp, level, message }) => 
     const levelText = levelTextMap[level] || level;
     if (typeof message === 'string') {
         const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[([^\]]+)\]/g);
+        const categoryMatches = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/g);
         const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        let logtext = message.replace(/\[[^\]]+\]/g, '').trim();
+        let logtext = message.replace(/\[(?!['"])[A-Za-z0-9 _-]+\]/g, '').trim();
         logtext = formatLogMessage(logtext);
         return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
     }
@@ -982,37 +1028,16 @@ exports.LoggerService = LoggerService;
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
-
-/***/ }),
-/* 31 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(32);
-Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(34);
-Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(36);
-Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(47);
-Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(48);
-Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(49);
-Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
-
 
 /***/ }),
 /* 32 */
@@ -1020,8 +1045,29 @@ Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: funct
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
+var url_util_1 = __webpack_require__(33);
+Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
+var date_util_1 = __webpack_require__(35);
+Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
+var file_util_1 = __webpack_require__(37);
+Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
+var parse_util_1 = __webpack_require__(48);
+Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
+var crypto_util_1 = __webpack_require__(49);
+Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
+var validation_util_1 = __webpack_require__(50);
+Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
+
+
+/***/ }),
+/* 33 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(33);
+const uuid_1 = __webpack_require__(34);
 class UrlUtil {
     static generateUUID() {
         return (0, uuid_1.v4)();
@@ -1031,19 +1077,19 @@ exports.UrlUtil = UrlUtil;
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ ((module) => {
 
 module.exports = require("uuid");
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(35);
+const date_fns_1 = __webpack_require__(36);
 class DateUtil {
     static toDatetimeString(date) {
         return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
@@ -1190,29 +1236,29 @@ exports.DateUtil = DateUtil;
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ ((module) => {
 
 module.exports = require("date-fns");
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUtil = void 0;
-const fs = __webpack_require__(37);
-const path = __webpack_require__(38);
-const unzipper = __webpack_require__(39);
-const il = __webpack_require__(40);
-const uuid_1 = __webpack_require__(33);
-const archiver_1 = __webpack_require__(41);
-const csv = __webpack_require__(42);
-const zlib_1 = __webpack_require__(43);
+const fs = __webpack_require__(38);
+const path = __webpack_require__(39);
+const unzipper = __webpack_require__(40);
+const il = __webpack_require__(41);
+const uuid_1 = __webpack_require__(34);
+const archiver_1 = __webpack_require__(42);
+const csv = __webpack_require__(43);
+const zlib_1 = __webpack_require__(44);
 const common_1 = __webpack_require__(3);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(45);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
 const microservices_1 = __webpack_require__(2);
 class FileUtil {
     static checkBasePath() {
@@ -1470,10 +1516,15 @@ class FileUtil {
             if (data === undefined || data === '' || JSON.stringify(data) === '') {
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
-            fs.mkdirSync(path.dirname(dir), { recursive: true });
+            console.log('--------------------------------------');
+            console.log(dir);
+            if (!fs.existsSync(path.dirname(dir))) {
+                fs.mkdirSync(path.dirname(dir), { recursive: true });
+            }
             if (typeof data === 'string') {
                 data = JSON.parse(data);
             }
+            fs.renameSync(dir, `${dir}.bak`);
             fs.writeFileSync(dir, JSON.stringify(data, null, 2));
             return;
         }
@@ -1489,49 +1540,49 @@ exports.FileUtil = FileUtil;
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ ((module) => {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ ((module) => {
 
 module.exports = require("path");
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ ((module) => {
 
 module.exports = require("unzipper");
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ ((module) => {
 
 module.exports = require("iconv-lite");
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ ((module) => {
 
 module.exports = require("archiver");
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ ((module) => {
 
 module.exports = require("csv");
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ ((module) => {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1548,7 +1599,7 @@ exports.RpcCodeException = RpcCodeException;
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1567,11 +1618,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(46), exports);
+__exportStar(__webpack_require__(47), exports);
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1601,7 +1652,7 @@ var GrpcCode;
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1651,7 +1702,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1663,7 +1714,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1697,13 +1748,13 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ ((module) => {
 
 module.exports = require("chalk");
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1734,13 +1785,13 @@ function errorToJson(error) {
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/config");
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1752,14 +1803,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppModule = void 0;
-const common_1 = __webpack_require__(54);
-const config_1 = __webpack_require__(52);
-const Joi = __webpack_require__(55);
-const typeorm_1 = __webpack_require__(56);
+const common_1 = __webpack_require__(55);
+const config_1 = __webpack_require__(53);
+const Joi = __webpack_require__(56);
+const typeorm_1 = __webpack_require__(57);
 const microservices_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(57);
-const path_1 = __webpack_require__(38);
-const code_module_1 = __webpack_require__(64);
+const constant_1 = __webpack_require__(58);
+const path_1 = __webpack_require__(39);
+const code_module_1 = __webpack_require__(65);
 const common_2 = __webpack_require__(3);
 let AppModule = class AppModule {
 };
@@ -1807,25 +1858,25 @@ exports.AppModule = AppModule = __decorate([
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/common");
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ ((module) => {
 
 module.exports = require("joi");
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1845,19 +1896,19 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.message = exports.environment = void 0;
-__exportStar(__webpack_require__(58), exports);
 __exportStar(__webpack_require__(59), exports);
-exports.environment = __webpack_require__(60);
-exports.message = __webpack_require__(62);
+__exportStar(__webpack_require__(60), exports);
+exports.environment = __webpack_require__(61);
+exports.message = __webpack_require__(63);
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.COBOT_SERVICE = exports.CODE_SERVICE = exports.TASK_SERVICE = exports.MQTT_BROKER = exports.SOUND_SERVICE = exports.EXTERNAL_ACCESSORY_SERVICE = exports.SOCKETIO_SERVICE = exports.REDIS_SERVICE = exports.HOST_SERVER = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.LOG_SERVICE = exports.FILE_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.SLAMNAV_SERVICE = exports.SETTING_SERVICE = exports.CONTROL_SERVICE = exports.CONFIG_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.CODE_SERVICE = exports.TASK_SERVICE = exports.MQTT_BROKER = exports.SOUND_SERVICE = exports.EXTERNAL_ACCESSORY_SERVICE = exports.SOCKETIO_SERVICE = exports.REDIS_SERVICE = exports.HOST_SERVER = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.LOG_SERVICE = exports.FILE_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.SLAMNAV_SERVICE = exports.SETTING_SERVICE = exports.CONTROL_SERVICE = exports.CONFIG_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
 exports.AUTH_SERVICE = 'AUTH_SERVICE';
 exports.USER_SERVICE = 'USER_SERVICE';
 exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
@@ -1884,10 +1935,11 @@ exports.MQTT_BROKER = 'MQTT_BROKER';
 exports.TASK_SERVICE = 'TASK_SERVICE';
 exports.CODE_SERVICE = 'CODE_SERVICE';
 exports.COBOT_SERVICE = 'COBOT_SERVICE';
+exports.TCP_SERVICE = 'TCP_SERVICE';
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1895,7 +1947,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1914,11 +1966,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(61), exports);
+__exportStar(__webpack_require__(62), exports);
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1942,7 +1994,7 @@ exports.SYSTEM = {
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1961,11 +2013,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(63), exports);
+__exportStar(__webpack_require__(64), exports);
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2024,7 +2076,7 @@ exports.SUCCESS_MESSAGES = {
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2036,12 +2088,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodeModule = void 0;
-const common_1 = __webpack_require__(54);
-const code_service_1 = __webpack_require__(65);
-const code_controller_1 = __webpack_require__(68);
-const typeorm_1 = __webpack_require__(56);
-const code_entity_1 = __webpack_require__(69);
-const typeorm_adapter_1 = __webpack_require__(71);
+const common_1 = __webpack_require__(55);
+const code_service_1 = __webpack_require__(66);
+const code_controller_1 = __webpack_require__(69);
+const typeorm_1 = __webpack_require__(57);
+const code_entity_1 = __webpack_require__(70);
+const typeorm_adapter_1 = __webpack_require__(72);
 let CodeModule = class CodeModule {
 };
 exports.CodeModule = CodeModule;
@@ -2062,7 +2114,7 @@ exports.CodeModule = CodeModule = __decorate([
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2081,9 +2133,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodeService = void 0;
-const common_1 = __webpack_require__(54);
-const code_model_1 = __webpack_require__(66);
-const database_output_port_1 = __webpack_require__(67);
+const common_1 = __webpack_require__(55);
+const code_model_1 = __webpack_require__(67);
+const database_output_port_1 = __webpack_require__(68);
 let CodeService = class CodeService {
     constructor(databaseOutputPort) {
         this.databaseOutputPort = databaseOutputPort;
@@ -2210,7 +2262,7 @@ exports.CodeService = CodeService = __decorate([
 
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2349,7 +2401,7 @@ exports.CodePageResult = CodePageResult;
 
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2357,7 +2409,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2373,8 +2425,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodeController = void 0;
-const common_1 = __webpack_require__(54);
-const code_service_1 = __webpack_require__(65);
+const common_1 = __webpack_require__(55);
+const code_service_1 = __webpack_require__(66);
 const common_2 = __webpack_require__(3);
 let CodeController = class CodeController {
     constructor(codeService) {
@@ -2403,7 +2455,6 @@ let CodeController = class CodeController {
             updatedBy: param.updatedBy,
         };
         const serviceResponse = await this.codeService.getCodeList(serviceRequest);
-        console.log(serviceResponse);
         return {
             pageNo: serviceResponse.pageNo,
             pageSize: serviceResponse.pageSize,
@@ -2535,7 +2586,7 @@ exports.CodeController = CodeController = __decorate([
 
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2551,7 +2602,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodeEntity = void 0;
-const typeorm_1 = __webpack_require__(70);
+const typeorm_1 = __webpack_require__(71);
 let CodeEntity = class CodeEntity {
     setUpdateDt() {
         this.updatedAt = new Date();
@@ -2648,13 +2699,13 @@ exports.CodeEntity = CodeEntity = __decorate([
 
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2673,12 +2724,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TypeOrmAdapter = void 0;
-const code_model_1 = __webpack_require__(66);
-const common_1 = __webpack_require__(54);
-const typeorm_1 = __webpack_require__(70);
-const code_entity_1 = __webpack_require__(69);
-const code_entity_mapper_1 = __webpack_require__(72);
-const typeorm_2 = __webpack_require__(56);
+const code_model_1 = __webpack_require__(67);
+const common_1 = __webpack_require__(55);
+const typeorm_1 = __webpack_require__(71);
+const code_entity_1 = __webpack_require__(70);
+const code_entity_mapper_1 = __webpack_require__(73);
+const typeorm_2 = __webpack_require__(57);
 let TypeOrmAdapter = class TypeOrmAdapter {
     constructor(codeRepository) {
         this.codeRepository = codeRepository;
@@ -2815,13 +2866,13 @@ exports.TypeOrmAdapter = TypeOrmAdapter = __decorate([
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodeEntityMapper = void 0;
-const code_model_1 = __webpack_require__(66);
+const code_model_1 = __webpack_require__(67);
 class CodeEntityMapper {
     static fromDomain(code) {
         return {
@@ -2858,7 +2909,7 @@ exports.CodeEntityMapper = CodeEntityMapper;
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2870,14 +2921,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigDBModule = void 0;
-const common_1 = __webpack_require__(54);
-const typeorm_1 = __webpack_require__(56);
-const config_service_1 = __webpack_require__(74);
-const db_grpc_controller_1 = __webpack_require__(76);
-const db_api_controller_1 = __webpack_require__(77);
-const config_entity_1 = __webpack_require__(75);
-const pg_1 = __webpack_require__(83);
-const config_1 = __webpack_require__(52);
+const common_1 = __webpack_require__(55);
+const typeorm_1 = __webpack_require__(57);
+const config_service_1 = __webpack_require__(75);
+const db_grpc_controller_1 = __webpack_require__(77);
+const db_api_controller_1 = __webpack_require__(78);
+const config_entity_1 = __webpack_require__(76);
+const pg_1 = __webpack_require__(84);
+const config_1 = __webpack_require__(53);
 let ConfigDBModule = class ConfigDBModule {
 };
 exports.ConfigDBModule = ConfigDBModule;
@@ -2936,7 +2987,7 @@ async function ensureConfigDatabase() {
 
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2955,13 +3006,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigDBService = void 0;
-const common_1 = __webpack_require__(54);
-const typeorm_1 = __webpack_require__(70);
-const typeorm_2 = __webpack_require__(56);
+const common_1 = __webpack_require__(55);
+const typeorm_1 = __webpack_require__(71);
+const typeorm_2 = __webpack_require__(57);
 const common_2 = __webpack_require__(3);
-const config_entity_1 = __webpack_require__(75);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(45);
+const config_entity_1 = __webpack_require__(76);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
 const microservices_1 = __webpack_require__(2);
 let ConfigDBService = class ConfigDBService {
     constructor(configRepository) {
@@ -3078,7 +3129,7 @@ exports.ConfigDBService = ConfigDBService = __decorate([
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3094,7 +3145,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Config = void 0;
-const typeorm_1 = __webpack_require__(70);
+const typeorm_1 = __webpack_require__(71);
 let Config = class Config {
 };
 exports.Config = Config;
@@ -3126,7 +3177,7 @@ exports.Config = Config = __decorate([
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3142,10 +3193,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DBGrpcController = void 0;
-const common_1 = __webpack_require__(54);
+const common_1 = __webpack_require__(55);
 const src_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(3);
-const config_service_1 = __webpack_require__(74);
+const config_service_1 = __webpack_require__(75);
 let DBGrpcController = class DBGrpcController {
     constructor(configService) {
         this.configService = configService;
@@ -3179,7 +3230,7 @@ exports.DBGrpcController = DBGrpcController = __decorate([
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3198,13 +3249,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DBConfigAPIController = void 0;
-const common_1 = __webpack_require__(54);
-const swagger_1 = __webpack_require__(78);
-const config_service_1 = __webpack_require__(74);
-const set_dto_1 = __webpack_require__(79);
-const set_dto_2 = __webpack_require__(79);
-const delete_dto_1 = __webpack_require__(81);
-const get_dto_1 = __webpack_require__(82);
+const common_1 = __webpack_require__(55);
+const swagger_1 = __webpack_require__(79);
+const config_service_1 = __webpack_require__(75);
+const set_dto_1 = __webpack_require__(80);
+const set_dto_2 = __webpack_require__(80);
+const delete_dto_1 = __webpack_require__(82);
+const get_dto_1 = __webpack_require__(83);
 let DBConfigAPIController = class DBConfigAPIController {
     constructor(configService) {
         this.configService = configService;
@@ -3302,13 +3353,13 @@ exports.DBConfigAPIController = DBConfigAPIController = __decorate([
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3323,8 +3374,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetConfigsResponseDto = exports.SetConfigResponseDto = exports.SetConfigsRequestDto = exports.SetConfigRequestDto = void 0;
-const swagger_1 = __webpack_require__(78);
-const class_validator_1 = __webpack_require__(80);
+const swagger_1 = __webpack_require__(79);
+const class_validator_1 = __webpack_require__(81);
 class SetConfigRequestDto {
 }
 exports.SetConfigRequestDto = SetConfigRequestDto;
@@ -3356,13 +3407,13 @@ exports.SetConfigsResponseDto = SetConfigsResponseDto;
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3377,8 +3428,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DeleteConfigsResponseDto = exports.DeleteConfigResponseDto = exports.DeleteConfigsRequestDto = exports.DeleteConfigRequestDto = void 0;
-const swagger_1 = __webpack_require__(78);
-const class_validator_1 = __webpack_require__(80);
+const swagger_1 = __webpack_require__(79);
+const class_validator_1 = __webpack_require__(81);
 class DeleteConfigRequestDto {
 }
 exports.DeleteConfigRequestDto = DeleteConfigRequestDto;
@@ -3405,7 +3456,7 @@ exports.DeleteConfigsResponseDto = DeleteConfigsResponseDto;
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3420,8 +3471,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GetConfigsResponseDto = exports.GetConfigResponseDto = exports.GetConfigRequestDto = void 0;
-const swagger_1 = __webpack_require__(78);
-const class_validator_1 = __webpack_require__(80);
+const swagger_1 = __webpack_require__(79);
+const class_validator_1 = __webpack_require__(81);
 class GetConfigRequestDto {
 }
 exports.GetConfigRequestDto = GetConfigRequestDto;
@@ -3457,7 +3508,7 @@ __decorate([
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ ((module) => {
 
 module.exports = require("pg");
@@ -3499,12 +3550,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const microservices_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(38);
-const config_1 = __webpack_require__(52);
-const app_module_1 = __webpack_require__(53);
-const config_module_1 = __webpack_require__(73);
-const common_2 = __webpack_require__(54);
-const swagger_1 = __webpack_require__(78);
+const path_1 = __webpack_require__(39);
+const config_1 = __webpack_require__(53);
+const app_module_1 = __webpack_require__(54);
+const config_module_1 = __webpack_require__(74);
+const common_2 = __webpack_require__(55);
+const swagger_1 = __webpack_require__(79);
 async function bootstrap() {
     const configModule = await core_1.NestFactory.create(config_module_1.ConfigDBModule);
     const config = configModule.get(config_1.ConfigService);
