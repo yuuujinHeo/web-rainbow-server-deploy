@@ -17,9 +17,46 @@ service CobotGrpcService {
     rpc CobotProgram(CobotProgramRequest) returns (CobotProgramResponse);
     rpc GetCobotData(GetCobotDataRequest) returns (GetCobotDataResponse);
     rpc CobotModeChange(CobotModeChangeRequest) returns (CobotModeChangeResponse);
+    rpc CobotInit(CobotRequest) returns (CobotResponse);
+    rpc CobotMove(CobotMoveRequest) returns (CobotMoveResponse);
+    rpc CobotSpeed(CobotSpeedRequest) returns (CobotSpeedResponse);
 }
 
+message CobotRequest {
+    string cobotId = 1;
+}
 
+message CobotResponse {
+    string cobotId = 1;
+}
+
+message CobotMoveRequest {
+    string cobotId = 1;
+    string method = 2;
+    repeated double pose = 3; 
+    double speed = 4;
+    double acceleration = 5;  
+    optional string coordinate = 6;
+}
+
+message CobotMoveResponse {
+    string cobotId = 1;
+    string method = 2;
+    repeated double pose = 3; 
+    double speed = 4;
+    double acceleration = 5;  
+    optional string coordinate = 6;
+}
+
+message CobotSpeedRequest {
+    string cobotId = 1;
+    double speed = 2;
+}
+
+message CobotSpeedResponse {
+    string cobotId = 1;
+    double speed = 2;
+}
 message CobotModeChangeRequest {
     string cobotId = 1;
     string mode = 2;

@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString, Length, ValidateIf, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Length, ValidateIf, ValidateNested } from 'class-validator';
 // import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -67,23 +67,27 @@ export class MoveRequestDto {
   })
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   @Expose()
   preset?: number;
 
   @ApiProperty({ description: Description.X, example: 0, required: false })
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   @Expose()
   x?: number;
 
   @ApiProperty({ description: Description.Y, example: 0, required: false })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Expose()
   y?: number;
 
   @ApiProperty({ description: Description.Z, example: 0, required: false })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Expose()
   z?: number;
@@ -94,6 +98,7 @@ export class MoveRequestDto {
     required: false,
   })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Expose()
   rz?: number;
@@ -104,6 +109,7 @@ export class MoveRequestDto {
     required: false,
   })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Expose()
   vx?: number;
@@ -114,7 +120,7 @@ export class MoveRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
   @Expose()
   vy?: number;
 
@@ -124,8 +130,8 @@ export class MoveRequestDto {
     required: false,
   })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  @Expose()
   wz?: number;
 }
 
@@ -149,6 +155,7 @@ export class MoveGoalCommandDto {
 
   @ApiProperty({ description: Description.PRESET, example: 0 })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Expose()
   preset?: number;
@@ -164,28 +171,29 @@ export class MoveTargetCommandDto {
 
   @ApiProperty({ description: Description.PRESET, example: 0 })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Expose()
   preset?: number;
 
   @ApiProperty({ description: Description.X, example: 0 })
   @IsNumber()
-  @Expose()
+  @Type(() => Number)
   x: number;
 
   @ApiProperty({ description: Description.Y, example: 0 })
   @IsNumber()
-  @Expose()
+  @Type(() => Number)
   y: number;
 
   @ApiProperty({ description: Description.Z, example: 0 })
   @IsNumber()
-  @Expose()
+  @Type(() => Number)
   z: number;
 
   @ApiProperty({ description: Description.RZ, example: 0 })
   @IsNumber()
-  @Expose()
+  @Type(() => Number)
   rz: number;
 }
 
@@ -197,9 +205,8 @@ export class MoveRequestSlamnav extends MoveRequestDto {
     example: UrlUtil.generateUUID(),
     required: true,
   })
-  @Type(() => String)
+  @IsNotEmpty()
   @IsString()
-  @Length(1, 50)
   @Expose()
   id: string;
 }

@@ -1,6 +1,7 @@
 import { PaginationRequest, PaginationResponse } from '@app/common/pagination';
 import { UrlUtil } from '@app/common/util';
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 
 enum Description {
@@ -137,6 +138,7 @@ export class ResponseReleaseVersionInfoDto {
   sha: string;
 
   @IsNumber()
+  @Type(() => Number)
   @IsNotEmpty()
   @ApiPropertyOptional({
     description: 'version size',

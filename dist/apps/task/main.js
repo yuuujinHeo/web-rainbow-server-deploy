@@ -881,6 +881,9 @@ function CobotGrpcServiceControllerMethods() {
             "cobotProgram",
             "getCobotData",
             "cobotModeChange",
+            "cobotInit",
+            "cobotMove",
+            "cobotSpeed",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

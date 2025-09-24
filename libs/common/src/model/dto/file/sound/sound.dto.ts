@@ -22,6 +22,7 @@ export class SoundDto {
   @Length(1, 50)
   fileName: string;
 }
+
 export class PlaySoundRequestDto extends SoundDto {
   @Type(() => Number)
   @IsNumber()

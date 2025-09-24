@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export const CobotDataRequestCommand = 'request_data';
+export const CobotDataRequestCommand = 'reqdata';
 export enum CobotCommand {
   halt = 'halt',
   taskStop = 'task stop',
@@ -105,6 +106,106 @@ export class CobotRequestDto {
 
 export class CobotResponseDto extends CobotRequestDto {}
 
+export enum CobotMoveMethod {
+  moveJ = 'moveJ',
+  moveL = 'moveL',
+  moveJRelative = 'moveJRelative',
+  moveLRelative = 'moveLRelative',
+}
+
+export enum CobotCoordinate {
+  Global = 'Global',
+  Local = 'Local',
+  UserCoordinate0 = 'UserCoordinate0',
+  UserCoordinate1 = 'UserCoordinate1',
+  UserCoordinate2 = 'UserCoordinate2',
+}
+export class CobotMoveRequestDto {
+  @ApiProperty({
+    description: '협동로봇 아이디',
+    example: 'cobot1',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  cobotId: string;
+
+  @ApiProperty({
+    description: '협동로봇 이동 방법',
+    example: 'moveJ',
+    enum: CobotMoveMethod,
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  method: string;
+
+  @ApiProperty({
+    description: '협동로봇 이동 위치. ',
+    example: [0, 0, 0, 0, 0, 0],
+    required: true,
+  })
+  @Type(() => Number)
+  @IsArray()
+  @IsNotEmpty()
+  pose: number[];
+
+  @ApiProperty({
+    description: '협동로봇 이동 속도. moveJ, moveJRelative 방법일 때는 deg/s, moveL, moveLRelative 방법일 때는 mm/s',
+    example: 20,
+    required: true,
+  })
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  speed: number;
+
+  @ApiProperty({
+    description: '협동로봇 이동 가속도. moveJ, moveJRelative 방법일 때는 deg/s^2, moveL, moveLRelative 방법일 때는 mm/s^2',
+    example: 5,
+    required: true,
+  })
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  acceleration: number;
+
+  @ApiProperty({
+    description: '협동로봇 이동 좌표계 (moveLRelative 일때만 사용)',
+    example: 'Global',
+    enum: CobotCoordinate,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  coordinate?: string;
+}
+
+export class CobotMoveResponseDto extends CobotMoveRequestDto {}
+
+export class CobotSpeedRequestDto {
+  @ApiProperty({
+    description: '협동로봇 아이디',
+    example: 'cobot1',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  cobotId: string;
+
+  @ApiProperty({
+    description: '협동로봇 속도. 0 ~ 100(%) 사이의 값을 입력해야 합니다.',
+    example: 50,
+    required: true,
+  })
+  @IsNumber()
+  @Type(() => Number)
+  @IsNotEmpty()
+  speed: number;
+}
+
+export class CobotSpeedResponseDto extends CobotSpeedRequestDto {}
+
 export class CobotConnectRequestDto {
   @ApiProperty({
     description: '협동로봇 아이디. 아이디는 중복되지 않아야 하며 협동로봇을 구분하는 값으로 사용됩니다.',
@@ -156,6 +257,7 @@ export class GetConnectStateResponseDto extends GetConnectStateRequestDto {
     required: true,
   })
   @IsBoolean()
+  @Type(() => Boolean)
   @IsNotEmpty()
   commandConnected: boolean;
 
@@ -165,6 +267,7 @@ export class GetConnectStateResponseDto extends GetConnectStateRequestDto {
     required: true,
   })
   @IsBoolean()
+  @Type(() => Boolean)
   @IsNotEmpty()
   dataConnected: boolean;
 }
@@ -176,6 +279,7 @@ export class GetCobotTcpServerRequestDto {
     required: true,
   })
   @IsNumber()
+  @Type(() => Number)
   @IsNotEmpty()
   port: number;
 }
@@ -207,6 +311,7 @@ export class TcpServerInfoDto {
     required: true,
   })
   @IsNumber()
+  @Type(() => Number)
   @IsNotEmpty()
   clients: number;
 }
@@ -224,6 +329,7 @@ export class GetCobotTcpServerResponseDto {
     required: true,
   })
   @IsArray()
+  @Type(() => TcpServerInfoDto)
   @IsNotEmpty()
   servers: TcpServerInfoDto[];
 }
@@ -235,6 +341,7 @@ export class CreateTcpServerRequestDto {
     required: true,
   })
   @IsNumber()
+  @Type(() => Number)
   @IsNotEmpty()
   port: number;
 }
@@ -246,6 +353,7 @@ export class CreateTcpServerResponseDto extends CreateTcpServerRequestDto {
     required: true,
   })
   @IsString()
+  @Type(() => String)
   @IsNotEmpty()
   createAt: string;
 }
@@ -256,6 +364,7 @@ export class CloseTcpServerRequestDto {
     required: true,
   })
   @IsNumber()
+  @Type(() => Number)
   @IsNotEmpty()
   port: number;
 }
@@ -267,6 +376,7 @@ export class CloseTcpServerResponseDto extends CloseTcpServerRequestDto {
     required: true,
   })
   @IsNumber()
+  @Type(() => Number)
   @IsNotEmpty()
   clients: number;
 }

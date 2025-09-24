@@ -994,6 +994,9 @@ function CobotGrpcServiceControllerMethods() {
             "cobotProgram",
             "getCobotData",
             "cobotModeChange",
+            "cobotInit",
+            "cobotMove",
+            "cobotSpeed",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -2152,7 +2155,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
+exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_transformer_1 = __webpack_require__(60);
 const class_validator_1 = __webpack_require__(61);
@@ -2318,6 +2321,93 @@ __decorate([
     }),
     __metadata("design:type", ControlResponseDto)
 ], ControlResponseFrs.prototype, "data", void 0);
+class ObsBoxRequestDto {
+}
+exports.ObsBoxRequestDto = ObsBoxRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최소 z값 (0~5m)',
+        example: '1.3',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "minZ", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최대 z값 (0~5m)',
+        example: '1.3',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "maxZ", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 맵 범위 (0~5m)',
+        example: '1.3',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "mapRange", void 0);
+class ObsBoxResponseDto extends ObsBoxRequestDto {
+}
+exports.ObsBoxResponseDto = ObsBoxResponseDto;
+class ObsBoxRequestSlamnav extends ObsBoxRequestDto {
+}
+exports.ObsBoxRequestSlamnav = ObsBoxRequestSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ID,
+        example: util_1.UrlUtil.generateUUID(),
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], ObsBoxRequestSlamnav.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 설정 명령',
+        example: control_type_1.ControlCommand.setObsBox,
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], ObsBoxRequestSlamnav.prototype, "command", void 0);
+class ObsBoxResponseSlamnav extends ObsBoxRequestSlamnav {
+}
+exports.ObsBoxResponseSlamnav = ObsBoxResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], ObsBoxResponseSlamnav.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], ObsBoxResponseSlamnav.prototype, "message", void 0);
 class LEDRequestDto {
 }
 exports.LEDRequestDto = LEDRequestDto;
@@ -2509,6 +2599,8 @@ var ControlCommand;
     ControlCommand["footMove"] = "footMove";
     ControlCommand["footStop"] = "footStop";
     ControlCommand["safetyIoControl"] = "safetyIoControl";
+    ControlCommand["setObsBox"] = "setObsBox";
+    ControlCommand["getObsBox"] = "getObsBox";
 })(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
 var LEDColor;
 (function (LEDColor) {
@@ -10856,11 +10948,24 @@ let CobotApiService = class CobotApiService {
     async CobotModeChange(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotModeChange(dto));
     }
+    async CobotInit(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotInit(dto));
+    }
+    async CobotMove(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotMove(dto));
+    }
+    async CobotSpeed(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotSpeed(dto));
+    }
     async CobotCommand(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotCommand(dto));
     }
     async CobotData(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.cobotService.getCobotData(dto));
+        const resp = await (0, rxjs_1.lastValueFrom)(this.cobotService.getCobotData(dto));
+        return {
+            cobotId: resp.cobotId,
+            data: resp.data ? JSON.parse(resp.data) : undefined,
+        };
     }
     async CobotConnect(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotConnect(dto));
@@ -10908,7 +11013,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -10947,11 +11052,20 @@ let CobotApiController = class CobotApiController {
     async CobotMode(dto) {
         return this.cobotApiService.CobotModeChange(dto);
     }
+    async CobotInit(dto) {
+        return this.cobotApiService.CobotInit(dto);
+    }
     async CobotCommand(dto) {
         return this.cobotApiService.CobotCommand(dto);
     }
     async CobotData(dto) {
         return this.cobotApiService.CobotData(dto);
+    }
+    async CobotMove(dto) {
+        return this.cobotApiService.CobotMove(dto);
+    }
+    async CobotSpeed(dto) {
+        return this.cobotApiService.CobotSpeed(dto);
     }
     async CobotConnect(dto) {
         return this.cobotApiService.CobotConnect(dto);
@@ -10982,7 +11096,7 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 로드 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _b : Object]),
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
@@ -10996,7 +11110,7 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 실행 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
@@ -11010,7 +11124,7 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 로드 & 실행 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_f = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _f : Object]),
     __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
@@ -11024,7 +11138,7 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 일시정지 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_h = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _h : Object]),
     __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
@@ -11038,7 +11152,7 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 재실행 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_k = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
@@ -11052,7 +11166,7 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 재실행 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_m = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _m : Object]),
     __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
@@ -11066,7 +11180,7 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 중지 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_p = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _p : Object]),
     __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
@@ -11080,11 +11194,25 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 모드 변경 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_r = typeof cobot_dto_1.CobotModeRequestDto !== "undefined" && cobot_dto_1.CobotModeRequestDto) === "function" ? _r : Object]),
     __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
 ], CobotApiController.prototype, "CobotMode", null);
+__decorate([
+    (0, common_1.Post)('init'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Cobot 초기화 요청',
+        description: 'Cobot 초기화를 요청합니다.',
+    }),
+    (0, swagger_2.ApiOkResponse)({
+        description: 'Cobot 초기화 요청 성공',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_t = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _t : Object]),
+    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+], CobotApiController.prototype, "CobotInit", null);
 __decorate([
     (0, common_1.Post)('command'),
     (0, swagger_1.ApiOperation)({
@@ -11094,10 +11222,10 @@ __decorate([
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 명령 요청 성공',
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof cobot_dto_1.CobotCommandRequestDto !== "undefined" && cobot_dto_1.CobotCommandRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+    __metadata("design:paramtypes", [typeof (_v = typeof cobot_dto_1.CobotCommandRequestDto !== "undefined" && cobot_dto_1.CobotCommandRequestDto) === "function" ? _v : Object]),
+    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
 ], CobotApiController.prototype, "CobotCommand", null);
 __decorate([
     (0, common_1.Get)('data'),
@@ -11110,9 +11238,37 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _v : Object]),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
+    __metadata("design:paramtypes", [typeof (_x = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _x : Object]),
+    __metadata("design:returntype", typeof (_y = typeof Promise !== "undefined" && Promise) === "function" ? _y : Object)
 ], CobotApiController.prototype, "CobotData", null);
+__decorate([
+    (0, common_1.Post)('move'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Cobot Move 요청',
+        description: 'Cobot Move를 요청합니다.',
+    }),
+    (0, swagger_2.ApiOkResponse)({
+        description: 'Cobot Move 요청 성공',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_z = typeof cobot_dto_1.CobotMoveRequestDto !== "undefined" && cobot_dto_1.CobotMoveRequestDto) === "function" ? _z : Object]),
+    __metadata("design:returntype", typeof (_0 = typeof Promise !== "undefined" && Promise) === "function" ? _0 : Object)
+], CobotApiController.prototype, "CobotMove", null);
+__decorate([
+    (0, common_1.Post)('speed'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Cobot Speed 요청',
+        description: 'Cobot Speed를 요청합니다.',
+    }),
+    (0, swagger_2.ApiOkResponse)({
+        description: 'Cobot Speed 요청 성공',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_1 = typeof cobot_dto_1.CobotSpeedRequestDto !== "undefined" && cobot_dto_1.CobotSpeedRequestDto) === "function" ? _1 : Object]),
+    __metadata("design:returntype", typeof (_2 = typeof Promise !== "undefined" && Promise) === "function" ? _2 : Object)
+], CobotApiController.prototype, "CobotSpeed", null);
 __decorate([
     (0, common_1.Post)('connect'),
     (0, swagger_1.ApiOperation)({
@@ -11124,8 +11280,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof cobot_dto_2.CobotConnectRequestDto !== "undefined" && cobot_dto_2.CobotConnectRequestDto) === "function" ? _x : Object]),
-    __metadata("design:returntype", typeof (_y = typeof Promise !== "undefined" && Promise) === "function" ? _y : Object)
+    __metadata("design:paramtypes", [typeof (_3 = typeof cobot_dto_2.CobotConnectRequestDto !== "undefined" && cobot_dto_2.CobotConnectRequestDto) === "function" ? _3 : Object]),
+    __metadata("design:returntype", typeof (_4 = typeof Promise !== "undefined" && Promise) === "function" ? _4 : Object)
 ], CobotApiController.prototype, "CobotConnect", null);
 __decorate([
     (0, common_1.Post)('connect/command'),
@@ -11138,8 +11294,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_z = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _z : Object]),
-    __metadata("design:returntype", typeof (_0 = typeof Promise !== "undefined" && Promise) === "function" ? _0 : Object)
+    __metadata("design:paramtypes", [typeof (_5 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _5 : Object]),
+    __metadata("design:returntype", typeof (_6 = typeof Promise !== "undefined" && Promise) === "function" ? _6 : Object)
 ], CobotApiController.prototype, "CobotConnectCommand", null);
 __decorate([
     (0, common_1.Post)('connect/data'),
@@ -11152,8 +11308,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_1 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _1 : Object]),
-    __metadata("design:returntype", typeof (_2 = typeof Promise !== "undefined" && Promise) === "function" ? _2 : Object)
+    __metadata("design:paramtypes", [typeof (_7 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _7 : Object]),
+    __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
 ], CobotApiController.prototype, "CobotConnectData", null);
 __decorate([
     (0, common_1.Post)('disconnect/command'),
@@ -11166,8 +11322,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_3 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _3 : Object]),
-    __metadata("design:returntype", typeof (_4 = typeof Promise !== "undefined" && Promise) === "function" ? _4 : Object)
+    __metadata("design:paramtypes", [typeof (_9 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _9 : Object]),
+    __metadata("design:returntype", typeof (_10 = typeof Promise !== "undefined" && Promise) === "function" ? _10 : Object)
 ], CobotApiController.prototype, "CobotDisconnectCommand", null);
 __decorate([
     (0, common_1.Post)('disconnect/data'),
@@ -11180,8 +11336,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_5 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _5 : Object]),
-    __metadata("design:returntype", typeof (_6 = typeof Promise !== "undefined" && Promise) === "function" ? _6 : Object)
+    __metadata("design:paramtypes", [typeof (_11 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _11 : Object]),
+    __metadata("design:returntype", typeof (_12 = typeof Promise !== "undefined" && Promise) === "function" ? _12 : Object)
 ], CobotApiController.prototype, "CobotDisconnectData", null);
 __decorate([
     (0, common_1.Get)('connect'),
@@ -11194,8 +11350,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_7 = typeof cobot_dto_4.GetConnectStateRequestDto !== "undefined" && cobot_dto_4.GetConnectStateRequestDto) === "function" ? _7 : Object]),
-    __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
+    __metadata("design:paramtypes", [typeof (_13 = typeof cobot_dto_4.GetConnectStateRequestDto !== "undefined" && cobot_dto_4.GetConnectStateRequestDto) === "function" ? _13 : Object]),
+    __metadata("design:returntype", typeof (_14 = typeof Promise !== "undefined" && Promise) === "function" ? _14 : Object)
 ], CobotApiController.prototype, "GetCobotConnectState", null);
 exports.CobotApiController = CobotApiController = __decorate([
     (0, swagger_1.ApiTags)('Cobot 컨트롤 API'),
@@ -11219,11 +11375,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CloseTcpServerResponseDto = exports.CloseTcpServerRequestDto = exports.CreateTcpServerResponseDto = exports.CreateTcpServerRequestDto = exports.GetCobotTcpServerResponseDto = exports.TcpServerInfoDto = exports.GetCobotTcpServerRequestDto = exports.GetConnectStateResponseDto = exports.GetConnectStateRequestDto = exports.CobotConnectServerResponseDto = exports.CobotConnectServerRequestDto = exports.CobotConnectResponseDto = exports.CobotConnectRequestDto = exports.CobotResponseDto = exports.CobotRequestDto = exports.CobotModeResponseDto = exports.CobotModeRequestDto = exports.CobotProgramResponseDto = exports.CobotProgramRequestDto = exports.CobotCommandResponseDto = exports.CobotCommandRequestDto = exports.CobotCommand = exports.CobotDataRequestCommand = void 0;
+exports.CloseTcpServerResponseDto = exports.CloseTcpServerRequestDto = exports.CreateTcpServerResponseDto = exports.CreateTcpServerRequestDto = exports.GetCobotTcpServerResponseDto = exports.TcpServerInfoDto = exports.GetCobotTcpServerRequestDto = exports.GetConnectStateResponseDto = exports.GetConnectStateRequestDto = exports.CobotConnectServerResponseDto = exports.CobotConnectServerRequestDto = exports.CobotConnectResponseDto = exports.CobotConnectRequestDto = exports.CobotSpeedResponseDto = exports.CobotSpeedRequestDto = exports.CobotMoveResponseDto = exports.CobotMoveRequestDto = exports.CobotCoordinate = exports.CobotMoveMethod = exports.CobotResponseDto = exports.CobotRequestDto = exports.CobotModeResponseDto = exports.CobotModeRequestDto = exports.CobotProgramResponseDto = exports.CobotProgramRequestDto = exports.CobotCommandResponseDto = exports.CobotCommandRequestDto = exports.CobotCommand = exports.CobotDataRequestCommand = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
 const class_transformer_1 = __webpack_require__(60);
-exports.CobotDataRequestCommand = 'request_data';
+exports.CobotDataRequestCommand = 'reqdata';
 var CobotCommand;
 (function (CobotCommand) {
     CobotCommand["halt"] = "halt";
@@ -11343,6 +11499,119 @@ __decorate([
 class CobotResponseDto extends CobotRequestDto {
 }
 exports.CobotResponseDto = CobotResponseDto;
+var CobotMoveMethod;
+(function (CobotMoveMethod) {
+    CobotMoveMethod["moveJ"] = "moveJ";
+    CobotMoveMethod["moveL"] = "moveL";
+    CobotMoveMethod["moveJRelative"] = "moveJRelative";
+    CobotMoveMethod["moveLRelative"] = "moveLRelative";
+})(CobotMoveMethod || (exports.CobotMoveMethod = CobotMoveMethod = {}));
+var CobotCoordinate;
+(function (CobotCoordinate) {
+    CobotCoordinate["Global"] = "Global";
+    CobotCoordinate["Local"] = "Local";
+    CobotCoordinate["UserCoordinate0"] = "UserCoordinate0";
+    CobotCoordinate["UserCoordinate1"] = "UserCoordinate1";
+    CobotCoordinate["UserCoordinate2"] = "UserCoordinate2";
+})(CobotCoordinate || (exports.CobotCoordinate = CobotCoordinate = {}));
+class CobotMoveRequestDto {
+}
+exports.CobotMoveRequestDto = CobotMoveRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 아이디',
+        example: 'cobot1',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CobotMoveRequestDto.prototype, "cobotId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 이동 방법',
+        example: 'moveJ',
+        enum: CobotMoveMethod,
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CobotMoveRequestDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 이동 위치. ',
+        example: [0, 0, 0, 0, 0, 0],
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], CobotMoveRequestDto.prototype, "pose", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 이동 속도. moveJ, moveJRelative 방법일 때는 deg/s, moveL, moveLRelative 방법일 때는 mm/s',
+        example: 20,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CobotMoveRequestDto.prototype, "speed", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 이동 가속도. moveJ, moveJRelative 방법일 때는 deg/s^2, moveL, moveLRelative 방법일 때는 mm/s^2',
+        example: 5,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CobotMoveRequestDto.prototype, "acceleration", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 이동 좌표계 (moveLRelative 일때만 사용)',
+        example: 'Global',
+        enum: CobotCoordinate,
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CobotMoveRequestDto.prototype, "coordinate", void 0);
+class CobotMoveResponseDto extends CobotMoveRequestDto {
+}
+exports.CobotMoveResponseDto = CobotMoveResponseDto;
+class CobotSpeedRequestDto {
+}
+exports.CobotSpeedRequestDto = CobotSpeedRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 아이디',
+        example: 'cobot1',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CobotSpeedRequestDto.prototype, "cobotId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '협동로봇 속도. 0 ~ 100(%) 사이의 값을 입력해야 합니다.',
+        example: 50,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CobotSpeedRequestDto.prototype, "speed", void 0);
+class CobotSpeedResponseDto extends CobotSpeedRequestDto {
+}
+exports.CobotSpeedResponseDto = CobotSpeedResponseDto;
 class CobotConnectRequestDto {
 }
 exports.CobotConnectRequestDto = CobotConnectRequestDto;
@@ -17571,6 +17840,7 @@ class CobotTcpClientAdapter {
             socket.on('connect', () => {
                 clearTimeout(timeout);
                 resolve(true);
+                this.sendData(model, 'reqdata');
                 model.dataHandler.onClientConnect();
             });
             socket.on('data', (buf) => {
@@ -17729,11 +17999,11 @@ const microservices_1 = __webpack_require__(3);
 const cobot_socket_domain_1 = __webpack_require__(196);
 const cobot_client_output_port_1 = __webpack_require__(197);
 const cobot_command_handler_1 = __webpack_require__(198);
-const cobot_data_handler_1 = __webpack_require__(199);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_2 = __webpack_require__(51);
 const net_1 = __webpack_require__(188);
 const cobot_dto_1 = __webpack_require__(143);
+const cobot_data_handler_1 = __webpack_require__(199);
 let CobotService = class CobotService {
     constructor(tcpClientPort, mqttMicroservice) {
         this.tcpClientPort = tcpClientPort;
@@ -17745,7 +18015,7 @@ let CobotService = class CobotService {
         console.log('==================>', event.cobotId, event.data.toString('utf-8'));
     }
     handleCobotSystemStat(cobotId, stat) {
-        console.log(cobotId, stat.header, stat.time, stat.robot_state);
+        this.cobotModels.get(cobotId).systemStat = stat;
         this.mqttMicroservice.emit('cobot.system.stat', {
             cobotId: cobotId,
             stat: stat,
@@ -17778,7 +18048,8 @@ let CobotService = class CobotService {
                     this.loggerService.error(`[Cobot] cobotModeChange : mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`);
                     throw new rpc_code_exception_1.RpcCodeException(`mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`, constant_2.GrpcCode.InvalidArgument);
                 }
-                this.tcpClientPort.sendData(cobotModel, cobot_dto_1.CobotCommand.programModeReal);
+                this.loggerService.info(`[Cobot] cobotModeChange : ${command}`);
+                this.tcpClientPort.sendCommand(cobotModel, command);
                 resolve({ ...request, mode: request.mode, command: command });
             }
             catch (error) {
@@ -17787,6 +18058,139 @@ let CobotService = class CobotService {
                 }
                 this.loggerService.error(`[Cobot] cobotModeChange : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 모드 변경에 실패했습니다.`, constant_2.GrpcCode.InternalError));
+            }
+        });
+    }
+    async cobotMove(request) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (request.cobotId == undefined || request.cobotId == '') {
+                    throw new rpc_code_exception_1.RpcCodeException(`cobotId 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.pose == undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException(`pose 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.pose.length != 6) {
+                    throw new rpc_code_exception_1.RpcCodeException(`pose 값이 올바르지 않습니다. 6개의 값을 입력해주세요. (${request.pose.length})`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.method == undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException(`method 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.method != cobot_dto_1.CobotMoveMethod.moveJ &&
+                    request.method != cobot_dto_1.CobotMoveMethod.moveL &&
+                    request.method != cobot_dto_1.CobotMoveMethod.moveJRelative &&
+                    request.method != cobot_dto_1.CobotMoveMethod.moveLRelative) {
+                    throw new rpc_code_exception_1.RpcCodeException(`method 값이 올바르지 않습니다. moveJ, moveL, moveJRelative, moveLRelative 중 하나를 입력해주세요. (${request.method})`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.speed == undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException(`speed 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.acceleration == undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException(`acceleration 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.method == cobot_dto_1.CobotMoveMethod.moveLRelative) {
+                    if (request.coordinate == undefined) {
+                        throw new rpc_code_exception_1.RpcCodeException(`coordinate 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                    }
+                    if (request.coordinate != cobot_dto_1.CobotCoordinate.Global &&
+                        request.coordinate != cobot_dto_1.CobotCoordinate.Local &&
+                        request.coordinate != cobot_dto_1.CobotCoordinate.UserCoordinate0 &&
+                        request.coordinate != cobot_dto_1.CobotCoordinate.UserCoordinate1 &&
+                        request.coordinate != cobot_dto_1.CobotCoordinate.UserCoordinate2) {
+                        throw new rpc_code_exception_1.RpcCodeException(`coordinate 값이 올바르지 않습니다. Global, Local, UserCoordinate0, UserCoordinate1, UserCoordinate2 중 하나를 입력해주세요. (${request.coordinate})`, constant_2.GrpcCode.InvalidArgument);
+                    }
+                }
+                const cobotModel = this.cobotModels.get(request.cobotId);
+                if (!cobotModel) {
+                    throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
+                }
+                let command = '';
+                if (request.method == cobot_dto_1.CobotMoveMethod.moveJ) {
+                    command = `move_j (jnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
+                }
+                else if (request.method == cobot_dto_1.CobotMoveMethod.moveL) {
+                    command = `move_l (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
+                }
+                else if (request.method == cobot_dto_1.CobotMoveMethod.moveJRelative) {
+                    command = `move_j_rel (jnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
+                }
+                else if (request.method == cobot_dto_1.CobotMoveMethod.moveLRelative) {
+                    if (request.coordinate == cobot_dto_1.CobotCoordinate.Global) {
+                        command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 0)`;
+                    }
+                    else if (request.coordinate == cobot_dto_1.CobotCoordinate.Local) {
+                        command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 1)`;
+                    }
+                    else if (request.coordinate == cobot_dto_1.CobotCoordinate.UserCoordinate0) {
+                        command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 2)`;
+                    }
+                    else if (request.coordinate == cobot_dto_1.CobotCoordinate.UserCoordinate1) {
+                        command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 3)`;
+                    }
+                    else if (request.coordinate == cobot_dto_1.CobotCoordinate.UserCoordinate2) {
+                        command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 4)`;
+                    }
+                }
+                this.loggerService.info(`[Cobot] cobotMove : ${command}`);
+                this.tcpClientPort.sendCommand(cobotModel, command);
+                resolve(request);
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException) {
+                    reject(error);
+                }
+                this.loggerService.error(`[Cobot] cobotMove : ${(0, common_2.errorToJson)(error)}`);
+                reject(new rpc_code_exception_1.RpcCodeException(`Cobot 이동에 실패했습니다.`, constant_2.GrpcCode.InternalError));
+            }
+        });
+    }
+    async cobotSpeed(request) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (request.cobotId == undefined || request.cobotId == '') {
+                    throw new rpc_code_exception_1.RpcCodeException(`cobotId 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.speed == undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException(`speed 값이 없습니다.`, constant_2.GrpcCode.InvalidArgument);
+                }
+                if (request.speed < 0 || request.speed > 100) {
+                    throw new rpc_code_exception_1.RpcCodeException(`speed 값이 올바르지 않습니다. 0 ~ 100 사이의 값을 입력해주세요. (${request.speed})`, constant_2.GrpcCode.InvalidArgument);
+                }
+                const cobotModel = this.cobotModels.get(request.cobotId);
+                if (!cobotModel) {
+                    throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
+                }
+                const command = `set_speed_bar(${request.speed / 100})`;
+                this.loggerService.info(`[Cobot] cobotSpeed : ${command}`);
+                this.tcpClientPort.sendCommand(cobotModel, command);
+                resolve(request);
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException) {
+                    reject(error);
+                }
+                this.loggerService.error(`[Cobot] cobotSpeed : ${(0, common_2.errorToJson)(error)}`);
+                reject(new rpc_code_exception_1.RpcCodeException(`Cobot 속도 변경에 실패했습니다.`, constant_2.GrpcCode.InternalError));
+            }
+        });
+    }
+    async cobotInit(request) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const cobotModel = this.cobotModels.get(request.cobotId);
+                if (!cobotModel) {
+                    throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
+                }
+                this.loggerService.info(`[Cobot] cobotInit : ${cobot_dto_1.CobotCommand.mcJallInit}`);
+                this.tcpClientPort.sendCommand(cobotModel, cobot_dto_1.CobotCommand.mcJallInit);
+                resolve(request);
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException) {
+                    reject(error);
+                }
+                this.loggerService.error(`[Cobot] cobotInit : ${(0, common_2.errorToJson)(error)}`);
+                reject(new rpc_code_exception_1.RpcCodeException(`Cobot 초기화에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
     }
@@ -17958,7 +18362,7 @@ let CobotService = class CobotService {
                 if (!cobotModel) {
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
                 }
-                this.tcpClientPort.sendData(cobotModel, request.command);
+                this.tcpClientPort.sendCommand(cobotModel, request.command);
                 resolve({ ...request, command: request.command });
             }
             catch (error) {
@@ -18013,7 +18417,7 @@ let CobotService = class CobotService {
                     throw new rpc_code_exception_1.RpcCodeException(`${request.command} 명령은 지원하지 않습니다.`, constant_2.GrpcCode.InvalidArgument);
                 }
                 this.loggerService.info(`[Cobot] sendCobotProgram : ${request.cobotId} "${command}"`);
-                this.tcpClientPort.sendData(cobotModel, command);
+                this.tcpClientPort.sendCommand(cobotModel, command);
                 resolve({ ...request, command: command });
             }
             catch (error) {
@@ -18032,6 +18436,7 @@ let CobotService = class CobotService {
                 throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
             }
             this.tcpClientPort.sendData(cobotModel, cobot_dto_1.CobotDataRequestCommand);
+            return this.cobotModels.get(request.cobotId).systemStat;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException) {
@@ -18421,11 +18826,18 @@ exports.CobotGrpcController = void 0;
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
 const cobot_service_1 = __webpack_require__(195);
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
 let CobotGrpcController = class CobotGrpcController {
     constructor(cobotService) {
         this.cobotService = cobotService;
+    }
+    cobotInit(request, metadata) {
+        return this.cobotService.cobotInit(request);
+    }
+    cobotMove(request, metadata) {
+        return this.cobotService.cobotMove(request);
+    }
+    cobotSpeed(request, metadata) {
+        return this.cobotService.cobotSpeed(request);
     }
     cobotModeChange(request, metadata) {
         return this.cobotService.cobotModeChange(request);
@@ -18458,7 +18870,11 @@ let CobotGrpcController = class CobotGrpcController {
         return this.cobotService.sendCobotProgram(request);
     }
     getCobotData(request, metadata) {
-        throw new rpc_code_exception_1.RpcCodeException('아직 미구현된 기능입니다.', constant_1.GrpcCode.Unimplemented);
+        const data = this.cobotService.requestCobotData(request);
+        return {
+            cobotId: request.cobotId,
+            data: JSON.stringify(data),
+        };
     }
 };
 exports.CobotGrpcController = CobotGrpcController;

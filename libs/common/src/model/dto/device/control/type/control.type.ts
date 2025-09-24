@@ -13,6 +13,8 @@ export enum ControlCommand {
   footMove = 'footMove',
   footStop = 'footStop',
   safetyIoControl = 'safetyIoControl',
+  setObsBox = 'setObsBox',
+  getObsBox = 'getObsBox',
 }
 
 export enum LEDColor {

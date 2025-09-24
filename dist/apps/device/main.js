@@ -648,6 +648,9 @@ function CobotGrpcServiceControllerMethods() {
             "cobotProgram",
             "getCobotData",
             "cobotModeChange",
+            "cobotInit",
+            "cobotMove",
+            "cobotSpeed",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -2492,6 +2495,8 @@ var ControlCommand;
     ControlCommand["footMove"] = "footMove";
     ControlCommand["footStop"] = "footStop";
     ControlCommand["safetyIoControl"] = "safetyIoControl";
+    ControlCommand["setObsBox"] = "setObsBox";
+    ControlCommand["getObsBox"] = "getObsBox";
 })(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
 var LEDColor;
 (function (LEDColor) {
@@ -2976,7 +2981,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
+exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
 const swagger_1 = __webpack_require__(78);
 const class_transformer_1 = __webpack_require__(79);
 const class_validator_1 = __webpack_require__(80);
@@ -3142,6 +3147,93 @@ __decorate([
     }),
     __metadata("design:type", ControlResponseDto)
 ], ControlResponseFrs.prototype, "data", void 0);
+class ObsBoxRequestDto {
+}
+exports.ObsBoxRequestDto = ObsBoxRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최소 z값 (0~5m)',
+        example: '1.3',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "minZ", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최대 z값 (0~5m)',
+        example: '1.3',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "maxZ", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 맵 범위 (0~5m)',
+        example: '1.3',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "mapRange", void 0);
+class ObsBoxResponseDto extends ObsBoxRequestDto {
+}
+exports.ObsBoxResponseDto = ObsBoxResponseDto;
+class ObsBoxRequestSlamnav extends ObsBoxRequestDto {
+}
+exports.ObsBoxRequestSlamnav = ObsBoxRequestSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ID,
+        example: util_1.UrlUtil.generateUUID(),
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], ObsBoxRequestSlamnav.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 설정 명령',
+        example: control_type_1.ControlCommand.setObsBox,
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], ObsBoxRequestSlamnav.prototype, "command", void 0);
+class ObsBoxResponseSlamnav extends ObsBoxRequestSlamnav {
+}
+exports.ObsBoxResponseSlamnav = ObsBoxResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], ObsBoxResponseSlamnav.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], ObsBoxResponseSlamnav.prototype, "message", void 0);
 class LEDRequestDto {
 }
 exports.LEDRequestDto = LEDRequestDto;

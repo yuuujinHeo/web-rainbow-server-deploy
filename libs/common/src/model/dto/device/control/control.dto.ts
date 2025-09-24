@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { ControlCommand, LEDColor } from './type/control.type';
 import { UrlUtil } from '@app/common/util';
@@ -145,6 +145,82 @@ export class ControlResponseFrs {
     required: true,
   })
   data: ControlResponseDto;
+}
+
+export class ObsBoxRequestDto {
+  @ApiProperty({
+    description: '장애물감지영역 최소 z값 (0~5m)',
+    example: '1.3',
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  minZ?: number;
+
+  @ApiProperty({
+    description: '장애물감지영역 최대 z값 (0~5m)',
+    example: '1.3',
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  maxZ?: number;
+
+  @ApiProperty({
+    description: '장애물감지영역 맵 범위 (0~5m)',
+    example: '1.3',
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  mapRange?: number;
+}
+
+export class ObsBoxResponseDto extends ObsBoxRequestDto {}
+
+export class ObsBoxRequestSlamnav extends ObsBoxRequestDto {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  id: string;
+
+  @ApiProperty({
+    description: '장애물감지영역 설정 명령',
+    example: ControlCommand.setObsBox,
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  command: string;
+}
+
+export class ObsBoxResponseSlamnav extends ObsBoxRequestSlamnav {
+  @ApiProperty({
+    description: Description.RESULT,
+    example: 'accept',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  result: string;
+
+  @ApiProperty({
+    description: Description.MESSAGE,
+    example: '',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Length(1, 50)
+  message?: string;
 }
 
 export class LEDRequestDto {

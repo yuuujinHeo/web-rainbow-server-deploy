@@ -11,6 +11,42 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "cobot";
 
+export interface CobotRequest {
+  cobotId: string;
+}
+
+export interface CobotResponse {
+  cobotId: string;
+}
+
+export interface CobotMoveRequest {
+  cobotId: string;
+  method: string;
+  pose: number[];
+  speed: number;
+  acceleration: number;
+  coordinate?: string | undefined;
+}
+
+export interface CobotMoveResponse {
+  cobotId: string;
+  method: string;
+  pose: number[];
+  speed: number;
+  acceleration: number;
+  coordinate?: string | undefined;
+}
+
+export interface CobotSpeedRequest {
+  cobotId: string;
+  speed: number;
+}
+
+export interface CobotSpeedResponse {
+  cobotId: string;
+  speed: number;
+}
+
 export interface CobotModeChangeRequest {
   cobotId: string;
   mode: string;
@@ -139,6 +175,12 @@ export interface CobotGrpcServiceClient {
   getCobotData(request: GetCobotDataRequest, metadata?: Metadata): Observable<GetCobotDataResponse>;
 
   cobotModeChange(request: CobotModeChangeRequest, metadata?: Metadata): Observable<CobotModeChangeResponse>;
+
+  cobotInit(request: CobotRequest, metadata?: Metadata): Observable<CobotResponse>;
+
+  cobotMove(request: CobotMoveRequest, metadata?: Metadata): Observable<CobotMoveResponse>;
+
+  cobotSpeed(request: CobotSpeedRequest, metadata?: Metadata): Observable<CobotSpeedResponse>;
 }
 
 export interface CobotGrpcServiceController {
@@ -200,6 +242,21 @@ export interface CobotGrpcServiceController {
     request: CobotModeChangeRequest,
     metadata?: Metadata,
   ): Promise<CobotModeChangeResponse> | Observable<CobotModeChangeResponse> | CobotModeChangeResponse;
+
+  cobotInit(
+    request: CobotRequest,
+    metadata?: Metadata,
+  ): Promise<CobotResponse> | Observable<CobotResponse> | CobotResponse;
+
+  cobotMove(
+    request: CobotMoveRequest,
+    metadata?: Metadata,
+  ): Promise<CobotMoveResponse> | Observable<CobotMoveResponse> | CobotMoveResponse;
+
+  cobotSpeed(
+    request: CobotSpeedRequest,
+    metadata?: Metadata,
+  ): Promise<CobotSpeedResponse> | Observable<CobotSpeedResponse> | CobotSpeedResponse;
 }
 
 export function CobotGrpcServiceControllerMethods() {
@@ -216,6 +273,9 @@ export function CobotGrpcServiceControllerMethods() {
       "cobotProgram",
       "getCobotData",
       "cobotModeChange",
+      "cobotInit",
+      "cobotMove",
+      "cobotSpeed",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
