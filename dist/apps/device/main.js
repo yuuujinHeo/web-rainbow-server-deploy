@@ -2222,14 +2222,22 @@ let ControlService = class ControlService {
         this.slamnav_connection = false;
     }
     async updateResponse(resp) {
-        this.loggerService.info(`[Control] updateResponse : ${JSON.stringify(resp)}`);
-        const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
-        if (dbmodel) {
-            const model = new control_domain_1.ControlModel(dbmodel);
-            model.assignId(dbmodel._id);
-            model.statusChange('accept');
-            this.databaseOutput.update(model);
-            this.loggerService.info(`[Control] update Response : ${model.id}, ${model.status}`);
+        try {
+            this.loggerService.info(`[Control] updateResponse : ${JSON.stringify(resp)}`);
+            const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
+            if (dbmodel) {
+                const model = new control_domain_1.ControlModel(dbmodel);
+                model.assignId(dbmodel._id);
+                model.statusChange('accept');
+                this.databaseOutput.update(model);
+                this.loggerService.info(`[Control] update Response : ${model.id}, ${model.status}`);
+            }
+        }
+        catch (error) {
+            this.loggerService.error(`[Control] updateResponse : ${(0, common_2.errorToJson)(error)}`);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('updateResponse 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
     async SafetyIoControl(request) {
@@ -2238,7 +2246,7 @@ let ControlService = class ControlService {
             this.loggerService.info(`[Control] SafetyIoControl : ${JSON.stringify(request)}`);
             const req = {
                 command: request.command,
-                mcuDio: request.mcuDio.map((e) => e.channel),
+                mcuDio: request.mcuDio ? request.mcuDio.map((e) => e.channel) : undefined,
             };
             command = new control_domain_1.ControlModel(req);
             const result = await this.databaseOutput.save(command);
@@ -2248,10 +2256,15 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.safetyIoControl(command);
-            this.loggerService.info(`[Control] SafetyIoControl Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            await this.databaseOutput.update(command);
-            return { ...resp, command: request.command, mcuDio: request.mcuDio };
+            if (resp.result == 'success' || resp.result == 'accept') {
+                this.loggerService.info(`[Control] SafetyIoControl Response : ${JSON.stringify(resp)}`);
+                command.statusChange(resp.result);
+                await this.databaseOutput.update(command);
+                return { ...resp, command: request.command, mcuDio: request.mcuDio };
+            }
+            else {
+                throw new rpc_code_exception_1.RpcCodeException(resp.message, constant_1.GrpcCode.Aborted);
+            }
         }
         catch (error) {
             this.loggerService.error(`[Control] SafetyIoControl : ${(0, common_2.errorToJson)(error)}`);
@@ -2356,8 +2369,8 @@ const microservices_1 = __webpack_require__(2);
 var ControlStatus;
 (function (ControlStatus) {
     ControlStatus["pending"] = "pending";
-    ControlStatus["accepted"] = "accepted";
-    ControlStatus["rejected"] = "rejected";
+    ControlStatus["accept"] = "accept";
+    ControlStatus["reject"] = "reject";
     ControlStatus["fail"] = "fail";
     ControlStatus["unknown"] = "unknown";
 })(ControlStatus || (exports.ControlStatus = ControlStatus = {}));
@@ -2450,7 +2463,10 @@ class ControlModel {
                 }
                 break;
             }
-            case control_type_1.ControlCommand.safetyIoControl: {
+            case control_type_1.ControlCommand.getDigitalIO: {
+                break;
+            }
+            case control_type_1.ControlCommand.setDigitalIO: {
                 if (this.mcuDio === undefined || this.mcuDio.length === 0) {
                     throw new rpc_code_exception_1.RpcCodeException('mcuDio 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
@@ -2494,7 +2510,8 @@ var ControlCommand;
     ControlCommand["resetSafetyField"] = "resetSafetyField";
     ControlCommand["footMove"] = "footMove";
     ControlCommand["footStop"] = "footStop";
-    ControlCommand["safetyIoControl"] = "safetyIoControl";
+    ControlCommand["getDigitalIO"] = "getDigitalIO";
+    ControlCommand["setDigitalIO"] = "setDigitalIO";
     ControlCommand["setObsBox"] = "setObsBox";
     ControlCommand["getObsBox"] = "getObsBox";
 })(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
@@ -2550,6 +2567,9 @@ const microservices_1 = __webpack_require__(2);
 const common_2 = __webpack_require__(3);
 const constant_1 = __webpack_require__(67);
 const control_pending_service_1 = __webpack_require__(74);
+const util_1 = __webpack_require__(32);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_2 = __webpack_require__(46);
 let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     constructor(mqttMicroservice, pendingService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -2558,7 +2578,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async exAccessoryControl(data) {
         this.loggerService.debug(`[Control] Socket externalControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
+        const response = this.waitForResponse(data.id, 1000);
         this.mqttMicroservice.emit('exAccessoryRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket externalControl : ${JSON.stringify(resp)}`);
@@ -2566,8 +2586,8 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async safetyIoControl(data) {
         this.loggerService.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
-        this.mqttMicroservice.emit('controlRequest', data);
+        const response = this.waitForResponse(data.id, 1000);
+        this.mqttMicroservice.emit('controlRequest', { command: data.command, mcuDio: data.mcuDio, time: util_1.DateUtil.getTimeString() });
         const resp = await response;
         this.loggerService.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(resp)}`);
         return resp;
@@ -2577,7 +2597,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async onoffControl(data) {
         this.loggerService.debug(`[Control] Socket onoffControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
+        const response = this.waitForResponse(data.id, 1000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket onoffControl : ${JSON.stringify(resp)}`);
@@ -2585,7 +2605,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async workControl(data) {
         this.loggerService.debug(`[Control] Socket workControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
+        const response = this.waitForResponse(data.id, 1000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket workControl : ${JSON.stringify(resp)}`);
@@ -2593,7 +2613,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async ledControl(data) {
         this.loggerService.debug(`[Control] Socket ledControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
+        const response = this.waitForResponse(data.id, 1000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket ledControl : ${JSON.stringify(resp)}`);
@@ -2601,17 +2621,35 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async safetyFieldControl(data) {
         this.loggerService.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
+        const response = this.waitForResponse(data.id, 1000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(resp)}`);
         return resp;
     }
-    async waitForResponse(id) {
+    async waitForResponse(id, timeoutMs) {
         return new Promise((resolve, reject) => {
+            let timeout;
+            if (timeoutMs) {
+                timeout = setTimeout(() => {
+                    this.pendingService.pendingResponses.delete(id);
+                    this.loggerService.error(`[UPDATE] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
+                }, timeoutMs);
+            }
             this.pendingService.pendingResponses.set(id, {
-                resolve,
-                reject,
+                resolve: (value) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    resolve(value);
+                },
+                reject: (error) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    reject(error);
+                },
                 received: [],
             });
         });

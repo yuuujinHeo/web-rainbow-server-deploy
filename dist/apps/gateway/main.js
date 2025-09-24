@@ -159,7 +159,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiController = void 0;
 const common_1 = __webpack_require__(8);
@@ -169,6 +169,7 @@ const control_dto_1 = __webpack_require__(59);
 const error_response_dto_1 = __webpack_require__(63);
 const control_api_service_1 = __webpack_require__(64);
 const safety_io_dto_1 = __webpack_require__(72);
+const control_type_1 = __webpack_require__(62);
 let ControlApiController = class ControlApiController {
     constructor(controlService) {
         this.controlService = controlService;
@@ -196,7 +197,10 @@ let ControlApiController = class ControlApiController {
         return this.controlService.LED(dto);
     }
     async SafetyIo(dto) {
-        return this.controlService.SafetyIo(dto);
+        return this.controlService.SafetyIo({ command: control_type_1.ControlCommand.setDigitalIO, mcuDio: dto.mcuDio?.map((e) => ({ channel: e })) });
+    }
+    async GetSafetyIo() {
+        return this.controlService.SafetyIo({ command: control_type_1.ControlCommand.getDigitalIO, mcuDio: [] });
     }
 };
 exports.ControlApiController = ControlApiController;
@@ -352,6 +356,20 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_o = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _o : Object]),
     __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], ControlApiController.prototype, "SafetyIo", null);
+__decorate([
+    (0, common_2.Get)('safetyIo'),
+    (0, swagger_1.ApiOperation)({
+        summary: '세이프티 IO 조회 요청',
+        description: '세이프티 IO를 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '세이프티 IO 조회 요청 성공',
+        type: safety_io_dto_1.SafetyIoResponseDto,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+], ControlApiController.prototype, "GetSafetyIo", null);
 exports.ControlApiController = ControlApiController = __decorate([
     (0, swagger_1.ApiTags)('SLAMNAV 컨트롤 API'),
     (0, common_2.Controller)('control'),
@@ -2598,7 +2616,8 @@ var ControlCommand;
     ControlCommand["resetSafetyField"] = "resetSafetyField";
     ControlCommand["footMove"] = "footMove";
     ControlCommand["footStop"] = "footStop";
-    ControlCommand["safetyIoControl"] = "safetyIoControl";
+    ControlCommand["getDigitalIO"] = "getDigitalIO";
+    ControlCommand["setDigitalIO"] = "setDigitalIO";
     ControlCommand["setObsBox"] = "setObsBox";
     ControlCommand["getObsBox"] = "getObsBox";
 })(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
@@ -2709,13 +2728,8 @@ let ControlApiService = class ControlApiService {
         return await (0, rxjs_1.lastValueFrom)(this.controlService.setSafetyField(dto));
     }
     async SafetyIo(dto) {
-        const request = {
-            command: control_type_1.ControlCommand.safetyIoControl,
-            mcuDio: dto.mcuDio.map((e) => ({ channel: e })),
-        };
-        const response = await (0, rxjs_1.lastValueFrom)(this.controlService.safetyIoControl(request));
+        const response = await (0, rxjs_1.lastValueFrom)(this.controlService.safetyIoControl(dto));
         return {
-            command: control_type_1.ControlCommand.safetyIoControl,
             mcuDio: response.mcuDio?.map((dio) => dio.channel) ?? [],
             result: response.result,
             message: response.message,
@@ -2946,9 +2960,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SafetyIoResponseSlamnav = exports.SafetyIoRequestSlamnav = exports.SafetyIoResponseDto = exports.SafetyIoRequestDto = void 0;
+exports.SafetyIoResponseSlamnav = exports.SafetyIoResponseDto = exports.SafetyIoRequestSlamnav = exports.SafetyIoRequestDto = void 0;
 const swagger_1 = __webpack_require__(58);
 const control_type_1 = __webpack_require__(62);
+const class_transformer_1 = __webpack_require__(60);
 const config_dto_1 = __webpack_require__(73);
 const class_validator_1 = __webpack_require__(61);
 class SafetyIoRequestDto {
@@ -2956,23 +2971,36 @@ class SafetyIoRequestDto {
 exports.SafetyIoRequestDto = SafetyIoRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'MCU DIO 명령',
-        example: control_type_1.ControlCommand.safetyIoControl,
-        required: true,
-    }),
-    __metadata("design:type", String)
-], SafetyIoRequestDto.prototype, "command", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
         description: 'MCU DIO 명령 파라미터 (채널당 8bit 값)',
         example: [
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
         ],
-        required: true,
+        required: false,
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", Array)
 ], SafetyIoRequestDto.prototype, "mcuDio", void 0);
+class SafetyIoRequestSlamnav extends SafetyIoRequestDto {
+}
+exports.SafetyIoRequestSlamnav = SafetyIoRequestSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '명령 ID',
+        example: '550e8400-e29b-41d4-a716-446655440000',
+        required: true,
+    }),
+    __metadata("design:type", String)
+], SafetyIoRequestSlamnav.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'MCU DIO 명령',
+        example: control_type_1.ControlCommand.getDigitalIO,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], SafetyIoRequestSlamnav.prototype, "command", void 0);
 class SafetyIoResponseDto extends SafetyIoRequestDto {
 }
 exports.SafetyIoResponseDto = SafetyIoResponseDto;
@@ -2996,17 +3024,6 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SafetyIoResponseDto.prototype, "message", void 0);
-class SafetyIoRequestSlamnav extends SafetyIoRequestDto {
-}
-exports.SafetyIoRequestSlamnav = SafetyIoRequestSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '명령 ID',
-        example: '550e8400-e29b-41d4-a716-446655440000',
-        required: true,
-    }),
-    __metadata("design:type", String)
-], SafetyIoRequestSlamnav.prototype, "id", void 0);
 class SafetyIoResponseSlamnav extends SafetyIoResponseDto {
 }
 exports.SafetyIoResponseSlamnav = SafetyIoResponseSlamnav;
@@ -14886,8 +14903,8 @@ const microservices_1 = __webpack_require__(3);
 var ControlStatus;
 (function (ControlStatus) {
     ControlStatus["pending"] = "pending";
-    ControlStatus["accepted"] = "accepted";
-    ControlStatus["rejected"] = "rejected";
+    ControlStatus["accept"] = "accept";
+    ControlStatus["reject"] = "reject";
     ControlStatus["fail"] = "fail";
     ControlStatus["unknown"] = "unknown";
 })(ControlStatus || (exports.ControlStatus = ControlStatus = {}));
@@ -14980,7 +14997,10 @@ class ControlModel {
                 }
                 break;
             }
-            case control_type_1.ControlCommand.safetyIoControl: {
+            case control_type_1.ControlCommand.getDigitalIO: {
+                break;
+            }
+            case control_type_1.ControlCommand.setDigitalIO: {
                 if (this.mcuDio === undefined || this.mcuDio.length === 0) {
                     throw new rpc_code_exception_1.RpcCodeException('mcuDio 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }

@@ -1,27 +1,38 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ControlCommand } from './type/control.type';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { McuDio } from '@app/common/grpc/proto/control';
 import { Result } from '../config/config.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class SafetyIoRequestDto {
-  @ApiProperty({
-    description: 'MCU DIO 명령',
-    example: ControlCommand.safetyIoControl,
-    required: true,
-  })
-  command: string;
-
   @ApiProperty({
     description: 'MCU DIO 명령 파라미터 (채널당 8bit 값)',
     example: [
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
     ],
+    required: false,
+  })
+  @IsOptional()
+  @Expose()
+  mcuDio?: number[][];
+}
+
+export class SafetyIoRequestSlamnav extends SafetyIoRequestDto {
+  @ApiProperty({
+    description: '명령 ID',
+    example: '550e8400-e29b-41d4-a716-446655440000',
     required: true,
   })
-  mcuDio: number[][];
+  id: string;
+
+  @ApiProperty({
+    description: 'MCU DIO 명령',
+    example: ControlCommand.getDigitalIO,
+    required: true,
+  })
+  command: string;
 }
 
 export class SafetyIoResponseDto extends SafetyIoRequestDto {
@@ -42,15 +53,6 @@ export class SafetyIoResponseDto extends SafetyIoRequestDto {
   @IsOptional()
   @IsString()
   message?: string;
-}
-
-export class SafetyIoRequestSlamnav extends SafetyIoRequestDto {
-  @ApiProperty({
-    description: '명령 ID',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-    required: true,
-  })
-  id: string;
 }
 
 export class SafetyIoResponseSlamnav extends SafetyIoResponseDto {

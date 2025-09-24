@@ -12,7 +12,8 @@ export enum ControlCommand {
   resetSafetyField = 'resetSafetyField',
   footMove = 'footMove',
   footStop = 'footStop',
-  safetyIoControl = 'safetyIoControl',
+  getDigitalIO = 'getDigitalIO',
+  setDigitalIO = 'setDigitalIO',
   setObsBox = 'setObsBox',
   getObsBox = 'getObsBox',
 }
