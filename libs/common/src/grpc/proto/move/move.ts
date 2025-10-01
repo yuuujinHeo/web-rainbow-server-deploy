@@ -69,6 +69,7 @@ export interface MoveCommandResquest {
   vx?: number | undefined;
   vy?: number | undefined;
   wz?: number | undefined;
+  direction?: string | undefined;
 }
 
 export interface MoveCommandResponse {
@@ -83,6 +84,7 @@ export interface MoveCommandResponse {
   vx?: number | undefined;
   vy?: number | undefined;
   wz?: number | undefined;
+  direction?: string | undefined;
 }
 
 export const MOVE_PACKAGE_NAME = "move";

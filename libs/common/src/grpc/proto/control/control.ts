@@ -72,6 +72,7 @@ export interface SafetyIoControlRequest {
 export interface SafetyIoControlResponse {
   command: string;
   mcuDio: McuDio[];
+  mcuDin: McuDio[];
   result: string;
   message?: string | undefined;
 }

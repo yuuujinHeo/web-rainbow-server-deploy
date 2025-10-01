@@ -3129,8 +3129,6 @@ let TaskMqttInputController = class TaskMqttInputController {
             listener.received.push(data);
             listener.resolve(data);
             this.pendingService.pendingResponses.delete(data.id);
-        }
-        {
             this.taskService.updateResponse(data);
         }
     }
@@ -3540,6 +3538,8 @@ const microservices_1 = __webpack_require__(2);
 const util_1 = __webpack_require__(38);
 const constant_1 = __webpack_require__(77);
 const task_pending_service_1 = __webpack_require__(70);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_2 = __webpack_require__(51);
 let TaskSocketioOutputController = class TaskSocketioOutputController {
     constructor(mqttMicroservice, pendingService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -3552,7 +3552,7 @@ let TaskSocketioOutputController = class TaskSocketioOutputController {
     async taskSocketRequest(data) {
         try {
             this.loggerService.debug(`[Task] taskSocketRequest : ${JSON.stringify(data)}`);
-            const response = this.waitForResponse(data.id);
+            const response = this.waitForResponse(data.id, 5000);
             this.mqttMicroservice.emit('taskman:taskRequest', data);
             const resp = await response;
             this.loggerService.debug(`[Task] taskSocketRequest Response : ${JSON.stringify(resp)}`);
@@ -3567,7 +3567,7 @@ let TaskSocketioOutputController = class TaskSocketioOutputController {
         try {
             const id = util_1.UrlUtil.generateUUID();
             this.loggerService.debug(`[Task] stateSocketRequest : ${id}`);
-            const response = this.waitForResponse(id, 1000);
+            const response = this.waitForResponse(id, 5000);
             this.mqttMicroservice.emit('taskman:stateRequest', { id: id });
             const resp = await response;
             this.loggerService.debug(`[Task] stateSocketRequest Response : ${JSON.stringify(resp)}`);
@@ -3582,7 +3582,7 @@ let TaskSocketioOutputController = class TaskSocketioOutputController {
         try {
             const id = util_1.UrlUtil.generateUUID();
             this.loggerService.debug(`[Task] variableSocketRequest : ${id}`);
-            const response = this.waitForResponse(id);
+            const response = this.waitForResponse(id, 5000);
             this.mqttMicroservice.emit('taskman:variableRequest', { id: id });
             const resp = await response;
             this.loggerService.debug(`[Task] variableSocketRequest Response : ${JSON.stringify(resp)}`);
@@ -3599,7 +3599,8 @@ let TaskSocketioOutputController = class TaskSocketioOutputController {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    reject(new Error(`Timeout ${id} , ${timeoutMs}`));
+                    this.loggerService.error(`[Task] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
             this.pendingService.pendingResponses.set(id, {
@@ -3661,34 +3662,29 @@ exports.message = __webpack_require__(82);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.CODE_SERVICE = exports.TASK_SERVICE = exports.MQTT_BROKER = exports.SOUND_SERVICE = exports.EXTERNAL_ACCESSORY_SERVICE = exports.SOCKETIO_SERVICE = exports.REDIS_SERVICE = exports.HOST_SERVER = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.LOG_SERVICE = exports.FILE_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.SLAMNAV_SERVICE = exports.SETTING_SERVICE = exports.CONTROL_SERVICE = exports.CONFIG_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
 exports.AUTH_SERVICE = 'AUTH_SERVICE';
 exports.USER_SERVICE = 'USER_SERVICE';
 exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
 exports.ROLE_SERVICE = 'ROLE_SERVICE';
 exports.GROUP_SERVICE = 'GROUP_SERVICE';
 exports.AMR_SERVICE = 'AMR_SERVICE';
+exports.REDIS_SERVICE = 'REDIS_SERVICE';
+exports.CODE_SERVICE = 'CODE_SERVICE';
 exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
-exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
 exports.SETTING_SERVICE = 'SETTING_SERVICE';
-exports.SLAMNAV_SERVICE = 'SLAMNAV_SERVICE';
+exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
 exports.MOVE_SERVICE = 'MOVE_SERVICE';
 exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
 exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
-exports.FILE_SERVICE = 'FILE_SERVICE';
-exports.LOG_SERVICE = 'LOG_SERVICE';
 exports.MAP_SERVICE = 'MAP_SERVICE';
 exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
-exports.HOST_SERVER = 'HOST_SERVER';
-exports.REDIS_SERVICE = 'REDIS_SERVICE';
-exports.SOCKETIO_SERVICE = 'SOCKETIO_SERVICE';
-exports.EXTERNAL_ACCESSORY_SERVICE = 'EXTERNAL_ACCESSORY_SERVICE';
 exports.SOUND_SERVICE = 'SOUND_SERVICE';
-exports.MQTT_BROKER = 'MQTT_BROKER';
 exports.TASK_SERVICE = 'TASK_SERVICE';
-exports.CODE_SERVICE = 'CODE_SERVICE';
 exports.COBOT_SERVICE = 'COBOT_SERVICE';
 exports.TCP_SERVICE = 'TCP_SERVICE';
+exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
+exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
 /***/ }),

@@ -1847,7 +1847,7 @@ exports.MapModule = MapModule = __decorate([
                 clients: [
                     {
                         inject: [config_1.ConfigService],
-                        name: constant_1.SOCKETIO_SERVICE,
+                        name: constant_1.MQTT_BROKER,
                         useFactory: (configService) => ({
                             transport: microservices_1.Transport.MQTT,
                             options: {
@@ -2610,7 +2610,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapCommandModel = exports.MapCommand = exports.CommandStatus = void 0;
 const rpc_code_exception_1 = __webpack_require__(46);
 const constant_1 = __webpack_require__(47);
-const microservices_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(40);
 var CommandStatus;
 (function (CommandStatus) {
@@ -2664,7 +2663,7 @@ class MapCommandModel {
     }
     statusChange(status) {
         if (!this.id) {
-            throw new microservices_1.RpcException('ID가 없습니다');
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
         }
         const parseStatus = this.parseStatus(status);
         this.status = parseStatus;
@@ -2810,6 +2809,8 @@ const fs_1 = __webpack_require__(39);
 const path_1 = __webpack_require__(40);
 const logger_1 = __webpack_require__(29);
 const microservices_1 = __webpack_require__(3);
+const rpc_code_exception_1 = __webpack_require__(46);
+const constant_1 = __webpack_require__(47);
 class ZipUtil {
     static async zipFolder(sourcePath, zipPath) {
         try {
@@ -2837,7 +2838,7 @@ class ZipUtil {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             logger_1.LoggerService.get('util').error(`[ZIP] zipFolder: ${(0, logger_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('파일을 압축할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('파일을 압축할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     static async unzipFolder(zipPath, targetPath) {
@@ -2853,7 +2854,7 @@ class ZipUtil {
         }
         catch (error) {
             logger_1.LoggerService.get('util').error(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}, ${(0, logger_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('파일을 압축 해제할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('파일을 압축 해제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
 }
@@ -2904,8 +2905,9 @@ const typeorm_1 = __webpack_require__(56);
 const map_entity_1 = __webpack_require__(68);
 const typeorm_2 = __webpack_require__(69);
 const common_1 = __webpack_require__(4);
-const microservices_1 = __webpack_require__(3);
 const parse_util_1 = __webpack_require__(49);
+const rpc_code_exception_1 = __webpack_require__(46);
+const constant_1 = __webpack_require__(47);
 let MapPostgresAdapter = class MapPostgresAdapter {
     constructor(commandRepository) {
         this.commandRepository = commandRepository;
@@ -2917,7 +2919,7 @@ let MapPostgresAdapter = class MapPostgresAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Map] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async save(command) {
@@ -2928,7 +2930,7 @@ let MapPostgresAdapter = class MapPostgresAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Map] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async update(command) {
@@ -2940,7 +2942,7 @@ let MapPostgresAdapter = class MapPostgresAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Map] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
 };
@@ -3056,6 +3058,8 @@ const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(4);
 const constant_1 = __webpack_require__(71);
 const map_pending_service_1 = __webpack_require__(78);
+const rpc_code_exception_1 = __webpack_require__(46);
+const constant_2 = __webpack_require__(47);
 let MapSocketIOAdapter = class MapSocketIOAdapter {
     constructor(mqttService, pendingService) {
         this.mqttService = mqttService;
@@ -3064,7 +3068,7 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
     }
     async mappingRequest(request) {
         this.loggerService.debug(`[Map] moveRequest : ${JSON.stringify(request)}`);
-        const response = this.waitForResponse(request.id);
+        const response = this.waitForResponse(request.id, 5000);
         this.mqttService.emit('mappingRequest', request);
         const resp = await response;
         this.loggerService.debug(`[Map] moveResponse : ${JSON.stringify(resp)}`);
@@ -3072,17 +3076,35 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
     }
     async loadRequest(request) {
         this.loggerService.debug(`[Map] loadRequest : ${JSON.stringify(request)}`);
-        const response = this.waitForResponse(request.id);
+        const response = this.waitForResponse(request.id, 5000);
         this.mqttService.emit('loadRequest', request);
         const resp = await response;
         this.loggerService.debug(`[Map] loadResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
-    async waitForResponse(id) {
+    async waitForResponse(id, timeoutMs) {
         return new Promise((resolve, reject) => {
+            let timeout;
+            if (timeoutMs) {
+                timeout = setTimeout(() => {
+                    this.pendingService.pendingResponses.delete(id);
+                    this.loggerService.error(`[Map] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
+                }, timeoutMs);
+            }
             this.pendingService.pendingResponses.set(id, {
-                resolve,
-                reject,
+                resolve: (value) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    resolve(value);
+                },
+                reject: (error) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    reject(error);
+                },
                 received: [],
             });
         });
@@ -3090,7 +3112,7 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
 };
 exports.MapSocketIOAdapter = MapSocketIOAdapter;
 exports.MapSocketIOAdapter = MapSocketIOAdapter = __decorate([
-    __param(0, (0, common_1.Inject)(constant_1.SOCKETIO_SERVICE)),
+    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof map_pending_service_1.MapPendingResponseService !== "undefined" && map_pending_service_1.MapPendingResponseService) === "function" ? _b : Object])
 ], MapSocketIOAdapter);
 
@@ -3128,34 +3150,29 @@ exports.message = __webpack_require__(76);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.CODE_SERVICE = exports.TASK_SERVICE = exports.MQTT_BROKER = exports.SOUND_SERVICE = exports.EXTERNAL_ACCESSORY_SERVICE = exports.SOCKETIO_SERVICE = exports.REDIS_SERVICE = exports.HOST_SERVER = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.LOG_SERVICE = exports.FILE_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.SLAMNAV_SERVICE = exports.SETTING_SERVICE = exports.CONTROL_SERVICE = exports.CONFIG_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
 exports.AUTH_SERVICE = 'AUTH_SERVICE';
 exports.USER_SERVICE = 'USER_SERVICE';
 exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
 exports.ROLE_SERVICE = 'ROLE_SERVICE';
 exports.GROUP_SERVICE = 'GROUP_SERVICE';
 exports.AMR_SERVICE = 'AMR_SERVICE';
+exports.REDIS_SERVICE = 'REDIS_SERVICE';
+exports.CODE_SERVICE = 'CODE_SERVICE';
 exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
-exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
 exports.SETTING_SERVICE = 'SETTING_SERVICE';
-exports.SLAMNAV_SERVICE = 'SLAMNAV_SERVICE';
+exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
 exports.MOVE_SERVICE = 'MOVE_SERVICE';
 exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
 exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
-exports.FILE_SERVICE = 'FILE_SERVICE';
-exports.LOG_SERVICE = 'LOG_SERVICE';
 exports.MAP_SERVICE = 'MAP_SERVICE';
 exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
-exports.HOST_SERVER = 'HOST_SERVER';
-exports.REDIS_SERVICE = 'REDIS_SERVICE';
-exports.SOCKETIO_SERVICE = 'SOCKETIO_SERVICE';
-exports.EXTERNAL_ACCESSORY_SERVICE = 'EXTERNAL_ACCESSORY_SERVICE';
 exports.SOUND_SERVICE = 'SOUND_SERVICE';
-exports.MQTT_BROKER = 'MQTT_BROKER';
 exports.TASK_SERVICE = 'TASK_SERVICE';
-exports.CODE_SERVICE = 'CODE_SERVICE';
 exports.COBOT_SERVICE = 'COBOT_SERVICE';
 exports.TCP_SERVICE = 'TCP_SERVICE';
+exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
+exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
 /***/ }),
@@ -3407,15 +3424,20 @@ let MapMqttInputController = class MapMqttInputController {
         }
     }
     getLoadResponse(data) {
-        const { id } = data;
-        const listener = this.pendingService.pendingResponses.get(id);
-        if (listener) {
-            listener.received.push(data);
-            listener.resolve(data);
-            this.pendingService.pendingResponses.delete(id);
+        try {
+            const { id } = data;
+            const listener = this.pendingService.pendingResponses.get(id);
+            if (listener) {
+                listener.received.push(data);
+                listener.resolve(data);
+                this.pendingService.pendingResponses.delete(id);
+            }
+            else {
+                this.mapService.loadResponse(data);
+            }
         }
-        else {
-            this.mapService.loadResponse(data);
+        catch (error) {
+            this.loggerService.error(`[Map] getLoadResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
 };
@@ -3780,6 +3802,7 @@ const date_util_1 = __webpack_require__(36);
 const swagger_1 = __webpack_require__(82);
 const class_validator_1 = __webpack_require__(83);
 const state_type_1 = __webpack_require__(88);
+const class_transformer_1 = __webpack_require__(84);
 var Description;
 (function (Description) {
     Description["IMU"] = "IMU, Gyro \uC13C\uC11C \uB370\uC774\uD130";
@@ -3840,6 +3863,16 @@ var Description;
     Description["CUR_XYZ"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uAE00\uB85C\uBC8C \uC88C\uD45C";
     Description["PATH_XYZ"] = "\uC8FC\uD589 \uC911 \uC0DD\uC131\uD55C \uACBD\uB85C \uD3EC\uC778\uD2B8\uC758 \uAE00\uB85C\uBC8C\uC88C\uD45C";
     Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
+    Description["POWER_TABOS_AE"] = "TABOS \uC804\uC555 \uC624\uCC28";
+    Description["POWER_TABOS_CURRENT"] = "TABOS \uC804\uB958";
+    Description["POWER_TABOS_RC"] = "TABOS \uC804\uC555 \uC624\uCC28";
+    Description["POWER_TABOS_SOC"] = "TABOS \uCDA9\uC804 \uC0C1\uD0DC";
+    Description["POWER_TABOS_SOH"] = "TABOS \uC140 \uC0C1\uD0DC";
+    Description["POWER_TABOS_STATUS"] = "TABOS \uC0C1\uD0DC";
+    Description["POWER_TABOS_TEMP"] = "TABOS \uC628\uB3C4";
+    Description["POWER_TABOS_TTE"] = "TABOS \uC140 \uC624\uCC28";
+    Description["POWER_TABOS_TTF"] = "TABOS \uC140 \uC624\uCC28";
+    Description["POWER_TABOS_VOLTAGE"] = "TABOS \uC804\uC555";
 })(Description || (Description = {}));
 class StatusIMUDto {
 }
@@ -3847,92 +3880,83 @@ exports.StatusIMUDto = StatusIMUDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_IMU,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "imu_rx", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_IMU,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "imu_ry", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_IMU,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "imu_rz", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_ACC,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "acc_x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_ACC,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "acc_y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_ACC,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "acc_z", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_GYR,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "gyr_x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_GYR,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "gyr_y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.IMU_GYR,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusIMUDto.prototype, "gyr_z", void 0);
 class StatusLidarDto {
 }
@@ -3940,12 +3964,11 @@ exports.StatusLidarDto = StatusLidarDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.LIDAR_CONNECTION,
-        example: 'false',
+        example: false,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
 ], StatusLidarDto.prototype, "connection", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
@@ -3973,42 +3996,38 @@ exports.StatuMotorDto = StatuMotorDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.MOTOR_CONNECTION,
-        example: 'false',
+        example: false,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
 ], StatuMotorDto.prototype, "connection", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.MOTOR_CURRENT,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatuMotorDto.prototype, "current", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.MOTOR_STATUS,
-        example: '0',
+        example: 0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatuMotorDto.prototype, "status", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.MOTOR_TEMP,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatuMotorDto.prototype, "temp", void 0);
 class StatusConditionDto {
 }
@@ -4016,42 +4035,38 @@ exports.StatusConditionDto = StatusConditionDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.CONDITION_INLIER_RATIO,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusConditionDto.prototype, "inlier_ratio", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.CONDITION_INLIER_ERROR,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusConditionDto.prototype, "inlier_error", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.CONDITION_MAPPING_RATIO,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusConditionDto.prototype, "mapping_ratio", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.CONDITION_MAPPING_ERROR,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusConditionDto.prototype, "mapping_error", void 0);
 class StatusStateDto {
 }
@@ -4064,28 +4079,25 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], StatusStateDto.prototype, "charge", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.STATE_DOCK,
-        example: 'false',
+        example: false,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
 ], StatusStateDto.prototype, "dock", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.STATE_EMO,
-        example: 'false',
+        example: false,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
 ], StatusStateDto.prototype, "emo", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
@@ -4095,18 +4107,16 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], StatusStateDto.prototype, "localization", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.STATE_POWER,
-        example: 'false',
+        example: false,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
 ], StatusStateDto.prototype, "power", void 0);
 class StatusPowerDto {
 }
@@ -4114,83 +4124,183 @@ exports.StatusPowerDto = StatusPowerDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_BATTERY_CURRENT,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "bat_current", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_BATTERY_IN,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "bat_in", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_BATTERY_OUT,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "bat_out", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_BATTERY_PERCENT,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "bat_percent", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_CHARGE_CURRENT,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "charge_current", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_CONTACT_VOLTAGE,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "contact_voltage", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_POWER,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "power", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.POWER_TOTAL_POWER,
-        example: '0.0',
+        example: 0.0,
         required: false,
     }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
 ], StatusPowerDto.prototype, "total_power", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_AE,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_ae", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_CURRENT,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_current", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_RC,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_rc", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_SOC,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_soc", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_SOH,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_soh", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_STATUS,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_TEMP,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_temp", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_TTE,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_tte", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_TTF,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_ttf", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POWER_TABOS_VOLTAGE,
+        example: 0.0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], StatusPowerDto.prototype, "tabos_voltage", void 0);
 class StatusSettingDto {
 }
 exports.StatusSettingDto = StatusSettingDto;
@@ -4201,7 +4311,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], StatusSettingDto.prototype, "platform_type", void 0);
 class StatusMapDto {
@@ -4214,7 +4323,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], StatusMapDto.prototype, "map_name", void 0);
 __decorate([
@@ -4225,7 +4333,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], StatusMapDto.prototype, "map_status", void 0);
 class StatusSlamnav {
@@ -4259,16 +4366,16 @@ __decorate([
         description: Description.MOTOR,
         example: [
             {
-                connection: 'false',
-                current: '0.0',
-                status: '0',
-                temp: '0.0',
+                connection: false,
+                current: 0.0,
+                status: 0,
+                temp: 0.0,
             },
             {
-                connection: 'true',
-                current: '1.54',
-                status: '1',
-                temp: '32.0',
+                connection: true,
+                current: 1.54,
+                status: 1,
+                temp: 32.0,
             },
         ],
         required: false,
@@ -4604,7 +4711,7 @@ class SettingFileService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[SETTING] getSetting : ${(0, common_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('세팅을 불러오던 중 에러가 발생했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('세팅을 불러오던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async saveSetting(request) {
@@ -4641,7 +4748,7 @@ class SettingFileService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[SETTING] saveSetting : ${(0, common_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('세팅을 저장하던 중 에러가 발생했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('세팅을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getPreset(request) {
@@ -4667,7 +4774,7 @@ class SettingFileService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('프리셋을 읽던 중 에러가 발생했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async deletePreset(request) {
@@ -4693,7 +4800,7 @@ class SettingFileService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('프리셋을 읽던 중 에러가 발생했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async createPreset(request) {
@@ -4740,7 +4847,7 @@ class SettingFileService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('프리셋을 읽던 중 에러가 발생했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async savePreset(request) {
@@ -4776,7 +4883,7 @@ class SettingFileService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[SETTING] savePreset : ${(0, common_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('프리셋을 저장하던 중 에러가 발생했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('프리셋을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getPresetList(request) {
@@ -5289,6 +5396,8 @@ const sound_output_port_1 = __webpack_require__(101);
 const microservices_1 = __webpack_require__(3);
 const fs_1 = __webpack_require__(39);
 const path_1 = __webpack_require__(40);
+const rpc_code_exception_1 = __webpack_require__(46);
+const constant_1 = __webpack_require__(47);
 let SoundService = class SoundService {
     constructor(soundOutput) {
         this.soundOutput = soundOutput;
@@ -5300,16 +5409,16 @@ let SoundService = class SoundService {
     async playSound(request) {
         try {
             if (process.env.HOST_OS !== 'linux') {
-                throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+                throw new rpc_code_exception_1.RpcCodeException('Linux Host 환경에서만 작동합니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.fileName === undefined || request.fileName === '') {
-                throw new microservices_1.RpcException('name 값이 없습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.volume === undefined) {
-                throw new microservices_1.RpcException('volume 값이 없습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('volume 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.volume < 0 || request.volume > 100) {
-                throw new microservices_1.RpcException(`volume 값의 범위가 기준을 벗어납니다. (값 : ${request.volume}, 기준 : 0 ~ 100%)`);
+                throw new rpc_code_exception_1.RpcCodeException(`volume 값의 범위가 기준을 벗어납니다. (값 : ${request.volume}, 기준 : 0 ~ 100%)`, constant_1.GrpcCode.InvalidArgument);
             }
             if (request.repeatCount < 1) {
                 request.repeatCount = 1;
@@ -5317,7 +5426,7 @@ let SoundService = class SoundService {
             const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
             if (!(0, fs_1.existsSync)(path)) {
                 this.loggerService.error(`[Sound] playSound : 경로의 파일이 존재하지 않습니다. ${path}`);
-                throw new microservices_1.RpcException(`경로의 파일이 존재하지 않습니다. ${request.fileName}`);
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. ${request.fileName}`, constant_1.GrpcCode.NotFound);
             }
             return this.soundOutput.play(request);
         }
@@ -5325,19 +5434,19 @@ let SoundService = class SoundService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Sound] playSound : ${(0, logger_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('파일을 플레이할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async stopSound() {
         if (process.env.HOST_OS !== 'linux') {
-            throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+            throw new rpc_code_exception_1.RpcCodeException('Linux Host 환경에서만 작동합니다.', constant_1.GrpcCode.InvalidArgument);
         }
         return this.soundOutput.stop();
     }
     async getSoundList() {
         try {
             if (process.env.HOST_OS !== 'linux') {
-                throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+                throw new rpc_code_exception_1.RpcCodeException('Linux Host 환경에서만 작동합니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = (0, path_1.join)(process.cwd(), 'public', 'sound');
             const files = (0, fs_1.readdirSync)(path, { withFileTypes: true });
@@ -5353,20 +5462,20 @@ let SoundService = class SoundService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Sound] getSoundList : ${(0, logger_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('리스트를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('리스트를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async deleteSoundFile(request) {
         try {
             if (process.env.HOST_OS !== 'linux') {
-                throw new microservices_1.RpcException('Linux Host 환경에서만 작동합니다.');
+                throw new rpc_code_exception_1.RpcCodeException('Linux Host 환경에서만 작동합니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.fileName === undefined || request.fileName === '') {
-                throw new microservices_1.RpcException('name 값이 없습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('name 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
             if (!(0, fs_1.existsSync)(path)) {
-                throw new microservices_1.RpcException(`파일이 존재하지 않습니다. ( name : ${request.fileName} )`);
+                throw new rpc_code_exception_1.RpcCodeException(`파일이 존재하지 않습니다. ( name : ${request.fileName} )`, constant_1.GrpcCode.NotFound);
             }
             (0, fs_1.unlinkSync)(path);
             return request;
@@ -5375,7 +5484,7 @@ let SoundService = class SoundService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Sound] deleteSoundFile : ${(0, logger_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('파일을 삭제할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('파일을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
 };
@@ -5434,7 +5543,7 @@ class SoundPlaySoundAdapter {
                 const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
                 this.loggerService.debug(`[Sound] Play: ${path}`);
                 if (!(0, fs_1.existsSync)(path)) {
-                    reject(new microservices_1.RpcException(`경로의 파일이 존재하지 않습니다. ${path}`));
+                    reject(new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. ${path}`, constant_1.GrpcCode.NotFound));
                 }
                 if (this.curPlaying) {
                     this.loggerService.info(`[Sound] Play: Stop cur Playing`);
@@ -5456,7 +5565,7 @@ class SoundPlaySoundAdapter {
                 if (error instanceof microservices_1.RpcException)
                     reject(error);
                 this.loggerService.error(`[Sound] Play: ${(0, common_1.errorToJson)(error)}`);
-                reject(new microservices_1.RpcException('파일을 플레이할 수 없습니다.'));
+                reject(new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
     }
@@ -5465,7 +5574,7 @@ class SoundPlaySoundAdapter {
             this.loggerService.info(`[Sound] Stop`);
             if (!this.curPlaying) {
                 this.loggerService.warn(`[Sound] Stop: curPlaying is null`);
-                throw new microservices_1.RpcException('실행중인 플레이가 없습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('실행중인 플레이가 없습니다.', constant_1.GrpcCode.NotFound);
             }
             await this.stopPlaying();
         }
@@ -5473,7 +5582,7 @@ class SoundPlaySoundAdapter {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
-            throw new microservices_1.RpcException('플레이를 종료할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('플레이를 종료할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async playSync(path, volume) {
@@ -5488,7 +5597,7 @@ class SoundPlaySoundAdapter {
                     else {
                         console.error(err);
                         this.loggerService.error(`[Sound] Play: ${(0, common_1.errorToJson)(err)}`);
-                        reject(new microservices_1.RpcException('파일을 플레이할 수 없습니다.'));
+                        reject(new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError));
                     }
                 }
                 resolve();
@@ -6386,7 +6495,7 @@ let UpdateSocketioAdapter = class UpdateSocketioAdapter {
     async updateSLAMNAV(request) {
         try {
             this.loggerService.debug(`[Update] updateSLAMNAV : ${JSON.stringify(request)}`);
-            const response = this.waitForResponse(request.id);
+            const response = this.waitForResponse(request.id, 5000);
             this.mqttService.emit('updateRequest', request);
             const resp = await response;
             this.loggerService.debug(`[Update] updateSLAMNAV Response : ${JSON.stringify(resp)}`);
@@ -6402,7 +6511,7 @@ let UpdateSocketioAdapter = class UpdateSocketioAdapter {
     async getVersion(request) {
         try {
             this.loggerService.debug(`[Update] getVersion : ${JSON.stringify(request)}`);
-            const response = this.waitForResponse(request.id, 1000);
+            const response = this.waitForResponse(request.id, 5000);
             this.mqttService.emit('swVersionInfo', request);
             const resp = await response;
             this.loggerService.debug(`[Update] getVersion Response : ${JSON.stringify(resp)}`);
@@ -6421,7 +6530,7 @@ let UpdateSocketioAdapter = class UpdateSocketioAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.loggerService.error(`[UPDATE] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.loggerService.error(`[Update] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_1.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -6497,12 +6606,13 @@ const mongoose_1 = __webpack_require__(107);
 const mongoose_2 = __webpack_require__(121);
 const common_1 = __webpack_require__(4);
 const typeorm_1 = __webpack_require__(56);
-const microservices_1 = __webpack_require__(3);
 const parse_util_1 = __webpack_require__(49);
 const typeorm_2 = __webpack_require__(69);
 const util_1 = __webpack_require__(33);
 const update_command_entity_1 = __webpack_require__(106);
 const update_version_entity_1 = __webpack_require__(122);
+const rpc_code_exception_1 = __webpack_require__(46);
+const constant_1 = __webpack_require__(47);
 let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
     constructor(Repository, VersionRepository) {
         this.Repository = Repository;
@@ -6515,7 +6625,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB getVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async setCurrentVersion(model) {
@@ -6534,7 +6644,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB setCurrentVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async setNewVersion(model) {
@@ -6551,7 +6661,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB setNewVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getNodebyId(id) {
@@ -6560,7 +6670,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async save(model) {
@@ -6570,7 +6680,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async update(model) {
@@ -6877,6 +6987,8 @@ const constant_1 = __webpack_require__(71);
 const network_output_port_1 = __webpack_require__(127);
 const network_database_output_port_1 = __webpack_require__(128);
 const network_domain_1 = __webpack_require__(129);
+const rpc_code_exception_1 = __webpack_require__(46);
+const constant_2 = __webpack_require__(47);
 let NetworkService = class NetworkService {
     constructor(mqttMicroservice, networkOutput, networkDatabase) {
         this.mqttMicroservice = mqttMicroservice;
@@ -6912,7 +7024,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getEthernet() {
@@ -6937,7 +7049,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getWifi() {
@@ -6962,7 +7074,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getBluetooth() {
@@ -6987,7 +7099,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getDevice(device) {
@@ -7012,7 +7124,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async setNetwork(request) {
@@ -7037,7 +7149,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 수정할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 수정할 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async connectWifi(request) {
@@ -7062,7 +7174,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] connectWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('와이파이 연결에 실패했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('와이파이 연결에 실패했습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async wifiScan() {
@@ -7087,7 +7199,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] wifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('와이파이 스캔에 실패했습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('와이파이 스캔에 실패했습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getWifiList() {
@@ -7112,7 +7224,7 @@ let NetworkService = class NetworkService {
             if (error instanceof microservices_1.RpcException)
                 throw error;
             this.loggerService.error(`[Network] getWifiList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('와이파이 목록을 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('와이파이 목록을 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
 };
@@ -7420,7 +7532,7 @@ class NetworkNmcliAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 수정할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 수정할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async connectWifi(model) {
@@ -7441,10 +7553,10 @@ class NetworkNmcliAdapter {
                 return { ssid: model.ssid };
             }
             else if (data.includes('Secrets were required')) {
-                throw new microservices_1.RpcException('비밀번호가 틀렸습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('비밀번호가 틀렸습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             else {
-                throw new microservices_1.RpcException(data);
+                throw new rpc_code_exception_1.RpcCodeException(data.toString(), constant_1.GrpcCode.InternalError);
             }
         }
         catch (error) {
@@ -7454,15 +7566,15 @@ class NetworkNmcliAdapter {
             const errorStr = parse_util_1.ParseUtil.errorToJson(error);
             this.loggerService.warn(`[Network] Connect Wifi: ${errorStr}`);
             if (errorStr.includes('Secrets were required')) {
-                throw new microservices_1.RpcException('비밀번호가 틀렸습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('비밀번호가 틀렸습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             else if (errorStr.includes('No network with SSID')) {
-                throw new microservices_1.RpcException('SSID를 찾을 수 없습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('SSID를 찾을 수 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             else if (errorStr.includes('property is invalid')) {
-                throw new microservices_1.RpcException('비밀번호가 틀렸습니다.');
+                throw new rpc_code_exception_1.RpcCodeException('비밀번호가 틀렸습니다.', constant_1.GrpcCode.InvalidArgument);
             }
-            throw new microservices_1.RpcException(error.message);
+            throw new rpc_code_exception_1.RpcCodeException(error.message, constant_1.GrpcCode.InternalError);
         }
     }
     async wifiScan() {
@@ -7475,7 +7587,7 @@ class NetworkNmcliAdapter {
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
-            throw new microservices_1.RpcException('와이파이 목록을 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('와이파이 목록을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     getWifiList() {
@@ -7483,7 +7595,7 @@ class NetworkNmcliAdapter {
             wifi.scan((error, networks) => {
                 if (error) {
                     this.loggerService.error(`[Network] WifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-                    return reject(new microservices_1.RpcException('와이파이 목록을 가져올 수 없습니다.'));
+                    return reject(new rpc_code_exception_1.RpcCodeException('와이파이 목록을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError));
                 }
                 const wifiMap = new Map();
                 for (const net of networks) {
@@ -7540,7 +7652,7 @@ class NetworkNmcliAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async nmcliConnectionShow() {
@@ -7577,7 +7689,7 @@ class NetworkNmcliAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getConnectionInfo(name) {
@@ -7685,7 +7797,7 @@ class NetworkNmcliAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Network] parseNMCLI: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('네트워크 정보를 파싱할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 파싱할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
 }
@@ -7721,10 +7833,11 @@ exports.NetworkMongoAdapter = void 0;
 const mongoose_1 = __webpack_require__(107);
 const mongoose_2 = __webpack_require__(121);
 const common_1 = __webpack_require__(4);
-const microservices_1 = __webpack_require__(3);
 const parse_util_1 = __webpack_require__(49);
 const util_1 = __webpack_require__(33);
 const network_command_entity_1 = __webpack_require__(133);
+const rpc_code_exception_1 = __webpack_require__(46);
+const constant_1 = __webpack_require__(47);
 let NetworkMongoAdapter = class NetworkMongoAdapter {
     constructor(Repository) {
         this.Repository = Repository;
@@ -7736,7 +7849,7 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Network] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async save(model) {
@@ -7746,7 +7859,7 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Network] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async update(move) {

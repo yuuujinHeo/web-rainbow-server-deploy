@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export const CobotDataRequestCommand = 'reqdata';
 export enum CobotCommand {
   halt = 'halt',
   taskStop = 'task stop',
@@ -15,6 +14,7 @@ export enum CobotCommand {
   taskPause = 'task pause',
   taskResumeA = 'task resume_a',
   taskResumeB = 'task resume_b',
+  requestData = 'reqdata',
 }
 
 export class CobotCommandRequestDto {

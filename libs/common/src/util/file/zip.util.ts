@@ -3,6 +3,8 @@ import { existsSync, mkdirSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { errorToJson, LoggerService } from '../../logger';
 import { RpcException } from '@nestjs/microservices';
+import { RpcCodeException } from '@app/common/exception/rpc-code.exception';
+import { GrpcCode } from '@app/common/grpc/constant';
 
 export class ZipUtil {
   static async zipFolder(sourcePath: string, zipPath: string): Promise<boolean> {
@@ -38,7 +40,7 @@ export class ZipUtil {
     } catch (error) {
       if (error instanceof RpcException) throw error;
       LoggerService.get('util').error(`[ZIP] zipFolder: ${errorToJson(error)}`);
-      throw new RpcException('파일을 압축할 수 없습니다.');
+      throw new RpcCodeException('파일을 압축할 수 없습니다.', GrpcCode.InternalError);
     }
   }
 
@@ -61,7 +63,7 @@ export class ZipUtil {
       return true;
     } catch (error) {
       LoggerService.get('util').error(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}, ${errorToJson(error)}`);
-      throw new RpcException('파일을 압축 해제할 수 없습니다.');
+      throw new RpcCodeException('파일을 압축 해제할 수 없습니다.', GrpcCode.InternalError);
     }
   }
 }

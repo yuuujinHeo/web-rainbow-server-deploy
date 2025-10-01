@@ -17,6 +17,7 @@ enum Description {
   PRESET = '속도 프리셋. 기본값은 0이며 현재 지원하지 않습니다.',
   RESULT = '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
   MESSAGE = 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+  DIRECTION = '주행 방향. 기본값은 forward 입니다.',
   X = 'target 이동 시, 목표지점의 지도상 x좌표를 입력하세요. 단위는 [m] 입니다.',
   Y = 'target 이동 시, 목표지점의 지도상 y좌표를 입력하세요. 단위는 [m] 입니다.',
   Z = 'target 이동 시, 목표지점의 지도상 z좌표를 입력하세요. 특정 모델만 사용합니다. 기본값 0으로 입력해주세요. 단위는 [m] 입니다.',
@@ -59,6 +60,18 @@ export class MoveRequestDto {
   @Length(1, 50)
   @Expose()
   method?: string;
+
+  @ApiProperty({
+    description: Description.DIRECTION,
+    example: 'forward',
+    enum: ['forward', 'backward'],
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  direction?: string;
 
   @ApiProperty({
     description: Description.PRESET,
@@ -159,6 +172,13 @@ export class MoveGoalCommandDto {
   @IsNumber()
   @Expose()
   preset?: number;
+
+  @ApiProperty({ description: Description.DIRECTION, example: 'forward' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  direction?: string;
 }
 
 export class MoveTargetCommandDto {
@@ -195,6 +215,13 @@ export class MoveTargetCommandDto {
   @IsNumber()
   @Type(() => Number)
   rz: number;
+
+  @ApiProperty({ description: Description.DIRECTION, example: 'forward' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  direction?: string;
 }
 
 export class MoveResponseDto extends MoveRequestDto {}

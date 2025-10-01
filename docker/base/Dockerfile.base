@@ -1,0 +1,18 @@
+FROM node:alpine AS development
+
+WORKDIR /usr/src/app
+
+RUN mkdir dist
+RUN chown -R 1000:1000 dist
+
+COPY --chown=1000:1000 package*.json ./
+COPY --chown=1000:1000 pnpm-lock.yaml ./
+
+RUN npm i -g pnpm
+RUN pnpm i
+
+COPY --chown=1000:1000 . .
+
+USER 1000:1000
+
+ENV WATCHPACK_POLLING=true

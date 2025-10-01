@@ -1,0 +1,39 @@
+FROM node:20-bullseye AS development
+
+WORKDIR /usr/src/app
+
+ENV TZ=Asia/Seoul
+# 필수 도구 설치
+RUN apt-get update && \
+    apt-get install -y network-manager && \
+    apt-get install -y net-tools && \
+    apt-get install -y mplayer && \
+    apt-get install -y alsa-utils && \
+    apt-get clean
+
+RUN mkdir dist
+RUN chown -R 1000:1000 dist
+RUN mkdir log
+RUN chown -R 1000:1000 log
+RUN mkdir data
+RUN chown -R 1000:1000 data
+
+# pnpm 설치 및 의존성 설치
+COPY --chown=1000:1000 package*.json ./
+COPY --chown=1000:1000 pnpm-lock.yaml ./
+COPY --chown=1000:1000 tsconfig.json ./
+COPY --chown=1000:1000 .env ./
+RUN npm i -g pnpm
+RUN npm i -g nodemon
+RUN pnpm i
+
+# COPY --chown=1000:1000 . .
+COPY --chown=1000:1000 dist ./dist
+COPY --chown=1000:1000 libs ./libs
+COPY --chown=1000:1000 public ./public
+COPY --chown=1000:1000 proto ./proto
+# RUN chown -R 1000:1000 /usr/src/app
+ 
+USER 1000:1000
+
+ENV WATCHPACK_POLLING=true

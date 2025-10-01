@@ -2235,9 +2235,6 @@ let ControlService = class ControlService {
         }
         catch (error) {
             this.loggerService.error(`[Control] updateResponse : ${(0, common_2.errorToJson)(error)}`);
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('updateResponse 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
     async SafetyIoControl(request) {
@@ -2260,7 +2257,7 @@ let ControlService = class ControlService {
                 this.loggerService.info(`[Control] SafetyIoControl Response : ${JSON.stringify(resp)}`);
                 command.statusChange(resp.result);
                 await this.databaseOutput.update(command);
-                return { ...resp, command: request.command, mcuDio: request.mcuDio };
+                return { ...resp, mcuDio: resp.mcuDio?.map((e) => ({ channel: e })), mcuDin: resp.mcuDin?.map((e) => ({ channel: e })) };
             }
             else {
                 throw new rpc_code_exception_1.RpcCodeException(resp.message, constant_1.GrpcCode.Aborted);
@@ -2365,7 +2362,6 @@ exports.ControlModel = exports.ControlStatus = void 0;
 const rpc_code_exception_1 = __webpack_require__(45);
 const constant_1 = __webpack_require__(46);
 const control_type_1 = __webpack_require__(64);
-const microservices_1 = __webpack_require__(2);
 var ControlStatus;
 (function (ControlStatus) {
     ControlStatus["pending"] = "pending";
@@ -2391,7 +2387,7 @@ class ControlModel {
     }
     statusChange(status) {
         if (!this.id) {
-            throw new microservices_1.RpcException('ID가 없습니다');
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
         }
         const moveStatus = this.parseStatus(status);
         this.status = moveStatus;
@@ -2578,7 +2574,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async exAccessoryControl(data) {
         this.loggerService.debug(`[Control] Socket externalControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id, 1000);
+        const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('exAccessoryRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket externalControl : ${JSON.stringify(resp)}`);
@@ -2586,8 +2582,13 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async safetyIoControl(data) {
         this.loggerService.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id, 1000);
-        this.mqttMicroservice.emit('controlRequest', { command: data.command, mcuDio: data.mcuDio, time: util_1.DateUtil.getTimeString() });
+        const response = this.waitForResponse(data.id, 5000);
+        this.mqttMicroservice.emit('controlRequest', {
+            id: data.id,
+            command: data.command,
+            mcuDio: data.mcuDio,
+            time: util_1.DateUtil.getTimeString(),
+        });
         const resp = await response;
         this.loggerService.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(resp)}`);
         return resp;
@@ -2597,7 +2598,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async onoffControl(data) {
         this.loggerService.debug(`[Control] Socket onoffControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id, 1000);
+        const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket onoffControl : ${JSON.stringify(resp)}`);
@@ -2605,7 +2606,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async workControl(data) {
         this.loggerService.debug(`[Control] Socket workControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id, 1000);
+        const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket workControl : ${JSON.stringify(resp)}`);
@@ -2613,7 +2614,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async ledControl(data) {
         this.loggerService.debug(`[Control] Socket ledControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id, 1000);
+        const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket ledControl : ${JSON.stringify(resp)}`);
@@ -2621,7 +2622,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
     }
     async safetyFieldControl(data) {
         this.loggerService.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id, 1000);
+        const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(resp)}`);
@@ -2633,7 +2634,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.loggerService.error(`[UPDATE] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.loggerService.error(`[Control] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -2695,34 +2696,29 @@ exports.message = __webpack_require__(72);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.CODE_SERVICE = exports.TASK_SERVICE = exports.MQTT_BROKER = exports.SOUND_SERVICE = exports.EXTERNAL_ACCESSORY_SERVICE = exports.SOCKETIO_SERVICE = exports.REDIS_SERVICE = exports.HOST_SERVER = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.LOG_SERVICE = exports.FILE_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.SLAMNAV_SERVICE = exports.SETTING_SERVICE = exports.CONTROL_SERVICE = exports.CONFIG_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
 exports.AUTH_SERVICE = 'AUTH_SERVICE';
 exports.USER_SERVICE = 'USER_SERVICE';
 exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
 exports.ROLE_SERVICE = 'ROLE_SERVICE';
 exports.GROUP_SERVICE = 'GROUP_SERVICE';
 exports.AMR_SERVICE = 'AMR_SERVICE';
+exports.REDIS_SERVICE = 'REDIS_SERVICE';
+exports.CODE_SERVICE = 'CODE_SERVICE';
 exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
-exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
 exports.SETTING_SERVICE = 'SETTING_SERVICE';
-exports.SLAMNAV_SERVICE = 'SLAMNAV_SERVICE';
+exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
 exports.MOVE_SERVICE = 'MOVE_SERVICE';
 exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
 exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
-exports.FILE_SERVICE = 'FILE_SERVICE';
-exports.LOG_SERVICE = 'LOG_SERVICE';
 exports.MAP_SERVICE = 'MAP_SERVICE';
 exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
-exports.HOST_SERVER = 'HOST_SERVER';
-exports.REDIS_SERVICE = 'REDIS_SERVICE';
-exports.SOCKETIO_SERVICE = 'SOCKETIO_SERVICE';
-exports.EXTERNAL_ACCESSORY_SERVICE = 'EXTERNAL_ACCESSORY_SERVICE';
 exports.SOUND_SERVICE = 'SOUND_SERVICE';
-exports.MQTT_BROKER = 'MQTT_BROKER';
 exports.TASK_SERVICE = 'TASK_SERVICE';
-exports.CODE_SERVICE = 'CODE_SERVICE';
 exports.COBOT_SERVICE = 'COBOT_SERVICE';
 exports.TCP_SERVICE = 'TCP_SERVICE';
+exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
+exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
 /***/ }),
@@ -2969,12 +2965,12 @@ let ControlMqttController = class ControlMqttController {
                     listener.reject(data);
                 }
                 this.pendingService.pendingResponses.delete(id);
-            }
-            {
                 this.controlService.updateResponse(data);
             }
         }
-        catch (error) { }
+        catch (error) {
+            this.loggerService.error(`[Control] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
+        }
     }
 };
 exports.ControlMqttController = ControlMqttController;
@@ -3037,6 +3033,7 @@ var Description;
     Description["ROBOT_SERIAL"] = "\uB85C\uBD07 \uC2DC\uB9AC\uC5BC \uBC88\uD638";
     Description["SAFETY_FIELD"] = "\uC548\uC804 \uD544\uB4DC \uC124\uC815. \uC0AC\uC804\uC5D0 \uC124\uC815\uB41C \uC548\uC804\uD544\uB4DC ID\uAC12\uC744 \uC785\uB825\uD558\uC138\uC694";
     Description["MCU_DIO"] = "MCU DIO \uC81C\uC5B4. 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C \uC785\uB825\uD558\uC138\uC694. \uC608\uB85C [0,0,0,0,0,1,1,1] \uC740 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C 0,0,0,0,0,1,1,1 \uB85C \uC81C\uC5B4\uD569\uB2C8\uB2E4.";
+    Description["MCU_DIN"] = "MCU DIN \uC81C\uC5B4. 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C \uC785\uB825\uD558\uC138\uC694. \uC608\uB85C [0,0,0,0,0,1,1,1] \uC740 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C 0,0,0,0,0,1,1,1 \uB85C \uC81C\uC5B4\uD569\uB2C8\uB2E4.";
 })(Description || (Description = {}));
 class ControlRequestDto {
 }
@@ -3100,7 +3097,7 @@ __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
-], ControlRequestDto.prototype, "mcu_dio", void 0);
+], ControlRequestDto.prototype, "mcuDio", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.SAFETY_FIELD,
@@ -3164,6 +3161,19 @@ __decorate([
     (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], ControlResponseSlamnav.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MCU_DIN,
+        example: [
+            [0, 0, 0, 0, 0, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], ControlResponseSlamnav.prototype, "mcuDin", void 0);
 class ControlResponseFrs {
 }
 exports.ControlResponseFrs = ControlResponseFrs;
@@ -3501,16 +3511,6 @@ exports.LocalizationModule = LocalizationModule = __decorate([
             }),
             microservices_1.ClientsModule.registerAsync([
                 {
-                    name: constant_1.SOCKETIO_SERVICE,
-                    inject: [config_1.ConfigService],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.MQTT,
-                        options: {
-                            url: configService.get('MQTT_URL'),
-                        },
-                    }),
-                },
-                {
                     name: constant_1.MQTT_BROKER,
                     inject: [config_1.ConfigService],
                     useFactory: (configService) => ({
@@ -3622,7 +3622,8 @@ exports.LocalizationGrpcInputController = void 0;
 const common_1 = __webpack_require__(3);
 const localization_service_1 = __webpack_require__(85);
 const common_2 = __webpack_require__(54);
-const microservices_1 = __webpack_require__(2);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
 let LocalizationGrpcInputController = class LocalizationGrpcInputController {
     constructor(localizationService) {
         this.localizationService = localizationService;
@@ -3640,7 +3641,7 @@ let LocalizationGrpcInputController = class LocalizationGrpcInputController {
         return this.localizationService.Localization(request);
     }
     start(request, metadata) {
-        throw new microservices_1.RpcException('테스트입니다');
+        throw new rpc_code_exception_1.RpcCodeException('테스트입니다', constant_1.GrpcCode.Unimplemented);
         return this.localizationService.Localization(request);
     }
     stop(request, metadata) {
@@ -3676,14 +3677,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationService = void 0;
-const microservices_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(54);
 const localization_database_output_port_1 = __webpack_require__(86);
 const localization_slamnav_output_port_1 = __webpack_require__(87);
 const common_2 = __webpack_require__(3);
 const localization_domain_1 = __webpack_require__(88);
 const constant_1 = __webpack_require__(67);
-const microservices_2 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(2);
 const rpc_code_exception_1 = __webpack_require__(45);
 const constant_2 = __webpack_require__(46);
 let LocalizationService = class LocalizationService {
@@ -3718,7 +3718,7 @@ let LocalizationService = class LocalizationService {
             }
         }
         else {
-            throw new microservices_1.RpcException('SLAMNAV가 연결되지 않았습니다');
+            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_2.GrpcCode.Aborted);
         }
     }
     slamConnect() {
@@ -3745,7 +3745,7 @@ exports.LocalizationService = LocalizationService = __decorate([
     __param(0, (0, common_1.Inject)('DatabaseOutputPort')),
     __param(1, (0, common_1.Inject)('SlamnavOutputPort')),
     __param(2, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof localization_database_output_port_1.LocalizationDatabaseOutputPort !== "undefined" && localization_database_output_port_1.LocalizationDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof localization_slamnav_output_port_1.LocalizationSlamnavOutputPort !== "undefined" && localization_slamnav_output_port_1.LocalizationSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof microservices_2.ClientProxy !== "undefined" && microservices_2.ClientProxy) === "function" ? _c : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof localization_database_output_port_1.LocalizationDatabaseOutputPort !== "undefined" && localization_database_output_port_1.LocalizationDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof localization_slamnav_output_port_1.LocalizationSlamnavOutputPort !== "undefined" && localization_slamnav_output_port_1.LocalizationSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _c : Object])
 ], LocalizationService);
 
 
@@ -3772,9 +3772,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationModel = exports.LocalizationStatus = void 0;
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
 const localization_type_1 = __webpack_require__(89);
 const util_1 = __webpack_require__(32);
-const microservices_1 = __webpack_require__(2);
 const uuid_1 = __webpack_require__(34);
 var LocalizationStatus;
 (function (LocalizationStatus) {
@@ -3801,7 +3802,7 @@ class LocalizationModel {
     }
     statusChange(status) {
         if (!this.id) {
-            throw new microservices_1.RpcException('ID가 없습니다');
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
         }
         const parsestatus = this.parseStatus(status);
         this.status = parsestatus;
@@ -3809,7 +3810,7 @@ class LocalizationModel {
     checkVariables() {
         if (this.command === localization_type_1.LocalizationCommand.setInit) {
             if (this.x === undefined || this.y === undefined || this.z === undefined || this.rz === undefined) {
-                throw new microservices_1.RpcException('init 값이 비어있습니다');
+                throw new rpc_code_exception_1.RpcCodeException('init 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
         }
         else if (this.command === localization_type_1.LocalizationCommand.randomInit) {
@@ -3868,8 +3869,9 @@ const mongoose_1 = __webpack_require__(56);
 const mongoose_2 = __webpack_require__(57);
 const localization_entity_1 = __webpack_require__(83);
 const common_1 = __webpack_require__(3);
-const microservices_1 = __webpack_require__(2);
 const util_1 = __webpack_require__(32);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
 let LocalizationMongoAdapter = class LocalizationMongoAdapter {
     constructor(Repository) {
         this.Repository = Repository;
@@ -3881,7 +3883,7 @@ let LocalizationMongoAdapter = class LocalizationMongoAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Localization] DB getNodebyId: ${util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async save(model) {
@@ -3892,7 +3894,7 @@ let LocalizationMongoAdapter = class LocalizationMongoAdapter {
         catch (error) {
             console.error(error);
             this.loggerService.error(`[Localization] DB save: ${util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async update(model) {
@@ -3931,34 +3933,54 @@ const common_2 = __webpack_require__(3);
 const microservices_1 = __webpack_require__(2);
 const constant_1 = __webpack_require__(67);
 const localization_pending_service_1 = __webpack_require__(92);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_2 = __webpack_require__(46);
 let LocalizationSocketIOAdapter = class LocalizationSocketIOAdapter {
     constructor(mqttService, pendingService) {
         this.mqttService = mqttService;
         this.pendingService = pendingService;
         this.loggerService = common_2.LoggerService.get('device');
     }
-    async waitForResponse(id) {
-        return new Promise((resolve, reject) => {
-            this.pendingService.pendingResponses.set(id, {
-                resolve,
-                reject,
-                received: [],
-            });
-        });
-    }
     async localizationRequest(data) {
         this.loggerService.debug(`[Localization] localizationRequest : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
+        const response = this.waitForResponse(data.id, 5000);
         this.mqttService.emit('localizationRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Localization] localizationResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
+    async waitForResponse(id, timeoutMs) {
+        return new Promise((resolve, reject) => {
+            let timeout;
+            if (timeoutMs) {
+                timeout = setTimeout(() => {
+                    this.pendingService.pendingResponses.delete(id);
+                    this.loggerService.error(`[Localization] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
+                }, timeoutMs);
+            }
+            this.pendingService.pendingResponses.set(id, {
+                resolve: (value) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    resolve(value);
+                },
+                reject: (error) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    reject(error);
+                },
+                received: [],
+            });
+        });
+    }
 };
 exports.LocalizationSocketIOAdapter = LocalizationSocketIOAdapter;
 exports.LocalizationSocketIOAdapter = LocalizationSocketIOAdapter = __decorate([
     (0, common_1.Controller)(),
-    __param(0, (0, common_1.Inject)(constant_1.SOCKETIO_SERVICE)),
+    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof localization_pending_service_1.LocalizationPendingResponseService !== "undefined" && localization_pending_service_1.LocalizationPendingResponseService) === "function" ? _b : Object])
 ], LocalizationSocketIOAdapter);
 
@@ -4033,15 +4055,18 @@ let LocalizationMqttInputController = class LocalizationMqttInputController {
         this.pendingService.pendingResponses.clear();
     }
     getLocalizationResponse(data) {
-        const { id } = data;
-        const listener = this.pendingService.pendingResponses.get(id);
-        if (listener) {
-            listener.received.push(data);
-            listener.resolve(data);
-            this.pendingService.pendingResponses.delete(id);
+        try {
+            const { id } = data;
+            const listener = this.pendingService.pendingResponses.get(id);
+            if (listener) {
+                listener.received.push(data);
+                listener.resolve(data);
+                this.pendingService.pendingResponses.delete(id);
+                this.localizationService.updateResponse(data);
+            }
         }
-        {
-            this.localizationService.updateResponse(data);
+        catch (error) {
+            this.loggerService.error(`[Localization] getLocalizationResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
 };
@@ -4306,7 +4331,7 @@ exports.MoveModule = MoveModule = __decorate([
             }),
             microservices_1.ClientsModule.registerAsync([
                 {
-                    name: constant_1.SOCKETIO_SERVICE,
+                    name: constant_1.MQTT_BROKER,
                     inject: [config_1.ConfigService],
                     useFactory: (configService) => ({
                         transport: microservices_1.Transport.MQTT,
@@ -4405,7 +4430,7 @@ let MoveService = class MoveService {
             return resp;
         }
         else {
-            throw new microservices_1.RpcException('SLAMNAV가 연결되지 않았습니다');
+            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
         }
     }
     slamConnect() {
@@ -4475,7 +4500,7 @@ let MoveService = class MoveService {
             this.slamnavOutput.moveJogRequest(command);
         }
         else {
-            throw new microservices_1.RpcException('SLAMNAV가 연결되지 않았습니다');
+            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
         }
     }
     async moveLogLast(request) {
@@ -4522,9 +4547,10 @@ exports.MoveService = MoveService = __decorate([
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveModel = exports.MoveMethod = exports.MoveStatus = void 0;
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_1 = __webpack_require__(46);
 const move_type_1 = __webpack_require__(99);
 const util_1 = __webpack_require__(32);
-const microservices_1 = __webpack_require__(2);
 var MoveStatus;
 (function (MoveStatus) {
     MoveStatus["pending"] = "pending";
@@ -4546,6 +4572,7 @@ class MoveModel {
         this.status = MoveStatus.pending;
         this.command = param.command;
         this.method = param.method;
+        this.direction = param.direction ?? 'forward';
         this.preset = param.preset;
         this.goalId = param.goalId;
         this.x = param.x;
@@ -4562,7 +4589,7 @@ class MoveModel {
     }
     statusChange(status) {
         if (!this.id) {
-            throw new microservices_1.RpcException('ID가 없습니다');
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
         }
         const moveStatus = this.parseStatus(status);
         this.status = moveStatus;
@@ -4570,18 +4597,21 @@ class MoveModel {
     checkVariables() {
         if (this.command === move_type_1.MoveCommand.moveGoal) {
             if (this.goalId === '') {
-                throw new microservices_1.RpcException('goalID 값이 없습니다');
+                throw new rpc_code_exception_1.RpcCodeException('goalID 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
             }
             if (this.method === undefined) {
                 this.method = MoveMethod.pp;
             }
             if (this.preset === undefined) {
                 this.preset = 0;
+            }
+            if (this.direction === undefined || (this.direction !== 'forward' && this.direction !== 'backward')) {
+                throw new rpc_code_exception_1.RpcCodeException('direction 값이 없거나 올바르지 않습니다', constant_1.GrpcCode.InvalidArgument);
             }
         }
         else if (this.command === move_type_1.MoveCommand.moveTarget) {
             if (this.x === undefined || this.y === undefined || this.z === undefined || this.rz === undefined) {
-                throw new microservices_1.RpcException('target 값이 비어있습니다');
+                throw new rpc_code_exception_1.RpcCodeException('target 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
             if (this.method === undefined) {
                 this.method = MoveMethod.pp;
@@ -4589,11 +4619,17 @@ class MoveModel {
             if (this.preset === undefined) {
                 this.preset = 0;
             }
+            if (this.direction === undefined || (this.direction !== 'forward' && this.direction !== 'backward')) {
+                throw new rpc_code_exception_1.RpcCodeException('direction 값이 없거나 올바르지 않습니다', constant_1.GrpcCode.InvalidArgument);
+            }
         }
         else if (this.command === move_type_1.MoveCommand.moveJog) {
             if (this.vx === undefined || this.vy === undefined || this.wz === undefined) {
-                throw new microservices_1.RpcException('vel 값이 비어있습니다');
+                throw new rpc_code_exception_1.RpcCodeException('vel 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
+        }
+        else {
+            throw new rpc_code_exception_1.RpcCodeException(`알 수 없는 command 값입니다. (${this.command})`, constant_1.GrpcCode.InvalidArgument);
         }
     }
     parseStatus(value) {
@@ -4667,11 +4703,11 @@ const mongoose_1 = __webpack_require__(56);
 const mongoose_2 = __webpack_require__(57);
 const move_entity_1 = __webpack_require__(103);
 const common_1 = __webpack_require__(3);
-const microservices_1 = __webpack_require__(2);
 const parse_util_1 = __webpack_require__(48);
 const util_1 = __webpack_require__(32);
 const rpc_code_exception_1 = __webpack_require__(45);
 const constant_1 = __webpack_require__(46);
+const microservices_1 = __webpack_require__(2);
 let MoveMongoAdapter = class MoveMongoAdapter {
     constructor(Repository) {
         this.Repository = Repository;
@@ -4683,7 +4719,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async getLast() {
@@ -4692,7 +4728,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB getLast: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async getLogLast(request) {
@@ -4718,7 +4754,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
                 throw error;
             }
             this.loggerService.error(`[Move] DB getLast: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async getLog(request) {
@@ -4796,7 +4832,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
                 throw error;
             }
             this.loggerService.error(`[Move] DB getLog: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async save(model) {
@@ -4806,7 +4842,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
         }
         catch (error) {
             this.loggerService.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
     async update(move) {
@@ -4861,6 +4897,10 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Move.prototype, "method", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Move.prototype, "direction", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)
@@ -4955,7 +4995,6 @@ let MoveGrpcInputController = class MoveGrpcInputController {
         return this.moveService.Move(request);
     }
     moveJog(request, metadata) {
-        console.log('moveJog');
         this.moveService.MoveJog(request);
         return {};
     }
@@ -5000,24 +5039,17 @@ const microservices_1 = __webpack_require__(2);
 const common_2 = __webpack_require__(3);
 const constant_1 = __webpack_require__(67);
 const move_pending_service_1 = __webpack_require__(106);
+const rpc_code_exception_1 = __webpack_require__(45);
+const constant_2 = __webpack_require__(46);
 let MoveSocketIOAdapter = class MoveSocketIOAdapter {
     constructor(mqttService, pendingService) {
         this.mqttService = mqttService;
         this.pendingService = pendingService;
         this.loggerService = common_2.LoggerService.get('device');
     }
-    async waitForResponse(id) {
-        return new Promise((resolve, reject) => {
-            this.pendingService.pendingResponses.set(id, {
-                resolve,
-                reject,
-                received: [],
-            });
-        });
-    }
     async moveRequest(data) {
         this.loggerService.debug(`[Move] moveRequest : ${JSON.stringify(data)}`);
-        const response = this.waitForResponse(data.id);
+        const response = this.waitForResponse(data.id, 5000);
         this.mqttService.emit('moveRequest', data);
         const resp = await response;
         this.loggerService.debug(`[Move] moveResponse : ${JSON.stringify(resp)}`);
@@ -5028,11 +5060,38 @@ let MoveSocketIOAdapter = class MoveSocketIOAdapter {
         this.mqttService.emit('moveRequest', data);
         return;
     }
+    async waitForResponse(id, timeoutMs) {
+        return new Promise((resolve, reject) => {
+            let timeout;
+            if (timeoutMs) {
+                timeout = setTimeout(() => {
+                    this.pendingService.pendingResponses.delete(id);
+                    this.loggerService.error(`[Move] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
+                }, timeoutMs);
+            }
+            this.pendingService.pendingResponses.set(id, {
+                resolve: (value) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    resolve(value);
+                },
+                reject: (error) => {
+                    if (timeoutMs) {
+                        clearTimeout(timeout);
+                    }
+                    reject(error);
+                },
+                received: [],
+            });
+        });
+    }
 };
 exports.MoveSocketIOAdapter = MoveSocketIOAdapter;
 exports.MoveSocketIOAdapter = MoveSocketIOAdapter = __decorate([
     (0, common_1.Controller)(),
-    __param(0, (0, common_1.Inject)(constant_1.SOCKETIO_SERVICE)),
+    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof move_pending_service_1.MovePendingResponseService !== "undefined" && move_pending_service_1.MovePendingResponseService) === "function" ? _b : Object])
 ], MoveSocketIOAdapter);
 
@@ -5115,15 +5174,18 @@ let MoveMqttInputController = class MoveMqttInputController {
         this.moveService.frsDisconnect();
     }
     getMoveResponse(data) {
-        const { id } = data;
-        const listener = this.pendingService.pendingResponses.get(id);
-        if (listener) {
-            listener.received.push(data);
-            listener.resolve(data);
-            this.pendingService.pendingResponses.delete(id);
+        try {
+            const { id } = data;
+            const listener = this.pendingService.pendingResponses.get(id);
+            if (listener) {
+                listener.received.push(data);
+                listener.resolve(data);
+                this.pendingService.pendingResponses.delete(id);
+                this.moveService.updateResponse(data);
+            }
         }
-        {
-            this.moveService.updateResponse(data);
+        catch (error) {
+            this.loggerService.error(`[Move] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
 };
@@ -5199,6 +5261,7 @@ var Description;
     Description["PRESET"] = "\uC18D\uB3C4 \uD504\uB9AC\uC14B. \uAE30\uBCF8\uAC12\uC740 0\uC774\uBA70 \uD604\uC7AC \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.";
     Description["RESULT"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC5D0 \uB300\uD55C \uACB0\uACFC\uC785\uB2C8\uB2E4. accept, reject, success, fail \uB4F1 \uBA85\uB839\uC5D0 \uB300\uD574 \uB2E4\uC591\uD55C \uAC12\uC774 \uC874\uC7AC\uD569\uB2C8\uB2E4.";
     Description["MESSAGE"] = "result\uAC12\uC774 reject, fail \uC778 \uACBD\uC6B0 SLAMNAV\uC5D0\uC11C \uBCF4\uB0B4\uB294 \uBA54\uC2DC\uC9C0 \uC785\uB2C8\uB2E4.";
+    Description["DIRECTION"] = "\uC8FC\uD589 \uBC29\uD5A5. \uAE30\uBCF8\uAC12\uC740 forward \uC785\uB2C8\uB2E4.";
     Description["X"] = "target \uC774\uB3D9 \uC2DC, \uBAA9\uD45C\uC9C0\uC810\uC758 \uC9C0\uB3C4\uC0C1 x\uC88C\uD45C\uB97C \uC785\uB825\uD558\uC138\uC694. \uB2E8\uC704\uB294 [m] \uC785\uB2C8\uB2E4.";
     Description["Y"] = "target \uC774\uB3D9 \uC2DC, \uBAA9\uD45C\uC9C0\uC810\uC758 \uC9C0\uB3C4\uC0C1 y\uC88C\uD45C\uB97C \uC785\uB825\uD558\uC138\uC694. \uB2E8\uC704\uB294 [m] \uC785\uB2C8\uB2E4.";
     Description["Z"] = "target \uC774\uB3D9 \uC2DC, \uBAA9\uD45C\uC9C0\uC810\uC758 \uC9C0\uB3C4\uC0C1 z\uC88C\uD45C\uB97C \uC785\uB825\uD558\uC138\uC694. \uD2B9\uC815 \uBAA8\uB378\uB9CC \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uAE30\uBCF8\uAC12 0\uC73C\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694. \uB2E8\uC704\uB294 [m] \uC785\uB2C8\uB2E4.";
@@ -5246,6 +5309,19 @@ __decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
 ], MoveRequestDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DIRECTION,
+        example: 'forward',
+        enum: ['forward', 'backward'],
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveRequestDto.prototype, "direction", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.PRESET,
@@ -5358,6 +5434,14 @@ __decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveGoalCommandDto.prototype, "preset", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: Description.DIRECTION, example: 'forward' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveGoalCommandDto.prototype, "direction", void 0);
 class MoveTargetCommandDto {
 }
 exports.MoveTargetCommandDto = MoveTargetCommandDto;
@@ -5401,6 +5485,14 @@ __decorate([
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "rz", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: Description.DIRECTION, example: 'forward' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveTargetCommandDto.prototype, "direction", void 0);
 class MoveResponseDto extends MoveRequestDto {
 }
 exports.MoveResponseDto = MoveResponseDto;

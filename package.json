@@ -34,6 +34,7 @@
     "@grpc/grpc-js": "^1.13.4",
     "@grpc/proto-loader": "^0.7.15",
     "@influxdata/influxdb-client": "^1.35.0",
+    "@influxdata/influxdb-client-apis": "^1.35.0",
     "@keyv/redis": "^4.4.0",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.1.3",

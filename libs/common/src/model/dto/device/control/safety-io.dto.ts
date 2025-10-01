@@ -37,15 +37,6 @@ export class SafetyIoRequestSlamnav extends SafetyIoRequestDto {
 
 export class SafetyIoResponseDto extends SafetyIoRequestDto {
   @ApiProperty({
-    description: '결과 상태',
-    example: Result.accept,
-    enum: Result,
-    required: true,
-  })
-  @IsString()
-  result: string;
-
-  @ApiProperty({
     description: '결과 메시지. result값이 reject, fail일 경우 메시지 내용을 확인하세요.',
     example: '파라미터의 값이 범위를 벗어났습니다.',
     required: false,
@@ -53,6 +44,18 @@ export class SafetyIoResponseDto extends SafetyIoRequestDto {
   @IsOptional()
   @IsString()
   message?: string;
+
+  @ApiProperty({
+    description: 'MCU DIN 명령 파라미터 (채널당 8bit 값)',
+    example: [
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ],
+    required: false,
+  })
+  @IsOptional()
+  @Expose()
+  mcuDin?: number[][];
 }
 
 export class SafetyIoResponseSlamnav extends SafetyIoResponseDto {

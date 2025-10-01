@@ -1,0 +1,22 @@
+FROM node:20-bullseye AS development
+
+WORKDIR /usr/src/app
+
+# 필수 도구 설치
+RUN apt-get update && \
+    apt-get install -y network-manager && \
+    apt-get install -y net-tools && \
+    apt-get install -y mplayer && \
+    apt-get install -y iputils-ping && \
+    apt-get install -y alsa-utils && \
+    apt-get clean
+
+# pnpm 설치 및 의존성 설치
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+RUN npm i -g pnpm
+RUN pnpm install
+
+COPY . .
+
+ENV WATCHPACK_POLLING=true

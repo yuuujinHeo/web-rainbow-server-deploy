@@ -2,6 +2,7 @@ import { DateUtil } from '@app/common/util/date.util';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
 import { ChargeState, LocalizationState, MapState } from './state.type';
+import { Type } from 'class-transformer';
 
 enum Description {
   IMU = 'IMU, Gyro 센서 데이터',
@@ -62,94 +63,94 @@ enum Description {
   CUR_XYZ = '주행 현재지점 글로벌 좌표',
   PATH_XYZ = '주행 중 생성한 경로 포인트의 글로벌좌표',
   TIME = '메시지 발송 시간. ms 단위',
+  POWER_TABOS_AE = 'TABOS 전압 오차',
+  POWER_TABOS_CURRENT = 'TABOS 전류',
+  POWER_TABOS_RC = 'TABOS 전압 오차',
+  POWER_TABOS_SOC = 'TABOS 충전 상태',
+  POWER_TABOS_SOH = 'TABOS 셀 상태',
+  POWER_TABOS_STATUS = 'TABOS 상태',
+  POWER_TABOS_TEMP = 'TABOS 온도',
+  POWER_TABOS_TTE = 'TABOS 셀 오차',
+  POWER_TABOS_TTF = 'TABOS 셀 오차',
+  POWER_TABOS_VOLTAGE = 'TABOS 전압',
 }
 
 export class StatusIMUDto {
   @ApiProperty({
     description: Description.IMU_IMU,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  imu_rx: string;
+  @Type(() => Number)
+  imu_rx: number;
   @ApiProperty({
     description: Description.IMU_IMU,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  imu_ry: string;
+  @Type(() => Number)
+  imu_ry: number;
   @ApiProperty({
     description: Description.IMU_IMU,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  imu_rz: string;
+  @Type(() => Number)
+  imu_rz: number;
 
   @ApiProperty({
     description: Description.IMU_ACC,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  acc_x: string;
+  @Type(() => Number)
+  acc_x: number;
   @ApiProperty({
     description: Description.IMU_ACC,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  acc_y: string;
+  @Type(() => Number)
+  acc_y: number;
   @ApiProperty({
     description: Description.IMU_ACC,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  acc_z: string;
+  @Type(() => Number)
+  acc_z: number;
 
   @ApiProperty({
     description: Description.IMU_GYR,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  gyr_x: string;
+  @Type(() => Number)
+  gyr_x: number;
   @ApiProperty({
     description: Description.IMU_GYR,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  gyr_y: string;
+  @Type(() => Number)
+  gyr_y: number;
   @ApiProperty({
     description: Description.IMU_GYR,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  gyr_z: string;
+  @Type(() => Number)
+  gyr_z: number;
 }
 
 export class StatusLidarDto {
   @ApiProperty({
     description: Description.LIDAR_CONNECTION,
-    example: 'false',
+    example: false,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  connection: string;
+  @Type(() => Boolean)
+  connection: boolean;
 
   @ApiProperty({
     description: Description.LIDAR_PORT,
@@ -173,77 +174,69 @@ export class StatusLidarDto {
 export class StatuMotorDto {
   @ApiProperty({
     description: Description.MOTOR_CONNECTION,
-    example: 'false',
+    example: false,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  connection: string;
+  @Type(() => Boolean)
+  connection: boolean;
 
   @ApiProperty({
     description: Description.MOTOR_CURRENT,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  current: string;
+  @Type(() => Number)
+  current: number;
 
   @ApiProperty({
     description: Description.MOTOR_STATUS,
-    example: '0',
+    example: 0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  status: string;
+  @Type(() => Number)
+  status: number;
 
   @ApiProperty({
     description: Description.MOTOR_TEMP,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  temp: string;
+  @Type(() => Number)
+  temp: number;
 }
 
 export class StatusConditionDto {
   @ApiProperty({
     description: Description.CONDITION_INLIER_RATIO,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  inlier_ratio: string;
+  @Type(() => Number)
+  inlier_ratio: number;
 
   @ApiProperty({
     description: Description.CONDITION_INLIER_ERROR,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  inlier_error: string;
+  @Type(() => Number)
+  inlier_error: number;
 
   @ApiProperty({
     description: Description.CONDITION_MAPPING_RATIO,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  mapping_ratio: string;
+  @Type(() => Number)
+  mapping_ratio: number;
 
   @ApiProperty({
     description: Description.CONDITION_MAPPING_ERROR,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  mapping_error: string;
+  @Type(() => Number)
+  mapping_error: number;
 }
 
 export class StatusStateDto {
@@ -254,26 +247,23 @@ export class StatusStateDto {
     required: false,
   })
   @IsString()
-  @Length(1, 50)
   charge: string;
 
   @ApiProperty({
     description: Description.STATE_DOCK,
-    example: 'false',
+    example: false,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  dock: string;
+  @Type(() => Boolean)
+  dock: boolean;
 
   @ApiProperty({
     description: Description.STATE_EMO,
-    example: 'false',
+    example: false,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  emo: string;
+  @Type(() => Boolean)
+  emo: boolean;
 
   @ApiProperty({
     description: Description.STATE_LOCALIZATION,
@@ -282,91 +272,179 @@ export class StatusStateDto {
     required: false,
   })
   @IsString()
-  @Length(1, 50)
   localization: string;
 
   @ApiProperty({
     description: Description.STATE_POWER,
-    example: 'false',
+    example: false,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  power: string;
+  @Type(() => Boolean)
+  power: boolean;
 }
 
 export class StatusPowerDto {
   @ApiProperty({
     description: Description.POWER_BATTERY_CURRENT,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  bat_current: string;
+  @IsOptional()
+  @Type(() => Number)
+  bat_current: number;
 
   @ApiProperty({
     description: Description.POWER_BATTERY_IN,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  bat_in: string;
+  @IsOptional()
+  @Type(() => Number)
+  bat_in: number;
 
   @ApiProperty({
     description: Description.POWER_BATTERY_OUT,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  bat_out: string;
+  @IsOptional()
+  @Type(() => Number)
+  bat_out: number;
 
   @ApiProperty({
     description: Description.POWER_BATTERY_PERCENT,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  bat_percent: string;
+  @IsOptional()
+  @Type(() => Number)
+  bat_percent: number;
 
   @ApiProperty({
     description: Description.POWER_CHARGE_CURRENT,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  charge_current: string;
+  @IsOptional()
+  @Type(() => Number)
+  charge_current: number;
 
   @ApiProperty({
     description: Description.POWER_CONTACT_VOLTAGE,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  contact_voltage: string;
+  @IsOptional()
+  @Type(() => Number)
+  contact_voltage: number;
 
   @ApiProperty({
     description: Description.POWER_POWER,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  power: string;
+  @IsOptional()
+  @Type(() => Number)
+  power: number;
 
   @ApiProperty({
     description: Description.POWER_TOTAL_POWER,
-    example: '0.0',
+    example: 0.0,
     required: false,
   })
-  @IsString()
-  @Length(1, 50)
-  total_power: string;
+  @IsOptional()
+  @Type(() => Number)
+  total_power: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_AE,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_ae?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_CURRENT,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_current?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_RC,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_rc?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_SOC,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_soc?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_SOH,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_soh?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_STATUS,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_status?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_TEMP,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_temp?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_TTE,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_tte?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_TTF,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_ttf?: number;
+
+  @ApiProperty({
+    description: Description.POWER_TABOS_VOLTAGE,
+    example: 0.0,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  tabos_voltage?: number;
 }
 
 export class StatusSettingDto {
@@ -376,7 +454,6 @@ export class StatusSettingDto {
     required: false,
   })
   @IsString()
-  @Length(1, 50)
   platform_type: string;
 }
 
@@ -387,7 +464,6 @@ export class StatusMapDto {
     required: false,
   })
   @IsString()
-  @Length(1, 50)
   map_name: string;
 
   @ApiProperty({
@@ -397,7 +473,6 @@ export class StatusMapDto {
     required: false,
   })
   @IsString()
-  @Length(1, 50)
   map_status: string;
 }
 
@@ -427,16 +502,16 @@ export class StatusSlamnav {
     description: Description.MOTOR,
     example: [
       {
-        connection: 'false',
-        current: '0.0',
-        status: '0',
-        temp: '0.0',
+        connection: false,
+        current: 0.0,
+        status: 0,
+        temp: 0.0,
       },
       {
-        connection: 'true',
-        current: '1.54',
-        status: '1',
-        temp: '32.0',
+        connection: true,
+        current: 1.54,
+        status: 1,
+        temp: 32.0,
       },
     ],
     required: false,

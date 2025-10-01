@@ -15,6 +15,7 @@ enum Description {
   ROBOT_SERIAL = '로봇 시리얼 번호',
   SAFETY_FIELD = '안전 필드 설정. 사전에 설정된 안전필드 ID값을 입력하세요',
   MCU_DIO = 'MCU DIO 제어. 0번 핀부터 7번 핀까지 순서대로 입력하세요. 예로 [0,0,0,0,0,1,1,1] 은 0번 핀부터 7번 핀까지 순서대로 0,0,0,0,0,1,1,1 로 제어합니다.',
+  MCU_DIN = 'MCU DIN 제어. 0번 핀부터 7번 핀까지 순서대로 입력하세요. 예로 [0,0,0,0,0,1,1,1] 은 0번 핀부터 7번 핀까지 순서대로 0,0,0,0,0,1,1,1 로 제어합니다.',
 }
 
 export class ControlRequestDto {
@@ -71,7 +72,7 @@ export class ControlRequestDto {
   })
   @IsArray()
   @IsOptional()
-  mcu_dio?: number[][];
+  mcuDio?: number[][];
 
   @ApiProperty({
     description: Description.SAFETY_FIELD,
@@ -127,6 +128,18 @@ export class ControlResponseSlamnav extends ControlResponseDto {
   @IsOptional()
   @Length(1, 50)
   message?: string;
+
+  @ApiProperty({
+    description: Description.MCU_DIN,
+    example: [
+      [0, 0, 0, 0, 0, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0],
+    ],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  mcuDin?: number[][];
 }
 
 export class ControlResponseFrs {
