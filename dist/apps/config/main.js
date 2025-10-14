@@ -2927,6 +2927,8 @@ const db_api_controller_1 = __webpack_require__(78);
 const config_entity_1 = __webpack_require__(76);
 const pg_1 = __webpack_require__(84);
 const config_1 = __webpack_require__(53);
+const microservices_1 = __webpack_require__(2);
+const constant_1 = __webpack_require__(58);
 let ConfigDBModule = class ConfigDBModule {
 };
 exports.ConfigDBModule = ConfigDBModule;
@@ -2948,6 +2950,20 @@ exports.ConfigDBModule = ConfigDBModule = __decorate([
                         synchronize: true,
                     };
                 },
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.MQTT_BROKER,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.MQTT,
+                            options: {
+                                url: configService.get('MQTT_URL'),
+                            },
+                        }),
+                    },
+                ],
             }),
             typeorm_1.TypeOrmModule.forFeature([config_entity_1.Config]),
         ],
@@ -3001,7 +3017,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigDBService = void 0;
 const common_1 = __webpack_require__(55);
@@ -3012,10 +3028,16 @@ const config_entity_1 = __webpack_require__(76);
 const rpc_code_exception_1 = __webpack_require__(45);
 const constant_1 = __webpack_require__(46);
 const microservices_1 = __webpack_require__(2);
+const constant_2 = __webpack_require__(58);
 let ConfigDBService = class ConfigDBService {
-    constructor(configRepository) {
+    constructor(configRepository, mqttMicroservice) {
         this.configRepository = configRepository;
+        this.mqttMicroservice = mqttMicroservice;
         this.loggerService = common_2.LoggerService.get('config');
+        this.fired = false;
+    }
+    async onApplicationBootstrap() {
+        this.mqttMicroservice.emit('ready:config', {});
     }
     async getConfig(request) {
         try {
@@ -3122,7 +3144,8 @@ exports.ConfigDBService = ConfigDBService;
 exports.ConfigDBService = ConfigDBService = __decorate([
     (0, common_1.Controller)(),
     __param(0, (0, typeorm_2.InjectRepository)(config_entity_1.Config)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object])
+    __param(1, (0, common_1.Inject)(constant_2.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object])
 ], ConfigDBService);
 
 

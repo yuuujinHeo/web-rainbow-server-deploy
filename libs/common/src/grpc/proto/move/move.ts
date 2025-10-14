@@ -27,7 +27,9 @@ export interface MoveLog {
   vx?: number | undefined;
   vy?: number | undefined;
   wz?: number | undefined;
-  time?: string | undefined;
+  createdAt?: string | undefined;
+  updatedAt?: string | undefined;
+  direction?: string | undefined;
 }
 
 export interface MoveLogLastRequest {

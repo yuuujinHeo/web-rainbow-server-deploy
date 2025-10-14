@@ -4508,6 +4508,8 @@ let MoveService = class MoveService {
             if (request.num === undefined || request.num === null || request.num === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('num 값이 없습니다. 가져올 로그의 개수를 입력해주세요.     ', constant_1.GrpcCode.InvalidArgument);
             }
+            const dd = await this.databaseOutput.getLogLast(request);
+            console.log(dd);
             return this.databaseOutput.getLogLast(request);
         }
         catch (error) {
@@ -4597,7 +4599,7 @@ class MoveModel {
     checkVariables() {
         if (this.command === move_type_1.MoveCommand.moveGoal) {
             if (this.goalId === '') {
-                throw new rpc_code_exception_1.RpcCodeException('goalID 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+                throw new rpc_code_exception_1.RpcCodeException('goalId 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
             }
             if (this.method === undefined) {
                 this.method = MoveMethod.pp;
@@ -4739,13 +4741,23 @@ let MoveMongoAdapter = class MoveMongoAdapter {
                     .limit(request.num)
                     .lean();
                 return {
-                    list: data.map((item) => ({ id: item._id.toString(), ...item })),
+                    list: data.map((item) => ({
+                        ...item,
+                        id: item._id.toString(),
+                        createdAt: item.createdAt.toISOString(),
+                        updatedAt: item.updatedAt.toISOString(),
+                    })),
                 };
             }
             else {
                 const data = await this.Repository.find().sort({ createdAt: -1 }).limit(request.num).lean();
                 return {
-                    list: data.map((item) => ({ id: item._id.toString(), ...item })),
+                    list: data.map((item) => ({
+                        ...item,
+                        id: item._id.toString(),
+                        createdAt: item.createdAt.toISOString(),
+                        updatedAt: item.updatedAt.toISOString(),
+                    })),
                 };
             }
         }
@@ -4769,7 +4781,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
                             query.command = { $regex: searchText, $options: 'i' };
                             break;
                         case 'goalId':
-                            query.goalID = { $regex: searchText, $options: 'i' };
+                            query.goalId = { $regex: searchText, $options: 'i' };
                             break;
                         case 'status':
                             query.status = { $regex: searchText, $options: 'i' };
@@ -4777,7 +4789,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
                         case 'all':
                             query.$or = [
                                 { command: { $regex: searchText, $options: 'i' } },
-                                { goalID: { $regex: searchText, $options: 'i' } },
+                                { goalId: { $regex: searchText, $options: 'i' } },
                                 { status: { $regex: searchText, $options: 'i' } },
                             ];
                             break;
@@ -4788,7 +4800,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
                 else {
                     query.$or = [
                         { command: { $regex: searchText, $options: 'i' } },
-                        { goalID: { $regex: searchText, $options: 'i' } },
+                        { goalId: { $regex: searchText, $options: 'i' } },
                         { status: { $regex: searchText, $options: 'i' } },
                     ];
                 }
@@ -4807,20 +4819,23 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             sortQuery[sortOption] = sortDirectionValue;
             const skip = (pageNo - 1) * pageSize;
             const totalCount = await this.Repository.countDocuments(query);
-            const data = await this.Repository.find(query).sort(sortQuery).skip(skip).limit(pageSize).lean();
+            const data = await this.Repository.find(query).sort(sortQuery).skip(skip).limit(pageSize);
             const totalPage = Math.ceil(totalCount / pageSize);
             return {
                 list: data.map((item) => ({
                     id: item._id.toString(),
                     command: item.command,
                     status: item.status,
-                    goalId: item.goalID,
+                    goalId: item.goalId,
                     x: item.x,
                     y: item.y,
                     rz: item.rz,
                     vx: item.vx,
                     vy: item.vy,
                     wz: item.wz,
+                    createAt: item.createdAt.toISOString(),
+                    updateAt: item.updatedAt.toISOString(),
+                    direction: item.direction,
                 })),
                 pageSize,
                 totalCount,
@@ -4875,6 +4890,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveSchema = exports.Move = void 0;
 const mongoose_1 = __webpack_require__(56);
@@ -4908,7 +4924,7 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
-], Move.prototype, "goalID", void 0);
+], Move.prototype, "goalId", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)
@@ -4937,6 +4953,14 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)
 ], Move.prototype, "wz", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Move.prototype, "createdAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Move.prototype, "updatedAt", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)

@@ -23,8 +23,8 @@ exports.TsdbModule = void 0;
 const common_1 = __webpack_require__(3);
 const influxdb_client_1 = __webpack_require__(4);
 const tsdb_service_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(6);
-const tsdb_mqtt_controller_1 = __webpack_require__(7);
+const config_1 = __webpack_require__(58);
+const tsdb_mqtt_controller_1 = __webpack_require__(59);
 let TsdbModule = class TsdbModule {
 };
 exports.TsdbModule = TsdbModule;
@@ -73,9 +73,9 @@ module.exports = require("@influxdata/influxdb-client");
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TsdbService = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(6);
 const influxdb_client_1 = __webpack_require__(4);
-const influxdb_client_apis_1 = __webpack_require__(79);
+const influxdb_client_apis_1 = __webpack_require__(57);
 class TsdbService {
     constructor() {
         this.loggerService = common_1.LoggerService.get('influxdb');
@@ -383,165 +383,89 @@ exports.TsdbService = TsdbService;
 
 /***/ }),
 /* 6 */
-/***/ ((module) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-module.exports = require("@nestjs/config");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(7), exports);
+__exportStar(__webpack_require__(29), exports);
+__exportStar(__webpack_require__(32), exports);
+
 
 /***/ }),
 /* 7 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TsdbMqttInputController = void 0;
-const common_1 = __webpack_require__(3);
-const tsdb_service_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(8);
-const microservices_1 = __webpack_require__(12);
-const status_type_1 = __webpack_require__(59);
-const movestatus_type_1 = __webpack_require__(78);
-const exAccessory_dto_1 = __webpack_require__(80);
-let TsdbMqttInputController = class TsdbMqttInputController {
-    constructor(tsdbService) {
-        this.tsdbService = tsdbService;
-        this.loggerService = common_2.LoggerService.get('tsdb');
-    }
-    getCobotCommandResponse(data) {
-        this.tsdbService.writeStatus(data);
-    }
-    getMoveStatus(data) {
-        this.tsdbService.writeMoveStatus(data);
-    }
-    getExternalStatus(data) {
-        this.tsdbService.writeExternalStatus(data);
-    }
-};
-exports.TsdbMqttInputController = TsdbMqttInputController;
-__decorate([
-    (0, microservices_1.MessagePattern)('status'),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _b : Object]),
-    __metadata("design:returntype", void 0)
-], TsdbMqttInputController.prototype, "getCobotCommandResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('moveStatus'),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _c : Object]),
-    __metadata("design:returntype", void 0)
-], TsdbMqttInputController.prototype, "getMoveStatus", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('exAccessoryStatus'),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", void 0)
-], TsdbMqttInputController.prototype, "getExternalStatus", null);
-exports.TsdbMqttInputController = TsdbMqttInputController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof tsdb_service_1.TsdbService !== "undefined" && tsdb_service_1.TsdbService) === "function" ? _a : Object])
-], TsdbMqttInputController);
+__exportStar(__webpack_require__(8), exports);
 
 
 /***/ }),
 /* 8 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(9), exports);
-__exportStar(__webpack_require__(31), exports);
-__exportStar(__webpack_require__(34), exports);
-
-
-/***/ }),
-/* 9 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(10), exports);
-
-
-/***/ }),
-/* 10 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
-exports.UserMicroservice = __webpack_require__(11);
-exports.AuthMicroservice = __webpack_require__(13);
-exports.AmrMicroservice = __webpack_require__(14);
-exports.RedisMicroservice = __webpack_require__(15);
-exports.ConfigMicroservice = __webpack_require__(16);
-exports.ControlMicroservice = __webpack_require__(17);
-exports.CodeMicroservice = __webpack_require__(18);
-exports.MoveMicroservice = __webpack_require__(19);
-exports.LocalizationMicroservice = __webpack_require__(20);
-exports.NetworkMicroservice = __webpack_require__(21);
-exports.MapMicroservice = __webpack_require__(22);
-exports.OnvifMicroservice = __webpack_require__(23);
-exports.TaskMicroservice = __webpack_require__(24);
-exports.SettingMicroservice = __webpack_require__(25);
-exports.SoundMicroservice = __webpack_require__(26);
-exports.CobotMicroservice = __webpack_require__(27);
-exports.LogMicroservice = __webpack_require__(28);
-exports.UpdateMicroservice = __webpack_require__(29);
-exports.TcpMicroservice = __webpack_require__(30);
+exports.UserMicroservice = __webpack_require__(9);
+exports.AuthMicroservice = __webpack_require__(11);
+exports.AmrMicroservice = __webpack_require__(12);
+exports.RedisMicroservice = __webpack_require__(13);
+exports.ConfigMicroservice = __webpack_require__(14);
+exports.ControlMicroservice = __webpack_require__(15);
+exports.CodeMicroservice = __webpack_require__(16);
+exports.MoveMicroservice = __webpack_require__(17);
+exports.LocalizationMicroservice = __webpack_require__(18);
+exports.NetworkMicroservice = __webpack_require__(19);
+exports.MapMicroservice = __webpack_require__(20);
+exports.OnvifMicroservice = __webpack_require__(21);
+exports.TaskMicroservice = __webpack_require__(22);
+exports.SettingMicroservice = __webpack_require__(23);
+exports.SoundMicroservice = __webpack_require__(24);
+exports.CobotMicroservice = __webpack_require__(25);
+exports.LogMicroservice = __webpack_require__(26);
+exports.UpdateMicroservice = __webpack_require__(27);
+exports.TcpMicroservice = __webpack_require__(28);
 
 
 /***/ }),
-/* 11 */
+/* 9 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.USER_GRPC_SERVICE_NAME = exports.USER_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.UserGrpcServiceControllerMethods = UserGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "user";
 exports.USER_PACKAGE_NAME = "user";
 function UserGrpcServiceControllerMethods() {
@@ -572,20 +496,20 @@ exports.USER_GRPC_SERVICE_NAME = "UserGrpcService";
 
 
 /***/ }),
-/* 12 */
+/* 10 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/microservices");
 
 /***/ }),
-/* 13 */
+/* 11 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AUTH_GRPC_SERVICE_NAME = exports.AUTH_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.AuthGrpcServiceControllerMethods = AuthGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "auth";
 exports.AUTH_PACKAGE_NAME = "auth";
 function AuthGrpcServiceControllerMethods() {
@@ -606,14 +530,14 @@ exports.AUTH_GRPC_SERVICE_NAME = "AuthGrpcService";
 
 
 /***/ }),
-/* 14 */
+/* 12 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AMR_GRPC_SERVICE_NAME = exports.AMR_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.AmrGrpcServiceControllerMethods = AmrGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "amr";
 exports.AMR_PACKAGE_NAME = "amr";
 function AmrGrpcServiceControllerMethods() {
@@ -634,7 +558,7 @@ exports.AMR_GRPC_SERVICE_NAME = "AmrGrpcService";
 
 
 /***/ }),
-/* 15 */
+/* 13 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -642,7 +566,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.RobotType = exports.protobufPackage = void 0;
 exports.RedisSocketCacheGrpcServiceControllerMethods = RedisSocketCacheGrpcServiceControllerMethods;
 exports.RedisRobotCacheGrpcServiceControllerMethods = RedisRobotCacheGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "redis";
 var RobotType;
 (function (RobotType) {
@@ -698,14 +622,14 @@ exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = "RedisRobotCacheGrpcService";
 
 
 /***/ }),
-/* 16 */
+/* 14 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONFIG_GRPC_SERVICE_NAME = exports.CONFIG_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ConfigGrpcServiceControllerMethods = ConfigGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "config";
 exports.CONFIG_PACKAGE_NAME = "config";
 function ConfigGrpcServiceControllerMethods() {
@@ -733,14 +657,14 @@ exports.CONFIG_GRPC_SERVICE_NAME = "ConfigGrpcService";
 
 
 /***/ }),
-/* 17 */
+/* 15 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "control";
 exports.CONTROL_PACKAGE_NAME = "control";
 function ControlGrpcServiceControllerMethods() {
@@ -769,14 +693,14 @@ exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
 
 
 /***/ }),
-/* 18 */
+/* 16 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CODE_GRPC_SERVICE_NAME = exports.CODE_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.CodeGrpcServiceControllerMethods = CodeGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "code";
 exports.CODE_PACKAGE_NAME = "code";
 function CodeGrpcServiceControllerMethods() {
@@ -797,14 +721,14 @@ exports.CODE_GRPC_SERVICE_NAME = "CodeGrpcService";
 
 
 /***/ }),
-/* 19 */
+/* 17 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MOVE_GRPC_SERVICE_NAME = exports.MOVE_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.MoveGrpcServiceControllerMethods = MoveGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "move";
 exports.MOVE_PACKAGE_NAME = "move";
 function MoveGrpcServiceControllerMethods() {
@@ -836,14 +760,14 @@ exports.MOVE_GRPC_SERVICE_NAME = "MoveGrpcService";
 
 
 /***/ }),
-/* 20 */
+/* 18 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LOCALIZATION_GRPC_SERVICE_NAME = exports.LOCALIZATION_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.LocalizationGrpcServiceControllerMethods = LocalizationGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "localization";
 exports.LOCALIZATION_PACKAGE_NAME = "localization";
 function LocalizationGrpcServiceControllerMethods() {
@@ -864,14 +788,14 @@ exports.LOCALIZATION_GRPC_SERVICE_NAME = "LocalizationGrpcService";
 
 
 /***/ }),
-/* 21 */
+/* 19 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NETWORK_GRPC_SERVICE_NAME = exports.NETWORK_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.NetworkGrpcServiceControllerMethods = NetworkGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "network";
 exports.NETWORK_PACKAGE_NAME = "network";
 function NetworkGrpcServiceControllerMethods() {
@@ -902,14 +826,14 @@ exports.NETWORK_GRPC_SERVICE_NAME = "NetworkGrpcService";
 
 
 /***/ }),
-/* 22 */
+/* 20 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MAP_GRPC_SERVICE_NAME = exports.MAP_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.MapGrpcServiceControllerMethods = MapGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "map";
 exports.MAP_PACKAGE_NAME = "map";
 function MapGrpcServiceControllerMethods() {
@@ -944,14 +868,14 @@ exports.MAP_GRPC_SERVICE_NAME = "MapGrpcService";
 
 
 /***/ }),
-/* 23 */
+/* 21 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ONVIF_SERVICE_NAME = exports.ONVIF_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.OnvifServiceControllerMethods = OnvifServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = 'onvif';
 exports.ONVIF_PACKAGE_NAME = 'onvif';
 function OnvifServiceControllerMethods() {
@@ -972,14 +896,14 @@ exports.ONVIF_SERVICE_NAME = 'OnvifService';
 
 
 /***/ }),
-/* 24 */
+/* 22 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TASK_GRPC_SERVICE_NAME = exports.TASK_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.TaskGrpcServiceControllerMethods = TaskGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "task";
 exports.TASK_PACKAGE_NAME = "task";
 function TaskGrpcServiceControllerMethods() {
@@ -1008,14 +932,14 @@ exports.TASK_GRPC_SERVICE_NAME = "TaskGrpcService";
 
 
 /***/ }),
-/* 25 */
+/* 23 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SETTING_GRPC_SERVICE_NAME = exports.SETTING_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.SettingGrpcServiceControllerMethods = SettingGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "setting";
 exports.SETTING_PACKAGE_NAME = "setting";
 function SettingGrpcServiceControllerMethods() {
@@ -1046,14 +970,14 @@ exports.SETTING_GRPC_SERVICE_NAME = "SettingGrpcService";
 
 
 /***/ }),
-/* 26 */
+/* 24 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SOUND_GRPC_SERVICE_NAME = exports.SOUND_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.SoundGrpcServiceControllerMethods = SoundGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "sound";
 exports.SOUND_PACKAGE_NAME = "sound";
 function SoundGrpcServiceControllerMethods() {
@@ -1074,14 +998,14 @@ exports.SOUND_GRPC_SERVICE_NAME = "SoundGrpcService";
 
 
 /***/ }),
-/* 27 */
+/* 25 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.COBOT_GRPC_SERVICE_NAME = exports.COBOT_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.CobotGrpcServiceControllerMethods = CobotGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "cobot";
 exports.COBOT_PACKAGE_NAME = "cobot";
 function CobotGrpcServiceControllerMethods() {
@@ -1117,14 +1041,14 @@ exports.COBOT_GRPC_SERVICE_NAME = "CobotGrpcService";
 
 
 /***/ }),
-/* 28 */
+/* 26 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SEM_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.SEMLogGrpcServiceControllerMethods = SEMLogGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "log";
 exports.LOG_PACKAGE_NAME = "log";
 function SEMLogGrpcServiceControllerMethods() {
@@ -1160,14 +1084,14 @@ exports.SEM_LOG_GRPC_SERVICE_NAME = "SEMLogGrpcService";
 
 
 /***/ }),
-/* 29 */
+/* 27 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UPDATE_GRPC_SERVICE_NAME = exports.UPDATE_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.UpdateGrpcServiceControllerMethods = UpdateGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "update";
 exports.UPDATE_PACKAGE_NAME = "update";
 function UpdateGrpcServiceControllerMethods() {
@@ -1197,14 +1121,14 @@ exports.UPDATE_GRPC_SERVICE_NAME = "UpdateGrpcService";
 
 
 /***/ }),
-/* 30 */
+/* 28 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TCP_GRPC_SERVICE_NAME = exports.TCP_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.TcpGrpcServiceControllerMethods = TcpGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 exports.protobufPackage = "tcp";
 exports.TCP_PACKAGE_NAME = "tcp";
 function TcpGrpcServiceControllerMethods() {
@@ -1225,7 +1149,7 @@ exports.TCP_GRPC_SERVICE_NAME = "TcpGrpcService";
 
 
 /***/ }),
-/* 31 */
+/* 29 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1244,17 +1168,17 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(32), exports);
+__exportStar(__webpack_require__(30), exports);
 
 
 /***/ }),
-/* 32 */
+/* 30 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrpcInterceptor = void 0;
-const rxjs_1 = __webpack_require__(33);
+const rxjs_1 = __webpack_require__(31);
 class GrpcInterceptor {
     intercept(context, next) {
         const data = context.switchToRpc().getData();
@@ -1297,13 +1221,13 @@ exports.GrpcInterceptor = GrpcInterceptor;
 
 
 /***/ }),
-/* 33 */
+/* 31 */
 /***/ ((module) => {
 
 module.exports = require("rxjs");
 
 /***/ }),
-/* 34 */
+/* 32 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1322,22 +1246,22 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(35), exports);
-__exportStar(__webpack_require__(58), exports);
+__exportStar(__webpack_require__(33), exports);
+__exportStar(__webpack_require__(56), exports);
 
 
 /***/ }),
-/* 35 */
+/* 33 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoggerService = void 0;
-const winston_1 = __webpack_require__(36);
-const DailyRotateFile = __webpack_require__(37);
-const util_1 = __webpack_require__(38);
-const chalk_1 = __webpack_require__(57);
-const fs_1 = __webpack_require__(44);
+const winston_1 = __webpack_require__(34);
+const DailyRotateFile = __webpack_require__(35);
+const util_1 = __webpack_require__(36);
+const chalk_1 = __webpack_require__(55);
+const fs_1 = __webpack_require__(42);
 const levelColorMap = {
     error: chalk_1.default.red,
     warn: chalk_1.default.magenta,
@@ -1481,46 +1405,46 @@ exports.LoggerService = LoggerService;
 
 
 /***/ }),
-/* 36 */
+/* 34 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 37 */
+/* 35 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
 
 /***/ }),
-/* 38 */
+/* 36 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(39);
+var url_util_1 = __webpack_require__(37);
 Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(41);
+var date_util_1 = __webpack_require__(39);
 Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(43);
+var file_util_1 = __webpack_require__(41);
 Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(54);
+var parse_util_1 = __webpack_require__(52);
 Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(55);
+var crypto_util_1 = __webpack_require__(53);
 Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(56);
+var validation_util_1 = __webpack_require__(54);
 Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
 
 
 /***/ }),
-/* 39 */
+/* 37 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(40);
+const uuid_1 = __webpack_require__(38);
 class UrlUtil {
     static generateUUID() {
         return (0, uuid_1.v4)();
@@ -1530,19 +1454,19 @@ exports.UrlUtil = UrlUtil;
 
 
 /***/ }),
-/* 40 */
+/* 38 */
 /***/ ((module) => {
 
 module.exports = require("uuid");
 
 /***/ }),
-/* 41 */
+/* 39 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(42);
+const date_fns_1 = __webpack_require__(40);
 class DateUtil {
     static toDatetimeString(date) {
         return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
@@ -1689,30 +1613,30 @@ exports.DateUtil = DateUtil;
 
 
 /***/ }),
-/* 42 */
+/* 40 */
 /***/ ((module) => {
 
 module.exports = require("date-fns");
 
 /***/ }),
-/* 43 */
+/* 41 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUtil = void 0;
-const fs = __webpack_require__(44);
-const path = __webpack_require__(45);
-const unzipper = __webpack_require__(46);
-const il = __webpack_require__(47);
-const uuid_1 = __webpack_require__(40);
-const archiver_1 = __webpack_require__(48);
-const csv = __webpack_require__(49);
-const zlib_1 = __webpack_require__(50);
-const common_1 = __webpack_require__(8);
-const rpc_code_exception_1 = __webpack_require__(51);
-const constant_1 = __webpack_require__(52);
-const microservices_1 = __webpack_require__(12);
+const fs = __webpack_require__(42);
+const path = __webpack_require__(43);
+const unzipper = __webpack_require__(44);
+const il = __webpack_require__(45);
+const uuid_1 = __webpack_require__(38);
+const archiver_1 = __webpack_require__(46);
+const csv = __webpack_require__(47);
+const zlib_1 = __webpack_require__(48);
+const common_1 = __webpack_require__(6);
+const rpc_code_exception_1 = __webpack_require__(49);
+const constant_1 = __webpack_require__(50);
+const microservices_1 = __webpack_require__(10);
 class FileUtil {
     static checkBasePath() {
         this.basePath = '';
@@ -1993,55 +1917,55 @@ exports.FileUtil = FileUtil;
 
 
 /***/ }),
-/* 44 */
+/* 42 */
 /***/ ((module) => {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 45 */
+/* 43 */
 /***/ ((module) => {
 
 module.exports = require("path");
 
 /***/ }),
-/* 46 */
+/* 44 */
 /***/ ((module) => {
 
 module.exports = require("unzipper");
 
 /***/ }),
-/* 47 */
+/* 45 */
 /***/ ((module) => {
 
 module.exports = require("iconv-lite");
 
 /***/ }),
-/* 48 */
+/* 46 */
 /***/ ((module) => {
 
 module.exports = require("archiver");
 
 /***/ }),
-/* 49 */
+/* 47 */
 /***/ ((module) => {
 
 module.exports = require("csv");
 
 /***/ }),
-/* 50 */
+/* 48 */
 /***/ ((module) => {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 51 */
+/* 49 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RpcCodeException = void 0;
-const microservices_1 = __webpack_require__(12);
+const microservices_1 = __webpack_require__(10);
 class RpcCodeException extends microservices_1.RpcException {
     constructor(details, statusCode) {
         super({ details: details, code: statusCode });
@@ -2052,7 +1976,7 @@ exports.RpcCodeException = RpcCodeException;
 
 
 /***/ }),
-/* 52 */
+/* 50 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2071,11 +1995,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(53), exports);
+__exportStar(__webpack_require__(51), exports);
 
 
 /***/ }),
-/* 53 */
+/* 51 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2105,7 +2029,7 @@ var GrpcCode;
 
 
 /***/ }),
-/* 54 */
+/* 52 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2155,7 +2079,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 55 */
+/* 53 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2167,7 +2091,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 56 */
+/* 54 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2201,13 +2125,13 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 57 */
+/* 55 */
 /***/ ((module) => {
 
 module.exports = require("chalk");
 
 /***/ }),
-/* 58 */
+/* 56 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2238,7 +2162,89 @@ function errorToJson(error) {
 
 
 /***/ }),
+/* 57 */
+/***/ ((module) => {
+
+module.exports = require("@influxdata/influxdb-client-apis");
+
+/***/ }),
+/* 58 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/config");
+
+/***/ }),
 /* 59 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TsdbMqttInputController = void 0;
+const common_1 = __webpack_require__(3);
+const tsdb_service_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(6);
+const microservices_1 = __webpack_require__(10);
+const status_type_1 = __webpack_require__(60);
+const movestatus_type_1 = __webpack_require__(65);
+const exAccessory_dto_1 = __webpack_require__(66);
+let TsdbMqttInputController = class TsdbMqttInputController {
+    constructor(tsdbService) {
+        this.tsdbService = tsdbService;
+        this.loggerService = common_2.LoggerService.get('tsdb');
+    }
+    getCobotCommandResponse(data) {
+        this.tsdbService.writeStatus(data);
+    }
+    getMoveStatus(data) {
+        this.tsdbService.writeMoveStatus(data);
+    }
+    getExternalStatus(data) {
+        this.tsdbService.writeExternalStatus(data);
+    }
+};
+exports.TsdbMqttInputController = TsdbMqttInputController;
+__decorate([
+    (0, microservices_1.MessagePattern)('status'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], TsdbMqttInputController.prototype, "getCobotCommandResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('moveStatus'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _c : Object]),
+    __metadata("design:returntype", void 0)
+], TsdbMqttInputController.prototype, "getMoveStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('exAccessoryStatus'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", void 0)
+], TsdbMqttInputController.prototype, "getExternalStatus", null);
+exports.TsdbMqttInputController = TsdbMqttInputController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof tsdb_service_1.TsdbService !== "undefined" && tsdb_service_1.TsdbService) === "function" ? _a : Object])
+], TsdbMqttInputController);
+
+
+/***/ }),
+/* 60 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2253,11 +2259,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = exports.StatusPowerDto = exports.StatusStateDto = exports.StatusConditionDto = exports.StatuMotorDto = exports.StatusLidarDto = exports.StatusIMUDto = void 0;
-const date_util_1 = __webpack_require__(41);
-const swagger_1 = __webpack_require__(60);
-const class_validator_1 = __webpack_require__(61);
-const state_type_1 = __webpack_require__(62);
-const class_transformer_1 = __webpack_require__(63);
+const date_util_1 = __webpack_require__(39);
+const swagger_1 = __webpack_require__(61);
+const class_validator_1 = __webpack_require__(62);
+const state_type_1 = __webpack_require__(63);
+const class_transformer_1 = __webpack_require__(64);
 var Description;
 (function (Description) {
     Description["IMU"] = "IMU, Gyro \uC13C\uC11C \uB370\uC774\uD130";
@@ -2881,19 +2887,19 @@ __decorate([
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2954,13 +2960,528 @@ var ChargeState;
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 64 */
+/* 65 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.VelocityStatusDto = exports.PoseStatusDto = exports.MoveStateDto = void 0;
+const swagger_1 = __webpack_require__(61);
+const class_validator_1 = __webpack_require__(62);
+const util_1 = __webpack_require__(36);
+const state_type_1 = __webpack_require__(63);
+const state_type_2 = __webpack_require__(63);
+var Description;
+(function (Description) {
+    Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
+    Description["MOVE_DOCK"] = "\uB3C4\uD0B9 \uC774\uB3D9 \uC0C1\uD0DC";
+    Description["MOVE_JOG"] = "\uC870\uC774\uC2A4\uD2F1 \uC774\uB3D9 \uC0C1\uD0DC";
+    Description["MOVE_OBS"] = "\uC8FC\uD589 \uC911 \uC7A5\uC560\uBB3C \uC0C1\uD0DC";
+    Description["MOVE_PATH"] = "\uC8FC\uD589 \uACBD\uB85C\uC694\uCCAD \uC0C1\uD0DC";
+    Description["POSE"] = "\uB85C\uBD07 \uAE00\uB85C\uBC8C\uC88C\uD45C. \uC704\uCE58\uCD08\uAE30\uD654\uAC00 good\uC778 \uC0C1\uD0DC\uC77C\uB54C \uC720\uC758\uBBF8 \uD569\uB2C8\uB2E4.";
+    Description["VELOCITY"] = "\uB85C\uBD07 \uC8FC\uD589 \uC18D\uB3C4";
+    Description["GOAL_NODE"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uC815\uBCF4 \uBC0F \uC0C1\uD0DC";
+    Description["GOAL_NODE_ID"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uB178\uB4DC ID";
+    Description["GOAL_NODE_NAME"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uB178\uB4DC \uC774\uB984";
+    Description["GOAL_NODE_STATE"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uC774\uB3D9 \uC0C1\uD0DC";
+    Description["GOAL_NODE_XYZ"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uAE00\uB85C\uBC8C \uC88C\uD45C";
+    Description["CUR_NODE"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uC815\uBCF4 \uBC0F \uC0C1\uD0DC";
+    Description["CUR_NODE_ID"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uB178\uB4DC ID";
+    Description["CUR_NODE_NAME"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uB178\uB4DC \uC774\uB984";
+    Description["CUR_NODE_XYZ"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uAE00\uB85C\uBC8C \uC88C\uD45C";
+    Description["MOVE_STATE"] = "\uC774\uB3D9 \uC0C1\uD0DC \uAD00\uB828 \uC815\uBCF4";
+    Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
+})(Description || (Description = {}));
+class MoveStateDto {
+}
+exports.MoveStateDto = MoveStateDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MOVE_AUTO,
+        example: state_type_1.MoveState.notReady,
+        enum: state_type_1.MoveState,
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MoveStateDto.prototype, "auto_move", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MOVE_DOCK,
+        example: 'none',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MoveStateDto.prototype, "dock_move", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MOVE_JOG,
+        example: 'none',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MoveStateDto.prototype, "jog_move", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MOVE_OBS,
+        example: state_type_1.ObsState.none,
+        enum: state_type_1.ObsState,
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MoveStateDto.prototype, "obs", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MOVE_PATH,
+        example: state_type_1.PathState.none,
+        enum: state_type_1.PathState,
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MoveStateDto.prototype, "path", void 0);
+class PoseStatusDto {
+}
+exports.PoseStatusDto = PoseStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POSE,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], PoseStatusDto.prototype, "x", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POSE,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], PoseStatusDto.prototype, "y", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POSE,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], PoseStatusDto.prototype, "rz", void 0);
+class VelocityStatusDto {
+}
+exports.VelocityStatusDto = VelocityStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.VELOCITY,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], VelocityStatusDto.prototype, "vx", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.VELOCITY,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], VelocityStatusDto.prototype, "vy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.VELOCITY,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], VelocityStatusDto.prototype, "wz", void 0);
+class GoalNodeDto {
+}
+exports.GoalNodeDto = GoalNodeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.GOAL_NODE_ID,
+        example: 'goal_1',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], GoalNodeDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.GOAL_NODE_NAME,
+        example: 'goal_1',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], GoalNodeDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.GOAL_NODE_STATE,
+        example: state_type_2.GoalState.none,
+        enum: state_type_2.GoalState,
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], GoalNodeDto.prototype, "state", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.GOAL_NODE_XYZ,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], GoalNodeDto.prototype, "x", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.GOAL_NODE_XYZ,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], GoalNodeDto.prototype, "y", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.GOAL_NODE_XYZ,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], GoalNodeDto.prototype, "rz", void 0);
+class CurNodeDto {
+}
+exports.CurNodeDto = CurNodeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.CUR_NODE_ID,
+        example: 'goal_1',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], CurNodeDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.CUR_NODE_NAME,
+        example: 'goal_1',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], CurNodeDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.CUR_NODE_XYZ,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], CurNodeDto.prototype, "x", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.CUR_NODE_XYZ,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], CurNodeDto.prototype, "y", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.CUR_NODE_XYZ,
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], CurNodeDto.prototype, "rz", void 0);
+class MoveStatusSlamnav {
+}
+exports.MoveStatusSlamnav = MoveStatusSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MOVE_STATE,
+        required: false,
+    }),
+    __metadata("design:type", MoveStateDto)
+], MoveStatusSlamnav.prototype, "move_state", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.POSE,
+        required: false,
+    }),
+    __metadata("design:type", PoseStatusDto)
+], MoveStatusSlamnav.prototype, "pose", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.VELOCITY,
+        required: false,
+    }),
+    __metadata("design:type", VelocityStatusDto)
+], MoveStatusSlamnav.prototype, "vel", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.GOAL_NODE,
+        required: false,
+    }),
+    __metadata("design:type", GoalNodeDto)
+], MoveStatusSlamnav.prototype, "goal_node", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.CUR_NODE,
+        required: false,
+    }),
+    __metadata("design:type", CurNodeDto)
+], MoveStatusSlamnav.prototype, "cur_node", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.TIME,
+        example: util_1.DateUtil.getTimeString(),
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], MoveStatusSlamnav.prototype, "time", void 0);
+
+
+/***/ }),
+/* 66 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExAccessoryStatusDto = exports.TemperatureSensorStatusDto = exports.FootStatusDto = exports.ExAccessoryResponseExAccessory = exports.ExAccessoryRequestExAccessory = exports.ExAccessoryResponseDto = exports.ExAccessoryRequestDto = void 0;
+const swagger_1 = __webpack_require__(61);
+const control_type_1 = __webpack_require__(67);
+const class_transformer_1 = __webpack_require__(64);
+var FootStatus;
+(function (FootStatus) {
+    FootStatus[FootStatus["idle"] = 0] = "idle";
+    FootStatus[FootStatus["init"] = 1] = "init";
+    FootStatus[FootStatus["moving"] = 2] = "moving";
+    FootStatus[FootStatus["emoStop"] = 3] = "emoStop";
+    FootStatus[FootStatus["upDone"] = 4] = "upDone";
+    FootStatus[FootStatus["downDone"] = 5] = "downDone";
+})(FootStatus || (FootStatus = {}));
+class ExAccessoryRequestDto {
+}
+exports.ExAccessoryRequestDto = ExAccessoryRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '외부 악세사리 명령',
+        example: control_type_1.ControlCommand.footMove,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], ExAccessoryRequestDto.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Foot 명령 파라미터 (Foot 위치 값)',
+        example: 100,
+        required: false,
+    }),
+    __metadata("design:type", Number)
+], ExAccessoryRequestDto.prototype, "position", void 0);
+class ExAccessoryResponseDto extends ExAccessoryRequestDto {
+}
+exports.ExAccessoryResponseDto = ExAccessoryResponseDto;
+class ExAccessoryRequestExAccessory extends ExAccessoryRequestDto {
+}
+exports.ExAccessoryRequestExAccessory = ExAccessoryRequestExAccessory;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '명령의 id값. 서버에서 자동 생성됩니다.',
+        example: '550e8400-e29b-41d4-a716-446655440000',
+        required: true,
+    }),
+    __metadata("design:type", String)
+], ExAccessoryRequestExAccessory.prototype, "id", void 0);
+class ExAccessoryResponseExAccessory extends ExAccessoryRequestExAccessory {
+}
+exports.ExAccessoryResponseExAccessory = ExAccessoryResponseExAccessory;
+class FootStatusDto {
+}
+exports.FootStatusDto = FootStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Foot 연결 상태',
+        example: true,
+    }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], FootStatusDto.prototype, "connection", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Foot 위치 값',
+        example: 100,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], FootStatusDto.prototype, "position", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Foot이 바닥을 지지하고 있는 상태 여부',
+        example: false,
+    }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], FootStatusDto.prototype, "is_down", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Foot 상태',
+        example: FootStatus.moving,
+        enum: FootStatus,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], FootStatusDto.prototype, "foot_status", void 0);
+class TemperatureSensorStatusDto {
+}
+exports.TemperatureSensorStatusDto = TemperatureSensorStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '온도센서 연결 상태',
+        example: true,
+    }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], TemperatureSensorStatusDto.prototype, "connection", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '온도센서 측정값',
+        example: 25,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], TemperatureSensorStatusDto.prototype, "temperature_value", void 0);
+class ExAccessoryStatusDto {
+}
+exports.ExAccessoryStatusDto = ExAccessoryStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Foot 상태',
+        type: FootStatusDto,
+    }),
+    __metadata("design:type", FootStatusDto)
+], ExAccessoryStatusDto.prototype, "foot", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '온도센서 상태',
+        type: TemperatureSensorStatusDto,
+    }),
+    __metadata("design:type", TemperatureSensorStatusDto)
+], ExAccessoryStatusDto.prototype, "temperature_sensor", void 0);
+
+
+/***/ }),
+/* 67 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LEDColor = exports.ControlCommand = void 0;
+var ControlCommand;
+(function (ControlCommand) {
+    ControlCommand["dockStart"] = "dock";
+    ControlCommand["undockStart"] = "undock";
+    ControlCommand["randomSeq"] = "randomSeq";
+    ControlCommand["ledControl"] = "ledControl";
+    ControlCommand["lidarOnOff"] = "lidarOnOff";
+    ControlCommand["pathOnOff"] = "pathOnOff";
+    ControlCommand["motorOnOff"] = "motorOnOff";
+    ControlCommand["safetyFieldControl"] = "safetyFieldControl";
+    ControlCommand["setSafetyField"] = "setSafetyField";
+    ControlCommand["getSafetyField"] = "getSafetyField";
+    ControlCommand["resetSafetyField"] = "resetSafetyField";
+    ControlCommand["footMove"] = "footMove";
+    ControlCommand["footStop"] = "footStop";
+    ControlCommand["getDigitalIO"] = "getDigitalIO";
+    ControlCommand["setDigitalIO"] = "setDigitalIO";
+    ControlCommand["setObsBox"] = "setObsBox";
+    ControlCommand["getObsBox"] = "getObsBox";
+})(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
+var LEDColor;
+(function (LEDColor) {
+    LEDColor["none"] = "none";
+    LEDColor["red"] = "red";
+    LEDColor["blue"] = "blue";
+    LEDColor["white"] = "white";
+    LEDColor["green"] = "green";
+    LEDColor["magenta"] = "magenta";
+    LEDColor["yellow"] = "yellow";
+    LEDColor["red_blink"] = "red blink";
+    LEDColor["blue_blink"] = "blue blink";
+    LEDColor["white_blink"] = "white blink";
+    LEDColor["green_blink"] = "green blink";
+    LEDColor["magenta_blink"] = "magenta blink";
+    LEDColor["yellow_blink"] = "yellow blink";
+    LEDColor["unknown"] = "unknown";
+})(LEDColor || (exports.LEDColor = LEDColor = {}));
+
+
+/***/ }),
+/* 68 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2972,16 +3493,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemlogModule = void 0;
-const config_1 = __webpack_require__(6);
-const sem_log_service_1 = __webpack_require__(65);
+const config_1 = __webpack_require__(58);
+const sem_log_service_1 = __webpack_require__(69);
 const common_1 = __webpack_require__(3);
-const sem_log_alarm_log_dto_1 = __webpack_require__(67);
-const typeorm_1 = __webpack_require__(69);
-const sem_log_alarm_dto_1 = __webpack_require__(70);
-const pg_1 = __webpack_require__(71);
-const sem_log_mqtt_controller_1 = __webpack_require__(72);
-const sem_log_grpc_controller_1 = __webpack_require__(73);
-const sem_log_postgres_adapter_1 = __webpack_require__(74);
+const sem_log_alarm_log_dto_1 = __webpack_require__(71);
+const typeorm_1 = __webpack_require__(73);
+const sem_log_alarm_dto_1 = __webpack_require__(74);
+const pg_1 = __webpack_require__(75);
+const sem_log_mqtt_controller_1 = __webpack_require__(76);
+const sem_log_grpc_controller_1 = __webpack_require__(77);
+const sem_log_postgres_adapter_1 = __webpack_require__(78);
 let SemlogModule = class SemlogModule {
 };
 exports.SemlogModule = SemlogModule;
@@ -3046,7 +3567,7 @@ async function ensureSemlogDatabase() {
 
 
 /***/ }),
-/* 65 */
+/* 69 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3065,12 +3586,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogService = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_database_output_port_1 = __webpack_require__(66);
-const rpc_code_exception_1 = __webpack_require__(51);
-const constant_1 = __webpack_require__(52);
-const date_util_1 = __webpack_require__(41);
+const sem_log_database_output_port_1 = __webpack_require__(70);
+const rpc_code_exception_1 = __webpack_require__(49);
+const constant_1 = __webpack_require__(50);
+const date_util_1 = __webpack_require__(39);
 let SemLogService = class SemLogService {
     constructor(databaseOutput) {
         this.databaseOutput = databaseOutput;
@@ -3328,7 +3849,7 @@ exports.SemLogService = SemLogService = __decorate([
 
 
 /***/ }),
-/* 66 */
+/* 70 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3336,7 +3857,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 67 */
+/* 71 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3352,7 +3873,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmLog = void 0;
-const typeorm_1 = __webpack_require__(68);
+const typeorm_1 = __webpack_require__(72);
 let SemLogAlarmLog = class SemLogAlarmLog {
 };
 exports.SemLogAlarmLog = SemLogAlarmLog;
@@ -3390,19 +3911,19 @@ exports.SemLogAlarmLog = SemLogAlarmLog = __decorate([
 
 
 /***/ }),
-/* 68 */
+/* 72 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 69 */
+/* 73 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 70 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3417,7 +3938,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmList = void 0;
-const typeorm_1 = __webpack_require__(68);
+const typeorm_1 = __webpack_require__(72);
 let SemLogAlarmList = class SemLogAlarmList {
 };
 exports.SemLogAlarmList = SemLogAlarmList;
@@ -3443,13 +3964,13 @@ exports.SemLogAlarmList = SemLogAlarmList = __decorate([
 
 
 /***/ }),
-/* 71 */
+/* 75 */
 /***/ ((module) => {
 
 module.exports = require("pg");
 
 /***/ }),
-/* 72 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3466,8 +3987,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogMqttInputController = void 0;
 const common_1 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(65);
-const microservices_1 = __webpack_require__(12);
+const sem_log_service_1 = __webpack_require__(69);
+const microservices_1 = __webpack_require__(10);
 let SemLogMqttInputController = class SemLogMqttInputController {
     constructor(semlogService) {
         this.semlogService = semlogService;
@@ -3495,7 +4016,7 @@ exports.SemLogMqttInputController = SemLogMqttInputController = __decorate([
 
 
 /***/ }),
-/* 73 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3511,11 +4032,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogGrpcController = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(65);
-const rpc_code_exception_1 = __webpack_require__(51);
-const constant_1 = __webpack_require__(52);
+const sem_log_service_1 = __webpack_require__(69);
+const rpc_code_exception_1 = __webpack_require__(49);
+const constant_1 = __webpack_require__(50);
 let SemLogGrpcController = class SemLogGrpcController {
     constructor(semlogService) {
         this.semlogService = semlogService;
@@ -3573,7 +4094,7 @@ exports.SemLogGrpcController = SemLogGrpcController = __decorate([
 
 
 /***/ }),
-/* 74 */
+/* 78 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3592,15 +4113,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogPostgresAdapter = void 0;
-const typeorm_1 = __webpack_require__(69);
-const sem_log_alarm_dto_1 = __webpack_require__(70);
-const sem_log_alarm_log_dto_1 = __webpack_require__(67);
-const typeorm_2 = __webpack_require__(68);
-const common_1 = __webpack_require__(8);
-const util_1 = __webpack_require__(38);
-const rpc_code_exception_1 = __webpack_require__(51);
-const constant_1 = __webpack_require__(52);
-const pagination_1 = __webpack_require__(75);
+const typeorm_1 = __webpack_require__(73);
+const sem_log_alarm_dto_1 = __webpack_require__(74);
+const sem_log_alarm_log_dto_1 = __webpack_require__(71);
+const typeorm_2 = __webpack_require__(72);
+const common_1 = __webpack_require__(6);
+const util_1 = __webpack_require__(36);
+const rpc_code_exception_1 = __webpack_require__(49);
+const constant_1 = __webpack_require__(50);
+const pagination_1 = __webpack_require__(79);
 let SemLogPostgresAdapter = class SemLogPostgresAdapter {
     constructor(alarmListRepository, alarmLogRepository) {
         this.alarmListRepository = alarmListRepository;
@@ -4215,7 +4736,7 @@ exports.SemLogPostgresAdapter = SemLogPostgresAdapter = __decorate([
 
 
 /***/ }),
-/* 75 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4234,12 +4755,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(76), exports);
-__exportStar(__webpack_require__(77), exports);
+__exportStar(__webpack_require__(80), exports);
+__exportStar(__webpack_require__(81), exports);
 
 
 /***/ }),
-/* 76 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4256,9 +4777,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationRequest = void 0;
 exports.getPaginationOffset = getPaginationOffset;
 exports.getPaginationLimit = getPaginationLimit;
-const class_validator_1 = __webpack_require__(61);
-const swagger_1 = __webpack_require__(60);
-const class_transformer_1 = __webpack_require__(63);
+const class_validator_1 = __webpack_require__(62);
+const swagger_1 = __webpack_require__(61);
+const class_transformer_1 = __webpack_require__(64);
 class PaginationRequest {
     getOffset() {
         if (this.pageNo === null || this.pageNo === undefined || this.pageNo < 1) {
@@ -4317,7 +4838,7 @@ function getPaginationLimit(pageSize) {
 
 
 /***/ }),
-/* 77 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4332,7 +4853,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationResponse = void 0;
-const swagger_1 = __webpack_require__(60);
+const swagger_1 = __webpack_require__(61);
 class PaginationResponse {
     constructor(list, pageSize, totalCount) {
         this.pageSize = pageSize;
@@ -4377,528 +4898,6 @@ __decorate([
 ], PaginationResponse.prototype, "list", void 0);
 
 
-/***/ }),
-/* 78 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.VelocityStatusDto = exports.PoseStatusDto = exports.MoveStateDto = void 0;
-const swagger_1 = __webpack_require__(60);
-const class_validator_1 = __webpack_require__(61);
-const util_1 = __webpack_require__(38);
-const state_type_1 = __webpack_require__(62);
-const state_type_2 = __webpack_require__(62);
-var Description;
-(function (Description) {
-    Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
-    Description["MOVE_DOCK"] = "\uB3C4\uD0B9 \uC774\uB3D9 \uC0C1\uD0DC";
-    Description["MOVE_JOG"] = "\uC870\uC774\uC2A4\uD2F1 \uC774\uB3D9 \uC0C1\uD0DC";
-    Description["MOVE_OBS"] = "\uC8FC\uD589 \uC911 \uC7A5\uC560\uBB3C \uC0C1\uD0DC";
-    Description["MOVE_PATH"] = "\uC8FC\uD589 \uACBD\uB85C\uC694\uCCAD \uC0C1\uD0DC";
-    Description["POSE"] = "\uB85C\uBD07 \uAE00\uB85C\uBC8C\uC88C\uD45C. \uC704\uCE58\uCD08\uAE30\uD654\uAC00 good\uC778 \uC0C1\uD0DC\uC77C\uB54C \uC720\uC758\uBBF8 \uD569\uB2C8\uB2E4.";
-    Description["VELOCITY"] = "\uB85C\uBD07 \uC8FC\uD589 \uC18D\uB3C4";
-    Description["GOAL_NODE"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uC815\uBCF4 \uBC0F \uC0C1\uD0DC";
-    Description["GOAL_NODE_ID"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uB178\uB4DC ID";
-    Description["GOAL_NODE_NAME"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uB178\uB4DC \uC774\uB984";
-    Description["GOAL_NODE_STATE"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uC774\uB3D9 \uC0C1\uD0DC";
-    Description["GOAL_NODE_XYZ"] = "\uC8FC\uD589 \uBAA9\uD45C\uC9C0\uC810 \uAE00\uB85C\uBC8C \uC88C\uD45C";
-    Description["CUR_NODE"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uC815\uBCF4 \uBC0F \uC0C1\uD0DC";
-    Description["CUR_NODE_ID"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uB178\uB4DC ID";
-    Description["CUR_NODE_NAME"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uB178\uB4DC \uC774\uB984";
-    Description["CUR_NODE_XYZ"] = "\uC8FC\uD589 \uD604\uC7AC\uC9C0\uC810 \uAE00\uB85C\uBC8C \uC88C\uD45C";
-    Description["MOVE_STATE"] = "\uC774\uB3D9 \uC0C1\uD0DC \uAD00\uB828 \uC815\uBCF4";
-    Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
-})(Description || (Description = {}));
-class MoveStateDto {
-}
-exports.MoveStateDto = MoveStateDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MOVE_AUTO,
-        example: state_type_1.MoveState.notReady,
-        enum: state_type_1.MoveState,
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], MoveStateDto.prototype, "auto_move", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MOVE_DOCK,
-        example: 'none',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], MoveStateDto.prototype, "dock_move", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MOVE_JOG,
-        example: 'none',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], MoveStateDto.prototype, "jog_move", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MOVE_OBS,
-        example: state_type_1.ObsState.none,
-        enum: state_type_1.ObsState,
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], MoveStateDto.prototype, "obs", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MOVE_PATH,
-        example: state_type_1.PathState.none,
-        enum: state_type_1.PathState,
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], MoveStateDto.prototype, "path", void 0);
-class PoseStatusDto {
-}
-exports.PoseStatusDto = PoseStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.POSE,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], PoseStatusDto.prototype, "x", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.POSE,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], PoseStatusDto.prototype, "y", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.POSE,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], PoseStatusDto.prototype, "rz", void 0);
-class VelocityStatusDto {
-}
-exports.VelocityStatusDto = VelocityStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.VELOCITY,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], VelocityStatusDto.prototype, "vx", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.VELOCITY,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], VelocityStatusDto.prototype, "vy", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.VELOCITY,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], VelocityStatusDto.prototype, "wz", void 0);
-class GoalNodeDto {
-}
-exports.GoalNodeDto = GoalNodeDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.GOAL_NODE_ID,
-        example: 'goal_1',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], GoalNodeDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.GOAL_NODE_NAME,
-        example: 'goal_1',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], GoalNodeDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.GOAL_NODE_STATE,
-        example: state_type_2.GoalState.none,
-        enum: state_type_2.GoalState,
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], GoalNodeDto.prototype, "state", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.GOAL_NODE_XYZ,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], GoalNodeDto.prototype, "x", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.GOAL_NODE_XYZ,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], GoalNodeDto.prototype, "y", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.GOAL_NODE_XYZ,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], GoalNodeDto.prototype, "rz", void 0);
-class CurNodeDto {
-}
-exports.CurNodeDto = CurNodeDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.CUR_NODE_ID,
-        example: 'goal_1',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], CurNodeDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.CUR_NODE_NAME,
-        example: 'goal_1',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], CurNodeDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.CUR_NODE_XYZ,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], CurNodeDto.prototype, "x", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.CUR_NODE_XYZ,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], CurNodeDto.prototype, "y", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.CUR_NODE_XYZ,
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], CurNodeDto.prototype, "rz", void 0);
-class MoveStatusSlamnav {
-}
-exports.MoveStatusSlamnav = MoveStatusSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MOVE_STATE,
-        required: false,
-    }),
-    __metadata("design:type", MoveStateDto)
-], MoveStatusSlamnav.prototype, "move_state", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.POSE,
-        required: false,
-    }),
-    __metadata("design:type", PoseStatusDto)
-], MoveStatusSlamnav.prototype, "pose", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.VELOCITY,
-        required: false,
-    }),
-    __metadata("design:type", VelocityStatusDto)
-], MoveStatusSlamnav.prototype, "vel", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.GOAL_NODE,
-        required: false,
-    }),
-    __metadata("design:type", GoalNodeDto)
-], MoveStatusSlamnav.prototype, "goal_node", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.CUR_NODE,
-        required: false,
-    }),
-    __metadata("design:type", CurNodeDto)
-], MoveStatusSlamnav.prototype, "cur_node", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.TIME,
-        example: util_1.DateUtil.getTimeString(),
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], MoveStatusSlamnav.prototype, "time", void 0);
-
-
-/***/ }),
-/* 79 */
-/***/ ((module) => {
-
-var p=Object.defineProperty;var X=Object.getOwnPropertyDescriptor;var Y=Object.getOwnPropertyNames;var Z=Object.prototype.hasOwnProperty;var ee=(r,e)=>{for(var s in e)p(r,s,{get:e[s],enumerable:!0})},se=(r,e,s,i)=>{if(e&&typeof e=="object"||typeof e=="function")for(let o of Y(e))!Z.call(r,o)&&o!==s&&p(r,o,{get:()=>e[o],enumerable:!(i=X(e,o))||i.enumerable});return r};var te=r=>se(p({},"__esModule",{value:!0}),r);var ie={};ee(ie,{AuthorizationsAPI:()=>D,BackupAPI:()=>l,BucketsAPI:()=>R,ChecksAPI:()=>b,ConfigAPI:()=>I,DashboardsAPI:()=>g,DbrpsAPI:()=>q,DebugAPI:()=>m,DeleteAPI:()=>f,FlagsAPI:()=>d,FluxScriptInvocationAPI:()=>W,HealthAPI:()=>h,LabelsAPI:()=>P,MeAPI:()=>O,MetricsAPI:()=>x,NotificationEndpointsAPI:()=>T,NotificationRulesAPI:()=>k,OrgsAPI:()=>v,PingAPI:()=>B,QueryAPI:()=>S,ReadyAPI:()=>G,RemotesAPI:()=>E,ReplicationsAPI:()=>y,ResourcesAPI:()=>$,RestoreAPI:()=>L,RootAPI:()=>c,ScrapersAPI:()=>w,ScriptsAPI:()=>C,SetupAPI:()=>M,SigninAPI:()=>A,SignoutAPI:()=>N,SourcesAPI:()=>j,StacksAPI:()=>V,TasksAPI:()=>U,TelegrafAPI:()=>z,TelegrafsAPI:()=>H,TemplatesAPI:()=>Q,UsersAPI:()=>F,VariablesAPI:()=>K,WriteAPI:()=>_});module.exports=te(ie);function re(r){return typeof btoa=="function"?btoa(r):Buffer.from(r,"binary").toString("base64")}var t=class{constructor(e){if(!e)throw new Error("No influxDB supplied!");if(!e.transport)throw new Error("No transport supplied!");this.transport=e.transport}queryString(e,s){return e&&s?s.reduce((i,o)=>{let a=e[o];return a!=null&&(i+=i?"&":"?",i+=encodeURIComponent(o)+"="+encodeURIComponent(String(a))),i},""):""}request(e,s,i={},o,a){let n={...o,method:e};if(a&&((n.headers||(n.headers={}))["content-type"]=a),i.auth){let u=`${i.auth.user}:${i.auth.password}`;(n.headers||(n.headers={})).authorization=`Basic ${re(u)}`}return this.transport.request(s,i.body?i.body:"",n,o==null?void 0:o.responseStarted)}};var c=class{constructor(e){this.base=new t(e)}getRoutes(e,s){return this.base.request("GET","/api/v2/",e,s)}};var D=class{constructor(e){this.base=new t(e)}getAuthorizations(e,s){return this.base.request("GET",`/api/v2/authorizations${this.base.queryString(e,["userID","user","orgID","org"])}`,e,s)}postAuthorizations(e,s){return this.base.request("POST","/api/v2/authorizations",e,s,"application/json")}getAuthorizationsID(e,s){return this.base.request("GET",`/api/v2/authorizations/${e.authID}`,e,s)}patchAuthorizationsID(e,s){return this.base.request("PATCH",`/api/v2/authorizations/${e.authID}`,e,s,"application/json")}deleteAuthorizationsID(e,s){return this.base.request("DELETE",`/api/v2/authorizations/${e.authID}`,e,s)}};var l=class{constructor(e){this.base=new t(e)}getBackupKV(e,s){return this.base.request("GET","/api/v2/backup/kv",e,s)}getBackupMetadata(e,s){return this.base.request("GET","/api/v2/backup/metadata",e,s)}getBackupShardId(e,s){return this.base.request("GET",`/api/v2/backup/shards/${e.shardID}${this.base.queryString(e,["since"])}`,e,s)}};var R=class{constructor(e){this.base=new t(e)}getBuckets(e,s){return this.base.request("GET",`/api/v2/buckets${this.base.queryString(e,["offset","limit","after","org","orgID","name","id"])}`,e,s)}postBuckets(e,s){return this.base.request("POST","/api/v2/buckets",e,s,"application/json")}getBucketsID(e,s){return this.base.request("GET",`/api/v2/buckets/${e.bucketID}`,e,s)}patchBucketsID(e,s){return this.base.request("PATCH",`/api/v2/buckets/${e.bucketID}`,e,s,"application/json")}deleteBucketsID(e,s){return this.base.request("DELETE",`/api/v2/buckets/${e.bucketID}`,e,s)}getBucketsIDLabels(e,s){return this.base.request("GET",`/api/v2/buckets/${e.bucketID}/labels`,e,s)}postBucketsIDLabels(e,s){return this.base.request("POST",`/api/v2/buckets/${e.bucketID}/labels`,e,s,"application/json")}deleteBucketsIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/buckets/${e.bucketID}/labels/${e.labelID}`,e,s)}getBucketsIDMembers(e,s){return this.base.request("GET",`/api/v2/buckets/${e.bucketID}/members`,e,s)}postBucketsIDMembers(e,s){return this.base.request("POST",`/api/v2/buckets/${e.bucketID}/members`,e,s,"application/json")}deleteBucketsIDMembersID(e,s){return this.base.request("DELETE",`/api/v2/buckets/${e.bucketID}/members/${e.userID}`,e,s)}getBucketsIDOwners(e,s){return this.base.request("GET",`/api/v2/buckets/${e.bucketID}/owners`,e,s)}postBucketsIDOwners(e,s){return this.base.request("POST",`/api/v2/buckets/${e.bucketID}/owners`,e,s,"application/json")}deleteBucketsIDOwnersID(e,s){return this.base.request("DELETE",`/api/v2/buckets/${e.bucketID}/owners/${e.userID}`,e,s)}};var b=class{constructor(e){this.base=new t(e)}getChecks(e,s){return this.base.request("GET",`/api/v2/checks${this.base.queryString(e,["offset","limit","orgID"])}`,e,s)}createCheck(e,s){return this.base.request("POST","/api/v2/checks",e,s,"application/json")}getChecksID(e,s){return this.base.request("GET",`/api/v2/checks/${e.checkID}`,e,s)}putChecksID(e,s){return this.base.request("PUT",`/api/v2/checks/${e.checkID}`,e,s,"application/json")}patchChecksID(e,s){return this.base.request("PATCH",`/api/v2/checks/${e.checkID}`,e,s,"application/json")}deleteChecksID(e,s){return this.base.request("DELETE",`/api/v2/checks/${e.checkID}`,e,s)}getChecksIDLabels(e,s){return this.base.request("GET",`/api/v2/checks/${e.checkID}/labels`,e,s)}postChecksIDLabels(e,s){return this.base.request("POST",`/api/v2/checks/${e.checkID}/labels`,e,s,"application/json")}deleteChecksIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/checks/${e.checkID}/labels/${e.labelID}`,e,s)}getChecksIDQuery(e,s){return this.base.request("GET",`/api/v2/checks/${e.checkID}/query`,e,s)}};var I=class{constructor(e){this.base=new t(e)}getConfig(e,s){return this.base.request("GET","/api/v2/config",e,s)}};var g=class{constructor(e){this.base=new t(e)}getDashboardsID(e,s){return this.base.request("GET",`/api/v2/dashboards/${e.dashboardID}${this.base.queryString(e,["include"])}`,e,s)}patchDashboardsID(e,s){return this.base.request("PATCH",`/api/v2/dashboards/${e.dashboardID}`,e,s,"application/json")}deleteDashboardsID(e,s){return this.base.request("DELETE",`/api/v2/dashboards/${e.dashboardID}`,e,s)}postDashboardsIDCells(e,s){return this.base.request("POST",`/api/v2/dashboards/${e.dashboardID}/cells`,e,s,"application/json")}putDashboardsIDCells(e,s){return this.base.request("PUT",`/api/v2/dashboards/${e.dashboardID}/cells`,e,s,"application/json")}patchDashboardsIDCellsID(e,s){return this.base.request("PATCH",`/api/v2/dashboards/${e.dashboardID}/cells/${e.cellID}`,e,s,"application/json")}deleteDashboardsIDCellsID(e,s){return this.base.request("DELETE",`/api/v2/dashboards/${e.dashboardID}/cells/${e.cellID}`,e,s)}getDashboardsIDCellsIDView(e,s){return this.base.request("GET",`/api/v2/dashboards/${e.dashboardID}/cells/${e.cellID}/view`,e,s)}patchDashboardsIDCellsIDView(e,s){return this.base.request("PATCH",`/api/v2/dashboards/${e.dashboardID}/cells/${e.cellID}/view`,e,s,"application/json")}getDashboardsIDLabels(e,s){return this.base.request("GET",`/api/v2/dashboards/${e.dashboardID}/labels`,e,s)}postDashboardsIDLabels(e,s){return this.base.request("POST",`/api/v2/dashboards/${e.dashboardID}/labels`,e,s,"application/json")}deleteDashboardsIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/dashboards/${e.dashboardID}/labels/${e.labelID}`,e,s)}getDashboardsIDMembers(e,s){return this.base.request("GET",`/api/v2/dashboards/${e.dashboardID}/members`,e,s)}postDashboardsIDMembers(e,s){return this.base.request("POST",`/api/v2/dashboards/${e.dashboardID}/members`,e,s,"application/json")}deleteDashboardsIDMembersID(e,s){return this.base.request("DELETE",`/api/v2/dashboards/${e.dashboardID}/members/${e.userID}`,e,s)}getDashboardsIDOwners(e,s){return this.base.request("GET",`/api/v2/dashboards/${e.dashboardID}/owners`,e,s)}postDashboardsIDOwners(e,s){return this.base.request("POST",`/api/v2/dashboards/${e.dashboardID}/owners`,e,s,"application/json")}deleteDashboardsIDOwnersID(e,s){return this.base.request("DELETE",`/api/v2/dashboards/${e.dashboardID}/owners/${e.userID}`,e,s)}getDashboards(e,s){return this.base.request("GET",`/api/v2/dashboards${this.base.queryString(e,["offset","limit","descending","owner","sortBy","id","orgID","org"])}`,e,s)}postDashboards(e,s){return this.base.request("POST","/api/v2/dashboards",e,s,"application/json")}};var q=class{constructor(e){this.base=new t(e)}getDBRPs(e,s){return this.base.request("GET",`/api/v2/dbrps${this.base.queryString(e,["orgID","org","id","bucketID","default","db","rp"])}`,e,s)}postDBRP(e,s){return this.base.request("POST","/api/v2/dbrps",e,s,"application/json")}getDBRPsID(e,s){return this.base.request("GET",`/api/v2/dbrps/${e.dbrpID}${this.base.queryString(e,["orgID","org"])}`,e,s)}patchDBRPID(e,s){return this.base.request("PATCH",`/api/v2/dbrps/${e.dbrpID}${this.base.queryString(e,["orgID","org"])}`,e,s,"application/json")}deleteDBRPID(e,s){return this.base.request("DELETE",`/api/v2/dbrps/${e.dbrpID}${this.base.queryString(e,["orgID","org"])}`,e,s)}};var m=class{constructor(e){this.base=new t(e)}getDebugPprofAllProfiles(e,s){return this.base.request("GET",`/api/v2/debug/pprof/all${this.base.queryString(e,["cpu"])}`,e,s)}getDebugPprofAllocs(e,s){return this.base.request("GET",`/api/v2/debug/pprof/allocs${this.base.queryString(e,["debug","seconds"])}`,e,s)}getDebugPprofBlock(e,s){return this.base.request("GET",`/api/v2/debug/pprof/block${this.base.queryString(e,["debug","seconds"])}`,e,s)}getDebugPprofCmdline(e,s){return this.base.request("GET","/api/v2/debug/pprof/cmdline",e,s)}getDebugPprofGoroutine(e,s){return this.base.request("GET",`/api/v2/debug/pprof/goroutine${this.base.queryString(e,["debug","seconds"])}`,e,s)}getDebugPprofHeap(e,s){return this.base.request("GET",`/api/v2/debug/pprof/heap${this.base.queryString(e,["debug","seconds","gc"])}`,e,s)}getDebugPprofMutex(e,s){return this.base.request("GET",`/api/v2/debug/pprof/mutex${this.base.queryString(e,["debug","seconds"])}`,e,s)}getDebugPprofProfile(e,s){return this.base.request("GET",`/api/v2/debug/pprof/profile${this.base.queryString(e,["seconds"])}`,e,s)}getDebugPprofThreadCreate(e,s){return this.base.request("GET",`/api/v2/debug/pprof/threadcreate${this.base.queryString(e,["debug","seconds"])}`,e,s)}getDebugPprofTrace(e,s){return this.base.request("GET",`/api/v2/debug/pprof/trace${this.base.queryString(e,["seconds"])}`,e,s)}};var f=class{constructor(e){this.base=new t(e)}postDelete(e,s){return this.base.request("POST",`/api/v2/delete${this.base.queryString(e,["org","bucket","orgID","bucketID"])}`,e,s,"application/json")}};var d=class{constructor(e){this.base=new t(e)}getFlags(e,s){return this.base.request("GET","/api/v2/flags",e,s)}};var h=class{constructor(e){this.base=new t(e)}getHealth(e,s){return this.base.request("GET","/health",e,s)}};var P=class{constructor(e){this.base=new t(e)}getLabels(e,s){return this.base.request("GET",`/api/v2/labels${this.base.queryString(e,["orgID"])}`,e,s)}postLabels(e,s){return this.base.request("POST","/api/v2/labels",e,s,"application/json")}getLabelsID(e,s){return this.base.request("GET",`/api/v2/labels/${e.labelID}`,e,s)}patchLabelsID(e,s){return this.base.request("PATCH",`/api/v2/labels/${e.labelID}`,e,s,"application/json")}deleteLabelsID(e,s){return this.base.request("DELETE",`/api/v2/labels/${e.labelID}`,e,s)}};var O=class{constructor(e){this.base=new t(e)}getMe(e,s){return this.base.request("GET","/api/v2/me",e,s)}putMePassword(e,s){return this.base.request("PUT","/api/v2/me/password",e,s,"application/json")}};var x=class{constructor(e){this.base=new t(e)}getMetrics(e,s){return this.base.request("GET","/api/v2/metrics",e,s)}};var T=class{constructor(e){this.base=new t(e)}getNotificationEndpoints(e,s){return this.base.request("GET",`/api/v2/notificationEndpoints${this.base.queryString(e,["offset","limit","orgID"])}`,e,s)}createNotificationEndpoint(e,s){return this.base.request("POST","/api/v2/notificationEndpoints",e,s,"application/json")}getNotificationEndpointsID(e,s){return this.base.request("GET",`/api/v2/notificationEndpoints/${e.endpointID}`,e,s)}putNotificationEndpointsID(e,s){return this.base.request("PUT",`/api/v2/notificationEndpoints/${e.endpointID}`,e,s,"application/json")}patchNotificationEndpointsID(e,s){return this.base.request("PATCH",`/api/v2/notificationEndpoints/${e.endpointID}`,e,s,"application/json")}deleteNotificationEndpointsID(e,s){return this.base.request("DELETE",`/api/v2/notificationEndpoints/${e.endpointID}`,e,s)}getNotificationEndpointsIDLabels(e,s){return this.base.request("GET",`/api/v2/notificationEndpoints/${e.endpointID}/labels`,e,s)}postNotificationEndpointIDLabels(e,s){return this.base.request("POST",`/api/v2/notificationEndpoints/${e.endpointID}/labels`,e,s,"application/json")}deleteNotificationEndpointsIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/notificationEndpoints/${e.endpointID}/labels/${e.labelID}`,e,s)}};var k=class{constructor(e){this.base=new t(e)}getNotificationRules(e,s){return this.base.request("GET",`/api/v2/notificationRules${this.base.queryString(e,["offset","limit","orgID","checkID","tag"])}`,e,s)}createNotificationRule(e,s){return this.base.request("POST","/api/v2/notificationRules",e,s,"application/json")}getNotificationRulesID(e,s){return this.base.request("GET",`/api/v2/notificationRules/${e.ruleID}`,e,s)}putNotificationRulesID(e,s){return this.base.request("PUT",`/api/v2/notificationRules/${e.ruleID}`,e,s,"application/json")}patchNotificationRulesID(e,s){return this.base.request("PATCH",`/api/v2/notificationRules/${e.ruleID}`,e,s,"application/json")}deleteNotificationRulesID(e,s){return this.base.request("DELETE",`/api/v2/notificationRules/${e.ruleID}`,e,s)}getNotificationRulesIDLabels(e,s){return this.base.request("GET",`/api/v2/notificationRules/${e.ruleID}/labels`,e,s)}postNotificationRuleIDLabels(e,s){return this.base.request("POST",`/api/v2/notificationRules/${e.ruleID}/labels`,e,s,"application/json")}deleteNotificationRulesIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/notificationRules/${e.ruleID}/labels/${e.labelID}`,e,s)}getNotificationRulesIDQuery(e,s){return this.base.request("GET",`/api/v2/notificationRules/${e.ruleID}/query`,e,s)}};var v=class{constructor(e){this.base=new t(e)}getOrgs(e,s){return this.base.request("GET",`/api/v2/orgs${this.base.queryString(e,["offset","limit","descending","org","orgID","userID"])}`,e,s)}postOrgs(e,s){return this.base.request("POST","/api/v2/orgs",e,s,"application/json")}getOrgsID(e,s){return this.base.request("GET",`/api/v2/orgs/${e.orgID}`,e,s)}patchOrgsID(e,s){return this.base.request("PATCH",`/api/v2/orgs/${e.orgID}`,e,s,"application/json")}deleteOrgsID(e,s){return this.base.request("DELETE",`/api/v2/orgs/${e.orgID}`,e,s)}getOrgsIDSecrets(e,s){return this.base.request("GET",`/api/v2/orgs/${e.orgID}/secrets`,e,s)}patchOrgsIDSecrets(e,s){return this.base.request("PATCH",`/api/v2/orgs/${e.orgID}/secrets`,e,s,"application/json")}getOrgsIDMembers(e,s){return this.base.request("GET",`/api/v2/orgs/${e.orgID}/members`,e,s)}postOrgsIDMembers(e,s){return this.base.request("POST",`/api/v2/orgs/${e.orgID}/members`,e,s,"application/json")}deleteOrgsIDMembersID(e,s){return this.base.request("DELETE",`/api/v2/orgs/${e.orgID}/members/${e.userID}`,e,s)}getOrgsIDOwners(e,s){return this.base.request("GET",`/api/v2/orgs/${e.orgID}/owners`,e,s)}postOrgsIDOwners(e,s){return this.base.request("POST",`/api/v2/orgs/${e.orgID}/owners`,e,s,"application/json")}deleteOrgsIDOwnersID(e,s){return this.base.request("DELETE",`/api/v2/orgs/${e.orgID}/owners/${e.userID}`,e,s)}postOrgsIDSecrets(e,s){return this.base.request("POST",`/api/v2/orgs/${e.orgID}/secrets/delete`,e,s,"application/json")}deleteOrgsIDSecretsID(e,s){return this.base.request("DELETE",`/api/v2/orgs/${e.orgID}/secrets/${e.secretID}`,e,s)}};var B=class{constructor(e){this.base=new t(e)}getPing(e,s){return this.base.request("GET","/ping",e,s)}};var S=class{constructor(e){this.base=new t(e)}postQueryAst(e,s){return this.base.request("POST","/api/v2/query/ast",e,s,"application/json")}getQuerySuggestions(e,s){return this.base.request("GET","/api/v2/query/suggestions",e,s)}getQuerySuggestionsName(e,s){return this.base.request("GET",`/api/v2/query/suggestions/${e.name}`,e,s)}postQueryAnalyze(e,s){return this.base.request("POST","/api/v2/query/analyze",e,s,"application/json")}postQuery(e,s){return this.base.request("POST",`/api/v2/query${this.base.queryString(e,["org","orgID"])}`,e,s,"application/json")}};var G=class{constructor(e){this.base=new t(e)}getReady(e,s){return this.base.request("GET","/ready",e,s)}};var E=class{constructor(e){this.base=new t(e)}getRemoteConnections(e,s){return this.base.request("GET",`/api/v2/remotes${this.base.queryString(e,["orgID","name","remoteURL"])}`,e,s)}postRemoteConnection(e,s){return this.base.request("POST","/api/v2/remotes",e,s,"application/json")}getRemoteConnectionByID(e,s){return this.base.request("GET",`/api/v2/remotes/${e.remoteID}`,e,s)}patchRemoteConnectionByID(e,s){return this.base.request("PATCH",`/api/v2/remotes/${e.remoteID}`,e,s,"application/json")}deleteRemoteConnectionByID(e,s){return this.base.request("DELETE",`/api/v2/remotes/${e.remoteID}`,e,s)}};var y=class{constructor(e){this.base=new t(e)}getReplications(e,s){return this.base.request("GET",`/api/v2/replications${this.base.queryString(e,["orgID","name","remoteID","localBucketID"])}`,e,s)}postReplication(e,s){return this.base.request("POST",`/api/v2/replications${this.base.queryString(e,["validate"])}`,e,s,"application/json")}getReplicationByID(e,s){return this.base.request("GET",`/api/v2/replications/${e.replicationID}`,e,s)}patchReplicationByID(e,s){return this.base.request("PATCH",`/api/v2/replications/${e.replicationID}${this.base.queryString(e,["validate"])}`,e,s,"application/json")}deleteReplicationByID(e,s){return this.base.request("DELETE",`/api/v2/replications/${e.replicationID}`,e,s)}postValidateReplicationByID(e,s){return this.base.request("POST",`/api/v2/replications/${e.replicationID}/validate`,e,s)}};var $=class{constructor(e){this.base=new t(e)}getResources(e,s){return this.base.request("GET","/api/v2/resources",e,s)}};var L=class{constructor(e){this.base=new t(e)}postRestoreKV(e,s){return this.base.request("POST","/api/v2/restore/kv",e,s,"text/plain")}postRestoreSQL(e,s){return this.base.request("POST","/api/v2/restore/sql",e,s,"text/plain")}postRestoreBucketID(e,s){return this.base.request("POST",`/api/v2/restore/bucket/${e.bucketID}`,e,s,"text/plain")}postRestoreBucketMetadata(e,s){return this.base.request("POST","/api/v2/restore/bucketMetadata",e,s,"application/json")}postRestoreShardId(e,s){return this.base.request("POST",`/api/v2/restore/shards/${e.shardID}`,e,s,"text/plain")}};var w=class{constructor(e){this.base=new t(e)}getScrapers(e,s){return this.base.request("GET",`/api/v2/scrapers${this.base.queryString(e,["name","id","orgID","org"])}`,e,s)}postScrapers(e,s){return this.base.request("POST","/api/v2/scrapers",e,s,"application/json")}getScrapersID(e,s){return this.base.request("GET",`/api/v2/scrapers/${e.scraperTargetID}`,e,s)}patchScrapersID(e,s){return this.base.request("PATCH",`/api/v2/scrapers/${e.scraperTargetID}`,e,s,"application/json")}deleteScrapersID(e,s){return this.base.request("DELETE",`/api/v2/scrapers/${e.scraperTargetID}`,e,s)}getScrapersIDLabels(e,s){return this.base.request("GET",`/api/v2/scrapers/${e.scraperTargetID}/labels`,e,s)}postScrapersIDLabels(e,s){return this.base.request("POST",`/api/v2/scrapers/${e.scraperTargetID}/labels`,e,s,"application/json")}deleteScrapersIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/scrapers/${e.scraperTargetID}/labels/${e.labelID}`,e,s)}getScrapersIDMembers(e,s){return this.base.request("GET",`/api/v2/scrapers/${e.scraperTargetID}/members`,e,s)}postScrapersIDMembers(e,s){return this.base.request("POST",`/api/v2/scrapers/${e.scraperTargetID}/members`,e,s,"application/json")}deleteScrapersIDMembersID(e,s){return this.base.request("DELETE",`/api/v2/scrapers/${e.scraperTargetID}/members/${e.userID}`,e,s)}getScrapersIDOwners(e,s){return this.base.request("GET",`/api/v2/scrapers/${e.scraperTargetID}/owners`,e,s)}postScrapersIDOwners(e,s){return this.base.request("POST",`/api/v2/scrapers/${e.scraperTargetID}/owners`,e,s,"application/json")}deleteScrapersIDOwnersID(e,s){return this.base.request("DELETE",`/api/v2/scrapers/${e.scraperTargetID}/owners/${e.userID}`,e,s)}};var C=class{constructor(e){this.base=new t(e)}getScripts(e,s){return this.base.request("GET",`/api/v2/scripts${this.base.queryString(e,["limit","offset","name","labelNames","labelContains"])}`,e,s)}postScripts(e,s){return this.base.request("POST","/api/v2/scripts",e,s,"application/json")}getScriptsID(e,s){return this.base.request("GET",`/api/v2/scripts/${e.scriptID}`,e,s)}patchScriptsID(e,s){return this.base.request("PATCH",`/api/v2/scripts/${e.scriptID}`,e,s,"application/json")}deleteScriptsID(e,s){return this.base.request("DELETE",`/api/v2/scripts/${e.scriptID}`,e,s)}postScriptsIDInvoke(e,s){return this.base.request("POST",`/api/v2/scripts/${e.scriptID}/invoke`,e,s,"application/json")}patchScriptsIDAddLabels(e,s){return this.base.request("PATCH",`/api/v2/scripts/${e.scriptID}/labels/add`,e,s,"application/json")}patchScriptsIDRemoveLabels(e,s){return this.base.request("PATCH",`/api/v2/scripts/${e.scriptID}/labels/remove`,e,s,"application/json")}};var M=class{constructor(e){this.base=new t(e)}getSetup(e,s){return this.base.request("GET","/api/v2/setup",e,s)}postSetup(e,s){return this.base.request("POST","/api/v2/setup",e,s,"application/json")}};var A=class{constructor(e){this.base=new t(e)}postSignin(e,s){return this.base.request("POST","/api/v2/signin",e,s)}};var N=class{constructor(e){this.base=new t(e)}postSignout(e,s){return this.base.request("POST","/api/v2/signout",e,s)}};var j=class{constructor(e){this.base=new t(e)}getSources(e,s){return this.base.request("GET",`/api/v2/sources${this.base.queryString(e,["org"])}`,e,s)}postSources(e,s){return this.base.request("POST","/api/v2/sources",e,s,"application/json")}getSourcesID(e,s){return this.base.request("GET",`/api/v2/sources/${e.sourceID}`,e,s)}patchSourcesID(e,s){return this.base.request("PATCH",`/api/v2/sources/${e.sourceID}`,e,s,"application/json")}deleteSourcesID(e,s){return this.base.request("DELETE",`/api/v2/sources/${e.sourceID}`,e,s)}getSourcesIDHealth(e,s){return this.base.request("GET",`/api/v2/sources/${e.sourceID}/health`,e,s)}getSourcesIDBuckets(e,s){return this.base.request("GET",`/api/v2/sources/${e.sourceID}/buckets${this.base.queryString(e,["org"])}`,e,s)}};var V=class{constructor(e){this.base=new t(e)}listStacks(e,s){return this.base.request("GET",`/api/v2/stacks${this.base.queryString(e,["orgID","name","stackID"])}`,e,s)}createStack(e,s){return this.base.request("POST","/api/v2/stacks",e,s,"application/json")}readStack(e,s){return this.base.request("GET",`/api/v2/stacks/${e.stack_id}`,e,s)}updateStack(e,s){return this.base.request("PATCH",`/api/v2/stacks/${e.stack_id}`,e,s,"application/json")}deleteStack(e,s){return this.base.request("DELETE",`/api/v2/stacks/${e.stack_id}${this.base.queryString(e,["orgID"])}`,e,s)}uninstallStack(e,s){return this.base.request("POST",`/api/v2/stacks/${e.stack_id}/uninstall`,e,s)}};var U=class{constructor(e){this.base=new t(e)}getTasksIDRuns(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}/runs${this.base.queryString(e,["after","limit","afterTime","beforeTime"])}`,e,s)}postTasksIDRuns(e,s){return this.base.request("POST",`/api/v2/tasks/${e.taskID}/runs`,e,s,"application/json")}getTasksIDRunsID(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}/runs/${e.runID}`,e,s)}deleteTasksIDRunsID(e,s){return this.base.request("DELETE",`/api/v2/tasks/${e.taskID}/runs/${e.runID}`,e,s)}postTasksIDRunsIDRetry(e,s){return this.base.request("POST",`/api/v2/tasks/${e.taskID}/runs/${e.runID}/retry`,e,s,"application/json; charset=utf-8")}getTasksIDLogs(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}/logs`,e,s)}getTasksIDRunsIDLogs(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}/runs/${e.runID}/logs`,e,s)}getTasksIDLabels(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}/labels`,e,s)}postTasksIDLabels(e,s){return this.base.request("POST",`/api/v2/tasks/${e.taskID}/labels`,e,s,"application/json")}deleteTasksIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/tasks/${e.taskID}/labels/${e.labelID}`,e,s)}getTasksIDMembers(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}/members`,e,s)}postTasksIDMembers(e,s){return this.base.request("POST",`/api/v2/tasks/${e.taskID}/members`,e,s,"application/json")}deleteTasksIDMembersID(e,s){return this.base.request("DELETE",`/api/v2/tasks/${e.taskID}/members/${e.userID}`,e,s)}getTasksIDOwners(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}/owners`,e,s)}postTasksIDOwners(e,s){return this.base.request("POST",`/api/v2/tasks/${e.taskID}/owners`,e,s,"application/json")}deleteTasksIDOwnersID(e,s){return this.base.request("DELETE",`/api/v2/tasks/${e.taskID}/owners/${e.userID}`,e,s)}getTasks(e,s){return this.base.request("GET",`/api/v2/tasks${this.base.queryString(e,["name","after","user","org","orgID","status","limit","type"])}`,e,s)}postTasks(e,s){return this.base.request("POST","/api/v2/tasks",e,s,"application/json")}getTasksID(e,s){return this.base.request("GET",`/api/v2/tasks/${e.taskID}`,e,s)}patchTasksID(e,s){return this.base.request("PATCH",`/api/v2/tasks/${e.taskID}`,e,s,"application/json")}deleteTasksID(e,s){return this.base.request("DELETE",`/api/v2/tasks/${e.taskID}`,e,s)}};var z=class{constructor(e){this.base=new t(e)}getTelegrafPlugins(e,s){return this.base.request("GET",`/api/v2/telegraf/plugins${this.base.queryString(e,["type"])}`,e,s)}};var H=class{constructor(e){this.base=new t(e)}getTelegrafs(e,s){return this.base.request("GET",`/api/v2/telegrafs${this.base.queryString(e,["orgID"])}`,e,s)}postTelegrafs(e,s){return this.base.request("POST","/api/v2/telegrafs",e,s,"application/json")}getTelegrafsID(e,s){return this.base.request("GET",`/api/v2/telegrafs/${e.telegrafID}`,e,s)}putTelegrafsID(e,s){return this.base.request("PUT",`/api/v2/telegrafs/${e.telegrafID}`,e,s,"application/json")}deleteTelegrafsID(e,s){return this.base.request("DELETE",`/api/v2/telegrafs/${e.telegrafID}`,e,s)}getTelegrafsIDLabels(e,s){return this.base.request("GET",`/api/v2/telegrafs/${e.telegrafID}/labels`,e,s)}postTelegrafsIDLabels(e,s){return this.base.request("POST",`/api/v2/telegrafs/${e.telegrafID}/labels`,e,s,"application/json")}deleteTelegrafsIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/telegrafs/${e.telegrafID}/labels/${e.labelID}`,e,s)}getTelegrafsIDMembers(e,s){return this.base.request("GET",`/api/v2/telegrafs/${e.telegrafID}/members`,e,s)}postTelegrafsIDMembers(e,s){return this.base.request("POST",`/api/v2/telegrafs/${e.telegrafID}/members`,e,s,"application/json")}deleteTelegrafsIDMembersID(e,s){return this.base.request("DELETE",`/api/v2/telegrafs/${e.telegrafID}/members/${e.userID}`,e,s)}getTelegrafsIDOwners(e,s){return this.base.request("GET",`/api/v2/telegrafs/${e.telegrafID}/owners`,e,s)}postTelegrafsIDOwners(e,s){return this.base.request("POST",`/api/v2/telegrafs/${e.telegrafID}/owners`,e,s,"application/json")}deleteTelegrafsIDOwnersID(e,s){return this.base.request("DELETE",`/api/v2/telegrafs/${e.telegrafID}/owners/${e.userID}`,e,s)}};var Q=class{constructor(e){this.base=new t(e)}applyTemplate(e,s){return this.base.request("POST","/api/v2/templates/apply",e,s,"application/json")}exportTemplate(e,s){return this.base.request("POST","/api/v2/templates/export",e,s,"application/json")}};var F=class{constructor(e){this.base=new t(e)}postUsersIDPassword(e,s){return this.base.request("POST",`/api/v2/users/${e.userID}/password`,e,s,"application/json")}getUsers(e,s){return this.base.request("GET",`/api/v2/users${this.base.queryString(e,["offset","limit","after","name","id"])}`,e,s)}postUsers(e,s){return this.base.request("POST","/api/v2/users",e,s,"application/json")}getUsersID(e,s){return this.base.request("GET",`/api/v2/users/${e.userID}`,e,s)}patchUsersID(e,s){return this.base.request("PATCH",`/api/v2/users/${e.userID}`,e,s,"application/json")}deleteUsersID(e,s){return this.base.request("DELETE",`/api/v2/users/${e.userID}`,e,s)}};var K=class{constructor(e){this.base=new t(e)}getVariablesIDLabels(e,s){return this.base.request("GET",`/api/v2/variables/${e.variableID}/labels`,e,s)}postVariablesIDLabels(e,s){return this.base.request("POST",`/api/v2/variables/${e.variableID}/labels`,e,s,"application/json")}deleteVariablesIDLabelsID(e,s){return this.base.request("DELETE",`/api/v2/variables/${e.variableID}/labels/${e.labelID}`,e,s)}getVariables(e,s){return this.base.request("GET",`/api/v2/variables${this.base.queryString(e,["org","orgID"])}`,e,s)}postVariables(e,s){return this.base.request("POST","/api/v2/variables",e,s,"application/json")}getVariablesID(e,s){return this.base.request("GET",`/api/v2/variables/${e.variableID}`,e,s)}putVariablesID(e,s){return this.base.request("PUT",`/api/v2/variables/${e.variableID}`,e,s,"application/json")}patchVariablesID(e,s){return this.base.request("PATCH",`/api/v2/variables/${e.variableID}`,e,s,"application/json")}deleteVariablesID(e,s){return this.base.request("DELETE",`/api/v2/variables/${e.variableID}`,e,s)}};var _=class{constructor(e){this.base=new t(e)}postWrite(e,s){return this.base.request("POST",`/api/v2/write${this.base.queryString(e,["org","orgID","bucket","precision"])}`,e,s,"text/plain")}};var W=class{constructor(e,s){this.transport=e.transport,this.processCSVResponse=e.processCSVResponse,this.options={...s}}invoke(e,s){let{gzip:i,headers:o}=this.options,a=`/api/v2/scripts/${e}/invoke`,n=JSON.stringify({params:{...s}}),u={method:"POST",headers:{"content-type":"application/json; encoding=utf-8","accept-encoding":i?"gzip":"identity",...o}};return this.processCSVResponse(J=>this.transport.send(a,n,u,J),()=>this.transport.iterate(a,n,u))}};0&&(0);
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 80 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExAccessoryStatusDto = exports.TemperatureSensorStatusDto = exports.FootStatusDto = exports.ExAccessoryResponseExAccessory = exports.ExAccessoryRequestExAccessory = exports.ExAccessoryResponseDto = exports.ExAccessoryRequestDto = void 0;
-const swagger_1 = __webpack_require__(60);
-const control_type_1 = __webpack_require__(81);
-const class_transformer_1 = __webpack_require__(63);
-var FootStatus;
-(function (FootStatus) {
-    FootStatus[FootStatus["idle"] = 0] = "idle";
-    FootStatus[FootStatus["init"] = 1] = "init";
-    FootStatus[FootStatus["moving"] = 2] = "moving";
-    FootStatus[FootStatus["emoStop"] = 3] = "emoStop";
-    FootStatus[FootStatus["upDone"] = 4] = "upDone";
-    FootStatus[FootStatus["downDone"] = 5] = "downDone";
-})(FootStatus || (FootStatus = {}));
-class ExAccessoryRequestDto {
-}
-exports.ExAccessoryRequestDto = ExAccessoryRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '외부 악세사리 명령',
-        example: control_type_1.ControlCommand.footMove,
-        required: true,
-    }),
-    __metadata("design:type", String)
-], ExAccessoryRequestDto.prototype, "command", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Foot 명령 파라미터 (Foot 위치 값)',
-        example: 100,
-        required: false,
-    }),
-    __metadata("design:type", Number)
-], ExAccessoryRequestDto.prototype, "position", void 0);
-class ExAccessoryResponseDto extends ExAccessoryRequestDto {
-}
-exports.ExAccessoryResponseDto = ExAccessoryResponseDto;
-class ExAccessoryRequestExAccessory extends ExAccessoryRequestDto {
-}
-exports.ExAccessoryRequestExAccessory = ExAccessoryRequestExAccessory;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '명령의 id값. 서버에서 자동 생성됩니다.',
-        example: '550e8400-e29b-41d4-a716-446655440000',
-        required: true,
-    }),
-    __metadata("design:type", String)
-], ExAccessoryRequestExAccessory.prototype, "id", void 0);
-class ExAccessoryResponseExAccessory extends ExAccessoryRequestExAccessory {
-}
-exports.ExAccessoryResponseExAccessory = ExAccessoryResponseExAccessory;
-class FootStatusDto {
-}
-exports.FootStatusDto = FootStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Foot 연결 상태',
-        example: true,
-    }),
-    (0, class_transformer_1.Type)(() => Boolean),
-    __metadata("design:type", Boolean)
-], FootStatusDto.prototype, "connection", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Foot 위치 값',
-        example: 100,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], FootStatusDto.prototype, "position", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Foot이 바닥을 지지하고 있는 상태 여부',
-        example: false,
-    }),
-    (0, class_transformer_1.Type)(() => Boolean),
-    __metadata("design:type", Boolean)
-], FootStatusDto.prototype, "is_down", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Foot 상태',
-        example: FootStatus.moving,
-        enum: FootStatus,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], FootStatusDto.prototype, "foot_status", void 0);
-class TemperatureSensorStatusDto {
-}
-exports.TemperatureSensorStatusDto = TemperatureSensorStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '온도센서 연결 상태',
-        example: true,
-    }),
-    (0, class_transformer_1.Type)(() => Boolean),
-    __metadata("design:type", Boolean)
-], TemperatureSensorStatusDto.prototype, "connection", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '온도센서 측정값',
-        example: 25,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], TemperatureSensorStatusDto.prototype, "temperature_value", void 0);
-class ExAccessoryStatusDto {
-}
-exports.ExAccessoryStatusDto = ExAccessoryStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Foot 상태',
-        type: FootStatusDto,
-    }),
-    __metadata("design:type", FootStatusDto)
-], ExAccessoryStatusDto.prototype, "foot", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '온도센서 상태',
-        type: TemperatureSensorStatusDto,
-    }),
-    __metadata("design:type", TemperatureSensorStatusDto)
-], ExAccessoryStatusDto.prototype, "temperature_sensor", void 0);
-
-
-/***/ }),
-/* 81 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LEDColor = exports.ControlCommand = void 0;
-var ControlCommand;
-(function (ControlCommand) {
-    ControlCommand["dockStart"] = "dock";
-    ControlCommand["undockStart"] = "undock";
-    ControlCommand["randomSeq"] = "randomSeq";
-    ControlCommand["ledControl"] = "ledControl";
-    ControlCommand["lidarOnOff"] = "lidarOnOff";
-    ControlCommand["pathOnOff"] = "pathOnOff";
-    ControlCommand["motorOnOff"] = "motorOnOff";
-    ControlCommand["safetyFieldControl"] = "safetyFieldControl";
-    ControlCommand["setSafetyField"] = "setSafetyField";
-    ControlCommand["getSafetyField"] = "getSafetyField";
-    ControlCommand["resetSafetyField"] = "resetSafetyField";
-    ControlCommand["footMove"] = "footMove";
-    ControlCommand["footStop"] = "footStop";
-    ControlCommand["getDigitalIO"] = "getDigitalIO";
-    ControlCommand["setDigitalIO"] = "setDigitalIO";
-    ControlCommand["setObsBox"] = "setObsBox";
-    ControlCommand["getObsBox"] = "getObsBox";
-})(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
-var LEDColor;
-(function (LEDColor) {
-    LEDColor["none"] = "none";
-    LEDColor["red"] = "red";
-    LEDColor["blue"] = "blue";
-    LEDColor["white"] = "white";
-    LEDColor["green"] = "green";
-    LEDColor["magenta"] = "magenta";
-    LEDColor["yellow"] = "yellow";
-    LEDColor["red_blink"] = "red blink";
-    LEDColor["blue_blink"] = "blue blink";
-    LEDColor["white_blink"] = "white blink";
-    LEDColor["green_blink"] = "green blink";
-    LEDColor["magenta_blink"] = "magenta blink";
-    LEDColor["yellow_blink"] = "yellow blink";
-    LEDColor["unknown"] = "unknown";
-})(LEDColor || (exports.LEDColor = LEDColor = {}));
-
-
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -4935,11 +4934,11 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const tsdb_module_1 = __webpack_require__(2);
-const config_1 = __webpack_require__(6);
-const microservices_1 = __webpack_require__(12);
-const semlog_module_1 = __webpack_require__(64);
-const path_1 = __webpack_require__(45);
-const proto_1 = __webpack_require__(10);
+const config_1 = __webpack_require__(58);
+const microservices_1 = __webpack_require__(10);
+const semlog_module_1 = __webpack_require__(68);
+const path_1 = __webpack_require__(43);
+const proto_1 = __webpack_require__(8);
 async function bootstrap() {
     const tsdbModule = await core_1.NestFactory.create(tsdb_module_1.TsdbModule);
     const config = tsdbModule.get(config_1.ConfigService);

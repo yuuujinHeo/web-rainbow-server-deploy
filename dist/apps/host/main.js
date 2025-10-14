@@ -8411,11 +8411,16 @@ let OnvifMediaService = class OnvifMediaService {
         };
     }
     async onModuleInit() {
-        this.configService = this.configMicroservice.getService('ConfigGrpcService');
-        this.CONFIG.Name = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_name' }))).value ?? '';
-        this.CONFIG.Width = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_width' }))).value ?? '';
-        this.CONFIG.Height = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_height' }))).value ?? '';
-        this.loggerService.info(`[Media] get Config : ${JSON.stringify(this.CONFIG)}`);
+        try {
+            this.configService = this.configMicroservice.getService('ConfigGrpcService');
+            this.CONFIG.Name = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_name' }))).value ?? '';
+            this.CONFIG.Width = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_width' }))).value ?? '';
+            this.CONFIG.Height = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_height' }))).value ?? '';
+            this.loggerService.info(`[Media] get Config : ${JSON.stringify(this.CONFIG)}`);
+        }
+        catch (error) {
+            this.loggerService.error(`[Media] onModuleInit : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+        }
     }
     async responseMediaProfiles() {
         return new Promise(async (resolve, reject) => {
@@ -8852,21 +8857,62 @@ let OnvifDeviceService = class OnvifDeviceService {
             HardwareID: '',
         };
     }
-    async initConfig() {
-        this.loggerService.debug(`[Device] InitConfig --------------------------`);
+    async onModuleInit() {
+        this.instanceId = wsdl_util_1.WsdlUtil.generateInstanceId();
         this.configService = this.configMicroservice.getService('ConfigGrpcService');
-        this.CONFIG.Serial = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_serial' }))).value ?? '';
-        this.CONFIG.Manufacturer = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_manufacturer' }))).value ?? '';
-        this.CONFIG.Model = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_model' }))).value ?? '';
-        this.CONFIG.Version = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_version' }))).value ?? '';
-        this.CONFIG.HardwareID = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_hardware_id' }))).value ?? '';
-        this.loggerService.info(`[Device] get Config : ${JSON.stringify(this.CONFIG)}`);
-        this.initMulticast();
+        this.onReady();
+    }
+    async waitForGrpc(clientGrpc, serviceName, timeoutMs = 3000) {
+        const raw = clientGrpc.getClientByServiceName?.(serviceName) ?? clientGrpc.getClient?.();
+        if (!raw)
+            return false;
+        return new Promise((resolve) => {
+            const deadline = new Date(Date.now() + timeoutMs);
+            raw.waitForReady(deadline, (err) => resolve(!err));
+        });
+    }
+    async onReady() {
+        const ok = await this.waitForGrpc(this.configMicroservice, 'ConfigGrpcService', 3000);
+        if (!ok) {
+            this.loggerService.error('[Device] Config 연결 안됨');
+            return;
+        }
+        const svc = this.configMicroservice.getService('ConfigGrpcService');
+        try {
+            const result = await (0, rxjs_1.lastValueFrom)(svc.getConfig({ key: 'media_name' }));
+            this.initConfig();
+        }
+        catch (e) {
+            this.loggerService.warn(`RPC 호출 실패 ${e}`);
+        }
+    }
+    async initConfig() {
+        try {
+            this.loggerService.debug(`[Device] InitConfig --------------------------`);
+            this.CONFIG.Serial = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_serial' }))).value ?? '';
+            this.CONFIG.Manufacturer = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_manufacturer' }))).value ?? '';
+            this.CONFIG.Model = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_model' }))).value ?? '';
+            this.CONFIG.Version = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_version' }))).value ?? '';
+            this.CONFIG.HardwareID = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_hardware_id' }))).value ?? '';
+            this.loggerService.info(`[Device] initConfig : ${JSON.stringify(this.CONFIG)}`);
+            this.initMulticast();
+        }
+        catch (error) {
+            this.loggerService.error(`[Device] initConfig : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.configService = null;
+        }
     }
     async initNetwork() {
-        this.loggerService.debug(`[Device] initNetwork --------------------------`);
-        this.networkService = this.networkMicroservice.getService('NetworkGrpcService');
-        this.initMulticast();
+        try {
+            this.loggerService.debug(`[Device] initNetwork --------------------------`);
+            this.networkService = this.networkMicroservice.getService('NetworkGrpcService');
+            this.currentWifi = await (0, rxjs_1.lastValueFrom)(this.networkService.getWifi({}));
+            this.initMulticast();
+        }
+        catch (error) {
+            this.loggerService.error(`[Device] initNetwork : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.networkService = null;
+        }
     }
     async initMulticast() {
         if (this.networkService && this.configService) {
@@ -8905,11 +8951,6 @@ let OnvifDeviceService = class OnvifDeviceService {
                 this.hello();
             });
         }
-    }
-    async onModuleInit() {
-        this.instanceId = wsdl_util_1.WsdlUtil.generateInstanceId();
-        this.initConfig();
-        this.initNetwork();
     }
     async hello() {
         let helloMsg = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.HELLO];
@@ -9717,7 +9758,7 @@ let OnvifMqttController = class OnvifMqttController {
         this.mqttMicroservice.emit('check-network', {});
     }
     async readyConfig() {
-        this.deviceService.initConfig();
+        this.deviceService.onReady();
     }
     async readyNetwork() {
         this.deviceService.initNetwork();

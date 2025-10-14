@@ -33,7 +33,9 @@ message MoveLog{
     optional float vx = 10;
     optional float vy = 11;
     optional float wz = 12;
-    optional string time = 13;
+    optional string createdAt = 13;
+    optional string updatedAt = 14;
+    optional string direction = 15;
 }
 
 message MoveLogLastRequest {
@@ -75,6 +77,7 @@ message MoveCommandResquest {
     optional float vx = 9;
     optional float vy = 10;
     optional float wz = 11;
+    optional string direction = 12;
 }
 
 message MoveCommandResponse {
@@ -89,4 +92,5 @@ message MoveCommandResponse {
     optional float vx = 9;
     optional float vy = 10;
     optional float wz = 11;
+    optional string direction = 12;
 }

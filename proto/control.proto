@@ -73,7 +73,8 @@ message SafetyIoControlRequest {
 
 message SafetyIoControlResponse {
     string command = 1;
-    repeated McuDio mcu_dio = 2;
-    string result = 3;
-    optional string message = 4;
+    repeated McuDio mcuDio = 2;
+    repeated McuDio mcuDin = 3;
+    string result = 4;
+    optional string message = 5;
 }

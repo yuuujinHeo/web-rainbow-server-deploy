@@ -54,7 +54,7 @@ export class PathSlamnav {
 }
 export class PathResponseDto {
   @ApiProperty({
-    description: '경로 노드 배열',
+    description: '계산된 경로를 노드ID의 배열로 전달합니다. ',
     example: ['NODE_1', 'NODE_2', 'NODE_4'],
     required: false,
   })
