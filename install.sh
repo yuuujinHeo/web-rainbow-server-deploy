@@ -23,12 +23,11 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
 echo \
-"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-$(lsb_release -cs) stable" \
-| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
 
 echo "4) docker 권한 설정"
 sudo usermod -aG docker $USER
@@ -36,5 +35,15 @@ newgrp docker
 sudo chown root:docker /var/run/docker.sock
 sudo chmod 660 /var/run/docker.sock
 
-echo "5) 재시작"
-reboot
+echo "5) pnpm install"
+pnpm install
+
+echo "6) pm2 start"
+pm2 start ~/web-rainbow-server-deploy/start_docker.sh
+pm2 start ~/web-rainbow-server-deploy/start_host.sh
+pm2 save
+startup_command=$(pm2 startup | grep 'sudo' | tail -n 1)
+eval $startup_command
+
+
+
