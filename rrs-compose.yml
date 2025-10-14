@@ -209,34 +209,22 @@ services:
       timeout: 3s
       retries: 10
       start_period: 5s
-#   influxdb2:
-#     container_name: influxdb2
-#     image: influxdb:2
-#     ports:
-#       - 7002:8086
-#     environment:
-#       DOCKER_INFLUXDB_INIT_MODE: setup
-#       DOCKER_INFLUXDB_INIT_USERNAME_FILE: /run/secrets/influxdb2-admin-username
-#       DOCKER_INFLUXDB_INIT_PASSWORD_FILE: /run/secrets/influxdb2-admin-password
-#       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE: /run/secrets/influxdb2-admin-token
-#       DOCKER_INFLUXDB_INIT_ORG: docs
-#       DOCKER_INFLUXDB_INIT_BUCKET: home
-#     secrets:
-#       - influxdb2-admin-username
-#       - influxdb2-admin-password
-#       - influxdb2-admin-token
-#     volumes:
-#       - ./influxdb2-data:/var/lib/influxdb2
-#       - ./influxdb2-config:/etc/influxdb2
-#     restart: unless-stopped
-# secrets:
-#   influxdb2-admin-username:
-#     file: ~/.env.influxdb2-admin-username
-#   influxdb2-admin-password:
-#     file: ~/.env.influxdb2-admin-password
-#   influxdb2-admin-token:
-#     file: ~/.env.influxdb2-admin-token
-# volumes:
-#   influxdb2-data:
-#   influxdb2-config:
-
+  influxdb2:
+    container_name: influxdb2
+    image: influxdb:2
+    ports:
+      - 7002:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: rainbow
+      DOCKER_INFLUXDB_INIT_PASSWORD: rainbow
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: rainbow2011!
+      DOCKER_INFLUXDB_INIT_ORG: rainbow
+      DOCKER_INFLUXDB_INIT_BUCKET: slamnav
+    volumes:
+      - ./influxdb2-data:/var/lib/influxdb2
+      - ./influxdb2-config:/etc/influxdb2
+    restart: unless-stopped
+volumes:
+  influxdb2-data:
+  influxdb2-config:
