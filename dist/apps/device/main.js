@@ -4584,6 +4584,8 @@ class MoveModel {
         this.vx = param.vx;
         this.vy = param.vy;
         this.wz = param.wz;
+        this.target = param.target;
+        this.speed = param.speed;
         this.id = util_1.UrlUtil.generateUUID();
     }
     assignId(id) {
@@ -4628,6 +4630,39 @@ class MoveModel {
         else if (this.command === move_type_1.MoveCommand.moveJog) {
             if (this.vx === undefined || this.vy === undefined || this.wz === undefined) {
                 throw new rpc_code_exception_1.RpcCodeException('vel 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        else if (this.command === move_type_1.MoveCommand.moveStop) {
+        }
+        else if (this.command === move_type_1.MoveCommand.movePause) {
+        }
+        else if (this.command === move_type_1.MoveCommand.moveResume) {
+        }
+        else if (this.command === move_type_1.MoveCommand.moveXLinear) {
+            if (this.target === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('target 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.speed === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('speed 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        else if (this.command === move_type_1.MoveCommand.movecircular) {
+            if (this.target === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('target 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.speed === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('speed 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.direction === undefined || (this.direction !== 'right' && this.direction !== 'left')) {
+                throw new rpc_code_exception_1.RpcCodeException('direction 값이 없거나 올바르지 않습니다. (right, left)', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        else if (this.command === move_type_1.MoveCommand.moveRotate) {
+            if (this.target === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('target 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.speed === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('speed 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
         }
         else {
