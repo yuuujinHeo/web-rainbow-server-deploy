@@ -11,7 +11,7 @@ nvm install --lts
 npm install -g npm@latest
 
 echo "2) pm2, pnpm 설치"
-sudo npm i -g pm2 pnpm nodemon
+sudo npm i -g pm2 pnpm nodemon mplayer
 
 echo "3) docker 설치"
 # Add Docker's official GPG key:
