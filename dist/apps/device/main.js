@@ -3427,7 +3427,7 @@ class OnOffRequestDto {
 exports.OnOffRequestDto = OnOffRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'OnOff 명령을 사용할 Command를 입력하세요. 현재 사용가능한 Command는 lidarOnOff, pathOnOff, motorOnOff가 있습니다.',
+        description: `OnOff 명령을 사용할 Command를 입력하세요. `,
         example: 'lidarOnOff',
         required: true,
     }),
@@ -3447,8 +3447,9 @@ __decorate([
 ], OnOffRequestDto.prototype, "onoff", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '기능에 따라 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
+        description: 'pathOnOff 또는 lidarOnOff 명령의 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
         example: 10,
+        required: false,
     }),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),

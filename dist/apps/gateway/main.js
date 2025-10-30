@@ -216,7 +216,10 @@ __decorate([
     (0, common_2.Post)('onoff'),
     (0, swagger_1.ApiOperation)({
         summary: '기능 OnOff 요청',
-        description: '특정 기능을 켜고 끄는 요청을 합니다. 일부 기능에 따라 전송주기를 입력합니다.',
+        description: `특정 기능을 켜고 끄는 요청을 합니다. \n\n
+    현재 사용가능한 Command는 lidarOnOff, pathOnOff, motorOnOff가 있습니다.
+    motorOnOff는 모터 제어를 켜고 끄는 것을 의미하며 기본값은 항상 on입니다.
+    (pathOnOff와 lidarOnOff는 통신 주기를 설정할 수 있습니다. 현재 미지원하는 기능입니다.)`,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '기능 OnOff 요청 성공',
@@ -227,7 +230,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_2.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _b : Object]),
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
@@ -2532,7 +2535,7 @@ class OnOffRequestDto {
 exports.OnOffRequestDto = OnOffRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'OnOff 명령을 사용할 Command를 입력하세요. 현재 사용가능한 Command는 lidarOnOff, pathOnOff, motorOnOff가 있습니다.',
+        description: `OnOff 명령을 사용할 Command를 입력하세요. `,
         example: 'lidarOnOff',
         required: true,
     }),
@@ -2552,8 +2555,9 @@ __decorate([
 ], OnOffRequestDto.prototype, "onoff", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '기능에 따라 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
+        description: 'pathOnOff 또는 lidarOnOff 명령의 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
         example: 10,
+        required: false,
     }),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),
@@ -5416,14 +5420,14 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({
         summary: '이동 명령',
-        description: `이동 명령을 요청합니다.
-       command의 값에는 goal, target, jog, stop, pause, resume 이 존재합니다.
-       command가 goal인 경우, id, method, preset을 파라메터로 인식합니다.
-       command가 target인 경우, x,y,z,rz,method,preset을 파라메터로 인식합니다.
-       command가 jog인 경우, vx, vy, wz를 파라메터로 인식합니다.
-       그 외의 command는 파라메터를 입력받지 않습니다.
-       method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
-       preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
+        description: `이동 명령을 요청합니다. \n\n
+    command의 값에는 goal, target, jog, stop, pause, resume 이 존재합니다. 
+    command가 goal인 경우, id, method, preset을 파라메터로 인식합니다.
+    command가 target인 경우, x,y,z,rz,method,preset을 파라메터로 인식합니다.
+    command가 jog인 경우, vx, vy, wz를 파라메터로 인식합니다.
+    그 외의 command는 파라메터를 입력받지 않습니다.
+    method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
+    preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 명령 성공',
@@ -5443,9 +5447,10 @@ __decorate([
     (0, common_1.Post)('target'),
     (0, swagger_1.ApiOperation)({
         summary: '이동 명령 (타켓위치 지정)',
-        description: `이동 명령을 요청합니다. 타겟은 지도 상의 특정 x,y,z,rz 값으로 지정합니다.
-       method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
-       preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
+        description: `특정한 좌표값으로 이동 명령을 요청합니다. \n\n
+    타겟은 지도 상의 특정 x,y,z,rz 값으로 지정합니다.
+    method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
+    preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 명령 성공',
@@ -5464,10 +5469,11 @@ __decorate([
 __decorate([
     (0, common_1.Post)('goal'),
     (0, swagger_1.ApiOperation)({
-        summary: '이동 명령 (타켓위치 지정)',
-        description: `이동 명령을 요청합니다. 타겟은 지도 상에 선언된 goal노드의 id값으로(goalId) 지정합니다.
-       method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
-       preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
+        summary: '이동 명령 (목표 노드 지정)',
+        description: `이동 명령을 요청합니다. \n\n
+    목표 노드는 지도 상에 선언된 goal노드의 id값으로(goalId) 지정합니다.
+    method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
+    preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 명령 성공',
