@@ -138,6 +138,8 @@ export interface LoadRequest {
 export interface LoadResponse {
   command: string;
   mapName?: string | undefined;
+  result: string;
+  message?: string | undefined;
 }
 
 export interface MappingRequest {

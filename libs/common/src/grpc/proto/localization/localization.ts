@@ -27,6 +27,8 @@ export interface InitResponse {
   z?: number | undefined;
   rz?: number | undefined;
   randomSeed?: string | undefined;
+  result: string;
+  message?: string | undefined;
 }
 
 export const LOCALIZATION_PACKAGE_NAME = "localization";

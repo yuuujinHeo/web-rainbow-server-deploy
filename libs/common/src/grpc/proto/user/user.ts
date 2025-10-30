@@ -60,12 +60,6 @@ export interface ReadUserListResponse {
   pageSize: number;
   totalCount: number;
   totalPage: number;
-  searchType?: string | undefined;
-  searchText?: string | undefined;
-  createdAtStart?: string | undefined;
-  createdAtEnd?: string | undefined;
-  updatedAtStart?: string | undefined;
-  updatedAtEnd?: string | undefined;
   data: ReadUserListResponse_User[];
 }
 

@@ -64,6 +64,15 @@
         "tsConfigPath": "apps/caching/tsconfig.app.json"
       }
     },
+    "microservice-robot": {
+      "type": "application",
+      "root": "apps/robot",
+      "entryFile": "main",
+      "sourceRoot": "apps/robot/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/robot/tsconfig.app.json"
+      }
+    },
     "microservice-config": {
       "type": "application",
       "root": "apps/config",

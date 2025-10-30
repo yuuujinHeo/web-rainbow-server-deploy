@@ -168,7 +168,7 @@ exports.protobufPackage = "amr";
 exports.AMR_PACKAGE_NAME = "amr";
 function AmrGrpcServiceControllerMethods() {
     return function (constructor) {
-        const grpcMethods = ["readAmrList", "readAmr", "createAmr", "updateAmr", "deleteAmr"];
+        const grpcMethods = ["readAmrList", "readAmr", "existsAmr", "createAmr", "updateAmr", "deleteAmr"];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
             (0, microservices_1.GrpcMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
@@ -189,7 +189,7 @@ exports.AMR_GRPC_SERVICE_NAME = "AmrGrpcService";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.RobotType = exports.protobufPackage = void 0;
+exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.SocketType = exports.RobotType = exports.protobufPackage = void 0;
 exports.RedisSocketCacheGrpcServiceControllerMethods = RedisSocketCacheGrpcServiceControllerMethods;
 exports.RedisRobotCacheGrpcServiceControllerMethods = RedisRobotCacheGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(2);
@@ -202,6 +202,12 @@ var RobotType;
     RobotType[RobotType["SENSOR"] = 3] = "SENSOR";
     RobotType[RobotType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(RobotType || (exports.RobotType = RobotType = {}));
+var SocketType;
+(function (SocketType) {
+    SocketType[SocketType["CLIENT"] = 0] = "CLIENT";
+    SocketType[SocketType["AMR"] = 1] = "AMR";
+    SocketType[SocketType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(SocketType || (exports.SocketType = SocketType = {}));
 exports.REDIS_PACKAGE_NAME = "redis";
 function RedisSocketCacheGrpcServiceControllerMethods() {
     return function (constructor) {
@@ -228,6 +234,7 @@ function RedisRobotCacheGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
             "readRobotCache",
+            "existsRobotCache",
             "readRobotCacheList",
             "createRobotCache",
             "updateRobotCache",
@@ -303,6 +310,8 @@ function ControlGrpcServiceControllerMethods() {
             "getSafetyField",
             "exAccessoryControl",
             "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -1259,7 +1268,6 @@ const uuid_1 = __webpack_require__(34);
 const archiver_1 = __webpack_require__(42);
 const csv = __webpack_require__(43);
 const zlib_1 = __webpack_require__(44);
-const common_1 = __webpack_require__(3);
 const rpc_code_exception_1 = __webpack_require__(45);
 const constant_1 = __webpack_require__(46);
 const microservices_1 = __webpack_require__(2);
@@ -1402,18 +1410,15 @@ class FileUtil {
                     results.push(row);
                 })
                     .on('error', (error) => {
-                    common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
                     reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
                 })
                     .on('end', () => {
-                    common_1.LoggerService.get('util').debug(`[File] readCSV : done (length : ${results.length})`);
                     resolve(results);
                 });
             }
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     throw error;
-                common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -1428,18 +1433,16 @@ class FileUtil {
                     else {
                         res.setHeader('Content-Type', 'text/csv');
                         res.setHeader('Content-Encoding', 'gzip');
-                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv.gz"');
+                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
                         const fileStream = fs.createReadStream(path);
                         const gzip = (0, zlib_1.createGzip)();
                         fileStream
                             .pipe(gzip)
                             .pipe(res)
                             .on('finish', () => {
-                            common_1.LoggerService.get('util').debug(`[File] readCSVPipe : done`);
                             resolve();
                         })
                             .on('error', (error) => {
-                            common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
                             reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
                         });
                     }
@@ -1448,7 +1451,6 @@ class FileUtil {
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     throw error;
-                common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -1457,17 +1459,14 @@ class FileUtil {
         try {
             const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
             if (data === undefined || data.length === 0) {
-                common_1.LoggerService.get('util').error(`[File] saveCSV : data 값이 없습니다`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             fs.writeFileSync(path, csvData);
-            common_1.LoggerService.get('util').debug(`[File] saveCSV : done (path : ${path})`);
             return;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] saveCSV : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1485,7 +1484,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] readJson : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1499,7 +1497,7 @@ class FileUtil {
             }
             res.setHeader('Content-Type', 'application/json');
             res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Content-Disposition', 'attachment; filename="topo.json.gz"');
+            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
             const fileStream = fs.createReadStream(path);
             const gzip = (0, zlib_1.createGzip)();
             fileStream.pipe(gzip).pipe(res);
@@ -1507,7 +1505,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] readJSONPipe : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1534,7 +1531,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] saveJson : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -2159,19 +2155,12 @@ let CodeService = class CodeService {
             searchText: param.searchText,
         });
         const pageInfo = new code_model_1.PageInfo(param.pageNo, param.pageSize);
-        console.log('-------------------------------------------------');
         const result = await this.databaseOutputPort.findCodeByCriteria(criteria, pageInfo);
         return {
             pageNo: pageInfo.pageNo,
             pageSize: pageInfo.pageSize,
             totalCount: result.totalCount,
             totalPage: result.totalPage,
-            searchType: param.searchType,
-            searchText: param.searchText,
-            createdAtStart: param.createdAtStart,
-            createdAtEnd: param.createdAtEnd,
-            updatedAtStart: param.updatedAtStart,
-            updatedAtEnd: param.updatedAtEnd,
             data: result.code.map((code) => this.mapCodeToResponse(code)),
         };
     }
@@ -2371,11 +2360,15 @@ class PageInfo {
             throw new Error('페이지 번호는 1 이상이어야 합니다.');
         if (pageSize < 1)
             throw new Error('페이지 크기는 1 이상이어야 합니다.');
-        if (pageSize > 100)
-            throw new Error('페이지 크기는 100 이하여야 합니다.');
+        if (pageSize > 1000000)
+            throw new Error('페이지 크기가 너무 큽니다.');
     }
     get offset() {
-        return (this.pageNo - 1) * this.pageSize;
+        const result = (this.pageNo - 1) * this.pageSize;
+        if (result > Number.MAX_SAFE_INTEGER) {
+            throw new Error('Offset 값이 너무 큽니다.');
+        }
+        return result;
     }
 }
 exports.PageInfo = PageInfo;
@@ -2458,12 +2451,6 @@ let CodeController = class CodeController {
             pageSize: serviceResponse.pageSize,
             totalCount: serviceResponse.totalCount,
             totalPage: serviceResponse.totalPage,
-            searchType: serviceResponse.searchType,
-            searchText: serviceResponse.searchText,
-            createdAtStart: serviceResponse.createdAtStart,
-            createdAtEnd: serviceResponse.createdAtEnd,
-            updatedAtStart: serviceResponse.updatedAtStart,
-            updatedAtEnd: serviceResponse.updatedAtEnd,
             data: serviceResponse.data.map((code) => ({
                 codeId: code.codeId,
                 code: code.code,

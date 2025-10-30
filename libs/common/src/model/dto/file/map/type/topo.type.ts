@@ -24,8 +24,6 @@ export class PoseDto {
     example: 0,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   x: number;
 
   @ApiProperty({
@@ -33,8 +31,6 @@ export class PoseDto {
     example: 0,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   y: number;
 
   @ApiProperty({
@@ -42,8 +38,6 @@ export class PoseDto {
     example: 0,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   z: number;
 
   @ApiProperty({
@@ -51,8 +45,6 @@ export class PoseDto {
     example: 0,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   rx: number;
 
   @ApiProperty({
@@ -60,8 +52,6 @@ export class PoseDto {
     example: 0,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   ry: number;
 
   @ApiProperty({
@@ -69,8 +59,6 @@ export class PoseDto {
     example: 0,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   rz: number;
 }
 

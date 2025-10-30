@@ -31,19 +31,15 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 echo "4) docker 권한 설정"
 sudo usermod -aG docker $USER
-newgrp docker
+#newgrp docker
 sudo chown root:docker /var/run/docker.sock
 sudo chmod 660 /var/run/docker.sock
 
 echo "5) pnpm install"
 pnpm install
 
-echo "6) pm2 start"
-pm2 start ~/web-rainbow-server-deploy/start_docker.sh
-pm2 start ~/web-rainbow-server-deploy/start_host.sh
-pm2 save
-startup_command=$(pm2 startup | grep 'sudo' | tail -n 1)
-eval $startup_command
+echo "reboot"
+reboot
 
 
 

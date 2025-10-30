@@ -24,24 +24,18 @@ export class SoundDto {
 }
 
 export class PlaySoundRequestDto extends SoundDto {
-  @Type(() => Number)
-  @IsNumber()
   @ApiProperty({
     description: Description.VOLUME,
     example: 100,
   })
   volume: number;
 
-  @Type(() => Number)
-  @IsNumber()
   @ApiProperty({
     description: Description.IS_REPEAT,
     example: 0,
   })
   repeatCount: number;
 
-  @Transform(({ value }) => value === 'true' || value === true)
-  @IsBoolean()
   @ApiProperty({
     description: Description.IS_WAITUNTILDONE,
     example: true,

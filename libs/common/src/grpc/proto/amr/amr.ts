@@ -24,6 +24,10 @@ export interface ReadAmrRequest {
   updatedBy?: string | undefined;
 }
 
+export interface ExistsAmrRequest {
+  amrSerial: string;
+}
+
 export interface ReadAmrListRequest {
   pageNo?: number | undefined;
   pageSize?: number | undefined;
@@ -58,17 +62,15 @@ export interface ReadAmrResponse {
   updatedBy?: string | undefined;
 }
 
+export interface ExistsAmrResponse {
+  exists: boolean;
+}
+
 export interface ReadAmrListResponse {
   pageNo: number;
   pageSize: number;
   totalCount: number;
   totalPage: number;
-  searchType?: string | undefined;
-  searchText?: string | undefined;
-  createdAtStart?: string | undefined;
-  createdAtEnd?: string | undefined;
-  updatedAtStart?: string | undefined;
-  updatedAtEnd?: string | undefined;
   data: ReadAmrListResponse_Amr[];
 }
 
@@ -158,6 +160,8 @@ export interface AmrGrpcServiceClient {
 
   readAmr(request: ReadAmrRequest, metadata?: Metadata): Observable<ReadAmrResponse>;
 
+  existsAmr(request: ExistsAmrRequest, metadata?: Metadata): Observable<ExistsAmrResponse>;
+
   createAmr(request: CreateAmrRequest, metadata?: Metadata): Observable<CreateAmrResponse>;
 
   updateAmr(request: UpdateAmrRequest, metadata?: Metadata): Observable<UpdateAmrResponse>;
@@ -175,6 +179,11 @@ export interface AmrGrpcServiceController {
     request: ReadAmrRequest,
     metadata?: Metadata,
   ): Promise<ReadAmrResponse> | Observable<ReadAmrResponse> | ReadAmrResponse;
+
+  existsAmr(
+    request: ExistsAmrRequest,
+    metadata?: Metadata,
+  ): Promise<ExistsAmrResponse> | Observable<ExistsAmrResponse> | ExistsAmrResponse;
 
   createAmr(
     request: CreateAmrRequest,
@@ -194,7 +203,7 @@ export interface AmrGrpcServiceController {
 
 export function AmrGrpcServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["readAmrList", "readAmr", "createAmr", "updateAmr", "deleteAmr"];
+    const grpcMethods: string[] = ["readAmrList", "readAmr", "existsAmr", "createAmr", "updateAmr", "deleteAmr"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);

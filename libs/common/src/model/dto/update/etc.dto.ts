@@ -43,7 +43,6 @@ export class PingSendToTargetResponseDto extends PingSendToTargetDto {
 }
 
 export class NewVersionGitDto {
-  @IsBoolean()
   @IsNotEmpty()
   @ApiPropertyOptional({
     description: '핫픽스 여부',

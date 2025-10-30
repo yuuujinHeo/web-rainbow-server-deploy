@@ -1,7 +1,7 @@
 import * as AdmZip from 'adm-zip';
 import { existsSync, mkdirSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { errorToJson, LoggerService } from '../../logger';
+import { errorToJson } from '../../logger';
 import { RpcException } from '@nestjs/microservices';
 import { RpcCodeException } from '@app/common/exception/rpc-code.exception';
 import { GrpcCode } from '@app/common/grpc/constant';
@@ -10,7 +10,7 @@ export class ZipUtil {
   static async zipFolder(sourcePath: string, zipPath: string): Promise<boolean> {
     try {
       /// Adm Zip 생성
-      LoggerService.get('util').info(`[ZIP] zipFolder: ${sourcePath} -> ${zipPath}`);
+      //LoggerService.get('util').info(`[ZIP] zipFolder: ${sourcePath} -> ${zipPath}`);
       const zip = new AdmZip();
 
       const addFilesRecursively = async (folderPath: string, zipFolderPath: string = '') => {
@@ -35,18 +35,18 @@ export class ZipUtil {
 
       // 압축 파일 생성
       zip.writeZip(zipPath);
-      LoggerService.get('util').info(`[ZIP] zipFolder: successfully done ${sourcePath} -> ${zipPath}`);
+      //LoggerService.get('util').info(`[ZIP] zipFolder: successfully done ${sourcePath} -> ${zipPath}`);
       return true;
     } catch (error) {
       if (error instanceof RpcException) throw error;
-      LoggerService.get('util').error(`[ZIP] zipFolder: ${errorToJson(error)}`);
+      //LoggerService.get('util').error(`[ZIP] zipFolder: ${errorToJson(error)}`);
       throw new RpcCodeException('파일을 압축할 수 없습니다.', GrpcCode.InternalError);
     }
   }
 
   static async unzipFolder(zipPath: string, targetPath: string): Promise<boolean> {
     try {
-      LoggerService.get('util').info(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}`);
+      //LoggerService.get('util').info(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}`);
 
       const zip = new AdmZip(zipPath);
 
@@ -58,11 +58,11 @@ export class ZipUtil {
       // 압축 해제
       zip.extractAllTo(targetPath, true); // true는 기존 파일 덮어쓰기를 의미
 
-      LoggerService.get('util').info(`[ZIP] unzipFoler: successfully done ${zipPath} -> ${targetPath}`);
+      //LoggerService.get('util').info(`[ZIP] unzipFoler: successfully done ${zipPath} -> ${targetPath}`);
 
       return true;
     } catch (error) {
-      LoggerService.get('util').error(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}, ${errorToJson(error)}`);
+      //LoggerService.get('util').error(`[ZIP] unzipFoler: ${zipPath} -> ${targetPath}, ${errorToJson(error)}`);
       throw new RpcCodeException('파일을 압축 해제할 수 없습니다.', GrpcCode.InternalError);
     }
   }

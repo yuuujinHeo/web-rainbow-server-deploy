@@ -3,9 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class PaginationRequest {
-  @IsNumber()
   @IsOptional()
-  @Type(() => Number)
   @ApiProperty({
     example: '1',
     description: '페이지 번호',
@@ -13,9 +11,7 @@ export class PaginationRequest {
   })
   pageNo?: number;
 
-  @IsNumber()
   @IsOptional()
-  @Type(() => Number)
   @ApiProperty({
     example: '10',
     description: '페이지당 항목 수',

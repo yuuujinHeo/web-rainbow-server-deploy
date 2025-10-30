@@ -11,6 +11,8 @@ service ControlGrpcService {
     rpc GetSafetyField(Empty) returns (SafetyField);
     rpc ExAccessoryControl(ExAccessoryControlRequest) returns (ExAccessoryControlResponse);
     rpc SafetyIoControl(SafetyIoControlRequest) returns (SafetyIoControlResponse);
+    rpc SetObsBox(SetObsBoxRequest) returns (SetObsBoxResponse);
+    rpc GetObsBox(Empty) returns (GetObsBoxResponse);
 }
 
 message Empty {
@@ -26,6 +28,8 @@ message OnOffControlResponse {
     string command = 1;
     bool onoff = 2;
     optional int32 frequency = 3;
+    optional string result = 4;
+    optional string message = 5;
 }
 
 message WorkControlRequest {
@@ -34,6 +38,8 @@ message WorkControlRequest {
 
 message WorkControlResponse {
     string command = 1;
+    optional string result = 2;
+    optional string message = 3;
 }
 
 message LEDControlRequest {
@@ -46,6 +52,8 @@ message LEDControlResponse {
     string command = 1;
     bool onoff = 2;
     optional string color = 3;
+    optional string result = 4;
+    optional string message = 5;
 }
 
 message ExAccessoryControlRequest {
@@ -56,6 +64,8 @@ message ExAccessoryControlRequest {
 message ExAccessoryControlResponse {
     string command = 1;
     optional string pose = 2;
+    optional string result = 3;
+    optional string message = 4;
 }
 
 message SafetyField {
@@ -75,6 +85,28 @@ message SafetyIoControlResponse {
     string command = 1;
     repeated McuDio mcuDio = 2;
     repeated McuDio mcuDin = 3;
+    string result = 4;
+    optional string message = 5;
+}
+
+message SetObsBoxRequest {
+    optional float minZ = 1;
+    optional float maxZ = 2;
+    optional float mapRange = 3;
+}
+
+message SetObsBoxResponse {
+    optional float minZ = 1;
+    optional float maxZ = 2;
+    optional float mapRange = 3;
+    string result = 4;
+    optional string message = 5;
+}
+
+message GetObsBoxResponse {
+    optional float minZ = 1;
+    optional float maxZ = 2;
+    optional float mapRange = 3;
     string result = 4;
     optional string message = 5;
 }

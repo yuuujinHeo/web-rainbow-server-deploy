@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import archiver from 'archiver';
 import * as csv from 'csv';
 import { createGzip } from 'zlib';
-import { errorToJson, LoggerService } from '@app/common';
+import { errorToJson } from '@app/common';
 import { Response } from 'express';
 import { RpcCodeException } from '../../exception/rpc-code.exception';
 import { GrpcCode } from '../../grpc/constant';
@@ -195,16 +195,16 @@ export class FileUtil {
             results.push(row);
           })
           .on('error', (error) => {
-            LoggerService.get('util').error(`[File] readCSV : ${errorToJson(error)}`);
+            // //LoggerService.get('util').error(`[File] readCSV : ${errorToJson(error)}`);
             reject(new RpcCodeException('CSV 파일을 읽을 수 없습니다.', GrpcCode.InternalError));
           })
           .on('end', () => {
-            LoggerService.get('util').debug(`[File] readCSV : done (length : ${results.length})`);
+            //LoggerService.get('util').debug(`[File] readCSV : done (length : ${results.length})`);
             resolve(results);
           });
       } catch (error) {
         if (error instanceof RpcException) throw error;
-        LoggerService.get('util').error(`[File] readCSV : ${errorToJson(error)}`);
+        //LoggerService.get('util').error(`[File] readCSV : ${errorToJson(error)}`);
         reject(new RpcCodeException('CSV 파일을 읽을 수 없습니다.', GrpcCode.InternalError));
       }
     });
@@ -219,7 +219,7 @@ export class FileUtil {
           } else {
             res.setHeader('Content-Type', 'text/csv');
             res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv.gz"');
+            res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
 
             const fileStream = fs.createReadStream(path);
             const gzip = createGzip();
@@ -228,18 +228,18 @@ export class FileUtil {
               .pipe(gzip)
               .pipe(res)
               .on('finish', () => {
-                LoggerService.get('util').debug(`[File] readCSVPipe : done`);
+                //LoggerService.get('util').debug(`[File] readCSVPipe : done`);
                 resolve();
               })
               .on('error', (error) => {
-                LoggerService.get('util').error(`[File] readCSVPipe : ${errorToJson(error)}`);
+                //LoggerService.get('util').error(`[File] readCSVPipe : ${errorToJson(error)}`);
                 reject(new RpcCodeException('CSV 파일을 읽을 수 없습니다.', GrpcCode.InternalError));
               });
           }
         });
       } catch (error) {
         if (error instanceof RpcException) throw error;
-        LoggerService.get('util').error(`[File] readCSVPipe : ${errorToJson(error)}`);
+        //LoggerService.get('util').error(`[File] readCSVPipe : ${errorToJson(error)}`);
         reject(new RpcCodeException('CSV 파일을 읽을 수 없습니다.', GrpcCode.InternalError));
       }
     });
@@ -252,17 +252,17 @@ export class FileUtil {
 
       /// 2) 파일 크기 확인
       if (data === undefined || data.length === 0) {
-        LoggerService.get('util').error(`[File] saveCSV : data 값이 없습니다`);
+        //LoggerService.get('util').error(`[File] saveCSV : data 값이 없습니다`);
         throw new RpcCodeException('data 값이 없습니다.', GrpcCode.InvalidArgument);
       }
 
       /// 3) 데이터를 파일로 저장
       fs.writeFileSync(path, csvData);
-      LoggerService.get('util').debug(`[File] saveCSV : done (path : ${path})`);
+      //LoggerService.get('util').debug(`[File] saveCSV : done (path : ${path})`);
       return;
     } catch (error) {
       if (error instanceof RpcException) throw error;
-      LoggerService.get('util').error(`[File] saveCSV : ${errorToJson(error)}`);
+      //LoggerService.get('util').error(`[File] saveCSV : ${errorToJson(error)}`);
       throw new RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', GrpcCode.InternalError);
     }
   }
@@ -286,7 +286,7 @@ export class FileUtil {
       return JSON.parse(filecontent);
     } catch (error) {
       if (error instanceof RpcException) throw error;
-      LoggerService.get('util').error(`[File] readJson : ${errorToJson(error)}`);
+      //LoggerService.get('util').error(`[File] readJson : ${errorToJson(error)}`);
       throw new RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', GrpcCode.InternalError);
     }
   }
@@ -306,7 +306,7 @@ export class FileUtil {
       /// 3) 헤더 설정
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Encoding', 'gzip');
-      res.setHeader('Content-Disposition', 'attachment; filename="topo.json.gz"');
+      res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
 
       /// 4) 파일 스트림 생성
       const fileStream = fs.createReadStream(path);
@@ -318,7 +318,7 @@ export class FileUtil {
       fileStream.pipe(gzip).pipe(res);
     } catch (error) {
       if (error instanceof RpcException) throw error;
-      LoggerService.get('util').error(`[File] readJSONPipe : ${errorToJson(error)}`);
+      //LoggerService.get('util').error(`[File] readJSONPipe : ${errorToJson(error)}`);
       throw new RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', GrpcCode.InternalError);
     }
   }
@@ -355,7 +355,7 @@ export class FileUtil {
       return;
     } catch (error) {
       if (error instanceof RpcException) throw error;
-      LoggerService.get('util').error(`[File] saveJson : ${errorToJson(error)}`);
+      //LoggerService.get('util').error(`[File] saveJson : ${errorToJson(error)}`);
       throw new RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', GrpcCode.InternalError);
     }
   }

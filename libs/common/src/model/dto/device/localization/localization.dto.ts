@@ -1,6 +1,6 @@
 import { IsArray, IsNumber, IsOptional, IsString, Length, ValidateIf } from 'class-validator';
 // import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { LocalizationCommand } from './type/localization.type';
 import { UrlUtil } from '@app/common/util';
@@ -26,6 +26,7 @@ export class LocalizationRequestDto {
   })
   @IsString()
   @Length(1, 50)
+  @Type(() => String)
   @Expose()
   command: string;
 
@@ -35,7 +36,6 @@ export class LocalizationRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
   @Expose()
   x?: number;
 
@@ -45,7 +45,6 @@ export class LocalizationRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
   @Expose()
   y?: number;
 
@@ -55,7 +54,6 @@ export class LocalizationRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
   @Expose()
   z?: number;
 
@@ -65,7 +63,6 @@ export class LocalizationRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
   @Expose()
   rz?: number;
 }
@@ -82,7 +79,28 @@ export class LocalizationRequestSlamnav extends LocalizationRequestDto {
   id: string;
 }
 
-export class LocalizationResponseDto extends LocalizationRequestDto {}
+export class LocalizationResponseDto extends LocalizationRequestDto {
+  @ApiProperty({
+    description: Description.RESULT,
+    example: 'accept',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  result: string;
+
+  @ApiProperty({
+    description: Description.MESSAGE,
+    example: '',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Length(1, 50)
+  @Expose()
+  message?: string;
+}
 
 export class LocalizationResponseSlamnav extends LocalizationResponseDto {
   @ApiProperty({

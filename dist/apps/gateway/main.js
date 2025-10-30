@@ -46,6 +46,7 @@ const log_api_module_1 = __webpack_require__(125);
 const update_api_module_1 = __webpack_require__(129);
 const cobot_api_module_1 = __webpack_require__(137);
 const tcp_api_module_1 = __webpack_require__(141);
+const socket_api_module_1 = __webpack_require__(144);
 let RRSApiModule = class RRSApiModule {
 };
 exports.RRSApiModule = RRSApiModule;
@@ -65,6 +66,7 @@ exports.RRSApiModule = RRSApiModule = __decorate([
             log_api_module_1.LogApiModule,
             update_api_module_1.UpdateApiModule,
             tcp_api_module_1.TcpApiModule,
+            socket_api_module_1.SocketApiModule,
         ],
         controllers: [],
         providers: [],
@@ -159,7 +161,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiController = void 0;
 const common_1 = __webpack_require__(8);
@@ -201,6 +203,12 @@ let ControlApiController = class ControlApiController {
     }
     async GetSafetyIo() {
         return this.controlService.SafetyIo({ command: control_type_1.ControlCommand.getDigitalIO, mcuDio: [] });
+    }
+    async getObsboxControl() {
+        return this.controlService.getObsBoxRequest();
+    }
+    async setObsboxControl(dto) {
+        return this.controlService.setObsBoxRequest(dto);
     }
 };
 exports.ControlApiController = ControlApiController;
@@ -370,6 +378,27 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
 ], ControlApiController.prototype, "GetSafetyIo", null);
+__decorate([
+    (0, common_2.Get)('obsbox'),
+    (0, swagger_1.ApiOperation)({
+        summary: '장애물감지 영역 설정 조회',
+        description: 'AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ControlApiController.prototype, "getObsboxControl", null);
+__decorate([
+    (0, common_2.Post)('obsbox'),
+    (0, swagger_1.ApiOperation)({
+        summary: '장애물감지 영역 설정',
+        description: 'AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.',
+    }),
+    __param(0, (0, common_2.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _r : Object]),
+    __metadata("design:returntype", Promise)
+], ControlApiController.prototype, "setObsboxControl", null);
 exports.ControlApiController = ControlApiController = __decorate([
     (0, swagger_1.ApiTags)('SLAMNAV 컨트롤 API'),
     (0, common_2.Controller)('control'),
@@ -532,7 +561,7 @@ exports.protobufPackage = "amr";
 exports.AMR_PACKAGE_NAME = "amr";
 function AmrGrpcServiceControllerMethods() {
     return function (constructor) {
-        const grpcMethods = ["readAmrList", "readAmr", "createAmr", "updateAmr", "deleteAmr"];
+        const grpcMethods = ["readAmrList", "readAmr", "existsAmr", "createAmr", "updateAmr", "deleteAmr"];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
             (0, microservices_1.GrpcMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
@@ -553,7 +582,7 @@ exports.AMR_GRPC_SERVICE_NAME = "AmrGrpcService";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.RobotType = exports.protobufPackage = void 0;
+exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.SocketType = exports.RobotType = exports.protobufPackage = void 0;
 exports.RedisSocketCacheGrpcServiceControllerMethods = RedisSocketCacheGrpcServiceControllerMethods;
 exports.RedisRobotCacheGrpcServiceControllerMethods = RedisRobotCacheGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(3);
@@ -566,6 +595,12 @@ var RobotType;
     RobotType[RobotType["SENSOR"] = 3] = "SENSOR";
     RobotType[RobotType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(RobotType || (exports.RobotType = RobotType = {}));
+var SocketType;
+(function (SocketType) {
+    SocketType[SocketType["CLIENT"] = 0] = "CLIENT";
+    SocketType[SocketType["AMR"] = 1] = "AMR";
+    SocketType[SocketType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(SocketType || (exports.SocketType = SocketType = {}));
 exports.REDIS_PACKAGE_NAME = "redis";
 function RedisSocketCacheGrpcServiceControllerMethods() {
     return function (constructor) {
@@ -592,6 +627,7 @@ function RedisRobotCacheGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
             "readRobotCache",
+            "existsRobotCache",
             "readRobotCacheList",
             "createRobotCache",
             "updateRobotCache",
@@ -667,6 +703,8 @@ function ControlGrpcServiceControllerMethods() {
             "getSafetyField",
             "exAccessoryControl",
             "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -1623,7 +1661,6 @@ const uuid_1 = __webpack_require__(39);
 const archiver_1 = __webpack_require__(47);
 const csv = __webpack_require__(48);
 const zlib_1 = __webpack_require__(49);
-const common_1 = __webpack_require__(8);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const microservices_1 = __webpack_require__(3);
@@ -1766,18 +1803,15 @@ class FileUtil {
                     results.push(row);
                 })
                     .on('error', (error) => {
-                    common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
                     reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
                 })
                     .on('end', () => {
-                    common_1.LoggerService.get('util').debug(`[File] readCSV : done (length : ${results.length})`);
                     resolve(results);
                 });
             }
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     throw error;
-                common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -1792,18 +1826,16 @@ class FileUtil {
                     else {
                         res.setHeader('Content-Type', 'text/csv');
                         res.setHeader('Content-Encoding', 'gzip');
-                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv.gz"');
+                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
                         const fileStream = fs.createReadStream(path);
                         const gzip = (0, zlib_1.createGzip)();
                         fileStream
                             .pipe(gzip)
                             .pipe(res)
                             .on('finish', () => {
-                            common_1.LoggerService.get('util').debug(`[File] readCSVPipe : done`);
                             resolve();
                         })
                             .on('error', (error) => {
-                            common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
                             reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
                         });
                     }
@@ -1812,7 +1844,6 @@ class FileUtil {
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     throw error;
-                common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -1821,17 +1852,14 @@ class FileUtil {
         try {
             const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
             if (data === undefined || data.length === 0) {
-                common_1.LoggerService.get('util').error(`[File] saveCSV : data 값이 없습니다`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             fs.writeFileSync(path, csvData);
-            common_1.LoggerService.get('util').debug(`[File] saveCSV : done (path : ${path})`);
             return;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] saveCSV : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1849,7 +1877,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] readJson : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1863,7 +1890,7 @@ class FileUtil {
             }
             res.setHeader('Content-Type', 'application/json');
             res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Content-Disposition', 'attachment; filename="topo.json.gz"');
+            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
             const fileStream = fs.createReadStream(path);
             const gzip = (0, zlib_1.createGzip)();
             fileStream.pipe(gzip).pipe(res);
@@ -1871,7 +1898,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] readJSONPipe : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1898,7 +1924,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] saveJson : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -2216,7 +2241,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], ControlRequestDto.prototype, "onoff", void 0);
@@ -2238,7 +2262,6 @@ __decorate([
         example: 10,
         required: false,
     }),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -2252,7 +2275,6 @@ __decorate([
         ],
         required: false,
     }),
-    (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
 ], ControlRequestDto.prototype, "mcuDio", void 0);
@@ -2270,6 +2292,29 @@ __decorate([
 class ControlResponseDto extends ControlRequestDto {
 }
 exports.ControlResponseDto = ControlResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], ControlResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], ControlResponseDto.prototype, "message", void 0);
 class ControlRequestSlamnav extends ControlRequestDto {
 }
 exports.ControlRequestSlamnav = ControlRequestSlamnav;
@@ -2358,35 +2403,29 @@ class ObsBoxRequestDto {
 exports.ObsBoxRequestDto = ObsBoxRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '장애물감지영역 최소 z값 (0~5m)',
+        description: '장애물감지영역 최소 z값',
         example: '1.3',
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], ObsBoxRequestDto.prototype, "minZ", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '장애물감지영역 최대 z값 (0~5m)',
+        description: '장애물감지영역 최대 z값 ',
         example: '1.3',
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], ObsBoxRequestDto.prototype, "maxZ", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '장애물감지영역 맵 범위 (0~5m)',
+        description: '장애물감지영역 맵 범위',
         example: '1.3',
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], ObsBoxRequestDto.prototype, "mapRange", void 0);
 class ObsBoxResponseDto extends ObsBoxRequestDto {
@@ -2450,7 +2489,6 @@ __decorate([
         type: 'boolean',
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], LEDRequestDto.prototype, "onoff", void 0);
@@ -2472,7 +2510,6 @@ class LEDResponseDto {
 exports.LEDResponseDto = LEDResponseDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'LED를 켰는지/껐는지 여부', example: true }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], LEDResponseDto.prototype, "onoff", void 0);
@@ -2510,7 +2547,6 @@ __decorate([
         example: true,
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], OnOffRequestDto.prototype, "onoff", void 0);
@@ -2519,7 +2555,6 @@ __decorate([
         description: '기능에 따라 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
         example: 10,
     }),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -2544,7 +2579,6 @@ __decorate([
         example: true,
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], OnOffResponseDto.prototype, "onoff", void 0);
@@ -2554,7 +2588,6 @@ __decorate([
         example: 10,
         required: false,
     }),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -2748,6 +2781,12 @@ let ControlApiService = class ControlApiService {
             mcuDin: response.mcuDin?.map((din) => din.channel) ?? [],
             message: response.message,
         };
+    }
+    async getObsBoxRequest() {
+        return await (0, rxjs_1.lastValueFrom)(this.controlService.getObsBox({}));
+    }
+    async setObsBoxRequest(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.controlService.setObsBox(dto));
     }
 };
 exports.ControlApiService = ControlApiService;
@@ -3395,6 +3434,7 @@ __decorate([
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Type)(() => String),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
 ], LocalizationRequestDto.prototype, "command", void 0);
@@ -3405,7 +3445,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "x", void 0);
@@ -3416,7 +3455,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "y", void 0);
@@ -3427,7 +3465,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "z", void 0);
@@ -3438,7 +3475,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "rz", void 0);
@@ -3459,6 +3495,29 @@ __decorate([
 class LocalizationResponseDto extends LocalizationRequestDto {
 }
 exports.LocalizationResponseDto = LocalizationResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], LocalizationResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], LocalizationResponseDto.prototype, "message", void 0);
 class LocalizationResponseSlamnav extends LocalizationResponseDto {
 }
 exports.LocalizationResponseSlamnav = LocalizationResponseSlamnav;
@@ -3933,7 +3992,6 @@ __decorate([
         example: false,
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Boolean)
 ], SetNetworkRequestDto.prototype, "dhcp", void 0);
@@ -5209,6 +5267,9 @@ exports.MoveApiModule = MoveApiModule = __decorate([
                             package: common_2.MoveMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
                             url: configService.get('MOVE_GRPC_URL'),
+                            loader: {
+                                defaults: true,
+                            },
                         },
                     }),
                 },
@@ -5255,6 +5316,7 @@ let MoveApiService = class MoveApiService {
         this.moveService = this.moveMicroservice.getService('MoveGrpcService');
     }
     async sendMoveCommand(moveDto) {
+        console.log('sendMoveCommand', moveDto);
         return await (0, rxjs_1.lastValueFrom)(this.moveService.moveCommand(moveDto));
     }
     sendMoveJogCommand(moveDto) {
@@ -5294,7 +5356,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -5337,6 +5399,10 @@ let MoveApiController = class MoveApiController {
     async sendMoveResume() {
         this.loggerService.debug(`[Move] MoveResume`);
         return this.moveService.sendMoveCommand({ command: 'resume' });
+    }
+    async moveProfile(dto) {
+        this.loggerService.info(`[MOVE] moveProfile: ${JSON.stringify(dto)}`);
+        return this.moveService.sendMoveCommand(dto);
     }
     async getMoveLogLast(dto) {
         return this.moveService.getMoveLogLast(dto);
@@ -5495,6 +5561,17 @@ __decorate([
     __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], MoveApiController.prototype, "sendMoveResume", null);
 __decorate([
+    (0, common_1.Post)('profile'),
+    (0, swagger_1.ApiOperation)({
+        summary: '프로필 이동 명령',
+        description: '프로필 이동 명령을 요청합니다. (command == xLinear, rotate, circular, stop)',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof move_dto_1.MoveLinearRequestDto !== "undefined" && move_dto_1.MoveLinearRequestDto) === "function" ? _m : Object]),
+    __metadata("design:returntype", Promise)
+], MoveApiController.prototype, "moveProfile", null);
+__decorate([
     (0, common_1.Get)('log/last'),
     (0, swagger_1.ApiOperation)({
         summary: '이동 로그 조회 (최근 로그)',
@@ -5505,8 +5582,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof move_dto_1.MoveLogLastRequestDto !== "undefined" && move_dto_1.MoveLogLastRequestDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof move_dto_1.MoveLogLastRequestDto !== "undefined" && move_dto_1.MoveLogLastRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], MoveApiController.prototype, "getMoveLogLast", null);
 __decorate([
     (0, common_1.Get)('log'),
@@ -5519,8 +5596,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof move_dto_1.MoveLogRequestDto !== "undefined" && move_dto_1.MoveLogRequestDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof move_dto_1.MoveLogRequestDto !== "undefined" && move_dto_1.MoveLogRequestDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], MoveApiController.prototype, "getMoveLog", null);
 exports.MoveApiController = MoveApiController = __decorate([
     (0, swagger_1.ApiTags)('주행 API'),
@@ -5544,7 +5621,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MoveLogLastResponseDto = exports.MoveLogLastRequestDto = exports.MoveLogResponseDto = exports.MoveLogRequestDto = exports.MoveResponseFrs = exports.MoveResponseSlamnav = exports.MoveRequestSlamnav = exports.MoveResponseDto = exports.MoveTargetCommandDto = exports.MoveGoalCommandDto = exports.MoveRequestDto = void 0;
+exports.MoveLinearRequestDto = exports.MoveLogLastResponseDto = exports.MoveLogLastRequestDto = exports.MoveLogResponseDto = exports.MoveLogRequestDto = exports.MoveResponseFrs = exports.MoveResponseSlamnav = exports.MoveRequestSlamnav = exports.MoveResponseDto = exports.MoveTargetCommandDto = exports.MoveGoalCommandDto = exports.MoveRequestDto = void 0;
 const class_validator_1 = __webpack_require__(61);
 const class_transformer_1 = __webpack_require__(60);
 const swagger_1 = __webpack_require__(58);
@@ -5611,50 +5688,29 @@ __decorate([
 ], MoveRequestDto.prototype, "method", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: Description.DIRECTION,
-        example: 'forward',
-        enum: ['forward', 'backward'],
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", String)
-], MoveRequestDto.prototype, "direction", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
         description: Description.PRESET,
         example: 0,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "preset", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "z", void 0);
@@ -5665,8 +5721,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "rz", void 0);
@@ -5677,8 +5731,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "vx", void 0);
@@ -5700,10 +5752,40 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "wz", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동거리 [m] | circularMove 이동거리 [deg] | rotateMove 이동거리 [deg]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveRequestDto.prototype, "target", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동속도 [m/s] | circularMove 이동속도 [deg/s] | rotateMove 이동속도 [deg/s]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveRequestDto.prototype, "speed", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, swagger_1.ApiProperty)({
+        description: 'circularMove 방향 [left, right]',
+        enum: ['left', 'right'],
+        example: 'left',
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveRequestDto.prototype, "direction", void 0);
 class MoveGoalCommandDto {
 }
 exports.MoveGoalCommandDto = MoveGoalCommandDto;
@@ -5729,8 +5811,6 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveGoalCommandDto.prototype, "preset", void 0);
@@ -5756,33 +5836,23 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "preset", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "z", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.RZ, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "rz", void 0);
 __decorate([
@@ -5796,6 +5866,29 @@ __decorate([
 class MoveResponseDto extends MoveRequestDto {
 }
 exports.MoveResponseDto = MoveResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveResponseDto.prototype, "message", void 0);
 class MoveRequestSlamnav extends MoveRequestDto {
 }
 exports.MoveRequestSlamnav = MoveRequestSlamnav;
@@ -5875,8 +5968,6 @@ exports.MoveLogLastRequestDto = MoveLogLastRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '조회할 로그 개수', example: 5 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], MoveLogLastRequestDto.prototype, "num", void 0);
 __decorate([
@@ -5907,6 +5998,58 @@ __decorate([
     (0, class_validator_1.IsArray)(),
     __metadata("design:type", Array)
 ], MoveLogLastResponseDto.prototype, "list", void 0);
+var LinearMoveCommand;
+(function (LinearMoveCommand) {
+    LinearMoveCommand["moveXLinear"] = "xLinear";
+    LinearMoveCommand["movecircular"] = "circular";
+    LinearMoveCommand["moveRotate"] = "rotate";
+    LinearMoveCommand["linearStop"] = "stop";
+})(LinearMoveCommand || (LinearMoveCommand = {}));
+class MoveLinearRequestDto {
+}
+exports.MoveLinearRequestDto = MoveLinearRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'Linear Move 명령구분',
+        example: LinearMoveCommand.moveXLinear,
+        enum: LinearMoveCommand,
+    }),
+    __metadata("design:type", String)
+], MoveLinearRequestDto.prototype, "command", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동거리 [m] | circularMove 이동거리 [deg] | rotateMove 이동거리 [deg]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveLinearRequestDto.prototype, "target", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동속도 [m/s] | circularMove 이동속도 [deg/s] | rotateMove 이동속도 [deg/s]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveLinearRequestDto.prototype, "speed", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, swagger_1.ApiProperty)({
+        description: 'circularMove 방향 [left, right]',
+        enum: ['left', 'right'],
+        example: 'left',
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveLinearRequestDto.prototype, "direction", void 0);
 
 
 /***/ }),
@@ -6042,7 +6185,6 @@ exports.getPaginationOffset = getPaginationOffset;
 exports.getPaginationLimit = getPaginationLimit;
 const class_validator_1 = __webpack_require__(61);
 const swagger_1 = __webpack_require__(58);
-const class_transformer_1 = __webpack_require__(60);
 class PaginationRequest {
     getOffset() {
         if (this.pageNo === null || this.pageNo === undefined || this.pageNo < 1) {
@@ -6062,9 +6204,7 @@ class PaginationRequest {
 }
 exports.PaginationRequest = PaginationRequest;
 __decorate([
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, swagger_1.ApiProperty)({
         example: '1',
         description: '페이지 번호',
@@ -6073,9 +6213,7 @@ __decorate([
     __metadata("design:type", Number)
 ], PaginationRequest.prototype, "pageNo", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, swagger_1.ApiProperty)({
         example: '10',
         description: '페이지당 항목 수',
@@ -6828,7 +6966,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiController = void 0;
 const common_1 = __webpack_require__(8);
@@ -6939,9 +7077,16 @@ let MapApiController = class MapApiController {
         }
         return this.mapService.getTopologyPagination(dto);
     }
-    async getTopologyPipe(mapName, fileName, res) {
-        throw new common_2.HttpException('아직 미구현된 기능입니다.', common_2.HttpStatus.INTERNAL_SERVER_ERROR);
-        await util_1.FileUtil.readJSONPipe((0, path_1.join)('/data/maps', mapName, fileName), res);
+    async getTopologyPipe(dto, res) {
+        try {
+            this.loggerService.debug(`[Map] getTopologyPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
+            await util_1.FileUtil.readJSONPipe((0, path_1.join)('/data/maps', dto.mapName, dto.fileName), res);
+        }
+        catch (error) {
+            console.error(error);
+            this.loggerService.error(`[Map] getTopologyPipe: ${util_1.ParseUtil.errorToJson(error)}`);
+            throw new common_2.HttpException(error, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async saveTopology(dto) {
         return this.mapService.saveTopology(dto);
@@ -7076,11 +7221,11 @@ __decorate([
 __decorate([
     (0, common_2.Get)('cloudpipe'),
     (0, swagger_1.ApiOperation)({
-        summary: '맵 클라우드 데이터 요청',
-        description: '로봇에 저장된 맵 클라우드 데이터를 gzip 압축된 형태로 요청합니다.',
+        summary: '맵 클라우드 데이터 요청(파일)',
+        description: '로봇에 저장된 맵 클라우드 파일을 요청합니다.',
     }),
     (0, swagger_1.ApiOkResponse)({
-        description: '맵 클라우드 데이터 요청 성공 (CSV 파일)',
+        description: '맵 클라우드 데이터 요청 성공',
         type: map_dto_1.GetCloudResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
@@ -7219,13 +7364,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTopologyPagination", null);
 __decorate([
-    (0, common_2.Get)('topopipe/:mapName/:fileName'),
+    (0, common_2.Get)('topopipe'),
     (0, swagger_1.ApiOperation)({
-        summary: '토폴로지 파일 요청(압축파일)',
-        description: '맵의 토폴로지 데이터를 요청합니다. gzip형식으로 압축된 데이터를 파일로 전송합니다.',
+        summary: '토폴로지 파일 요청(파일)',
+        description: '맵의 토폴로지 데이터를 요청합니다. 파일로 전송합니다.',
     }),
     (0, swagger_1.ApiOkResponse)({
-        description: '토폴로지 파일 요청 성공 (gzip 압축)',
+        description: '토폴로지 파일 요청 성공',
         type: map_dto_1.GetTopologyResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
@@ -7233,11 +7378,10 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('mapName')),
-    __param(1, (0, common_2.Param)('fileName')),
-    __param(2, (0, common_2.Res)()),
+    __param(0, (0, common_2.Query)()),
+    __param(1, (0, common_2.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, typeof (_r = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof map_dto_2.GetTopologyPipeRequestDto !== "undefined" && map_dto_2.GetTopologyPipeRequestDto) === "function" ? _r : Object, typeof (_s = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _s : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTopologyPipe", null);
 __decorate([
@@ -7257,7 +7401,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof map_dto_1.SaveTopologyRequestDto !== "undefined" && map_dto_1.SaveTopologyRequestDto) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_t = typeof map_dto_1.SaveTopologyRequestDto !== "undefined" && map_dto_1.SaveTopologyRequestDto) === "function" ? _t : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "saveTopology", null);
 __decorate([
@@ -7315,7 +7459,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_u = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _u : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingSave", null);
 __decorate([
@@ -7354,7 +7498,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof map_dto_2.UploadMapRequestDto !== "undefined" && map_dto_2.UploadMapRequestDto) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof map_dto_2.UploadMapRequestDto !== "undefined" && map_dto_2.UploadMapRequestDto) === "function" ? _v : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "uploadMap", null);
 __decorate([
@@ -7374,7 +7518,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof map_dto_3.DownloadMapRequestDto !== "undefined" && map_dto_3.DownloadMapRequestDto) === "function" ? _v : Object]),
+    __metadata("design:paramtypes", [typeof (_w = typeof map_dto_3.DownloadMapRequestDto !== "undefined" && map_dto_3.DownloadMapRequestDto) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "downloadMap", null);
 __decorate([
@@ -7433,7 +7577,7 @@ __decorate([
     __param(2, (0, common_2.Body)('name')),
     __param(3, (0, common_2.Body)('isForce')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof Express !== "undefined" && (_w = Express.Multer) !== void 0 && _w.File) === "function" ? _x : Object, typeof (_y = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _y : Object, String, Boolean]),
+    __metadata("design:paramtypes", [typeof (_y = typeof Express !== "undefined" && (_x = Express.Multer) !== void 0 && _x.File) === "function" ? _y : Object, typeof (_z = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _z : Object, String, Boolean]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "pulishMap", null);
 exports.MapApiController = MapApiController = __decorate([
@@ -7845,6 +7989,29 @@ __decorate([
 class MappingResponseDto extends MappingRequestDto {
 }
 exports.MappingResponseDto = MappingResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MappingResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MappingResponseDto.prototype, "message", void 0);
 class MappingRequestSlamnav extends MappingRequestDto {
 }
 exports.MappingRequestSlamnav = MappingRequestSlamnav;
@@ -7987,6 +8154,29 @@ __decorate([
 class LoadResponseDto extends LoadRequestDto {
 }
 exports.LoadResponseDto = LoadResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], LoadResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], LoadResponseDto.prototype, "message", void 0);
 class LoadRequestSlamnav extends LoadRequestDto {
 }
 exports.LoadRequestSlamnav = LoadRequestSlamnav;
@@ -8079,7 +8269,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UploadMapRequestDto = exports.DownloadMapRequestDto = exports.SaveTopologyResponseDto = exports.SaveTopologyRequestDto = exports.GetTopologyResponseDto = exports.GetTopologyRequestDto = exports.SaveCloudPipeResponseDto = exports.SaveCloudPipeRequestDto = exports.SaveCloudResponseDto = exports.SaveCloudRequestDto = exports.GetCloudResponseDto = exports.GetCloudRequestDto = exports.FileDto = exports.GetMapListResponseDto = void 0;
+exports.UploadMapRequestDto = exports.DownloadMapRequestDto = exports.SaveTopologyResponseDto = exports.SaveTopologyRequestDto = exports.GetTopologyResponseDto = exports.GetTopologyRequestDto = exports.GetTopologyPipeRequestDto = exports.SaveCloudPipeResponseDto = exports.SaveCloudPipeRequestDto = exports.SaveCloudResponseDto = exports.SaveCloudRequestDto = exports.GetCloudResponseDto = exports.GetCloudRequestDto = exports.FileDto = exports.GetMapListResponseDto = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(58);
 const class_transformer_1 = __webpack_require__(60);
@@ -8195,6 +8385,9 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '저장된 파일 경로', example: '/uploads/cloud_data.gz' }),
     __metadata("design:type", String)
 ], SaveCloudPipeResponseDto.prototype, "filePath", void 0);
+class GetTopologyPipeRequestDto extends FileDto {
+}
+exports.GetTopologyPipeRequestDto = GetTopologyPipeRequestDto;
 class GetTopologyRequestDto extends pagination_1.PaginationRequest {
 }
 exports.GetTopologyRequestDto = GetTopologyRequestDto;
@@ -8283,7 +8476,6 @@ __decorate([
         description: Description.IS_FORCE,
         example: false,
     }),
-    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], DownloadMapRequestDto.prototype, "isForce", void 0);
 class UploadMapRequestDto {
@@ -8374,7 +8566,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NodeDto = exports.PoseDto = exports.NodeType = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
 const util_1 = __webpack_require__(37);
 var Description;
 (function (Description) {
@@ -8400,8 +8591,6 @@ __decorate([
         example: 0,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PoseDto.prototype, "x", void 0);
 __decorate([
@@ -8410,8 +8599,6 @@ __decorate([
         example: 0,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PoseDto.prototype, "y", void 0);
 __decorate([
@@ -8420,8 +8607,6 @@ __decorate([
         example: 0,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PoseDto.prototype, "z", void 0);
 __decorate([
@@ -8430,8 +8615,6 @@ __decorate([
         example: 0,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PoseDto.prototype, "rx", void 0);
 __decorate([
@@ -8440,8 +8623,6 @@ __decorate([
         example: 0,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PoseDto.prototype, "ry", void 0);
 __decorate([
@@ -8450,8 +8631,6 @@ __decorate([
         example: 0,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PoseDto.prototype, "rz", void 0);
 class NodeDto {
@@ -8887,7 +9066,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundListResponseDto = exports.DeleteSoundResponseDto = exports.DeleteSoundRequestDto = exports.StopSoundResponseDto = exports.PlaySoundResponseDto = exports.PlaySoundRequestDto = exports.SoundDto = void 0;
 const swagger_1 = __webpack_require__(58);
-const class_transformer_1 = __webpack_require__(60);
 const class_validator_1 = __webpack_require__(61);
 var Description;
 (function (Description) {
@@ -8915,8 +9093,6 @@ class PlaySoundRequestDto extends SoundDto {
 }
 exports.PlaySoundRequestDto = PlaySoundRequestDto;
 __decorate([
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, swagger_1.ApiProperty)({
         description: Description.VOLUME,
         example: 100,
@@ -8924,8 +9100,6 @@ __decorate([
     __metadata("design:type", Number)
 ], PlaySoundRequestDto.prototype, "volume", void 0);
 __decorate([
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, swagger_1.ApiProperty)({
         description: Description.IS_REPEAT,
         example: 0,
@@ -8933,8 +9107,6 @@ __decorate([
     __metadata("design:type", Number)
 ], PlaySoundRequestDto.prototype, "repeatCount", void 0);
 __decorate([
-    (0, class_transformer_1.Transform)(({ value }) => value === 'true' || value === true),
-    (0, class_validator_1.IsBoolean)(),
     (0, swagger_1.ApiProperty)({
         description: Description.IS_WAITUNTILDONE,
         example: true,
@@ -10093,7 +10265,6 @@ exports.ResponseWebUIAppDeleteDto = exports.ResponseWebUIAppAddDto = exports.Web
 const pagination_1 = __webpack_require__(101);
 const util_1 = __webpack_require__(37);
 const swagger_1 = __webpack_require__(58);
-const class_transformer_1 = __webpack_require__(60);
 const class_validator_1 = __webpack_require__(61);
 var Description;
 (function (Description) {
@@ -10146,7 +10317,6 @@ __decorate([
     __metadata("design:type", String)
 ], CommitDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiPropertyOptional)({
         description: 'commit protected',
@@ -10186,7 +10356,6 @@ __decorate([
     __metadata("design:type", String)
 ], ResponseReleaseAppsBranches.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiPropertyOptional)({
         description: Description.BRANCH,
@@ -10254,8 +10423,6 @@ __decorate([
     __metadata("design:type", String)
 ], ResponseReleaseVersionInfoDto.prototype, "sha", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiPropertyOptional)({
         description: 'version size',
@@ -10503,7 +10670,6 @@ class NewVersionGitDto {
 }
 exports.NewVersionGitDto = NewVersionGitDto;
 __decorate([
-    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiPropertyOptional)({
         description: '핫픽스 여부',
@@ -10597,7 +10763,6 @@ __decorate([
     __metadata("design:type", String)
 ], GetNewVersionResponseDto.prototype, "version", void 0);
 __decorate([
-    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiPropertyOptional)({
         description: Description.HOTFIX,
@@ -10787,6 +10952,7 @@ let CobotApiService = class CobotApiService {
         return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotConnectCommand(dto));
     }
     async CobotConnectData(dto) {
+        console.log(`test!! :${dto}`);
         return await (0, rxjs_1.lastValueFrom)(this.cobotService.cobotConnectData(dto));
     }
     async CobotDisconnectCommand(dto) {
@@ -11185,7 +11351,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CloseTcpServerResponseDto = exports.CloseTcpServerRequestDto = exports.CreateTcpServerResponseDto = exports.CreateTcpServerRequestDto = exports.GetCobotTcpServerResponseDto = exports.TcpServerInfoDto = exports.GetCobotTcpServerRequestDto = exports.GetConnectStateResponseDto = exports.GetConnectStateRequestDto = exports.CobotConnectServerResponseDto = exports.CobotConnectServerRequestDto = exports.CobotConnectResponseDto = exports.CobotConnectRequestDto = exports.CobotSpeedResponseDto = exports.CobotSpeedRequestDto = exports.CobotMoveResponseDto = exports.CobotMoveRequestDto = exports.CobotCoordinate = exports.CobotMoveMethod = exports.CobotResponseDto = exports.CobotRequestDto = exports.CobotModeResponseDto = exports.CobotModeRequestDto = exports.CobotProgramResponseDto = exports.CobotProgramRequestDto = exports.CobotCommandResponseDto = exports.CobotCommandRequestDto = exports.CobotCommand = void 0;
+exports.CloseTcpServerResponseDto = exports.CloseTcpServerRequestDto = exports.CreateTcpServerResponseDto = exports.CreateTcpServerRequestDto = exports.GetCobotTcpServerResponseDto = exports.TcpServerInfoDto = exports.GetCobotTcpServerRequestDto = exports.GetConnectStateResponseDto = exports.GetConnectStateRequestDto = exports.CobotConnectServerResponseDto = exports.CobotConnectServerRequestDto = exports.CobotConnectResponseDto = exports.CobotConnectRequestDto = exports.CobotSpeedResponseDto = exports.CobotSpeedRequestDto = exports.CobotMoveResponseDto = exports.CobotMoveRequestDto = exports.CobotCoordinate = exports.CobotMoveMethod = exports.CobotResponseDto = exports.CobotRequestDto = exports.CobotModeResponseDto = exports.CobotModeRequestDto = exports.CobotProgramResponseDto = exports.CobotProgramRequestDto = exports.CobotCommandResponseDto = exports.CobotCommandRequestDto = exports.CobotCommandType = exports.CobotCommand = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
 const class_transformer_1 = __webpack_require__(60);
@@ -11204,6 +11370,21 @@ var CobotCommand;
     CobotCommand["taskResumeB"] = "task resume_b";
     CobotCommand["requestData"] = "reqdata";
 })(CobotCommand || (exports.CobotCommand = CobotCommand = {}));
+var CobotCommandType;
+(function (CobotCommandType) {
+    CobotCommandType["Connect"] = "connect";
+    CobotCommandType["ConnectCommand"] = "connectCommand";
+    CobotCommandType["ConnectData"] = "connectData";
+    CobotCommandType["ChangeMode"] = "changeMode";
+    CobotCommandType["Move"] = "move";
+    CobotCommandType["ChangeSpeed"] = "changeSpeed";
+    CobotCommandType["Init"] = "init";
+    CobotCommandType["Disconnect"] = "disconnect";
+    CobotCommandType["DisconnectCommand"] = "disconnectCommand";
+    CobotCommandType["DisconnectData"] = "disconnectData";
+    CobotCommandType["SendCommand"] = "sendCommand";
+    CobotCommandType["SetProgram"] = "setProgram";
+})(CobotCommandType || (exports.CobotCommandType = CobotCommandType = {}));
 class CobotCommandRequestDto {
 }
 exports.CobotCommandRequestDto = CobotCommandRequestDto;
@@ -11354,8 +11535,6 @@ __decorate([
         example: [0, 0, 0, 0, 0, 0],
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Array)
 ], CobotMoveRequestDto.prototype, "pose", void 0);
@@ -11365,8 +11544,6 @@ __decorate([
         example: 20,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CobotMoveRequestDto.prototype, "speed", void 0);
@@ -11376,8 +11553,6 @@ __decorate([
         example: 5,
         required: true,
     }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CobotMoveRequestDto.prototype, "acceleration", void 0);
@@ -11414,8 +11589,6 @@ __decorate([
         example: 50,
         required: true,
     }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CobotSpeedRequestDto.prototype, "speed", void 0);
@@ -11484,8 +11657,6 @@ __decorate([
         example: true,
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_transformer_1.Type)(() => Boolean),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Boolean)
 ], GetConnectStateResponseDto.prototype, "commandConnected", void 0);
@@ -11495,8 +11666,6 @@ __decorate([
         example: true,
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_transformer_1.Type)(() => Boolean),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Boolean)
 ], GetConnectStateResponseDto.prototype, "dataConnected", void 0);
@@ -11509,8 +11678,6 @@ __decorate([
         example: 18000,
         required: true,
     }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], GetCobotTcpServerRequestDto.prototype, "port", void 0);
@@ -11523,7 +11690,6 @@ __decorate([
         example: 18000,
         required: true,
     }),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], TcpServerInfoDto.prototype, "port", void 0);
@@ -11543,8 +11709,6 @@ __decorate([
         example: 1,
         required: true,
     }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], TcpServerInfoDto.prototype, "clients", void 0);
@@ -11577,8 +11741,6 @@ __decorate([
         example: 18000,
         required: true,
     }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateTcpServerRequestDto.prototype, "port", void 0);
@@ -11605,8 +11767,6 @@ __decorate([
         example: 18000,
         required: true,
     }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CloseTcpServerRequestDto.prototype, "port", void 0);
@@ -11619,8 +11779,6 @@ __decorate([
         example: 0,
         required: true,
     }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CloseTcpServerResponseDto.prototype, "clients", void 0);
@@ -11824,131 +11982,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcToHttpFilter = void 0;
+exports.SocketApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const logger_1 = __webpack_require__(33);
-const constant_1 = __webpack_require__(51);
-let GrpcToHttpFilter = class GrpcToHttpFilter {
-    constructor() {
-        this.loggerService = logger_1.LoggerService.get('filter');
-    }
-    catch(exception, host) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
-        try {
-            if (exception instanceof Error) {
-                if ('code' in exception && 'details' in exception) {
-                    const statusCode = mapGrpcToHttpStatus(exception.code);
-                    this.loggerService.info(`[Grpc] RpcException : ${exception.details} ${statusCode}(${exception.code})`);
-                    return response.status(statusCode).json({
-                        statusCode,
-                        message: exception.details,
-                    });
-                }
-                else if (exception instanceof common_1.HttpException) {
-                    const statusCode = exception.getStatus();
-                    const message = exception.message;
-                    this.loggerService.info(`[Grpc] caught HttpException : ${statusCode}, ${message}`);
-                    return response.status(statusCode).json({ statusCode, message });
-                }
-                else {
-                    this.loggerService.info(`[Grpc] caught Error : ${exception.message}`);
-                    return response.status(500).json({
-                        statusCode: 500,
-                        message: exception.message,
-                    });
-                }
-            }
-            else {
-                this.loggerService.info(`[Grpc] caught unknown Error : ${(0, logger_1.errorToJson)(exception)}`);
-                return response.status(500).json({
-                    statusCode: 500,
-                    message: 'Internal server error',
-                });
-            }
-        }
-        catch (error) {
-            this.loggerService.info(`[Grpc] caught unknown Error : ${(0, logger_1.errorToJson)(exception)}`);
-            return response.status(500).json({
-                statusCode: 500,
-                message: 'Internal server error',
-            });
-        }
-    }
-};
-exports.GrpcToHttpFilter = GrpcToHttpFilter;
-exports.GrpcToHttpFilter = GrpcToHttpFilter = __decorate([
-    (0, common_1.Catch)()
-], GrpcToHttpFilter);
-function mapGrpcToHttpStatus(code) {
-    switch (code) {
-        case constant_1.GrpcCode.OK:
-            return common_1.HttpStatus.OK;
-        case constant_1.GrpcCode.Cancelled:
-            return 499;
-        case constant_1.GrpcCode.Unknown:
-            return common_1.HttpStatus.BAD_REQUEST;
-        case constant_1.GrpcCode.InvalidArgument:
-            return common_1.HttpStatus.BAD_REQUEST;
-        case constant_1.GrpcCode.DeadlineExceeded:
-            return common_1.HttpStatus.GATEWAY_TIMEOUT;
-        case constant_1.GrpcCode.NotFound:
-            return common_1.HttpStatus.NOT_FOUND;
-        case constant_1.GrpcCode.AlreadyExists:
-            return common_1.HttpStatus.CONFLICT;
-        case constant_1.GrpcCode.PermissionDenied:
-            return common_1.HttpStatus.FORBIDDEN;
-        case constant_1.GrpcCode.ResourceExhausted:
-            return common_1.HttpStatus.TOO_MANY_REQUESTS;
-        case constant_1.GrpcCode.FailedPrecondition:
-            return common_1.HttpStatus.BAD_REQUEST;
-        case constant_1.GrpcCode.Aborted:
-            return common_1.HttpStatus.CONFLICT;
-        case constant_1.GrpcCode.OutOfRange:
-            return common_1.HttpStatus.BAD_REQUEST;
-        case constant_1.GrpcCode.Unimplemented:
-            return common_1.HttpStatus.NOT_IMPLEMENTED;
-        case constant_1.GrpcCode.InternalError:
-            return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-        case constant_1.GrpcCode.Unavailable:
-            return common_1.HttpStatus.SERVICE_UNAVAILABLE;
-        case constant_1.GrpcCode.DataLoss:
-            return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-        case constant_1.GrpcCode.Unauthenticated:
-            return common_1.HttpStatus.UNAUTHORIZED;
-        default:
-            return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-}
-
-
-/***/ }),
-/* 145 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ClientSocketModule = void 0;
-const common_1 = __webpack_require__(5);
-const client_socket_service_1 = __webpack_require__(146);
-const client_socket_gateway_1 = __webpack_require__(148);
-const microservices_1 = __webpack_require__(3);
-const client_socket_mqtt_controller_1 = __webpack_require__(153);
-const constant_1 = __webpack_require__(65);
 const config_1 = __webpack_require__(73);
-const nestjs_asyncapi_1 = __webpack_require__(2);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
-let ClientSocketModule = class ClientSocketModule {
+const socket_api_controller_1 = __webpack_require__(145);
+const socket_api_service_1 = __webpack_require__(146);
+const microservices_1 = __webpack_require__(3);
+const constant_1 = __webpack_require__(65);
+const socket_mqtt_controller_1 = __webpack_require__(147);
+let SocketApiModule = class SocketApiModule {
 };
-exports.ClientSocketModule = ClientSocketModule;
-exports.ClientSocketModule = ClientSocketModule = __decorate([
+exports.SocketApiModule = SocketApiModule;
+exports.SocketApiModule = SocketApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({
@@ -11967,158 +12012,77 @@ exports.ClientSocketModule = ClientSocketModule = __decorate([
                             },
                         }),
                     },
-                    {
-                        name: constant_1.MOVE_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.MoveMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
-                                url: configService.get('MOVE_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.LOCALIZATION_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.LocalizationMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/localization.proto'),
-                                url: configService.get('LOCALIZATION_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.CONTROL_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.ControlMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/control.proto'),
-                                url: configService.get('CONTROL_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.MAP_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.MapMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/map.proto'),
-                                url: configService.get('MAP_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.SETTING_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.SettingMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/setting.proto'),
-                                url: configService.get('SETTING_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.COBOT_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.CobotMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/cobot.proto'),
-                                url: configService.get('COBOT_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.SOUND_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.SoundMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/sound.proto'),
-                                url: configService.get('SOUND_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.CONFIG_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.ConfigMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/config.proto'),
-                                url: configService.get('CONFIG_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.NETWORK_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.NetworkMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/network.proto'),
-                                url: configService.get('NETWORK_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.UPDATE_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.UpdateMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/update.proto'),
-                                url: configService.get('UPDATE_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.TASK_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.TaskMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/task.proto'),
-                                url: configService.get('TASK_GRPC_URL'),
-                            },
-                        }),
-                    },
-                    {
-                        name: constant_1.TCP_SERVICE,
-                        inject: [config_1.ConfigService],
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.TcpMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/tcp.proto'),
-                                url: configService.get('TCP_GRPC_URL'),
-                            },
-                        }),
-                    },
                 ],
             }),
-            nestjs_asyncapi_1.AsyncApiModule,
         ],
-        controllers: [client_socket_mqtt_controller_1.ClientSocketMqttController],
-        providers: [client_socket_gateway_1.ClientSocketGateway, client_socket_service_1.ClientSocketService],
+        controllers: [socket_api_controller_1.SocketApiController, socket_mqtt_controller_1.SocketMqttController],
+        providers: [socket_api_service_1.SocketApiService],
     })
-], ClientSocketModule);
+], SocketApiModule);
+
+
+/***/ }),
+/* 145 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SocketApiController = void 0;
+const common_1 = __webpack_require__(5);
+const swagger_1 = __webpack_require__(58);
+const common_2 = __webpack_require__(8);
+const socket_api_service_1 = __webpack_require__(146);
+let SocketApiController = class SocketApiController {
+    constructor() {
+        this.loggerService = common_2.LoggerService.get('gateway');
+    }
+    async getStatus() {
+        return this.socketService.getStatus();
+    }
+    async getMoveStatus() {
+        return this.socketService.getMoveStatus();
+    }
+};
+exports.SocketApiController = SocketApiController;
+__decorate([
+    (0, common_1.Inject)(),
+    __metadata("design:type", typeof (_a = typeof socket_api_service_1.SocketApiService !== "undefined" && socket_api_service_1.SocketApiService) === "function" ? _a : Object)
+], SocketApiController.prototype, "socketService", void 0);
+__decorate([
+    (0, common_1.Get)('status'),
+    (0, swagger_1.ApiOperation)({
+        summary: '상태 요청',
+        description: '가장 최신의 SLAMNAV 상태를 요청합니다. 현재 상태는 현재 로봇의 상태를 반환합니다.',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], SocketApiController.prototype, "getStatus", null);
+__decorate([
+    (0, common_1.Get)('moveStatus'),
+    (0, swagger_1.ApiOperation)({
+        summary: '이동 상태 요청',
+        description: '가장 최신의 SLAMNAV 이동 상태를 요청합니다. 현재 이동 상태는 현재 로봇의 이동 상태를 반환합니다.',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], SocketApiController.prototype, "getMoveStatus", null);
+exports.SocketApiController = SocketApiController = __decorate([
+    (0, swagger_1.ApiTags)('소켓 관련 API (socket)'),
+    (0, common_1.Controller)('socket'),
+    __metadata("design:paramtypes", [])
+], SocketApiController);
 
 
 /***/ }),
@@ -12135,1095 +12099,102 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ClientSocketService = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const websockets_1 = __webpack_require__(147);
-const constant_1 = __webpack_require__(65);
-const move_type_1 = __webpack_require__(98);
-const control_type_1 = __webpack_require__(62);
-const parse_util_1 = __webpack_require__(53);
-let ClientSocketService = class ClientSocketService {
-    constructor(mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice, settingMicroservice, soundMicroservice, networkMicroservice, updateMicroservice, taskMicroservice, tcpMicroservice, mapMicroservice) {
-        this.mqttMicroservice = mqttMicroservice;
-        this.moveMicroservice = moveMicroservice;
-        this.controlMicroservice = controlMicroservice;
-        this.localizationMicroservice = localizationMicroservice;
-        this.settingMicroservice = settingMicroservice;
-        this.soundMicroservice = soundMicroservice;
-        this.networkMicroservice = networkMicroservice;
-        this.updateMicroservice = updateMicroservice;
-        this.taskMicroservice = taskMicroservice;
-        this.tcpMicroservice = tcpMicroservice;
-        this.mapMicroservice = mapMicroservice;
-        this.loggerService = common_2.LoggerService.get('gateway-client');
+exports.SocketApiService = void 0;
+const common_1 = __webpack_require__(8);
+const common_2 = __webpack_require__(5);
+let SocketApiService = class SocketApiService {
+    constructor() {
+        this.loggerService = common_1.LoggerService.get('gateway');
     }
-    onModuleInit() {
-        this.moveService = this.moveMicroservice.getService('MoveGrpcService');
+    onModuleInit() { }
+    async getStatus() {
+        return this.lastStatus;
     }
-    setServer(server) {
-        this.server = server;
+    async getMoveStatus() {
+        return this.lastMoveStatus;
     }
-    async subscribe(dto, client) {
-        try {
-            if (dto.topic === undefined || dto.topic === '') {
-                throw new websockets_1.WsException('topic값이 없습니다.');
-            }
-            client.join(dto.topic);
-            this.loggerService.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
-            return;
-        }
-        catch (error) {
-            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
-            if (error instanceof websockets_1.WsException)
-                throw error;
-            throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
-        }
+    async status(data) {
+        this.lastStatus = data;
     }
-    async unSubscribe(dto, client) {
-        try {
-            if (dto.topic === undefined || dto.topic === '') {
-                throw new websockets_1.WsException('topic값이 없습니다.');
-            }
-            if (dto.topic == 'all') {
-                for (const room of client.rooms) {
-                    if (room !== client.id) {
-                        client.leave(room);
-                        this.loggerService.info(`[Client] ${client.id} : ${room} (room count = ${client.rooms.size - 1})`);
-                    }
-                }
-            }
-            else {
-                client.leave(dto.topic);
-                this.loggerService.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
-            }
-            return;
-        }
-        catch (error) {
-            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
-            if (error instanceof websockets_1.WsException)
-                throw error;
-            throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
-        }
-    }
-    moveRequest(dto) {
-        this.moveService.moveCommand(dto).subscribe({
-            error: (err) => this.loggerService.error(`[Client] moveRequest : ${parse_util_1.ParseUtil.errorToJson(err)}`),
-        });
-    }
-    moveJog(dto) {
-        try {
-            if (dto.command === undefined || dto.command !== move_type_1.MoveCommand.moveJog) {
-                throw new websockets_1.WsException(`command값이 잘못되었습니다. ${dto.command}`);
-            }
-            if (dto.vx === undefined || typeof dto.vx !== 'number' || dto.vx < -10 || dto.vx > 10) {
-                throw new websockets_1.WsException('vx값이 범위를 벗어납니다.');
-            }
-            if (dto.vy === undefined || typeof dto.vy !== 'number' || dto.vy < -10 || dto.vy > 10) {
-                throw new websockets_1.WsException('vy값이 범위를 벗어납니다.');
-            }
-            if (dto.wz === undefined || typeof dto.wz !== 'number' || dto.wz < -100 || dto.wz > 100) {
-                throw new websockets_1.WsException('wz값이 범위를 벗어납니다.');
-            }
-            this.mqttMicroservice.emit('moveJog', dto);
-        }
-        catch (error) {
-            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
-            if (error instanceof websockets_1.WsException)
-                throw error;
-            throw new websockets_1.WsException('Move명령을 처리하던 중 에러가 발생했습니다.');
-        }
-    }
-    localizationRequest(dto) {
-        this.localizationService.init(dto).subscribe();
-    }
-    loadRequest(dto) {
-        this.mapService.load(dto).subscribe();
-    }
-    mappingRequest(dto) {
-        this.mapService.mapping(dto).subscribe();
-    }
-    ledControlRequest(dto) {
-        this.controlService
-            .ledControl({
-            command: control_type_1.ControlCommand.ledControl,
-            onoff: dto.onoff,
-            color: dto.color,
-        })
-            .subscribe();
-    }
-    LEDControlRequest(dto) {
-        this.controlService.ledControl(dto).subscribe();
-    }
-    onOffControlRequest(dto) {
-        this.controlService.onOffControl(dto).subscribe();
-    }
-    workControlRequest(dto) {
-        this.controlService.workControl(dto).subscribe();
-    }
-    getSafetyIoControlRequest() {
-        this.controlService
-            .safetyIoControl({
-            command: control_type_1.ControlCommand.getDigitalIO,
-            mcuDio: [],
-        })
-            .subscribe();
-    }
-    setSafetyIoControlRequest(dto) {
-        this.controlService
-            .safetyIoControl({
-            command: control_type_1.ControlCommand.setDigitalIO,
-            mcuDio: dto.mcuDio.map((dio) => ({
-                channel: dio,
-            })),
-        })
-            .subscribe();
-    }
-    getSafetyFieldRequest() {
-        this.controlService.getSafetyField({}).subscribe();
-    }
-    setSafetyFieldRequest(dto) {
-        this.controlService.setSafetyField(dto).subscribe();
-    }
-    pathResponse(dto) {
-        try {
-            if (dto.path === undefined || dto.path.length === 0) {
-                throw new websockets_1.WsException('path값이 없습니다.');
-            }
-            this.mqttMicroservice.emit('pathResponse', { ...dto, time: Date.now().toString() });
-        }
-        catch (error) {
-            this.loggerService.error(`[Client] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new websockets_1.WsException('pathResponse 전송 중 에러가 발생했습니다.');
-        }
-    }
-    moveResponse(dto) {
-        this.server.to(['moveResponse', 'move', 'all']).emit('moveResponse', dto);
-    }
-    localizationResponse(dto) {
-        this.server.to(['localizationResponse', 'localization', 'all']).emit('localizationResponse', dto);
-    }
-    loadResponse(dto) {
-        this.server.to(['loadResponse', 'load', 'all']).emit('loadResponse', dto);
-    }
-    mappingResponse(dto) {
-        this.server.to(['mappingResponse', 'mapping', 'all']).emit('mappingResponse', dto);
-    }
-    controlResponse(dto) {
-        this.server.to(['controlResponse', 'control', 'all']).emit('controlResponse', dto);
-    }
-    status(dto) {
-        this.server.to(['status', 'all']).emit('status', dto);
-    }
-    moveStatus(dto) {
-        this.server.to(['moveStatus', 'status', 'all']).emit('moveStatus', dto);
-    }
-    localPath(dto) {
-        this.server.to(['localPath', 'path', 'all']).emit('localPath', dto);
-    }
-    globalPath(dto) {
-        this.server.to(['globalPath', 'path', 'all']).emit('globalPath', dto);
-    }
-    lidarCloud(dto) {
-        this.server.to(['lidarCloud', 'all']).emit('lidarCloud', dto);
-    }
-    mappingCloud(dto) {
-        this.server.to(['mappingCloud', 'mapping', 'all']).emit('mappingCloud', dto);
-    }
-    cobotResponse(dto) {
-        this.server.to(['cobotResponse', 'cobot', 'all']).emit('cobotResponse', dto);
-    }
-    exAccessoryResponse(dto) {
-        this.server.to(['exAccessoryResponse', 'exAccessory', 'all']).emit('exAccessoryResponse', dto);
-    }
-    exAccessoryStatus(dto) {
-        this.server.to(['exAccessoryStatus', 'exAccessory', 'status', 'all']).emit('exAccessoryStatus', dto);
+    async moveStatus(data) {
+        this.lastMoveStatus = data;
     }
 };
-exports.ClientSocketService = ClientSocketService;
-exports.ClientSocketService = ClientSocketService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __param(1, (0, common_1.Inject)(constant_1.MOVE_SERVICE)),
-    __param(2, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
-    __param(3, (0, common_1.Inject)(constant_1.LOCALIZATION_SERVICE)),
-    __param(4, (0, common_1.Inject)(constant_1.SETTING_SERVICE)),
-    __param(5, (0, common_1.Inject)(constant_1.SOUND_SERVICE)),
-    __param(6, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
-    __param(7, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
-    __param(8, (0, common_1.Inject)(constant_1.TASK_SERVICE)),
-    __param(9, (0, common_1.Inject)(constant_1.TCP_SERVICE)),
-    __param(10, (0, common_1.Inject)(constant_1.MAP_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object, typeof (_g = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _g : Object, typeof (_h = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _h : Object, typeof (_j = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _j : Object, typeof (_k = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _k : Object, typeof (_l = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _l : Object])
-], ClientSocketService);
+exports.SocketApiService = SocketApiService;
+exports.SocketApiService = SocketApiService = __decorate([
+    (0, common_2.Injectable)(),
+    __metadata("design:paramtypes", [])
+], SocketApiService);
 
 
 /***/ }),
 /* 147 */
-/***/ ((module) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-module.exports = require("@nestjs/websockets");
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SocketMqttController = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(8);
+const config_1 = __webpack_require__(73);
+const status_type_1 = __webpack_require__(148);
+const socket_api_service_1 = __webpack_require__(146);
+const websockets_1 = __webpack_require__(150);
+const movestatus_type_1 = __webpack_require__(151);
+const microservices_1 = __webpack_require__(3);
+let SocketMqttController = class SocketMqttController {
+    constructor(configService) {
+        this.configService = configService;
+        this.loggerService = common_2.LoggerService.get('gateway');
+    }
+    async handleStatus(data) {
+        return this.socketService.status(data);
+    }
+    async handleMoveStatus(data) {
+        return this.socketService.moveStatus(data);
+    }
+};
+exports.SocketMqttController = SocketMqttController;
+__decorate([
+    (0, common_1.Inject)(),
+    __metadata("design:type", typeof (_b = typeof socket_api_service_1.SocketApiService !== "undefined" && socket_api_service_1.SocketApiService) === "function" ? _b : Object)
+], SocketMqttController.prototype, "socketService", void 0);
+__decorate([
+    (0, microservices_1.MessagePattern)('status'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], SocketMqttController.prototype, "handleStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('moveStatus'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _d : Object]),
+    __metadata("design:returntype", Promise)
+], SocketMqttController.prototype, "handleMoveStatus", null);
+exports.SocketMqttController = SocketMqttController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+], SocketMqttController);
+
 
 /***/ }),
 /* 148 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ClientSocketGateway = void 0;
-const websockets_1 = __webpack_require__(147);
-const client_socket_service_1 = __webpack_require__(146);
-const socket_io_1 = __webpack_require__(149);
-const common_1 = __webpack_require__(8);
-const nestjs_asyncapi_1 = __webpack_require__(2);
-const subscribe_dto_1 = __webpack_require__(150);
-const move_dto_1 = __webpack_require__(97);
-const localization_dto_1 = __webpack_require__(77);
-const load_dto_1 = __webpack_require__(115);
-const mapping_dto_1 = __webpack_require__(114);
-const control_dto_1 = __webpack_require__(59);
-const safety_io_dto_1 = __webpack_require__(72);
-const path_dto_1 = __webpack_require__(152);
-let ClientSocketGateway = class ClientSocketGateway {
-    constructor(clientService) {
-        this.clientService = clientService;
-        this.loggerService = common_1.LoggerService.get('gateway');
-    }
-    afterInit(server) {
-        this.clientService.setServer(server);
-    }
-    handleConnection(client) {
-        this.loggerService.info(`[ClientGateway] Connect Client : ${client.id}`);
-    }
-    handleDisconnect(client) {
-        this.loggerService.info(`[ClientGateway] Disconnect Client : ${client.id}`);
-    }
-    async handelSubscribe(dto, client) {
-        return this.clientService.subscribe(dto, client);
-    }
-    async handelUnsubscribe(dto, client) {
-        return this.clientService.unSubscribe(dto, client);
-    }
-    async MoveRequest(data) {
-        this.clientService.moveRequest(data);
-    }
-    async handleMoveJogMessage(data) {
-        this.clientService.moveJog(data);
-    }
-    async LocalizationRequest(data) {
-        this.clientService.localizationRequest(data);
-    }
-    async LoadRequest(data) {
-        this.clientService.loadRequest(data);
-    }
-    async MappingRequest(data) {
-        this.clientService.mappingRequest(data);
-    }
-    async OnOffControlRequest(data) {
-        this.clientService.onOffControlRequest(data);
-    }
-    async LedControlRequest(data) {
-        this.clientService.ledControlRequest(data);
-    }
-    async WorkControlRequest(data) {
-        this.clientService.workControlRequest(data);
-    }
-    async GetSafetyFieldRequest() {
-        this.clientService.getSafetyFieldRequest();
-    }
-    async SetSafetyFieldRequest(data) {
-        this.clientService.setSafetyFieldRequest(data);
-    }
-    async GetSafetyIoControlRequest() {
-        this.clientService.getSafetyIoControlRequest();
-    }
-    async SetSafetyIoControlRequest(data) {
-        this.clientService.setSafetyIoControlRequest(data);
-    }
-    async PathResponse(data) {
-        this.clientService.pathResponse(data);
-    }
-};
-exports.ClientSocketGateway = ClientSocketGateway;
-__decorate([
-    (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", typeof (_b = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _b : Object)
-], ClientSocketGateway.prototype, "server", void 0);
-__decorate([
-    __param(0, (0, websockets_1.ConnectedSocket)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _c : Object]),
-    __metadata("design:returntype", void 0)
-], ClientSocketGateway.prototype, "handleConnection", null);
-__decorate([
-    __param(0, (0, websockets_1.ConnectedSocket)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _d : Object]),
-    __metadata("design:returntype", void 0)
-], ClientSocketGateway.prototype, "handleDisconnect", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('subscribe'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'subscribe',
-        message: {
-            payload: subscribe_dto_1.SubscribeDto,
-        },
-        description: '토픽 구독요청. 구독한 토픽 이벤트만 받을 수 있습니다. 응답은 없습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __param(1, (0, websockets_1.ConnectedSocket)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _e : Object, typeof (_f = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _f : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "handelSubscribe", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('unsubscribe'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'unsubscribe',
-        message: {
-            payload: subscribe_dto_1.SubscribeDto,
-        },
-        description: '토픽 구독해제요청. 구독한 토픽 이벤트만 받을 수 있습니다. 응답은 없습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __param(1, (0, websockets_1.ConnectedSocket)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _g : Object, typeof (_h = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _h : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "handelUnsubscribe", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('moveRequest'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'moveRequest',
-        message: {
-            payload: move_dto_1.MoveRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Move 요청. 응답은 moveResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _j : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "MoveRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('moveJog'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'moveJog',
-        message: {
-            payload: move_dto_1.MoveRequestDto,
-        },
-        description: 'Joystick 이동이벤트. 응답은 없습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "handleMoveJogMessage", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('localizationRequest'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'localizationRequest',
-        message: {
-            payload: localization_dto_1.LocalizationRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Localization 요청. 응답은 localizationResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof localization_dto_1.LocalizationRequestDto !== "undefined" && localization_dto_1.LocalizationRequestDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "LocalizationRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('loadRequest'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'loadRequest',
-        message: {
-            payload: load_dto_1.LoadRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Load 요청. 응답은 loadResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof load_dto_1.LoadRequestDto !== "undefined" && load_dto_1.LoadRequestDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "LoadRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('mappingRequest'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'mappingRequest',
-        message: {
-            payload: mapping_dto_1.MappingRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Mapping 요청. 응답은 mappingResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "MappingRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('onoffControlRequest'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'onoffControlRequest',
-        message: {
-            payload: control_dto_1.OnOffRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'OnOff Control 요청. 응답은 controlResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "OnOffControlRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('ledControlRequest'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'ledControlRequest',
-        message: {
-            payload: control_dto_1.LEDRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'OnOff Control 요청. 응답은 controlResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "LedControlRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('workControlRequest'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'workControlRequest',
-        message: {
-            payload: control_dto_1.WorkRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'OnOff Control 요청. 응답은 controlResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _r : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "WorkControlRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('getSafetyField'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'getSafetyField',
-        message: {
-            payload: String,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Safety Field 읽기 요청. 응답은 controlResponse로 받을 수 있습니다.',
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "GetSafetyFieldRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('setSafetyField'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'setSafetyField',
-        message: {
-            payload: control_dto_1.SafetyFieldRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Safety Field 쓰기 요청. 응답은 controlResponse로 받을 수 있습니다.',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _s : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "SetSafetyFieldRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('getSafetyIo'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'getSafetyIo',
-        message: {
-            payload: String,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Digital IO 읽기 요청',
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "GetSafetyIoControlRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('setSafetyIo'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'setSafetyIo',
-        message: {
-            payload: safety_io_dto_1.SafetyIoRequestDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-        description: 'Digital IO 쓰기 요청',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "SetSafetyIoControlRequest", null);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('pathResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiSub)({
-        channel: 'pathResponse',
-        message: {
-            payload: path_dto_1.PathResponseDto,
-        },
-        tags: [
-            {
-                description: 'SLAMNAV 전용',
-                name: 'SLAMNAV',
-            },
-        ],
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof path_dto_1.PathResponseDto !== "undefined" && path_dto_1.PathResponseDto) === "function" ? _u : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketGateway.prototype, "PathResponse", null);
-exports.ClientSocketGateway = ClientSocketGateway = __decorate([
-    (0, websockets_1.WebSocketGateway)({
-        namespace: '/',
-        cors: {
-            origin: ['*', 'https://admin.socket.io'],
-            credentials: true,
-        },
-        host: '0.0.0.0',
-        transports: ['websocket', 'polling'],
-    }),
-    __metadata("design:paramtypes", [typeof (_a = typeof client_socket_service_1.ClientSocketService !== "undefined" && client_socket_service_1.ClientSocketService) === "function" ? _a : Object])
-], ClientSocketGateway);
-
-
-/***/ }),
-/* 149 */
-/***/ ((module) => {
-
-module.exports = require("socket.io");
-
-/***/ }),
-/* 150 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubscribeDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const description_1 = __webpack_require__(151);
-class SubscribeDto {
-}
-exports.SubscribeDto = SubscribeDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: description_1.client_description.TOPIC,
-        example: 'status',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], SubscribeDto.prototype, "topic", void 0);
-
-
-/***/ }),
-/* 151 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.client_description = void 0;
-var client_description;
-(function (client_description) {
-    client_description["TOPIC"] = "\uAD6C\uB3C5/\uAD6C\uB3C5\uD574\uC81C \uD560 \uD1A0\uD53D\uBA85\uC744 \uC785\uB825\uD558\uC138\uC694.";
-})(client_description || (exports.client_description = client_description = {}));
-
-
-/***/ }),
-/* 152 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PathResponseSlamnav = exports.PathResponseDto = exports.PathSlamnav = exports.Path = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-class Path {
-}
-exports.Path = Path;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 X값',
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], Path.prototype, "x", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 Y값',
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], Path.prototype, "y", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 RZ값',
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], Path.prototype, "rz", void 0);
-class PathSlamnav {
-}
-exports.PathSlamnav = PathSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 X값',
-        example: [
-            [0, 0, 0, 0],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0],
-        ],
-        required: false,
-    }),
-    __metadata("design:type", typeof (_a = typeof Array !== "undefined" && Array) === "function" ? _a : Object)
-], PathSlamnav.prototype, "path", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 시간값',
-        example: '21352345124124',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], PathSlamnav.prototype, "time", void 0);
-class PathResponseDto {
-}
-exports.PathResponseDto = PathResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '계산된 경로를 노드ID의 배열로 전달합니다. ',
-        example: ['NODE_1', 'NODE_2', 'NODE_4'],
-        required: false,
-    }),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], PathResponseDto.prototype, "path", void 0);
-class PathResponseSlamnav extends PathResponseDto {
-}
-exports.PathResponseSlamnav = PathResponseSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 시간값',
-        example: '21352345124124',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], PathResponseSlamnav.prototype, "time", void 0);
-
-
-/***/ }),
-/* 153 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ClientSocketMqttController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const nestjs_asyncapi_1 = __webpack_require__(2);
-const websockets_1 = __webpack_require__(147);
-const common_2 = __webpack_require__(8);
-const client_socket_service_1 = __webpack_require__(146);
-const move_dto_1 = __webpack_require__(97);
-const localization_dto_1 = __webpack_require__(77);
-const load_dto_1 = __webpack_require__(115);
-const mapping_dto_1 = __webpack_require__(114);
-const control_dto_1 = __webpack_require__(59);
-const status_type_1 = __webpack_require__(154);
-const movestatus_type_1 = __webpack_require__(156);
-const cloud_type_1 = __webpack_require__(157);
-const cobot_dto_1 = __webpack_require__(140);
-const exAccessory_dto_1 = __webpack_require__(158);
-const path_dto_1 = __webpack_require__(152);
-let ClientSocketMqttController = class ClientSocketMqttController {
-    constructor(clientService) {
-        this.clientService = clientService;
-        this.loggerService = common_2.LoggerService.get('gateway');
-    }
-    getMoveResponse(data) {
-        this.clientService.moveResponse(data);
-    }
-    async handleLocalizationResponse(data) {
-        return this.clientService.localizationResponse(data);
-    }
-    async handleLoadResponse(data) {
-        return this.clientService.loadResponse(data);
-    }
-    async handleMappingResponse(data) {
-        return this.clientService.mappingResponse(data);
-    }
-    async handleControlResponse(data) {
-        return this.clientService.controlResponse(data);
-    }
-    async handleStatus(data) {
-        return this.clientService.status(data);
-    }
-    async handleMoveStatus(data) {
-        return this.clientService.moveStatus(data);
-    }
-    async handleLocalPath(data) {
-        return this.clientService.localPath(data);
-    }
-    async handleGlobalPath(data) {
-        return this.clientService.globalPath(data);
-    }
-    async handleLidarCloud(data) {
-        return this.clientService.lidarCloud(data);
-    }
-    async handleMappingCloud(data) {
-        return this.clientService.mappingCloud(data);
-    }
-    async handleCobotResponse(data) {
-        return this.clientService.cobotResponse(data);
-    }
-    async handleExAccessoryResponse(data) {
-        return this.clientService.exAccessoryResponse(data);
-    }
-    async handleExAccessoryStatus(data) {
-        return this.clientService.exAccessoryStatus(data);
-    }
-};
-exports.ClientSocketMqttController = ClientSocketMqttController;
-__decorate([
-    (0, microservices_1.MessagePattern)('moveResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'moveResponse',
-        message: {
-            payload: move_dto_1.MoveResponseDto,
-        },
-        description: 'Move 요청에 따른 응답. 이동 상태에 따라 여러번 호출될 수 있음',
-    }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof move_dto_1.MoveResponseDto !== "undefined" && move_dto_1.MoveResponseDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", void 0)
-], ClientSocketMqttController.prototype, "getMoveResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('localizationResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'localizationResponse',
-        message: {
-            payload: localization_dto_1.LocalizationResponseDto,
-        },
-        description: 'Localization 요청에 따른 응답',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof localization_dto_1.LocalizationResponseDto !== "undefined" && localization_dto_1.LocalizationResponseDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleLocalizationResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('loadResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'loadResponse',
-        message: {
-            payload: load_dto_1.LoadResponseDto,
-        },
-        description: 'Load 요청에 따른 응답',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof load_dto_1.LoadResponseDto !== "undefined" && load_dto_1.LoadResponseDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleLoadResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('mappingResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'mappingResponse',
-        message: {
-            payload: mapping_dto_1.MappingResponseDto,
-        },
-        description: 'Mapping 요청에 따른 응답',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof mapping_dto_1.MappingResponseDto !== "undefined" && mapping_dto_1.MappingResponseDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleMappingResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('controlResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'controlResponse',
-        message: {
-            payload: control_dto_1.ControlResponseDto,
-        },
-        description: 'Control 요청에 따른 응답',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof control_dto_1.ControlResponseDto !== "undefined" && control_dto_1.ControlResponseDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleControlResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('status'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'status',
-        message: {
-            payload: status_type_1.StatusSlamnav,
-        },
-        description: 'SLAMNAV에서 주기적 송신하는 상태정보. 2Hz',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _g : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleStatus", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('moveStatus'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'moveStatus',
-        message: {
-            payload: movestatus_type_1.MoveStatusSlamnav,
-        },
-        description: 'SLAMNAV에서 주기적 송신하는 상태정보. 10Hz',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _h : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleMoveStatus", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('localPath'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'localPath',
-        message: {
-            payload: path_dto_1.PathSlamnav,
-        },
-        description: 'SLAMNAV에서 주행하며 계산한 local 경로 배열. 변경될때마다 전송',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _j : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleLocalPath", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('globalPath'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'globalPath',
-        message: {
-            payload: path_dto_1.PathSlamnav,
-        },
-        description: 'SLAMNAV에서 주행하며 계산한 globalPath 경로 배열. 변경될때마다 전송',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _k : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleGlobalPath", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('lidarCloud'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'lidarCloud',
-        message: {
-            payload: cloud_type_1.LidarCloudDto,
-        },
-        description: 'Lidar 클라우드 데이터',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleLidarCloud", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('mappingCloud'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'mappingCloud',
-        message: {
-            payload: cloud_type_1.LidarCloudDto,
-        },
-        description: 'Mapping 클라우드 데이터',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleMappingCloud", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('cobotResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'cobotResponse',
-        message: {
-            payload: cobot_dto_1.CobotCommandResponseDto,
-        },
-        description: '협동로봇 응답. 협동로봇이 전송하는 응답',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof common_2.CobotMicroservice !== "undefined" && common_2.CobotMicroservice.CobotCommandResponse) === "function" ? _o : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleCobotResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('exAccessoryResponse'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'exAccessoryResponse',
-        message: {
-            payload: exAccessory_dto_1.ExAccessoryResponseDto,
-        },
-        description: 'External Accessory 응답',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof exAccessory_dto_1.ExAccessoryResponseDto !== "undefined" && exAccessory_dto_1.ExAccessoryResponseDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleExAccessoryResponse", null);
-__decorate([
-    (0, microservices_1.MessagePattern)('exAccessoryStatus'),
-    (0, nestjs_asyncapi_1.AsyncApiPub)({
-        channel: 'exAccessoryStatus',
-        message: {
-            payload: exAccessory_dto_1.ExAccessoryStatusDto,
-        },
-        description: 'External Accessory 상태',
-    }),
-    __param(0, (0, websockets_1.MessageBody)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", Promise)
-], ClientSocketMqttController.prototype, "handleExAccessoryStatus", null);
-exports.ClientSocketMqttController = ClientSocketMqttController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof client_socket_service_1.ClientSocketService !== "undefined" && client_socket_service_1.ClientSocketService) === "function" ? _a : Object])
-], ClientSocketMqttController);
-
-
-/***/ }),
-/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13241,7 +12212,7 @@ exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = export
 const date_util_1 = __webpack_require__(40);
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
-const state_type_1 = __webpack_require__(155);
+const state_type_1 = __webpack_require__(149);
 const class_transformer_1 = __webpack_require__(60);
 var Description;
 (function (Description) {
@@ -13866,7 +12837,7 @@ __decorate([
 
 
 /***/ }),
-/* 155 */
+/* 149 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -13927,7 +12898,13 @@ var ChargeState;
 
 
 /***/ }),
-/* 156 */
+/* 150 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/websockets");
+
+/***/ }),
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13945,8 +12922,8 @@ exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.V
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
 const util_1 = __webpack_require__(37);
-const state_type_1 = __webpack_require__(155);
-const state_type_2 = __webpack_require__(155);
+const state_type_1 = __webpack_require__(149);
+const state_type_2 = __webpack_require__(149);
 var Description;
 (function (Description) {
     Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
@@ -14258,7 +13235,1411 @@ __decorate([
 
 
 /***/ }),
+/* 152 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcToHttpFilter = void 0;
+const common_1 = __webpack_require__(5);
+const logger_1 = __webpack_require__(33);
+const constant_1 = __webpack_require__(51);
+let GrpcToHttpFilter = class GrpcToHttpFilter {
+    constructor() {
+        this.loggerService = logger_1.LoggerService.get('filter');
+    }
+    catch(exception, host) {
+        const ctx = host.switchToHttp();
+        const response = ctx.getResponse();
+        try {
+            if (exception instanceof Error) {
+                if ('code' in exception && 'details' in exception) {
+                    const statusCode = mapGrpcToHttpStatus(exception.code);
+                    this.loggerService.info(`[Grpc] RpcException : ${exception.details} ${statusCode}(${exception.code})`);
+                    return response.status(statusCode).json({
+                        statusCode,
+                        message: exception.details,
+                    });
+                }
+                else if (exception instanceof common_1.HttpException) {
+                    const statusCode = exception.getStatus();
+                    const message = exception.message;
+                    this.loggerService.info(`[Grpc] caught HttpException : ${statusCode}, ${message}`);
+                    return response.status(statusCode).json({ statusCode, message });
+                }
+                else {
+                    this.loggerService.info(`[Grpc] caught Error : ${exception.message}`);
+                    return response.status(500).json({
+                        statusCode: 500,
+                        message: exception.message,
+                    });
+                }
+            }
+            else {
+                this.loggerService.info(`[Grpc] caught unknown Error : ${(0, logger_1.errorToJson)(exception)}`);
+                return response.status(500).json({
+                    statusCode: 500,
+                    message: 'Internal server error',
+                });
+            }
+        }
+        catch (error) {
+            this.loggerService.info(`[Grpc] caught unknown Error : ${(0, logger_1.errorToJson)(exception)}`);
+            return response.status(500).json({
+                statusCode: 500,
+                message: 'Internal server error',
+            });
+        }
+    }
+};
+exports.GrpcToHttpFilter = GrpcToHttpFilter;
+exports.GrpcToHttpFilter = GrpcToHttpFilter = __decorate([
+    (0, common_1.Catch)()
+], GrpcToHttpFilter);
+function mapGrpcToHttpStatus(code) {
+    switch (code) {
+        case constant_1.GrpcCode.OK:
+            return common_1.HttpStatus.OK;
+        case constant_1.GrpcCode.Cancelled:
+            return 499;
+        case constant_1.GrpcCode.Unknown:
+            return common_1.HttpStatus.BAD_REQUEST;
+        case constant_1.GrpcCode.InvalidArgument:
+            return common_1.HttpStatus.BAD_REQUEST;
+        case constant_1.GrpcCode.DeadlineExceeded:
+            return common_1.HttpStatus.GATEWAY_TIMEOUT;
+        case constant_1.GrpcCode.NotFound:
+            return common_1.HttpStatus.NOT_FOUND;
+        case constant_1.GrpcCode.AlreadyExists:
+            return common_1.HttpStatus.CONFLICT;
+        case constant_1.GrpcCode.PermissionDenied:
+            return common_1.HttpStatus.FORBIDDEN;
+        case constant_1.GrpcCode.ResourceExhausted:
+            return common_1.HttpStatus.TOO_MANY_REQUESTS;
+        case constant_1.GrpcCode.FailedPrecondition:
+            return common_1.HttpStatus.BAD_REQUEST;
+        case constant_1.GrpcCode.Aborted:
+            return common_1.HttpStatus.CONFLICT;
+        case constant_1.GrpcCode.OutOfRange:
+            return common_1.HttpStatus.BAD_REQUEST;
+        case constant_1.GrpcCode.Unimplemented:
+            return common_1.HttpStatus.NOT_IMPLEMENTED;
+        case constant_1.GrpcCode.InternalError:
+            return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+        case constant_1.GrpcCode.Unavailable:
+            return common_1.HttpStatus.SERVICE_UNAVAILABLE;
+        case constant_1.GrpcCode.DataLoss:
+            return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+        case constant_1.GrpcCode.Unauthenticated:
+            return common_1.HttpStatus.UNAUTHORIZED;
+        default:
+            return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+}
+
+
+/***/ }),
+/* 153 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ClientSocketModule = void 0;
+const common_1 = __webpack_require__(5);
+const client_socket_service_1 = __webpack_require__(154);
+const client_socket_gateway_1 = __webpack_require__(155);
+const microservices_1 = __webpack_require__(3);
+const client_socket_mqtt_controller_1 = __webpack_require__(160);
+const constant_1 = __webpack_require__(65);
+const config_1 = __webpack_require__(73);
+const nestjs_asyncapi_1 = __webpack_require__(2);
+const common_2 = __webpack_require__(8);
+const path_1 = __webpack_require__(44);
+let ClientSocketModule = class ClientSocketModule {
+};
+exports.ClientSocketModule = ClientSocketModule;
+exports.ClientSocketModule = ClientSocketModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.MQTT_BROKER,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.MQTT,
+                            options: {
+                                url: configService.get('MQTT_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.MOVE_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.MoveMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
+                                url: configService.get('MOVE_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.LOCALIZATION_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.LocalizationMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/localization.proto'),
+                                url: configService.get('LOCALIZATION_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.CONTROL_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.ControlMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/control.proto'),
+                                url: configService.get('CONTROL_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.MAP_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.MapMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/map.proto'),
+                                url: configService.get('MAP_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.SETTING_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.SettingMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/setting.proto'),
+                                url: configService.get('SETTING_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.COBOT_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.CobotMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/cobot.proto'),
+                                url: configService.get('COBOT_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.SOUND_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.SoundMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/sound.proto'),
+                                url: configService.get('SOUND_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.CONFIG_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.ConfigMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/config.proto'),
+                                url: configService.get('CONFIG_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.NETWORK_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.NetworkMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/network.proto'),
+                                url: configService.get('NETWORK_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.UPDATE_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.UpdateMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/update.proto'),
+                                url: configService.get('UPDATE_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.TASK_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.TaskMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/task.proto'),
+                                url: configService.get('TASK_GRPC_URL'),
+                            },
+                        }),
+                    },
+                    {
+                        name: constant_1.TCP_SERVICE,
+                        inject: [config_1.ConfigService],
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.TcpMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/tcp.proto'),
+                                url: configService.get('TCP_GRPC_URL'),
+                            },
+                        }),
+                    },
+                ],
+            }),
+            nestjs_asyncapi_1.AsyncApiModule,
+        ],
+        controllers: [client_socket_mqtt_controller_1.ClientSocketMqttController],
+        providers: [client_socket_gateway_1.ClientSocketGateway, client_socket_service_1.ClientSocketService],
+    })
+], ClientSocketModule);
+
+
+/***/ }),
+/* 154 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ClientSocketService = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const common_2 = __webpack_require__(8);
+const websockets_1 = __webpack_require__(150);
+const constant_1 = __webpack_require__(65);
+const move_type_1 = __webpack_require__(98);
+const control_type_1 = __webpack_require__(62);
+const parse_util_1 = __webpack_require__(53);
+let ClientSocketService = class ClientSocketService {
+    constructor(mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice, settingMicroservice, soundMicroservice, networkMicroservice, updateMicroservice, taskMicroservice, tcpMicroservice, mapMicroservice) {
+        this.mqttMicroservice = mqttMicroservice;
+        this.moveMicroservice = moveMicroservice;
+        this.controlMicroservice = controlMicroservice;
+        this.localizationMicroservice = localizationMicroservice;
+        this.settingMicroservice = settingMicroservice;
+        this.soundMicroservice = soundMicroservice;
+        this.networkMicroservice = networkMicroservice;
+        this.updateMicroservice = updateMicroservice;
+        this.taskMicroservice = taskMicroservice;
+        this.tcpMicroservice = tcpMicroservice;
+        this.mapMicroservice = mapMicroservice;
+        this.loggerService = common_2.LoggerService.get('gateway-client');
+    }
+    onModuleInit() {
+        this.moveService = this.moveMicroservice.getService('MoveGrpcService');
+    }
+    setServer(server) {
+        this.server = server;
+    }
+    async subscribe(dto, client) {
+        try {
+            if (dto.topic === undefined || dto.topic === '') {
+                throw new websockets_1.WsException('topic값이 없습니다.');
+            }
+            client.join(dto.topic);
+            this.loggerService.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
+            return;
+        }
+        catch (error) {
+            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            if (error instanceof websockets_1.WsException)
+                throw error;
+            throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
+        }
+    }
+    async unSubscribe(dto, client) {
+        try {
+            if (dto.topic === undefined || dto.topic === '') {
+                throw new websockets_1.WsException('topic값이 없습니다.');
+            }
+            if (dto.topic == 'all') {
+                for (const room of client.rooms) {
+                    if (room !== client.id) {
+                        client.leave(room);
+                        this.loggerService.info(`[Client] ${client.id} : ${room} (room count = ${client.rooms.size - 1})`);
+                    }
+                }
+            }
+            else {
+                client.leave(dto.topic);
+                this.loggerService.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
+            }
+            return;
+        }
+        catch (error) {
+            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            if (error instanceof websockets_1.WsException)
+                throw error;
+            throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
+        }
+    }
+    moveRequest(dto) {
+        this.moveService.moveCommand(dto).subscribe({
+            error: (err) => this.loggerService.error(`[Client] moveRequest : ${parse_util_1.ParseUtil.errorToJson(err)}`),
+        });
+    }
+    moveJog(dto) {
+        try {
+            if (dto.command === undefined || dto.command !== move_type_1.MoveCommand.moveJog) {
+                throw new websockets_1.WsException(`command값이 잘못되었습니다. ${dto.command}`);
+            }
+            if (dto.vx === undefined || typeof dto.vx !== 'number' || dto.vx < -10 || dto.vx > 10) {
+                throw new websockets_1.WsException('vx값이 범위를 벗어납니다.');
+            }
+            if (dto.vy === undefined || typeof dto.vy !== 'number' || dto.vy < -10 || dto.vy > 10) {
+                throw new websockets_1.WsException('vy값이 범위를 벗어납니다.');
+            }
+            if (dto.wz === undefined || typeof dto.wz !== 'number' || dto.wz < -100 || dto.wz > 100) {
+                throw new websockets_1.WsException('wz값이 범위를 벗어납니다.');
+            }
+            this.mqttMicroservice.emit('moveJog', dto);
+        }
+        catch (error) {
+            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            if (error instanceof websockets_1.WsException)
+                throw error;
+            throw new websockets_1.WsException('Move명령을 처리하던 중 에러가 발생했습니다.');
+        }
+    }
+    localizationRequest(dto) {
+        this.localizationService.init(dto).subscribe();
+    }
+    loadRequest(dto) {
+        this.mapService.load(dto).subscribe();
+    }
+    mappingRequest(dto) {
+        this.mapService.mapping(dto).subscribe();
+    }
+    ledControlRequest(dto) {
+        this.controlService
+            .ledControl({
+            command: control_type_1.ControlCommand.ledControl,
+            onoff: dto.onoff,
+            color: dto.color,
+        })
+            .subscribe();
+    }
+    LEDControlRequest(dto) {
+        this.controlService.ledControl(dto).subscribe();
+    }
+    onOffControlRequest(dto) {
+        this.controlService.onOffControl(dto).subscribe();
+    }
+    workControlRequest(dto) {
+        this.controlService.workControl(dto).subscribe();
+    }
+    getSafetyIoControlRequest() {
+        this.controlService
+            .safetyIoControl({
+            command: control_type_1.ControlCommand.getDigitalIO,
+            mcuDio: [],
+        })
+            .subscribe();
+    }
+    setSafetyIoControlRequest(dto) {
+        this.controlService
+            .safetyIoControl({
+            command: control_type_1.ControlCommand.setDigitalIO,
+            mcuDio: dto.mcuDio.map((dio) => ({
+                channel: dio,
+            })),
+        })
+            .subscribe();
+    }
+    getSafetyFieldRequest() {
+        this.controlService.getSafetyField({}).subscribe();
+    }
+    setSafetyFieldRequest(dto) {
+        this.controlService.setSafetyField(dto).subscribe();
+    }
+    pathResponse(dto) {
+        try {
+            if (dto.path === undefined || dto.path.length === 0) {
+                throw new websockets_1.WsException('path값이 없습니다.');
+            }
+            this.mqttMicroservice.emit('pathResponse', { ...dto, time: Date.now().toString() });
+        }
+        catch (error) {
+            this.loggerService.error(`[Client] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new websockets_1.WsException('pathResponse 전송 중 에러가 발생했습니다.');
+        }
+    }
+    moveResponse(dto) {
+        this.server.to(['moveResponse', 'move', 'all']).emit('moveResponse', dto);
+    }
+    localizationResponse(dto) {
+        this.server.to(['localizationResponse', 'localization', 'all']).emit('localizationResponse', dto);
+    }
+    loadResponse(dto) {
+        this.server.to(['loadResponse', 'load', 'all']).emit('loadResponse', dto);
+    }
+    mappingResponse(dto) {
+        this.server.to(['mappingResponse', 'mapping', 'all']).emit('mappingResponse', dto);
+    }
+    controlResponse(dto) {
+        this.server.to(['controlResponse', 'control', 'all']).emit('controlResponse', dto);
+    }
+    status(dto) {
+        this.server.to(['status', 'all']).emit('status', dto);
+    }
+    moveStatus(dto) {
+        this.server.to(['moveStatus', 'status', 'all']).emit('moveStatus', dto);
+    }
+    localPath(dto) {
+        this.server.to(['localPath', 'path', 'all']).emit('localPath', dto);
+    }
+    globalPath(dto) {
+        this.server.to(['globalPath', 'path', 'all']).emit('globalPath', dto);
+    }
+    lidarCloud(dto) {
+        this.server.to(['lidarCloud', 'all']).emit('lidarCloud', dto);
+    }
+    mappingCloud(dto) {
+        this.server.to(['mappingCloud', 'mapping', 'all']).emit('mappingCloud', dto);
+    }
+    cobotResponse(dto) {
+        this.server.to(['cobotResponse', 'cobot', 'all']).emit('cobotResponse', dto);
+    }
+    exAccessoryResponse(dto) {
+        this.server.to(['exAccessoryResponse', 'exAccessory', 'all']).emit('exAccessoryResponse', dto);
+    }
+    exAccessoryStatus(dto) {
+        this.server.to(['exAccessoryStatus', 'exAccessory', 'status', 'all']).emit('exAccessoryStatus', dto);
+    }
+};
+exports.ClientSocketService = ClientSocketService;
+exports.ClientSocketService = ClientSocketService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __param(1, (0, common_1.Inject)(constant_1.MOVE_SERVICE)),
+    __param(2, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
+    __param(3, (0, common_1.Inject)(constant_1.LOCALIZATION_SERVICE)),
+    __param(4, (0, common_1.Inject)(constant_1.SETTING_SERVICE)),
+    __param(5, (0, common_1.Inject)(constant_1.SOUND_SERVICE)),
+    __param(6, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
+    __param(7, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
+    __param(8, (0, common_1.Inject)(constant_1.TASK_SERVICE)),
+    __param(9, (0, common_1.Inject)(constant_1.TCP_SERVICE)),
+    __param(10, (0, common_1.Inject)(constant_1.MAP_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object, typeof (_g = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _g : Object, typeof (_h = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _h : Object, typeof (_j = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _j : Object, typeof (_k = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _k : Object, typeof (_l = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _l : Object])
+], ClientSocketService);
+
+
+/***/ }),
+/* 155 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ClientSocketGateway = void 0;
+const websockets_1 = __webpack_require__(150);
+const client_socket_service_1 = __webpack_require__(154);
+const socket_io_1 = __webpack_require__(156);
+const common_1 = __webpack_require__(8);
+const nestjs_asyncapi_1 = __webpack_require__(2);
+const subscribe_dto_1 = __webpack_require__(157);
+const move_dto_1 = __webpack_require__(97);
+const localization_dto_1 = __webpack_require__(77);
+const load_dto_1 = __webpack_require__(115);
+const mapping_dto_1 = __webpack_require__(114);
+const control_dto_1 = __webpack_require__(59);
+const safety_io_dto_1 = __webpack_require__(72);
+const path_dto_1 = __webpack_require__(159);
+let ClientSocketGateway = class ClientSocketGateway {
+    constructor(clientService) {
+        this.clientService = clientService;
+        this.loggerService = common_1.LoggerService.get('gateway');
+    }
+    afterInit(server) {
+        this.clientService.setServer(server);
+    }
+    handleConnection(client) {
+        this.loggerService.info(`[ClientGateway] Connect Client : ${client.id}`);
+    }
+    handleDisconnect(client) {
+        this.loggerService.info(`[ClientGateway] Disconnect Client : ${client.id}`);
+    }
+    async handelSubscribe(dto, client) {
+        return this.clientService.subscribe(dto, client);
+    }
+    async handelUnsubscribe(dto, client) {
+        return this.clientService.unSubscribe(dto, client);
+    }
+    async MoveRequest(data) {
+        this.clientService.moveRequest(data);
+    }
+    async handleMoveJogMessage(data) {
+        this.clientService.moveJog(data);
+    }
+    async LocalizationRequest(data) {
+        this.clientService.localizationRequest(data);
+    }
+    async LoadRequest(data) {
+        this.clientService.loadRequest(data);
+    }
+    async MappingRequest(data) {
+        this.clientService.mappingRequest(data);
+    }
+    async OnOffControlRequest(data) {
+        this.clientService.onOffControlRequest(data);
+    }
+    async LedControlRequest(data) {
+        this.clientService.ledControlRequest(data);
+    }
+    async WorkControlRequest(data) {
+        this.clientService.workControlRequest(data);
+    }
+    async GetSafetyFieldRequest() {
+        this.clientService.getSafetyFieldRequest();
+    }
+    async SetSafetyFieldRequest(data) {
+        this.clientService.setSafetyFieldRequest(data);
+    }
+    async GetSafetyIoControlRequest() {
+        this.clientService.getSafetyIoControlRequest();
+    }
+    async SetSafetyIoControlRequest(data) {
+        this.clientService.setSafetyIoControlRequest(data);
+    }
+    async PathResponse(data) {
+        this.clientService.pathResponse(data);
+    }
+};
+exports.ClientSocketGateway = ClientSocketGateway;
+__decorate([
+    (0, websockets_1.WebSocketServer)(),
+    __metadata("design:type", typeof (_b = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _b : Object)
+], ClientSocketGateway.prototype, "server", void 0);
+__decorate([
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _c : Object]),
+    __metadata("design:returntype", void 0)
+], ClientSocketGateway.prototype, "handleConnection", null);
+__decorate([
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _d : Object]),
+    __metadata("design:returntype", void 0)
+], ClientSocketGateway.prototype, "handleDisconnect", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('subscribe'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'subscribe',
+        message: {
+            payload: subscribe_dto_1.SubscribeDto,
+        },
+        description: '토픽 구독요청. 구독한 토픽 이벤트만 받을 수 있습니다. 응답은 없습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _e : Object, typeof (_f = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _f : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "handelSubscribe", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('unsubscribe'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'unsubscribe',
+        message: {
+            payload: subscribe_dto_1.SubscribeDto,
+        },
+        description: '토픽 구독해제요청. 구독한 토픽 이벤트만 받을 수 있습니다. 응답은 없습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _g : Object, typeof (_h = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _h : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "handelUnsubscribe", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('moveRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'moveRequest',
+        message: {
+            payload: move_dto_1.MoveRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Move 요청. 응답은 moveResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "MoveRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('moveJog'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'moveJog',
+        message: {
+            payload: move_dto_1.MoveRequestDto,
+        },
+        description: 'Joystick 이동이벤트. 응답은 없습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_k = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _k : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "handleMoveJogMessage", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('localizationRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'localizationRequest',
+        message: {
+            payload: localization_dto_1.LocalizationRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Localization 요청. 응답은 localizationResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof localization_dto_1.LocalizationRequestDto !== "undefined" && localization_dto_1.LocalizationRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "LocalizationRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('loadRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'loadRequest',
+        message: {
+            payload: load_dto_1.LoadRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Load 요청. 응답은 loadResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof load_dto_1.LoadRequestDto !== "undefined" && load_dto_1.LoadRequestDto) === "function" ? _m : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "LoadRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('mappingRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'mappingRequest',
+        message: {
+            payload: mapping_dto_1.MappingRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Mapping 요청. 응답은 mappingResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_o = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "MappingRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('onoffControlRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'onoffControlRequest',
+        message: {
+            payload: control_dto_1.OnOffRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'OnOff Control 요청. 응답은 controlResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_p = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "OnOffControlRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('ledControlRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'ledControlRequest',
+        message: {
+            payload: control_dto_1.LEDRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'OnOff Control 요청. 응답은 controlResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "LedControlRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('workControlRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'workControlRequest',
+        message: {
+            payload: control_dto_1.WorkRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'OnOff Control 요청. 응답은 controlResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _r : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "WorkControlRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('getSafetyField'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'getSafetyField',
+        message: {
+            payload: String,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Safety Field 읽기 요청. 응답은 controlResponse로 받을 수 있습니다.',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "GetSafetyFieldRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('setSafetyField'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'setSafetyField',
+        message: {
+            payload: control_dto_1.SafetyFieldRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Safety Field 쓰기 요청. 응답은 controlResponse로 받을 수 있습니다.',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_s = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _s : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "SetSafetyFieldRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('getSafetyIo'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'getSafetyIo',
+        message: {
+            payload: String,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Digital IO 읽기 요청',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "GetSafetyIoControlRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('setSafetyIo'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'setSafetyIo',
+        message: {
+            payload: safety_io_dto_1.SafetyIoRequestDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+        description: 'Digital IO 쓰기 요청',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_t = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _t : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "SetSafetyIoControlRequest", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('pathResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'pathResponse',
+        message: {
+            payload: path_dto_1.PathResponseDto,
+        },
+        tags: [
+            {
+                description: 'SLAMNAV 전용',
+                name: 'SLAMNAV',
+            },
+        ],
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_u = typeof path_dto_1.PathResponseDto !== "undefined" && path_dto_1.PathResponseDto) === "function" ? _u : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketGateway.prototype, "PathResponse", null);
+exports.ClientSocketGateway = ClientSocketGateway = __decorate([
+    (0, websockets_1.WebSocketGateway)({
+        namespace: '/',
+        cors: {
+            origin: ['*', 'https://admin.socket.io'],
+            credentials: true,
+        },
+        host: '0.0.0.0',
+        transports: ['websocket', 'polling'],
+    }),
+    __metadata("design:paramtypes", [typeof (_a = typeof client_socket_service_1.ClientSocketService !== "undefined" && client_socket_service_1.ClientSocketService) === "function" ? _a : Object])
+], ClientSocketGateway);
+
+
+/***/ }),
+/* 156 */
+/***/ ((module) => {
+
+module.exports = require("socket.io");
+
+/***/ }),
 /* 157 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubscribeDto = void 0;
+const swagger_1 = __webpack_require__(58);
+const class_validator_1 = __webpack_require__(61);
+const description_1 = __webpack_require__(158);
+class SubscribeDto {
+}
+exports.SubscribeDto = SubscribeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: description_1.client_description.TOPIC,
+        example: 'status',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], SubscribeDto.prototype, "topic", void 0);
+
+
+/***/ }),
+/* 158 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.client_description = void 0;
+var client_description;
+(function (client_description) {
+    client_description["TOPIC"] = "\uAD6C\uB3C5/\uAD6C\uB3C5\uD574\uC81C \uD560 \uD1A0\uD53D\uBA85\uC744 \uC785\uB825\uD558\uC138\uC694.";
+})(client_description || (exports.client_description = client_description = {}));
+
+
+/***/ }),
+/* 159 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PathResponseSlamnav = exports.PathResponseDto = exports.PathSlamnav = exports.Path = void 0;
+const swagger_1 = __webpack_require__(58);
+const class_validator_1 = __webpack_require__(61);
+class Path {
+}
+exports.Path = Path;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Path 단위노드의 X값',
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], Path.prototype, "x", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Path 단위노드의 Y값',
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], Path.prototype, "y", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Path 단위노드의 RZ값',
+        example: '0.0',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], Path.prototype, "rz", void 0);
+class PathSlamnav {
+}
+exports.PathSlamnav = PathSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Path 단위노드의 X값',
+        example: [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+        ],
+        required: false,
+    }),
+    __metadata("design:type", typeof (_a = typeof Array !== "undefined" && Array) === "function" ? _a : Object)
+], PathSlamnav.prototype, "path", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Path 단위노드의 시간값',
+        example: '21352345124124',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], PathSlamnav.prototype, "time", void 0);
+class PathResponseDto {
+}
+exports.PathResponseDto = PathResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '계산된 경로를 노드ID의 배열로 전달합니다. ',
+        example: ['NODE_1', 'NODE_2', 'NODE_4'],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], PathResponseDto.prototype, "path", void 0);
+class PathResponseSlamnav extends PathResponseDto {
+}
+exports.PathResponseSlamnav = PathResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Path 단위노드의 시간값',
+        example: '21352345124124',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], PathResponseSlamnav.prototype, "time", void 0);
+
+
+/***/ }),
+/* 160 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ClientSocketMqttController = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const nestjs_asyncapi_1 = __webpack_require__(2);
+const websockets_1 = __webpack_require__(150);
+const common_2 = __webpack_require__(8);
+const client_socket_service_1 = __webpack_require__(154);
+const move_dto_1 = __webpack_require__(97);
+const localization_dto_1 = __webpack_require__(77);
+const load_dto_1 = __webpack_require__(115);
+const mapping_dto_1 = __webpack_require__(114);
+const control_dto_1 = __webpack_require__(59);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
+const cloud_type_1 = __webpack_require__(161);
+const cobot_dto_1 = __webpack_require__(140);
+const exAccessory_dto_1 = __webpack_require__(162);
+const path_dto_1 = __webpack_require__(159);
+let ClientSocketMqttController = class ClientSocketMqttController {
+    constructor(clientService) {
+        this.clientService = clientService;
+        this.loggerService = common_2.LoggerService.get('gateway');
+    }
+    getMoveResponse(data) {
+        this.clientService.moveResponse(data);
+    }
+    async handleLocalizationResponse(data) {
+        return this.clientService.localizationResponse(data);
+    }
+    async handleLoadResponse(data) {
+        return this.clientService.loadResponse(data);
+    }
+    async handleMappingResponse(data) {
+        return this.clientService.mappingResponse(data);
+    }
+    async handleControlResponse(data) {
+        return this.clientService.controlResponse(data);
+    }
+    async handleStatus(data) {
+        return this.clientService.status(data);
+    }
+    async handleMoveStatus(data) {
+        return this.clientService.moveStatus(data);
+    }
+    async handleLocalPath(data) {
+        return this.clientService.localPath(data);
+    }
+    async handleGlobalPath(data) {
+        return this.clientService.globalPath(data);
+    }
+    async handleLidarCloud(data) {
+        return this.clientService.lidarCloud(data);
+    }
+    async handleMappingCloud(data) {
+        return this.clientService.mappingCloud(data);
+    }
+    async handleCobotResponse(data) {
+        return this.clientService.cobotResponse(data);
+    }
+    async handleExAccessoryResponse(data) {
+        return this.clientService.exAccessoryResponse(data);
+    }
+    async handleExAccessoryStatus(data) {
+        return this.clientService.exAccessoryStatus(data);
+    }
+};
+exports.ClientSocketMqttController = ClientSocketMqttController;
+__decorate([
+    (0, microservices_1.MessagePattern)('moveResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'moveResponse',
+        message: {
+            payload: move_dto_1.MoveResponseDto,
+        },
+        description: 'Move 요청에 따른 응답. 이동 상태에 따라 여러번 호출될 수 있음',
+    }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof move_dto_1.MoveResponseDto !== "undefined" && move_dto_1.MoveResponseDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getMoveResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('localizationResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'localizationResponse',
+        message: {
+            payload: localization_dto_1.LocalizationResponseDto,
+        },
+        description: 'Localization 요청에 따른 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof localization_dto_1.LocalizationResponseDto !== "undefined" && localization_dto_1.LocalizationResponseDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleLocalizationResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('loadResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'loadResponse',
+        message: {
+            payload: load_dto_1.LoadResponseDto,
+        },
+        description: 'Load 요청에 따른 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof load_dto_1.LoadResponseDto !== "undefined" && load_dto_1.LoadResponseDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleLoadResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('mappingResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'mappingResponse',
+        message: {
+            payload: mapping_dto_1.MappingResponseDto,
+        },
+        description: 'Mapping 요청에 따른 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof mapping_dto_1.MappingResponseDto !== "undefined" && mapping_dto_1.MappingResponseDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleMappingResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('controlResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'controlResponse',
+        message: {
+            payload: control_dto_1.ControlResponseDto,
+        },
+        description: 'Control 요청에 따른 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof control_dto_1.ControlResponseDto !== "undefined" && control_dto_1.ControlResponseDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleControlResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('status'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'status',
+        message: {
+            payload: status_type_1.StatusSlamnav,
+        },
+        description: 'SLAMNAV에서 주기적 송신하는 상태정보. 2Hz',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _g : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('moveStatus'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'moveStatus',
+        message: {
+            payload: movestatus_type_1.MoveStatusSlamnav,
+        },
+        description: 'SLAMNAV에서 주기적 송신하는 상태정보. 10Hz',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_h = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _h : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleMoveStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('localPath'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'localPath',
+        message: {
+            payload: path_dto_1.PathSlamnav,
+        },
+        description: 'SLAMNAV에서 주행하며 계산한 local 경로 배열. 변경될때마다 전송',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _j : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleLocalPath", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('globalPath'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'globalPath',
+        message: {
+            payload: path_dto_1.PathSlamnav,
+        },
+        description: 'SLAMNAV에서 주행하며 계산한 globalPath 경로 배열. 변경될때마다 전송',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_k = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _k : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleGlobalPath", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('lidarCloud'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'lidarCloud',
+        message: {
+            payload: cloud_type_1.LidarCloudDto,
+        },
+        description: 'Lidar 클라우드 데이터',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleLidarCloud", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('mappingCloud'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'mappingCloud',
+        message: {
+            payload: cloud_type_1.LidarCloudDto,
+        },
+        description: 'Mapping 클라우드 데이터',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _m : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleMappingCloud", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('cobotResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'cobotResponse',
+        message: {
+            payload: cobot_dto_1.CobotCommandResponseDto,
+        },
+        description: '협동로봇 응답. 협동로봇이 전송하는 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_o = typeof common_2.CobotMicroservice !== "undefined" && common_2.CobotMicroservice.CobotCommandResponse) === "function" ? _o : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleCobotResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('exAccessoryResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'exAccessoryResponse',
+        message: {
+            payload: exAccessory_dto_1.ExAccessoryResponseDto,
+        },
+        description: 'External Accessory 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_p = typeof exAccessory_dto_1.ExAccessoryResponseDto !== "undefined" && exAccessory_dto_1.ExAccessoryResponseDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleExAccessoryResponse", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('exAccessoryStatus'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'exAccessoryStatus',
+        message: {
+            payload: exAccessory_dto_1.ExAccessoryStatusDto,
+        },
+        description: 'External Accessory 상태',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_q = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleExAccessoryStatus", null);
+exports.ClientSocketMqttController = ClientSocketMqttController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof client_socket_service_1.ClientSocketService !== "undefined" && client_socket_service_1.ClientSocketService) === "function" ? _a : Object])
+], ClientSocketMqttController);
+
+
+/***/ }),
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14276,7 +14657,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MappingCloudDto = exports.LidarCloudDto = exports.CloudDto = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
-const movestatus_type_1 = __webpack_require__(156);
+const movestatus_type_1 = __webpack_require__(151);
 const util_1 = __webpack_require__(37);
 var Description;
 (function (Description) {
@@ -14392,7 +14773,7 @@ __decorate([
 
 
 /***/ }),
-/* 158 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14530,7 +14911,7 @@ __decorate([
 
 
 /***/ }),
-/* 159 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14543,18 +14924,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(160);
+const slamnav_socket_service_1 = __webpack_require__(164);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(8);
 const path_1 = __webpack_require__(44);
-const taskman_socket_service_1 = __webpack_require__(162);
+const taskman_socket_service_1 = __webpack_require__(166);
 const constant_1 = __webpack_require__(65);
 const config_1 = __webpack_require__(73);
-const robot_socket_mqtt_controller_1 = __webpack_require__(163);
-const slamnav_socket_gateway_1 = __webpack_require__(168);
-const taskman_socket_gateway_1 = __webpack_require__(169);
-const ex_accessory_socket_gateway_1 = __webpack_require__(172);
-const ex_accessory_socket_service_1 = __webpack_require__(167);
+const robot_socket_mqtt_controller_1 = __webpack_require__(167);
+const slamnav_socket_gateway_1 = __webpack_require__(172);
+const taskman_socket_gateway_1 = __webpack_require__(173);
+const ex_accessory_socket_gateway_1 = __webpack_require__(176);
+const ex_accessory_socket_service_1 = __webpack_require__(171);
 let RobotSocketModule = class RobotSocketModule {
 };
 exports.RobotSocketModule = RobotSocketModule;
@@ -14618,7 +14999,7 @@ exports.RobotSocketModule = RobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 160 */
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14640,7 +15021,7 @@ exports.SlamnavService = void 0;
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const lodash_1 = __webpack_require__(161);
+const lodash_1 = __webpack_require__(165);
 const constant_1 = __webpack_require__(65);
 let SlamnavService = class SlamnavService {
     constructor(mqttMicroservice) {
@@ -14903,13 +15284,13 @@ exports.SlamnavService = SlamnavService = __decorate([
 
 
 /***/ }),
-/* 161 */
+/* 165 */
 /***/ ((module) => {
 
 module.exports = require("lodash");
 
 /***/ }),
-/* 162 */
+/* 166 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14990,7 +15371,7 @@ exports.TaskmanService = TaskmanService = __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 167 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15011,28 +15392,28 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketMqttController = void 0;
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(160);
+const slamnav_socket_service_1 = __webpack_require__(164);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const taskman_socket_service_1 = __webpack_require__(162);
+const taskman_socket_service_1 = __webpack_require__(166);
 const move_dto_1 = __webpack_require__(97);
-const move_domain_1 = __webpack_require__(164);
-const localization_domain_1 = __webpack_require__(165);
-const control_domain_1 = __webpack_require__(166);
+const move_domain_1 = __webpack_require__(168);
+const localization_domain_1 = __webpack_require__(169);
+const control_domain_1 = __webpack_require__(170);
 const move_dto_2 = __webpack_require__(97);
 const control_dto_1 = __webpack_require__(59);
-const status_type_1 = __webpack_require__(154);
-const movestatus_type_1 = __webpack_require__(156);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
 const map_command_domain_1 = __webpack_require__(111);
 const task_dto_1 = __webpack_require__(106);
-const ex_accessory_socket_service_1 = __webpack_require__(167);
-const exAccessory_dto_1 = __webpack_require__(158);
+const ex_accessory_socket_service_1 = __webpack_require__(171);
+const exAccessory_dto_1 = __webpack_require__(162);
 const version_dto_1 = __webpack_require__(136);
 const setting_dto_1 = __webpack_require__(93);
 const localization_dto_1 = __webpack_require__(77);
 const mapping_dto_1 = __webpack_require__(114);
 const load_dto_1 = __webpack_require__(115);
-const path_dto_1 = __webpack_require__(152);
+const path_dto_1 = __webpack_require__(159);
 let RobotSocketMqttController = class RobotSocketMqttController {
     constructor(slamnavService, exAccessoryService, taskmanService) {
         this.slamnavService = slamnavService;
@@ -15284,7 +15665,7 @@ exports.RobotSocketMqttController = RobotSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 168 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -15350,9 +15731,6 @@ class MoveModel {
             if (this.preset === undefined) {
                 this.preset = 0;
             }
-            if (this.direction === undefined || (this.direction !== 'forward' && this.direction !== 'backward')) {
-                throw new rpc_code_exception_1.RpcCodeException('direction 값이 없거나 올바르지 않습니다', constant_1.GrpcCode.InvalidArgument);
-            }
         }
         else if (this.command === move_type_1.MoveCommand.moveTarget) {
             if (this.x === undefined || this.y === undefined || this.z === undefined || this.rz === undefined) {
@@ -15363,9 +15741,6 @@ class MoveModel {
             }
             if (this.preset === undefined) {
                 this.preset = 0;
-            }
-            if (this.direction === undefined || (this.direction !== 'forward' && this.direction !== 'backward')) {
-                throw new rpc_code_exception_1.RpcCodeException('direction 값이 없거나 올바르지 않습니다', constant_1.GrpcCode.InvalidArgument);
             }
         }
         else if (this.command === move_type_1.MoveCommand.moveJog) {
@@ -15380,6 +15755,7 @@ class MoveModel {
         else if (this.command === move_type_1.MoveCommand.moveResume) {
         }
         else if (this.command === move_type_1.MoveCommand.moveXLinear) {
+            console.log('moveXLinear', this.target, this.speed, this.direction);
             if (this.target === undefined) {
                 throw new rpc_code_exception_1.RpcCodeException('target 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
@@ -15421,7 +15797,7 @@ exports.MoveModel = MoveModel;
 
 
 /***/ }),
-/* 165 */
+/* 169 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -15483,7 +15859,7 @@ exports.LocalizationModel = LocalizationModel;
 
 
 /***/ }),
-/* 166 */
+/* 170 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -15511,6 +15887,9 @@ class ControlModel {
         this.resetField = param.resetField;
         this.position = param.position;
         this.mcuDio = param.mcuDio;
+        this.minZ = param.minZ;
+        this.maxZ = param.maxZ;
+        this.mapRange = param.mapRange;
     }
     assignId(id) {
         this.id = id;
@@ -15604,6 +15983,15 @@ class ControlModel {
                 }
                 break;
             }
+            case control_type_1.ControlCommand.setObsBox: {
+                if (this.minZ === undefined || this.maxZ === undefined || this.mapRange === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minZ, maxZ, mapRange 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            case control_type_1.ControlCommand.getObsBox: {
+                break;
+            }
             default: {
                 throw new rpc_code_exception_1.RpcCodeException(`지원하지 않는 command 값입니다. (${this.command})`, constant_1.GrpcCode.InvalidArgument);
                 break;
@@ -15615,7 +16003,7 @@ exports.ControlModel = ControlModel;
 
 
 /***/ }),
-/* 167 */
+/* 171 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15680,7 +16068,7 @@ exports.ExAccessorySocketService = ExAccessorySocketService = __decorate([
 
 
 /***/ }),
-/* 168 */
+/* 172 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15699,9 +16087,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlamnavSocketGateway = void 0;
-const websockets_1 = __webpack_require__(147);
-const socket_io_1 = __webpack_require__(149);
-const slamnav_socket_service_1 = __webpack_require__(160);
+const websockets_1 = __webpack_require__(150);
+const socket_io_1 = __webpack_require__(156);
+const slamnav_socket_service_1 = __webpack_require__(164);
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
@@ -15710,14 +16098,14 @@ const constant_1 = __webpack_require__(65);
 const move_dto_1 = __webpack_require__(97);
 const localization_dto_1 = __webpack_require__(77);
 const control_dto_1 = __webpack_require__(59);
-const status_type_1 = __webpack_require__(154);
-const movestatus_type_1 = __webpack_require__(156);
-const cloud_type_1 = __webpack_require__(157);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
+const cloud_type_1 = __webpack_require__(161);
 const load_dto_1 = __webpack_require__(115);
 const mapping_dto_1 = __webpack_require__(114);
 const version_dto_1 = __webpack_require__(136);
 const setting_dto_1 = __webpack_require__(93);
-const path_dto_1 = __webpack_require__(152);
+const path_dto_1 = __webpack_require__(159);
 let SlamnavSocketGateway = class SlamnavSocketGateway {
     constructor(slamnavService, mqttMicroservice) {
         this.slamnavService = slamnavService;
@@ -16068,7 +16456,7 @@ exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
 
 
 /***/ }),
-/* 169 */
+/* 173 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16087,9 +16475,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskmanSocketGateway = void 0;
-const websockets_1 = __webpack_require__(147);
-const socket_io_1 = __webpack_require__(149);
-const taskman_socket_service_1 = __webpack_require__(162);
+const websockets_1 = __webpack_require__(150);
+const socket_io_1 = __webpack_require__(156);
+const taskman_socket_service_1 = __webpack_require__(166);
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
@@ -16097,8 +16485,8 @@ const constant_1 = __webpack_require__(65);
 const move_dto_1 = __webpack_require__(97);
 const control_dto_1 = __webpack_require__(59);
 const task_dto_1 = __webpack_require__(106);
-const variables_dto_1 = __webpack_require__(170);
-const state_dto_1 = __webpack_require__(171);
+const variables_dto_1 = __webpack_require__(174);
+const state_dto_1 = __webpack_require__(175);
 let TaskmanSocketGateway = class TaskmanSocketGateway {
     constructor(taskmanService, mqttMicroservice, moveMicroservice, controlMicroservice) {
         this.taskmanService = taskmanService;
@@ -16226,7 +16614,7 @@ exports.TaskmanSocketGateway = TaskmanSocketGateway = __decorate([
 
 
 /***/ }),
-/* 170 */
+/* 174 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16289,7 +16677,7 @@ __decorate([
 
 
 /***/ }),
-/* 171 */
+/* 175 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16320,7 +16708,6 @@ class TaskStateResponseDto {
 }
 exports.TaskStateResponseDto = TaskStateResponseDto;
 __decorate([
-    (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], TaskStateResponseDto.prototype, "connection", void 0);
@@ -16341,7 +16728,6 @@ __decorate([
 ], TaskStateResponseDto.prototype, "taskName", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.RUNNING, example: true }),
-    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], TaskStateResponseDto.prototype, "running", void 0);
 __decorate([
@@ -16380,7 +16766,7 @@ __decorate([
 
 
 /***/ }),
-/* 172 */
+/* 176 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16399,14 +16785,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessorySocketGateway = void 0;
-const websockets_1 = __webpack_require__(147);
+const websockets_1 = __webpack_require__(150);
 const common_1 = __webpack_require__(5);
-const socket_io_1 = __webpack_require__(149);
-const ex_accessory_socket_service_1 = __webpack_require__(167);
+const socket_io_1 = __webpack_require__(156);
+const ex_accessory_socket_service_1 = __webpack_require__(171);
 const common_2 = __webpack_require__(8);
 const constant_1 = __webpack_require__(65);
 const microservices_1 = __webpack_require__(3);
-const exAccessory_dto_1 = __webpack_require__(158);
+const exAccessory_dto_1 = __webpack_require__(162);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 const control_dto_1 = __webpack_require__(59);
 let ExAccessorySocketGateway = class ExAccessorySocketGateway {
@@ -16539,7 +16925,7 @@ exports.ExAccessorySocketGateway = ExAccessorySocketGateway = __decorate([
 
 
 /***/ }),
-/* 173 */
+/* 177 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16552,16 +16938,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FrsSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_1 = __webpack_require__(174);
-const frs_socket_client_1 = __webpack_require__(175);
+const typeorm_1 = __webpack_require__(178);
+const frs_socket_client_1 = __webpack_require__(179);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(8);
 const path_1 = __webpack_require__(44);
-const config_entity_1 = __webpack_require__(178);
+const config_entity_1 = __webpack_require__(182);
 const constant_1 = __webpack_require__(65);
 const config_1 = __webpack_require__(73);
-const frs_sub_docs_1 = __webpack_require__(180);
-const frs_socket_service_1 = __webpack_require__(177);
+const frs_sub_docs_1 = __webpack_require__(184);
+const frs_socket_service_1 = __webpack_require__(181);
 let FrsSocketModule = class FrsSocketModule {
 };
 exports.FrsSocketModule = FrsSocketModule;
@@ -16695,13 +17081,13 @@ exports.FrsSocketModule = FrsSocketModule = __decorate([
 
 
 /***/ }),
-/* 174 */
+/* 178 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 175 */
+/* 179 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16722,9 +17108,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSSocketClient = void 0;
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
-const socket_io_client_1 = __webpack_require__(176);
-const frs_socket_service_1 = __webpack_require__(177);
-const lodash_1 = __webpack_require__(161);
+const socket_io_client_1 = __webpack_require__(180);
+const frs_socket_service_1 = __webpack_require__(181);
+const lodash_1 = __webpack_require__(165);
 const microservices_1 = __webpack_require__(3);
 const class_validator_1 = __webpack_require__(61);
 const parse_util_1 = __webpack_require__(53);
@@ -16829,7 +17215,8 @@ let FRSSocketClient = class FRSSocketClient {
         this.cleanup();
         this.frsSocketUrl = await this.frsService.getConfig('frsSocketUrl');
         this.robotSerial = await this.frsService.getConfig('robotSerial');
-        this.loggerService.debug(`[Frs] connectFRS : ${this.frsSocketUrl}, ${this.robotSerial}`);
+        const useFMSMove = await this.frsService.getConfig('useFMSMove');
+        this.loggerService.debug(`[Frs] connectFRS : ${this.frsSocketUrl}, ${this.robotSerial}, ${useFMSMove}`);
         if (this.frsSocketUrl === undefined || this.frsSocketUrl === '' || this.robotSerial === undefined || this.robotSerial === '') {
             throw new rpc_code_exception_1.RpcCodeException(`url(${this.frsSocketUrl}) or robotSerial(${this.robotSerial}) is undefined`, constant_2.GrpcCode.FailedPrecondition);
         }
@@ -16845,9 +17232,10 @@ let FRSSocketClient = class FRSSocketClient {
         }
     }
     createSocket(url, robotSerial) {
+        console.log('----------------->', url, robotSerial);
         return (0, socket_io_client_1.io)(url, {
             transports: ['websocket'],
-            query: { name: 'rrs', robotSerial },
+            query: { system: 'RRS', amrSerial: robotSerial, fmsEnabled: true },
         });
     }
     registerEventHandlers() {
@@ -16984,13 +17372,13 @@ exports.FRSSocketClient = FRSSocketClient = __decorate([
 
 
 /***/ }),
-/* 176 */
+/* 180 */
 /***/ ((module) => {
 
 module.exports = require("socket.io-client");
 
 /***/ }),
-/* 177 */
+/* 181 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17182,7 +17570,7 @@ exports.FRSSocketService = FRSSocketService = __decorate([
 
 
 /***/ }),
-/* 178 */
+/* 182 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17198,7 +17586,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Config = void 0;
-const typeorm_1 = __webpack_require__(179);
+const typeorm_1 = __webpack_require__(183);
 let Config = class Config {
 };
 exports.Config = Config;
@@ -17230,13 +17618,13 @@ exports.Config = Config = __decorate([
 
 
 /***/ }),
-/* 179 */
+/* 183 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 180 */
+/* 184 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17257,7 +17645,7 @@ const move_dto_1 = __webpack_require__(97);
 const load_dto_1 = __webpack_require__(115);
 const localization_dto_1 = __webpack_require__(77);
 const control_dto_1 = __webpack_require__(59);
-const init_dto_1 = __webpack_require__(181);
+const init_dto_1 = __webpack_require__(185);
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
 const move_dto_2 = __webpack_require__(97);
@@ -17536,7 +17924,7 @@ exports.FRSAsyncSub = FRSAsyncSub = __decorate([
 
 
 /***/ }),
-/* 181 */
+/* 185 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17588,7 +17976,7 @@ __decorate([
 
 
 /***/ }),
-/* 182 */
+/* 186 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17613,19 +18001,15 @@ let APILogInterceptor = class APILogInterceptor {
         const ip = socket?.remoteAddress || 'unknown';
         const requestTimestamp = new Date();
         if (body) {
-            this.loggerService.debug(`[${method}] ${url} (${ip}) : ${JSON.stringify(body).substring(0, 100)}`);
         }
         else {
-            this.loggerService.debug(`[${method}] ${url} (${ip})`);
         }
         return next.handle().pipe((0, rxjs_1.tap)((data) => {
             const responseTimestamp = new Date();
             const responseTime = `${+responseTimestamp - +requestTimestamp}ms`;
             if (data) {
-                this.loggerService.debug(`[${method} RESPONSE] ${url} (${ip}) : ${JSON.stringify(data).substring(0, 100)} -> ${responseTime}`);
             }
             else {
-                this.loggerService.debug(`[${method} RESPONSE] ${url} (${ip}) -> ${responseTime}`);
             }
         }));
     }
@@ -17637,7 +18021,7 @@ exports.APILogInterceptor = APILogInterceptor = __decorate([
 
 
 /***/ }),
-/* 183 */
+/* 187 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17654,13 +18038,13 @@ const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(65);
 const config_1 = __webpack_require__(73);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const tcp_service_1 = __webpack_require__(184);
-const tcp_gateway_1 = __webpack_require__(187);
-const tcp_mqtt_controller_1 = __webpack_require__(189);
-const cobot_tcp_client_adapter_1 = __webpack_require__(190);
-const tcp_grpc_controller_1 = __webpack_require__(191);
-const tcp_custom_server_gateway_1 = __webpack_require__(185);
-const tcp_control_service_1 = __webpack_require__(188);
+const tcp_service_1 = __webpack_require__(188);
+const tcp_gateway_1 = __webpack_require__(191);
+const tcp_mqtt_controller_1 = __webpack_require__(193);
+const cobot_tcp_client_adapter_1 = __webpack_require__(194);
+const tcp_grpc_controller_1 = __webpack_require__(195);
+const tcp_custom_server_gateway_1 = __webpack_require__(189);
+const tcp_control_service_1 = __webpack_require__(192);
 const common_2 = __webpack_require__(8);
 const path_1 = __webpack_require__(44);
 let TCPModule = class TCPModule {
@@ -17741,7 +18125,7 @@ exports.TCPModule = TCPModule = __decorate([
 
 
 /***/ }),
-/* 184 */
+/* 188 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17767,8 +18151,8 @@ const util_1 = __webpack_require__(37);
 const common_2 = __webpack_require__(5);
 const config_1 = __webpack_require__(73);
 const microservices_1 = __webpack_require__(3);
-const tcp_custom_server_gateway_1 = __webpack_require__(185);
-const tcp_gateway_1 = __webpack_require__(187);
+const tcp_custom_server_gateway_1 = __webpack_require__(189);
+const tcp_gateway_1 = __webpack_require__(191);
 let TcpService = class TcpService {
     constructor(configService, tcpMainServer, tcpCustomServerGateway) {
         this.configService = configService;
@@ -17836,7 +18220,7 @@ exports.TcpService = TcpService = __decorate([
 
 
 /***/ }),
-/* 185 */
+/* 189 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17849,7 +18233,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpCustomServerGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(186);
+const net_1 = __webpack_require__(190);
 const common_2 = __webpack_require__(8);
 const util_1 = __webpack_require__(37);
 const rpc_code_exception_1 = __webpack_require__(50);
@@ -17987,13 +18371,13 @@ exports.TcpCustomServerGateway = TcpCustomServerGateway = __decorate([
 
 
 /***/ }),
-/* 186 */
+/* 190 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 187 */
+/* 191 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18010,7 +18394,7 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(186);
+const net_1 = __webpack_require__(190);
 const rxjs_1 = __webpack_require__(32);
 const common_2 = __webpack_require__(8);
 const config_1 = __webpack_require__(73);
@@ -18019,7 +18403,7 @@ const control_type_1 = __webpack_require__(62);
 const localization_type_1 = __webpack_require__(78);
 const load_dto_1 = __webpack_require__(115);
 const util_1 = __webpack_require__(37);
-const tcp_control_service_1 = __webpack_require__(188);
+const tcp_control_service_1 = __webpack_require__(192);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 let TcpGateway = class TcpGateway {
     constructor(configService, tcpControlService) {
@@ -18322,7 +18706,7 @@ exports.TcpGateway = TcpGateway = __decorate([
 
 
 /***/ }),
-/* 188 */
+/* 192 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18379,7 +18763,7 @@ exports.TcpControlService = TcpControlService = __decorate([
 
 
 /***/ }),
-/* 189 */
+/* 193 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18400,14 +18784,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpMqttController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(8);
-const tcp_service_1 = __webpack_require__(184);
+const tcp_service_1 = __webpack_require__(188);
 const microservices_1 = __webpack_require__(3);
 const move_dto_1 = __webpack_require__(97);
 const control_dto_1 = __webpack_require__(59);
 const localization_dto_1 = __webpack_require__(77);
 const load_dto_1 = __webpack_require__(115);
-const status_type_1 = __webpack_require__(154);
-const movestatus_type_1 = __webpack_require__(156);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
 let TcpMqttController = class TcpMqttController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -18482,13 +18866,13 @@ exports.TcpMqttController = TcpMqttController = __decorate([
 
 
 /***/ }),
-/* 190 */
+/* 194 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotTcpClientAdapter = void 0;
-const net_1 = __webpack_require__(186);
+const net_1 = __webpack_require__(190);
 const common_1 = __webpack_require__(8);
 const cobot_dto_1 = __webpack_require__(140);
 class CobotTcpClientAdapter {
@@ -18498,43 +18882,43 @@ class CobotTcpClientAdapter {
         this.dataSocket = new Map();
     }
     sendCommand(model, command) {
-        this.loggerService.debug(`[Client] sendCommand : ${model.id} -> ${command.command}`);
-        this.commandSocket.get(model.id).write(command.command);
+        this.loggerService.debug(`[Client] sendCommand : ${model.cobotId} -> ${command.sendCommand}`);
+        this.commandSocket.get(model.cobotId).write(command.sendCommand);
     }
     requestData(model) {
-        this.loggerService.debug(`[Client] requestData : ${model.id}`);
-        this.dataSocket.get(model.id).write(cobot_dto_1.CobotCommand.requestData);
+        this.loggerService.debug(`[Client] requestData : ${model.cobotId}`);
+        this.dataSocket.get(model.cobotId).write(cobot_dto_1.CobotCommand.requestData);
     }
     disconnect(model) {
-        this.loggerService.debug(`[Client] disconnect : ${model.id}`);
+        this.loggerService.debug(`[Client] disconnect : ${model.cobotId}`);
         this.disconnectCommand(model);
         this.disconnectData(model);
     }
     async disconnectCommand(model) {
-        if (this.commandSocket.get(model.id)) {
-            this.loggerService.debug(`[Client] disconnectCommand : ${model.id}`);
-            this.commandSocket.get(model.id).end();
-            this.commandSocket.get(model.id).destroy();
-            this.commandSocket.delete(model.id);
+        if (this.commandSocket.get(model.cobotId)) {
+            this.loggerService.debug(`[Client] disconnectCommand : ${model.cobotId}`);
+            this.commandSocket.get(model.cobotId).end();
+            this.commandSocket.get(model.cobotId).destroy();
+            this.commandSocket.delete(model.cobotId);
         }
     }
     async disconnectData(model) {
-        if (this.dataSocket.get(model.id)) {
-            this.loggerService.debug(`[Client] disconnectData : ${model.id}`);
-            this.dataSocket.get(model.id).end();
-            this.dataSocket.get(model.id).destroy();
-            this.dataSocket.delete(model.id);
+        if (this.dataSocket.get(model.cobotId)) {
+            this.loggerService.debug(`[Client] disconnectData : ${model.cobotId}`);
+            this.dataSocket.get(model.cobotId).end();
+            this.dataSocket.get(model.cobotId).destroy();
+            this.dataSocket.delete(model.cobotId);
         }
     }
     async connectCommand(model) {
         return new Promise(async (resolve) => {
-            this.loggerService.debug(`[Client] connectCommand : ${model.id}`);
+            this.loggerService.debug(`[Client] connectCommand : ${model.cobotId}`);
             await this.disconnectCommand(model);
             const socket = new net_1.Socket();
             socket.setNoDelay(true);
             socket.setKeepAlive(true, 15_000);
             socket.connect(model.commandPort, model.ipAddress);
-            this.commandSocket.set(model.id, socket);
+            this.commandSocket.set(model.cobotId, socket);
             socket.on('connect', () => {
                 clearTimeout(timeout);
                 resolve(true);
@@ -18566,13 +18950,13 @@ class CobotTcpClientAdapter {
     }
     async connectData(model) {
         return new Promise(async (resolve) => {
-            this.loggerService.debug(`[Client] connectData : ${model.id}`);
+            this.loggerService.debug(`[Client] connectData : ${model.cobotId}`);
             await this.disconnectData(model);
             const socket = new net_1.Socket();
             socket.setNoDelay(true);
             socket.setKeepAlive(true, 15_000);
             socket.connect(model.dataPort, model.ipAddress);
-            this.dataSocket.set(model.id, socket);
+            this.dataSocket.set(model.cobotId, socket);
             socket.on('connect', () => {
                 clearTimeout(timeout);
                 resolve(true);
@@ -18608,7 +18992,7 @@ exports.CobotTcpClientAdapter = CobotTcpClientAdapter;
 
 
 /***/ }),
-/* 191 */
+/* 195 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18626,7 +19010,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGrpcController = void 0;
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(184);
+const tcp_service_1 = __webpack_require__(188);
 let TcpGrpcController = class TcpGrpcController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -18652,7 +19036,7 @@ exports.TcpGrpcController = TcpGrpcController = __decorate([
 
 
 /***/ }),
-/* 192 */
+/* 196 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18668,13 +19052,13 @@ const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(65);
 const config_1 = __webpack_require__(73);
-const cobot_service_1 = __webpack_require__(193);
-const cobot_tcp_client_adapter_1 = __webpack_require__(190);
-const cobot_grpc_controller_1 = __webpack_require__(202);
-const cobot_mongo_adapter_1 = __webpack_require__(203);
-const mongoose_1 = __webpack_require__(204);
-const cobot_command_entity_1 = __webpack_require__(206);
-const cobot_connection_entity_1 = __webpack_require__(207);
+const cobot_service_1 = __webpack_require__(197);
+const cobot_tcp_client_adapter_1 = __webpack_require__(194);
+const cobot_grpc_controller_1 = __webpack_require__(206);
+const cobot_mongo_adapter_1 = __webpack_require__(207);
+const mongoose_1 = __webpack_require__(208);
+const cobot_command_entity_1 = __webpack_require__(210);
+const cobot_connection_entity_1 = __webpack_require__(211);
 let CobotSocketModule = class CobotSocketModule {
 };
 exports.CobotSocketModule = CobotSocketModule;
@@ -18733,7 +19117,7 @@ exports.CobotSocketModule = CobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 193 */
+/* 197 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18756,15 +19140,15 @@ const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(8);
 const constant_1 = __webpack_require__(65);
 const microservices_1 = __webpack_require__(3);
-const cobot_socket_domain_1 = __webpack_require__(194);
-const cobot_client_output_port_1 = __webpack_require__(195);
-const cobot_command_handler_1 = __webpack_require__(196);
+const cobot_socket_domain_1 = __webpack_require__(198);
+const cobot_client_output_port_1 = __webpack_require__(199);
+const cobot_command_handler_1 = __webpack_require__(200);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_2 = __webpack_require__(51);
 const cobot_dto_1 = __webpack_require__(140);
-const cobot_data_handler_1 = __webpack_require__(197);
-const cobot_database_output_port_1 = __webpack_require__(199);
-const cobot_domain_1 = __webpack_require__(200);
+const cobot_data_handler_1 = __webpack_require__(201);
+const cobot_database_output_port_1 = __webpack_require__(203);
+const cobot_domain_1 = __webpack_require__(204);
 const map_command_domain_1 = __webpack_require__(111);
 let CobotService = class CobotService {
     constructor(tcpClientPort, cobotDatabaseOutputPort, mqttMicroservice) {
@@ -18840,7 +19224,7 @@ let CobotService = class CobotService {
     }
     async cobotModeChange(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.ChangeMode);
             try {
                 model.setCobotMode(request);
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
@@ -18852,10 +19236,10 @@ let CobotService = class CobotService {
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
                 }
                 if (request.mode === 'real') {
-                    model.command = cobot_dto_1.CobotCommand.programModeReal;
+                    model.sendCommand = cobot_dto_1.CobotCommand.programModeReal;
                 }
                 else if (request.mode === 'simulation') {
-                    model.command = cobot_dto_1.CobotCommand.programModeSimulation;
+                    model.sendCommand = cobot_dto_1.CobotCommand.programModeSimulation;
                 }
                 else {
                     this.loggerService.error(`[Cobot] cobotModeChange : mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`);
@@ -18864,7 +19248,7 @@ let CobotService = class CobotService {
                 this.tcpClientPort.sendCommand(cobotModel, model);
                 model.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.cobotDatabaseOutputPort.updateCommand(model);
-                resolve({ ...request, mode: request.mode, command: model.command });
+                resolve({ ...request, mode: request.mode, command: model.sendCommand });
             }
             catch (error) {
                 if (model) {
@@ -18881,7 +19265,7 @@ let CobotService = class CobotService {
     }
     async cobotMove(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.Move);
             try {
                 model.setCobotMove(request);
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
@@ -18927,29 +19311,29 @@ let CobotService = class CobotService {
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
                 }
                 if (request.method == cobot_dto_1.CobotMoveMethod.moveJ) {
-                    model.command = `move_j (jnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
+                    model.sendCommand = `move_j (jnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
                 }
                 else if (request.method == cobot_dto_1.CobotMoveMethod.moveL) {
-                    model.command = `move_l (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
+                    model.sendCommand = `move_l (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
                 }
                 else if (request.method == cobot_dto_1.CobotMoveMethod.moveJRelative) {
-                    model.command = `move_j_rel (jnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
+                    model.sendCommand = `move_j_rel (jnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration})`;
                 }
                 else if (request.method == cobot_dto_1.CobotMoveMethod.moveLRelative) {
                     if (request.coordinate == cobot_dto_1.CobotCoordinate.Global) {
-                        model.command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 0)`;
+                        model.sendCommand = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 0)`;
                     }
                     else if (request.coordinate == cobot_dto_1.CobotCoordinate.Local) {
-                        model.command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 1)`;
+                        model.sendCommand = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 1)`;
                     }
                     else if (request.coordinate == cobot_dto_1.CobotCoordinate.UserCoordinate0) {
-                        model.command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 2)`;
+                        model.sendCommand = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 2)`;
                     }
                     else if (request.coordinate == cobot_dto_1.CobotCoordinate.UserCoordinate1) {
-                        model.command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 3)`;
+                        model.sendCommand = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 3)`;
                     }
                     else if (request.coordinate == cobot_dto_1.CobotCoordinate.UserCoordinate2) {
-                        model.command = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 4)`;
+                        model.sendCommand = `move_l_rel (pnt[${request.pose.join(',')}], ${request.speed}, ${request.acceleration}, 4)`;
                     }
                 }
                 this.tcpClientPort.sendCommand(cobotModel, model);
@@ -18972,7 +19356,7 @@ let CobotService = class CobotService {
     }
     async cobotSpeed(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.ChangeSpeed);
             try {
                 model.setCobotSpeed(request);
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
@@ -18982,7 +19366,7 @@ let CobotService = class CobotService {
                 if (!cobotModel) {
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
                 }
-                model.command = `set_speed_bar(${request.speed / 100})`;
+                model.sendCommand = `set_speed_bar(${request.speed / 100})`;
                 this.tcpClientPort.sendCommand(cobotModel, model);
                 model.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.cobotDatabaseOutputPort.updateCommand(model);
@@ -19003,7 +19387,7 @@ let CobotService = class CobotService {
     }
     async cobotInit(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.Init);
             try {
                 model.setCobotInit(request);
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
@@ -19033,7 +19417,7 @@ let CobotService = class CobotService {
     }
     async cobotConnect(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.Connect);
             try {
                 model.setCobotConnect(request);
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
@@ -19043,8 +19427,9 @@ let CobotService = class CobotService {
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId} 값을 가진 모델이 이미 존재합니다.`, constant_2.GrpcCode.InvalidArgument);
                 }
                 const cobotModel = new cobot_socket_domain_1.CobotModel(request.cobotId, request.ipAddress);
-                this.cobotModels.set(cobotModel.id, cobotModel);
-                cobotModel.commandHandler = new cobot_command_handler_1.CobotCommandHandler(cobotModel.id);
+                console.log('cobotModel : ', cobotModel.cobotId);
+                this.cobotModels.set(cobotModel.cobotId, cobotModel);
+                cobotModel.commandHandler = new cobot_command_handler_1.CobotCommandHandler(cobotModel.cobotId);
                 cobotModel.commandHandler.onCobotSystemStat = this.handleCobotSystemStat.bind(this);
                 cobotModel.commandHandler.onCobotCommandConnect = this.handleCobotCommandConnect.bind(this);
                 cobotModel.commandHandler.onCobotCommandDisconnect = this.handleCobotCommandDisconnect.bind(this);
@@ -19053,7 +19438,7 @@ let CobotService = class CobotService {
                 cobotModel.commandHandler.onCobotCommandDataReceived = this.handleCobotCommandDataReceived.bind(this);
                 const commandResult = await this.tcpClientPort.connectCommand(cobotModel);
                 cobotModel.commandConnected = commandResult;
-                cobotModel.dataHandler = new cobot_data_handler_1.CobotDataHandler(cobotModel.id);
+                cobotModel.dataHandler = new cobot_data_handler_1.CobotDataHandler(cobotModel.cobotId);
                 cobotModel.dataHandler.onCobotSystemStat = this.handleCobotSystemStat.bind(this);
                 cobotModel.dataHandler.onCobotDataConnect = this.handleCobotDataConnect.bind(this);
                 cobotModel.dataHandler.onCobotDataDisconnect = this.handleCobotDataDisconnect.bind(this);
@@ -19101,7 +19486,7 @@ let CobotService = class CobotService {
     }
     async connectCobotCommand(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.ConnectCommand);
             try {
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
                 model.assignId(db._id.toString());
@@ -19131,7 +19516,7 @@ let CobotService = class CobotService {
     }
     async connectCobotData(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.ConnectData);
             try {
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
                 model.assignId(db._id.toString());
@@ -19161,7 +19546,7 @@ let CobotService = class CobotService {
     }
     async cobotDisconnect(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.Disconnect);
             try {
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
                 model.assignId(db._id.toString());
@@ -19191,7 +19576,7 @@ let CobotService = class CobotService {
     }
     async disconnectCobotCommand(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.DisconnectCommand);
             try {
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
                 model.assignId(db._id.toString());
@@ -19220,7 +19605,7 @@ let CobotService = class CobotService {
     }
     async disconnectCobotData(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.DisconnectData);
             try {
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
                 model.assignId(db._id.toString());
@@ -19249,8 +19634,9 @@ let CobotService = class CobotService {
     }
     sendCobotCommand(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.SendCommand);
             try {
+                model.setCobotSendCommand(request);
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
                 model.assignId(db._id.toString());
                 model.checkCobotId();
@@ -19278,7 +19664,7 @@ let CobotService = class CobotService {
     }
     async sendCobotProgram(request) {
         return new Promise(async (resolve, reject) => {
-            const model = new cobot_domain_1.CobotCommandModel(request.cobotId);
+            const model = new cobot_domain_1.CobotCommandModel(request.cobotId, cobot_dto_1.CobotCommandType.SetProgram);
             try {
                 model.setCobotProgram(request);
                 const db = await this.cobotDatabaseOutputPort.saveCommand(model);
@@ -19289,25 +19675,25 @@ let CobotService = class CobotService {
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
                 }
                 if (request.command == cobot_dto_1.CobotCommand.programLoadandRun) {
-                    model.command = `program_load_and_run("${request.programName}")`;
+                    model.sendCommand = `program_load_and_run("${request.programName}")`;
                 }
                 else if (request.command == cobot_dto_1.CobotCommand.taskLoad) {
-                    model.command = `task load ${request.programName}`;
+                    model.sendCommand = `task load ${request.programName}`;
                 }
                 else if (request.command == cobot_dto_1.CobotCommand.taskStop) {
-                    model.command = request.command;
+                    model.sendCommand = request.command;
                 }
                 else if (request.command == cobot_dto_1.CobotCommand.taskPlayOnce) {
-                    model.command = request.command;
+                    model.sendCommand = request.command;
                 }
                 else if (request.command == cobot_dto_1.CobotCommand.taskPause) {
-                    model.command = request.command;
+                    model.sendCommand = request.command;
                 }
                 else if (request.command == cobot_dto_1.CobotCommand.taskResumeA) {
-                    model.command = request.command;
+                    model.sendCommand = request.command;
                 }
                 else if (request.command == cobot_dto_1.CobotCommand.taskResumeB) {
-                    model.command = request.command;
+                    model.sendCommand = request.command;
                 }
                 else {
                     this.loggerService.error(`[Cobot] sendCobotProgram : ${request.command} 명령은 지원하지 않습니다.`);
@@ -19316,7 +19702,7 @@ let CobotService = class CobotService {
                 this.tcpClientPort.sendCommand(cobotModel, model);
                 model.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.cobotDatabaseOutputPort.updateCommand(model);
-                resolve({ ...request, command: model.command });
+                resolve({ ...request, command: model.sendCommand });
             }
             catch (error) {
                 if (model) {
@@ -19360,7 +19746,7 @@ exports.CobotService = CobotService = __decorate([
 
 
 /***/ }),
-/* 194 */
+/* 198 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -19380,7 +19766,7 @@ exports.CobotModel = CobotModel;
 
 
 /***/ }),
-/* 195 */
+/* 199 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -19388,7 +19774,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 196 */
+/* 200 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -19435,14 +19821,14 @@ exports.CobotCommandHandler = CobotCommandHandler;
 
 
 /***/ }),
-/* 197 */
+/* 201 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotDataHandler = void 0;
 const common_1 = __webpack_require__(8);
-const cobot_system_stat_parser_1 = __webpack_require__(198);
+const cobot_system_stat_parser_1 = __webpack_require__(202);
 class CobotDataHandler {
     constructor(id) {
         this.loggerService = common_1.LoggerService.get('cobot');
@@ -19497,7 +19883,7 @@ exports.CobotDataHandler = CobotDataHandler;
 
 
 /***/ }),
-/* 198 */
+/* 202 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -19703,7 +20089,7 @@ CobotSystemStatParser.INT_SIZE = 4;
 
 
 /***/ }),
-/* 199 */
+/* 203 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -19711,7 +20097,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 200 */
+/* 204 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -19720,10 +20106,11 @@ exports.CobotCommandModel = void 0;
 const map_command_domain_1 = __webpack_require__(111);
 const rpc_code_exception_1 = __webpack_require__(50);
 const grpc_code_constant_1 = __webpack_require__(52);
-const node_net_1 = __webpack_require__(201);
+const node_net_1 = __webpack_require__(205);
 class CobotCommandModel {
-    constructor(cobotId) {
+    constructor(cobotId, command) {
         this.cobotId = cobotId;
+        this.command = command;
         this.status = map_command_domain_1.CommandStatus.pending;
         this.createdAt = new Date();
         this.updatedAt = new Date();
@@ -19733,6 +20120,10 @@ class CobotCommandModel {
     }
     setCobotSpeed(param) {
         this.speed = param.speed;
+    }
+    setCobotSendCommand(param) {
+        this.cobotId = param.cobotId;
+        this.sendCommand = param.command;
     }
     setCobotMove(param) {
         this.pose = param.pose;
@@ -19750,7 +20141,7 @@ class CobotCommandModel {
     }
     setCobotProgram(param) {
         this.cobotId = param.cobotId;
-        this.command = param.command;
+        this.sendCommand = param.command;
         this.programName = param.programName;
     }
     assignId(id) {
@@ -19808,13 +20199,13 @@ exports.CobotCommandModel = CobotCommandModel;
 
 
 /***/ }),
-/* 201 */
+/* 205 */
 /***/ ((module) => {
 
 module.exports = require("node:net");
 
 /***/ }),
-/* 202 */
+/* 206 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19832,7 +20223,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotGrpcController = void 0;
 const common_1 = __webpack_require__(8);
 const common_2 = __webpack_require__(5);
-const cobot_service_1 = __webpack_require__(193);
+const cobot_service_1 = __webpack_require__(197);
 let CobotGrpcController = class CobotGrpcController {
     constructor(cobotService) {
         this.cobotService = cobotService;
@@ -19894,7 +20285,7 @@ exports.CobotGrpcController = CobotGrpcController = __decorate([
 
 
 /***/ }),
-/* 203 */
+/* 207 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19913,13 +20304,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotMongoAdapter = void 0;
-const mongoose_1 = __webpack_require__(204);
-const mongoose_2 = __webpack_require__(205);
+const mongoose_1 = __webpack_require__(208);
+const mongoose_2 = __webpack_require__(209);
 const common_1 = __webpack_require__(8);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
-const cobot_command_entity_1 = __webpack_require__(206);
-const cobot_connection_entity_1 = __webpack_require__(207);
+const cobot_command_entity_1 = __webpack_require__(210);
+const cobot_connection_entity_1 = __webpack_require__(211);
+const util_1 = __webpack_require__(37);
 let CobotMongoAdapter = class CobotMongoAdapter {
     constructor(CommandRepository, ConnectionRepository) {
         this.CommandRepository = CommandRepository;
@@ -19953,12 +20345,13 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
-    async saveCommand(move) {
+    async saveCommand(model) {
         try {
-            return await this.CommandRepository.create(move);
+            const _id = util_1.UrlUtil.generateUUID();
+            return await this.CommandRepository.create({ ...model, _id });
         }
         catch (error) {
-            this.loggerService.error(`[Cobot] DB saveCommand : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
+            this.loggerService.error(`[Cobot] DB saveCommand : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -19981,19 +20374,19 @@ exports.CobotMongoAdapter = CobotMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 204 */
+/* 208 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/mongoose");
 
 /***/ }),
-/* 205 */
+/* 209 */
 /***/ ((module) => {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 206 */
+/* 210 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20008,7 +20401,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandSchema = exports.CobotCommandEntity = void 0;
-const mongoose_1 = __webpack_require__(204);
+const mongoose_1 = __webpack_require__(208);
 let CobotCommandEntity = class CobotCommandEntity {
 };
 exports.CobotCommandEntity = CobotCommandEntity;
@@ -20046,7 +20439,7 @@ exports.CobotCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 207 */
+/* 211 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20061,7 +20454,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotConnectionSchema = exports.CobotConnectionEntity = void 0;
-const mongoose_1 = __webpack_require__(204);
+const mongoose_1 = __webpack_require__(208);
 let CobotConnectionEntity = class CobotConnectionEntity {
 };
 exports.CobotConnectionEntity = CobotConnectionEntity;
@@ -20135,14 +20528,14 @@ const nestjs_asyncapi_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
 const api_module_1 = __webpack_require__(4);
 const common_1 = __webpack_require__(5);
-const grpc_to_http_filter_1 = __webpack_require__(144);
+const grpc_to_http_filter_1 = __webpack_require__(152);
 const swagger_1 = __webpack_require__(58);
-const client_socket_module_1 = __webpack_require__(145);
-const robot_socket_module_1 = __webpack_require__(159);
-const frs_socket_module_1 = __webpack_require__(173);
-const api_interceptor_1 = __webpack_require__(182);
-const tcp_socket_module_1 = __webpack_require__(183);
-const cobot_socket_module_1 = __webpack_require__(192);
+const client_socket_module_1 = __webpack_require__(153);
+const robot_socket_module_1 = __webpack_require__(163);
+const frs_socket_module_1 = __webpack_require__(177);
+const api_interceptor_1 = __webpack_require__(186);
+const tcp_socket_module_1 = __webpack_require__(187);
+const cobot_socket_module_1 = __webpack_require__(196);
 const common_2 = __webpack_require__(8);
 const path_1 = __webpack_require__(44);
 async function bootstrap() {
@@ -20159,6 +20552,14 @@ async function bootstrap() {
     console.log('----------------->', process.env.RELEASE_REPO_URL);
     console.log('----------------->', process.env.CONTROL_GRPC_URL);
     const swaggerConfig = new swagger_1.DocumentBuilder().setTitle('WEB RRS API').setDescription('WEB (RRS) APIs').setVersion('1.0').build();
+    apiModule.connectMicroservice({
+        transport: microservices_1.Transport.MQTT,
+        options: {
+            url: process.env.MQTT_URL,
+            clientId: 'gateway-rrs-api',
+        },
+    });
+    await apiModule.startAllMicroservices();
     console.log(process.env.RRS_API_PORT);
     const document = swagger_1.SwaggerModule.createDocument(apiModule, swaggerConfig);
     swagger_1.SwaggerModule.setup('docs/api', apiModule, document);

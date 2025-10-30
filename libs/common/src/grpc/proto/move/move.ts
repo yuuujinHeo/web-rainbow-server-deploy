@@ -30,6 +30,8 @@ export interface MoveLog {
   createdAt?: string | undefined;
   updatedAt?: string | undefined;
   direction?: string | undefined;
+  speed?: number | undefined;
+  target?: number | undefined;
 }
 
 export interface MoveLogLastRequest {
@@ -72,6 +74,8 @@ export interface MoveCommandResquest {
   vy?: number | undefined;
   wz?: number | undefined;
   direction?: string | undefined;
+  target?: number | undefined;
+  speed?: number | undefined;
 }
 
 export interface MoveCommandResponse {
@@ -87,6 +91,10 @@ export interface MoveCommandResponse {
   vy?: number | undefined;
   wz?: number | undefined;
   direction?: string | undefined;
+  target?: number | undefined;
+  speed?: number | undefined;
+  result: string;
+  message?: string | undefined;
 }
 
 export const MOVE_PACKAGE_NAME = "move";

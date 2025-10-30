@@ -168,7 +168,7 @@ exports.protobufPackage = "amr";
 exports.AMR_PACKAGE_NAME = "amr";
 function AmrGrpcServiceControllerMethods() {
     return function (constructor) {
-        const grpcMethods = ["readAmrList", "readAmr", "createAmr", "updateAmr", "deleteAmr"];
+        const grpcMethods = ["readAmrList", "readAmr", "existsAmr", "createAmr", "updateAmr", "deleteAmr"];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
             (0, microservices_1.GrpcMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
@@ -189,7 +189,7 @@ exports.AMR_GRPC_SERVICE_NAME = "AmrGrpcService";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.RobotType = exports.protobufPackage = void 0;
+exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.SocketType = exports.RobotType = exports.protobufPackage = void 0;
 exports.RedisSocketCacheGrpcServiceControllerMethods = RedisSocketCacheGrpcServiceControllerMethods;
 exports.RedisRobotCacheGrpcServiceControllerMethods = RedisRobotCacheGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(2);
@@ -202,6 +202,12 @@ var RobotType;
     RobotType[RobotType["SENSOR"] = 3] = "SENSOR";
     RobotType[RobotType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(RobotType || (exports.RobotType = RobotType = {}));
+var SocketType;
+(function (SocketType) {
+    SocketType[SocketType["CLIENT"] = 0] = "CLIENT";
+    SocketType[SocketType["AMR"] = 1] = "AMR";
+    SocketType[SocketType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(SocketType || (exports.SocketType = SocketType = {}));
 exports.REDIS_PACKAGE_NAME = "redis";
 function RedisSocketCacheGrpcServiceControllerMethods() {
     return function (constructor) {
@@ -228,6 +234,7 @@ function RedisRobotCacheGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
             "readRobotCache",
+            "existsRobotCache",
             "readRobotCacheList",
             "createRobotCache",
             "updateRobotCache",
@@ -303,6 +310,8 @@ function ControlGrpcServiceControllerMethods() {
             "getSafetyField",
             "exAccessoryControl",
             "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -1259,7 +1268,6 @@ const uuid_1 = __webpack_require__(34);
 const archiver_1 = __webpack_require__(42);
 const csv = __webpack_require__(43);
 const zlib_1 = __webpack_require__(44);
-const common_1 = __webpack_require__(3);
 const rpc_code_exception_1 = __webpack_require__(45);
 const constant_1 = __webpack_require__(46);
 const microservices_1 = __webpack_require__(2);
@@ -1402,18 +1410,15 @@ class FileUtil {
                     results.push(row);
                 })
                     .on('error', (error) => {
-                    common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
                     reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
                 })
                     .on('end', () => {
-                    common_1.LoggerService.get('util').debug(`[File] readCSV : done (length : ${results.length})`);
                     resolve(results);
                 });
             }
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     throw error;
-                common_1.LoggerService.get('util').error(`[File] readCSV : ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -1428,18 +1433,16 @@ class FileUtil {
                     else {
                         res.setHeader('Content-Type', 'text/csv');
                         res.setHeader('Content-Encoding', 'gzip');
-                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv.gz"');
+                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
                         const fileStream = fs.createReadStream(path);
                         const gzip = (0, zlib_1.createGzip)();
                         fileStream
                             .pipe(gzip)
                             .pipe(res)
                             .on('finish', () => {
-                            common_1.LoggerService.get('util').debug(`[File] readCSVPipe : done`);
                             resolve();
                         })
                             .on('error', (error) => {
-                            common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
                             reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
                         });
                     }
@@ -1448,7 +1451,6 @@ class FileUtil {
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     throw error;
-                common_1.LoggerService.get('util').error(`[File] readCSVPipe : ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -1457,17 +1459,14 @@ class FileUtil {
         try {
             const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
             if (data === undefined || data.length === 0) {
-                common_1.LoggerService.get('util').error(`[File] saveCSV : data 값이 없습니다`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             fs.writeFileSync(path, csvData);
-            common_1.LoggerService.get('util').debug(`[File] saveCSV : done (path : ${path})`);
             return;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] saveCSV : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1485,7 +1484,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] readJson : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1499,7 +1497,7 @@ class FileUtil {
             }
             res.setHeader('Content-Type', 'application/json');
             res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Content-Disposition', 'attachment; filename="topo.json.gz"');
+            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
             const fileStream = fs.createReadStream(path);
             const gzip = (0, zlib_1.createGzip)();
             fileStream.pipe(gzip).pipe(res);
@@ -1507,7 +1505,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] readJSONPipe : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -1534,7 +1531,6 @@ class FileUtil {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            common_1.LoggerService.get('util').error(`[File] saveJson : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -2045,6 +2041,12 @@ let ControlGrpcInputController = class ControlGrpcInputController {
     exAccessoryControl(request, metadata) {
         return this.controlService.ExAccessoryControl(request);
     }
+    setObsBox(request, metadata) {
+        return this.controlService.setObsBox(request);
+    }
+    getObsBox(request, metadata) {
+        return this.controlService.getObsBox(request);
+    }
 };
 exports.ControlGrpcInputController = ControlGrpcInputController;
 exports.ControlGrpcInputController = ControlGrpcInputController = __decorate([
@@ -2215,6 +2217,62 @@ let ControlService = class ControlService {
             throw new rpc_code_exception_1.RpcCodeException('ExAccessoryControl 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
+    async setObsBox(request) {
+        let command = null;
+        try {
+            this.loggerService.info(`[Control] setObsBox : ${JSON.stringify(request)}`);
+            command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.setObsBox, minZ: request.minZ, maxZ: request.maxZ, mapRange: request.mapRange });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result._id.toString());
+            command.checkVariables();
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            const resp = await this.slamnavOutput.obsBoxControl(command);
+            this.loggerService.info(`[Control] setObsBox Response : ${JSON.stringify(resp)}`);
+            command.statusChange('accept');
+            await this.databaseOutput.update(command);
+            return { ...resp, minZ: request.minZ, maxZ: request.maxZ, mapRange: request.mapRange };
+        }
+        catch (error) {
+            this.loggerService.error(`[Control] setObsBox : ${(0, common_2.errorToJson)(error)}`);
+            if (command) {
+                command.statusChange(control_domain_1.ControlStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('setObsBox 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getObsBox(request) {
+        let command = null;
+        try {
+            this.loggerService.info(`[Control] getObsBox`);
+            command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.getObsBox });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result._id.toString());
+            command.checkVariables();
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            const resp = await this.slamnavOutput.obsBoxControl(command);
+            this.loggerService.info(`[Control] getObsBox Response : ${JSON.stringify(resp)}`);
+            command.statusChange('accept');
+            await this.databaseOutput.update(command);
+            return { ...resp };
+        }
+        catch (error) {
+            this.loggerService.error(`[Control] getObsBox : ${(0, common_2.errorToJson)(error)}`);
+            if (command) {
+                command.statusChange(control_domain_1.ControlStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('getObsBox 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+    }
     slamConnect() {
         this.slamnav_connection = true;
     }
@@ -2381,6 +2439,9 @@ class ControlModel {
         this.resetField = param.resetField;
         this.position = param.position;
         this.mcuDio = param.mcuDio;
+        this.minZ = param.minZ;
+        this.maxZ = param.maxZ;
+        this.mapRange = param.mapRange;
     }
     assignId(id) {
         this.id = id;
@@ -2472,6 +2533,15 @@ class ControlModel {
                 if (this.safetyField === undefined) {
                     throw new rpc_code_exception_1.RpcCodeException('safetyField 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
+                break;
+            }
+            case control_type_1.ControlCommand.setObsBox: {
+                if (this.minZ === undefined || this.maxZ === undefined || this.mapRange === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minZ, maxZ, mapRange 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            case control_type_1.ControlCommand.getObsBox: {
                 break;
             }
             default: {
@@ -2571,6 +2641,14 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
         this.mqttMicroservice = mqttMicroservice;
         this.pendingService = pendingService;
         this.loggerService = common_2.LoggerService.get('device');
+    }
+    async obsBoxControl(data) {
+        this.loggerService.debug(`[Control] Socket obsBoxControl : ${JSON.stringify(data)}`);
+        const response = this.waitForResponse(data.id, 5000);
+        this.mqttMicroservice.emit('controlRequest', data);
+        const resp = await response;
+        this.loggerService.debug(`[Control] Socket obsBoxControl : ${JSON.stringify(resp)}`);
+        return resp;
     }
     async exAccessoryControl(data) {
         this.loggerService.debug(`[Control] Socket externalControl : ${JSON.stringify(data)}`);
@@ -3058,7 +3136,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], ControlRequestDto.prototype, "onoff", void 0);
@@ -3080,7 +3157,6 @@ __decorate([
         example: 10,
         required: false,
     }),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -3094,7 +3170,6 @@ __decorate([
         ],
         required: false,
     }),
-    (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
 ], ControlRequestDto.prototype, "mcuDio", void 0);
@@ -3112,6 +3187,29 @@ __decorate([
 class ControlResponseDto extends ControlRequestDto {
 }
 exports.ControlResponseDto = ControlResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], ControlResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], ControlResponseDto.prototype, "message", void 0);
 class ControlRequestSlamnav extends ControlRequestDto {
 }
 exports.ControlRequestSlamnav = ControlRequestSlamnav;
@@ -3200,35 +3298,29 @@ class ObsBoxRequestDto {
 exports.ObsBoxRequestDto = ObsBoxRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '장애물감지영역 최소 z값 (0~5m)',
+        description: '장애물감지영역 최소 z값',
         example: '1.3',
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], ObsBoxRequestDto.prototype, "minZ", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '장애물감지영역 최대 z값 (0~5m)',
+        description: '장애물감지영역 최대 z값 ',
         example: '1.3',
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], ObsBoxRequestDto.prototype, "maxZ", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '장애물감지영역 맵 범위 (0~5m)',
+        description: '장애물감지영역 맵 범위',
         example: '1.3',
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], ObsBoxRequestDto.prototype, "mapRange", void 0);
 class ObsBoxResponseDto extends ObsBoxRequestDto {
@@ -3292,7 +3384,6 @@ __decorate([
         type: 'boolean',
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], LEDRequestDto.prototype, "onoff", void 0);
@@ -3314,7 +3405,6 @@ class LEDResponseDto {
 exports.LEDResponseDto = LEDResponseDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'LED를 켰는지/껐는지 여부', example: true }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], LEDResponseDto.prototype, "onoff", void 0);
@@ -3352,7 +3442,6 @@ __decorate([
         example: true,
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], OnOffRequestDto.prototype, "onoff", void 0);
@@ -3361,7 +3450,6 @@ __decorate([
         description: '기능에 따라 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
         example: 10,
     }),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -3386,7 +3474,6 @@ __decorate([
         example: true,
         required: true,
     }),
-    (0, class_validator_1.IsBoolean)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], OnOffResponseDto.prototype, "onoff", void 0);
@@ -3396,7 +3483,6 @@ __decorate([
         example: 10,
         required: false,
     }),
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
@@ -4141,6 +4227,7 @@ __decorate([
     }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Type)(() => String),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
 ], LocalizationRequestDto.prototype, "command", void 0);
@@ -4151,7 +4238,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "x", void 0);
@@ -4162,7 +4248,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "y", void 0);
@@ -4173,7 +4258,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "z", void 0);
@@ -4184,7 +4268,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], LocalizationRequestDto.prototype, "rz", void 0);
@@ -4205,6 +4288,29 @@ __decorate([
 class LocalizationResponseDto extends LocalizationRequestDto {
 }
 exports.LocalizationResponseDto = LocalizationResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], LocalizationResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], LocalizationResponseDto.prototype, "message", void 0);
 class LocalizationResponseSlamnav extends LocalizationResponseDto {
 }
 exports.LocalizationResponseSlamnav = LocalizationResponseSlamnav;
@@ -4411,26 +4517,36 @@ let MoveService = class MoveService {
         this.loggerService = common_2.LoggerService.get('device');
     }
     async onModuleInit() {
+        console.log('MoveService onModuleInit');
         this.configService = this.configMicroservice.getService('ConfigGrpcService');
     }
     async Move(moveDto) {
-        this.loggerService.info(`[Move] Move ================================`);
-        const command = new move_domain_1.MoveModel(moveDto);
-        this.loggerService.info(`[Move] Move Command : ${JSON.stringify(command)}`);
-        command.checkVariables();
-        const result = await this.databaseOutput.save(command);
-        this.loggerService.info(`[Move] Move DB Save : ${result._id.toString()}`);
-        command.assignId(result._id.toString());
-        if (this.slamnav_connection) {
-            const resp = await this.slamnavOutput.moveRequest(command);
-            this.loggerService.info(`[Move] Move Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            const result = await this.databaseOutput.update(command);
-            this.loggerService.info(`[Move] Move DB Update : ${result?._id.toString()}`);
-            return resp;
+        try {
+            this.loggerService.info(`[Move] Move ================================`);
+            console.log('Move', moveDto);
+            const command = new move_domain_1.MoveModel(moveDto);
+            this.loggerService.info(`[Move] Move Command : ${JSON.stringify(command)}`);
+            command.checkVariables();
+            const result = await this.databaseOutput.save(command);
+            this.loggerService.info(`[Move] Move DB Save : ${result._id.toString()}`);
+            command.assignId(result._id.toString());
+            if (this.slamnav_connection) {
+                const resp = await this.slamnavOutput.moveRequest(command);
+                this.loggerService.info(`[Move] Move Response : ${JSON.stringify(resp)}`);
+                command.statusChange('accept');
+                const result = await this.databaseOutput.update(command);
+                this.loggerService.info(`[Move] Move DB Update : ${result?._id.toString()}`);
+                return resp;
+            }
+            else {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
         }
-        else {
-            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.loggerService.error(`[Move] Move : ${error}`);
+            throw new rpc_code_exception_1.RpcCodeException('Move 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
     slamConnect() {
@@ -4508,8 +4624,6 @@ let MoveService = class MoveService {
             if (request.num === undefined || request.num === null || request.num === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('num 값이 없습니다. 가져올 로그의 개수를 입력해주세요.     ', constant_1.GrpcCode.InvalidArgument);
             }
-            const dd = await this.databaseOutput.getLogLast(request);
-            console.log(dd);
             return this.databaseOutput.getLogLast(request);
         }
         catch (error) {
@@ -4609,9 +4723,6 @@ class MoveModel {
             if (this.preset === undefined) {
                 this.preset = 0;
             }
-            if (this.direction === undefined || (this.direction !== 'forward' && this.direction !== 'backward')) {
-                throw new rpc_code_exception_1.RpcCodeException('direction 값이 없거나 올바르지 않습니다', constant_1.GrpcCode.InvalidArgument);
-            }
         }
         else if (this.command === move_type_1.MoveCommand.moveTarget) {
             if (this.x === undefined || this.y === undefined || this.z === undefined || this.rz === undefined) {
@@ -4622,9 +4733,6 @@ class MoveModel {
             }
             if (this.preset === undefined) {
                 this.preset = 0;
-            }
-            if (this.direction === undefined || (this.direction !== 'forward' && this.direction !== 'backward')) {
-                throw new rpc_code_exception_1.RpcCodeException('direction 값이 없거나 올바르지 않습니다', constant_1.GrpcCode.InvalidArgument);
             }
         }
         else if (this.command === move_type_1.MoveCommand.moveJog) {
@@ -4639,6 +4747,7 @@ class MoveModel {
         else if (this.command === move_type_1.MoveCommand.moveResume) {
         }
         else if (this.command === move_type_1.MoveCommand.moveXLinear) {
+            console.log('moveXLinear', this.target, this.speed, this.direction);
             if (this.target === undefined) {
                 throw new rpc_code_exception_1.RpcCodeException('target 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
@@ -4871,6 +4980,8 @@ let MoveMongoAdapter = class MoveMongoAdapter {
                     createAt: item.createdAt.toISOString(),
                     updateAt: item.updatedAt.toISOString(),
                     direction: item.direction,
+                    target: item.target,
+                    speed: item.speed,
                 })),
                 pageSize,
                 totalCount,
@@ -4990,6 +5101,14 @@ __decorate([
 ], Move.prototype, "wz", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Move.prototype, "target", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Move.prototype, "speed", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
     __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], Move.prototype, "createdAt", void 0);
 __decorate([
@@ -5045,6 +5164,7 @@ let MoveGrpcInputController = class MoveGrpcInputController {
         return this.moveService.moveLastGoal();
     }
     moveCommand(request, metadata) {
+        console.log('moveCommand', request);
         return this.moveService.Move(request);
     }
     moveGoal(request, metadata) {
@@ -5303,7 +5423,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MoveLogLastResponseDto = exports.MoveLogLastRequestDto = exports.MoveLogResponseDto = exports.MoveLogRequestDto = exports.MoveResponseFrs = exports.MoveResponseSlamnav = exports.MoveRequestSlamnav = exports.MoveResponseDto = exports.MoveTargetCommandDto = exports.MoveGoalCommandDto = exports.MoveRequestDto = void 0;
+exports.MoveLinearRequestDto = exports.MoveLogLastResponseDto = exports.MoveLogLastRequestDto = exports.MoveLogResponseDto = exports.MoveLogRequestDto = exports.MoveResponseFrs = exports.MoveResponseSlamnav = exports.MoveRequestSlamnav = exports.MoveResponseDto = exports.MoveTargetCommandDto = exports.MoveGoalCommandDto = exports.MoveRequestDto = void 0;
 const class_validator_1 = __webpack_require__(80);
 const class_transformer_1 = __webpack_require__(79);
 const swagger_1 = __webpack_require__(78);
@@ -5370,50 +5490,29 @@ __decorate([
 ], MoveRequestDto.prototype, "method", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: Description.DIRECTION,
-        example: 'forward',
-        enum: ['forward', 'backward'],
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", String)
-], MoveRequestDto.prototype, "direction", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
         description: Description.PRESET,
         example: 0,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "preset", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0, required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "z", void 0);
@@ -5424,8 +5523,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "rz", void 0);
@@ -5436,8 +5533,6 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "vx", void 0);
@@ -5459,10 +5554,40 @@ __decorate([
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], MoveRequestDto.prototype, "wz", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동거리 [m] | circularMove 이동거리 [deg] | rotateMove 이동거리 [deg]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveRequestDto.prototype, "target", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동속도 [m/s] | circularMove 이동속도 [deg/s] | rotateMove 이동속도 [deg/s]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveRequestDto.prototype, "speed", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, swagger_1.ApiProperty)({
+        description: 'circularMove 방향 [left, right]',
+        enum: ['left', 'right'],
+        example: 'left',
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveRequestDto.prototype, "direction", void 0);
 class MoveGoalCommandDto {
 }
 exports.MoveGoalCommandDto = MoveGoalCommandDto;
@@ -5488,8 +5613,6 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveGoalCommandDto.prototype, "preset", void 0);
@@ -5515,33 +5638,23 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.PRESET, example: 0 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "preset", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.X, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "x", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Y, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "y", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.Z, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "z", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: Description.RZ, example: 0 }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], MoveTargetCommandDto.prototype, "rz", void 0);
 __decorate([
@@ -5555,6 +5668,29 @@ __decorate([
 class MoveResponseDto extends MoveRequestDto {
 }
 exports.MoveResponseDto = MoveResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveResponseDto.prototype, "message", void 0);
 class MoveRequestSlamnav extends MoveRequestDto {
 }
 exports.MoveRequestSlamnav = MoveRequestSlamnav;
@@ -5634,8 +5770,6 @@ exports.MoveLogLastRequestDto = MoveLogLastRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '조회할 로그 개수', example: 5 }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], MoveLogLastRequestDto.prototype, "num", void 0);
 __decorate([
@@ -5666,6 +5800,58 @@ __decorate([
     (0, class_validator_1.IsArray)(),
     __metadata("design:type", Array)
 ], MoveLogLastResponseDto.prototype, "list", void 0);
+var LinearMoveCommand;
+(function (LinearMoveCommand) {
+    LinearMoveCommand["moveXLinear"] = "xLinear";
+    LinearMoveCommand["movecircular"] = "circular";
+    LinearMoveCommand["moveRotate"] = "rotate";
+    LinearMoveCommand["linearStop"] = "stop";
+})(LinearMoveCommand || (LinearMoveCommand = {}));
+class MoveLinearRequestDto {
+}
+exports.MoveLinearRequestDto = MoveLinearRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'Linear Move 명령구분',
+        example: LinearMoveCommand.moveXLinear,
+        enum: LinearMoveCommand,
+    }),
+    __metadata("design:type", String)
+], MoveLinearRequestDto.prototype, "command", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동거리 [m] | circularMove 이동거리 [deg] | rotateMove 이동거리 [deg]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveLinearRequestDto.prototype, "target", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'linearXMove 이동속도 [m/s] | circularMove 이동속도 [deg/s] | rotateMove 이동속도 [deg/s]',
+        example: 0,
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number)
+], MoveLinearRequestDto.prototype, "speed", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    (0, swagger_1.ApiProperty)({
+        description: 'circularMove 방향 [left, right]',
+        enum: ['left', 'right'],
+        example: 'left',
+    }),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], MoveLinearRequestDto.prototype, "direction", void 0);
 
 
 /***/ }),
@@ -5780,7 +5966,6 @@ exports.getPaginationOffset = getPaginationOffset;
 exports.getPaginationLimit = getPaginationLimit;
 const class_validator_1 = __webpack_require__(80);
 const swagger_1 = __webpack_require__(78);
-const class_transformer_1 = __webpack_require__(79);
 class PaginationRequest {
     getOffset() {
         if (this.pageNo === null || this.pageNo === undefined || this.pageNo < 1) {
@@ -5800,9 +5985,7 @@ class PaginationRequest {
 }
 exports.PaginationRequest = PaginationRequest;
 __decorate([
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, swagger_1.ApiProperty)({
         example: '1',
         description: '페이지 번호',
@@ -5811,9 +5994,7 @@ __decorate([
     __metadata("design:type", Number)
 ], PaginationRequest.prototype, "pageNo", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Number),
     (0, swagger_1.ApiProperty)({
         example: '10',
         description: '페이지당 항목 수',
@@ -6016,6 +6197,9 @@ async function bootstrap() {
             package: common_1.MoveMicroservice.protobufPackage,
             protoPath: (0, path_1.join)(process.cwd(), 'proto/move.proto'),
             url: config.get('MOVE_GRPC_URL'),
+            loader: {
+                defaults: true,
+            },
         },
     });
     moveModule.connectMicroservice({

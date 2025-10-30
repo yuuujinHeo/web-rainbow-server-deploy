@@ -5,6 +5,7 @@ package amr;
 service AmrGrpcService {
   rpc ReadAmrList(ReadAmrListRequest) returns (ReadAmrListResponse);
   rpc ReadAmr(ReadAmrRequest) returns (ReadAmrResponse);
+  rpc ExistsAmr(ExistsAmrRequest) returns (ExistsAmrResponse);
   rpc CreateAmr(CreateAmrRequest) returns (CreateAmrResponse);
   rpc UpdateAmr(UpdateAmrRequest) returns (UpdateAmrResponse);
   rpc DeleteAmr(DeleteAmrRequest) returns (DeleteAmrResponse);
@@ -21,6 +22,10 @@ message ReadAmrRequest {
   optional string updatedAt = 8;
   optional string createdBy = 9;
   optional string updatedBy = 10;
+}
+
+message ExistsAmrRequest {
+  string amrSerial = 1;
 }
 
 message ReadAmrListRequest {
@@ -57,19 +62,17 @@ message ReadAmrResponse {
   optional string updatedBy = 10;
 }
 
+message ExistsAmrResponse {
+  bool exists = 1;
+}
+
 message ReadAmrListResponse {
   int32 pageNo = 1;
   int32 pageSize = 2;
   int32 totalCount = 3;
   int32 totalPage = 4;
-  optional string searchType = 5;
-  optional string searchText = 6;
-  optional string createdAtStart = 7;
-  optional string createdAtEnd = 8;
-  optional string updatedAtStart = 9;
-  optional string updatedAtEnd = 10;
 
-  repeated Amr data = 11;
+  repeated Amr data = 5;
 
   message Amr {
     string amrSerial = 1;

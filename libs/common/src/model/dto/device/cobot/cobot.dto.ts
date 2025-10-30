@@ -17,6 +17,21 @@ export enum CobotCommand {
   requestData = 'reqdata',
 }
 
+export enum CobotCommandType {
+  Connect = 'connect',
+  ConnectCommand = 'connectCommand',
+  ConnectData = 'connectData',
+  ChangeMode = 'changeMode',
+  Move = 'move',
+  ChangeSpeed = 'changeSpeed',
+  Init = 'init',
+  Disconnect = 'disconnect',
+  DisconnectCommand = 'disconnectCommand',
+  DisconnectData = 'disconnectData',
+  SendCommand = 'sendCommand',
+  SetProgram = 'setProgram',
+}
+
 export class CobotCommandRequestDto {
   @ApiProperty({
     description: '명령을 보낼 협동로봇의 ID',
@@ -145,8 +160,6 @@ export class CobotMoveRequestDto {
     example: [0, 0, 0, 0, 0, 0],
     required: true,
   })
-  @Type(() => Number)
-  @IsArray()
   @IsNotEmpty()
   pose: number[];
 
@@ -155,8 +168,6 @@ export class CobotMoveRequestDto {
     example: 20,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   @IsNotEmpty()
   speed: number;
 
@@ -165,8 +176,6 @@ export class CobotMoveRequestDto {
     example: 5,
     required: true,
   })
-  @Type(() => Number)
-  @IsNumber()
   @IsNotEmpty()
   acceleration: number;
 
@@ -198,8 +207,6 @@ export class CobotSpeedRequestDto {
     example: 50,
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
   @IsNotEmpty()
   speed: number;
 }
@@ -256,8 +263,6 @@ export class GetConnectStateResponseDto extends GetConnectStateRequestDto {
     example: true,
     required: true,
   })
-  @IsBoolean()
-  @Type(() => Boolean)
   @IsNotEmpty()
   commandConnected: boolean;
 
@@ -266,8 +271,6 @@ export class GetConnectStateResponseDto extends GetConnectStateRequestDto {
     example: true,
     required: true,
   })
-  @IsBoolean()
-  @Type(() => Boolean)
   @IsNotEmpty()
   dataConnected: boolean;
 }
@@ -278,8 +281,6 @@ export class GetCobotTcpServerRequestDto {
     example: 18000,
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
   @IsNotEmpty()
   port: number;
 }
@@ -292,7 +293,6 @@ export class TcpServerInfoDto {
     example: 18000,
     required: true,
   })
-  @IsNumber()
   @IsNotEmpty()
   port: number;
 
@@ -310,8 +310,6 @@ export class TcpServerInfoDto {
     example: 1,
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
   @IsNotEmpty()
   clients: number;
 }
@@ -340,8 +338,6 @@ export class CreateTcpServerRequestDto {
     example: 18000,
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
   @IsNotEmpty()
   port: number;
 }
@@ -363,8 +359,6 @@ export class CloseTcpServerRequestDto {
     example: 18000,
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
   @IsNotEmpty()
   port: number;
 }
@@ -375,8 +369,6 @@ export class CloseTcpServerResponseDto extends CloseTcpServerRequestDto {
     example: 0,
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
   @IsNotEmpty()
   clients: number;
 }

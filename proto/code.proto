@@ -84,14 +84,8 @@ message ReadCodeListResponse {
   int32 pageSize = 2;
   int32 totalCount = 3;
   int32 totalPage = 4;
-  optional string searchType = 5;
-  optional string searchText = 6;
-  optional string createdAtStart = 7;
-  optional string createdAtEnd = 8;
-  optional string updatedAtStart = 9;
-  optional string updatedAtEnd = 10;
 
-  repeated Code data = 11;
+  repeated Code data = 5;
 
   message Code {
     string codeId = 1;

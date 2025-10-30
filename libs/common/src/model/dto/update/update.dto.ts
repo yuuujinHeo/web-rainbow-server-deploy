@@ -49,7 +49,6 @@ export class CommitDto {
   })
   name: string;
 
-  @IsBoolean()
   @IsNotEmpty()
   @ApiPropertyOptional({
     description: 'commit protected',
@@ -81,7 +80,6 @@ export class ResponseReleaseAppsBranches {
   })
   name: string;
 
-  @IsBoolean()
   @IsNotEmpty()
   @ApiPropertyOptional({
     description: Description.BRANCH,
@@ -137,8 +135,6 @@ export class ResponseReleaseVersionInfoDto {
   })
   sha: string;
 
-  @IsNumber()
-  @Type(() => Number)
   @IsNotEmpty()
   @ApiPropertyOptional({
     description: 'version size',

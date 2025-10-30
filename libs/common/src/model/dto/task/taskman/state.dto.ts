@@ -13,7 +13,6 @@ export class TaskStateDto {
   @Optional()
   id?: string;
 
-  @IsBoolean()
   @IsOptional()
   connection: boolean;
 
@@ -31,7 +30,6 @@ export class TaskStateDto {
   taskName: string;
 
   @ApiProperty({ description: Description.RUNNING, example: true })
-  @IsBoolean()
   running: boolean;
 
   @ApiProperty({ description: Description.TASKID, example: 1 })

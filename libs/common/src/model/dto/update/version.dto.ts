@@ -39,7 +39,6 @@ export class GetNewVersionResponseDto extends GetNewVersionRequestDto {
   })
   version?: string;
 
-  @IsBoolean()
   @IsNotEmpty()
   @ApiPropertyOptional({
     description: Description.HOTFIX,

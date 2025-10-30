@@ -56,7 +56,28 @@ export class LoadRequestDto {
   mapName?: string;
 }
 
-export class LoadResponseDto extends LoadRequestDto {}
+export class LoadResponseDto extends LoadRequestDto {
+  @ApiProperty({
+    description: Description.RESULT,
+    example: 'accept',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  result: string;
+
+  @ApiProperty({
+    description: Description.MESSAGE,
+    example: '',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Length(1, 50)
+  @Expose()
+  message?: string;
+}
 
 export class LoadRequestSlamnav extends LoadRequestDto {
   @ApiProperty({

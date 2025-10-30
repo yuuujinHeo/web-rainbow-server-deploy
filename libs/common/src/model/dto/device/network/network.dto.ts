@@ -38,7 +38,6 @@ export class SetNetworkRequestDto {
     example: false,
     required: true,
   })
-  @IsBoolean()
   @IsNotEmpty()
   dhcp: boolean;
 

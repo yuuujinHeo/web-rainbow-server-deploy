@@ -99,6 +99,8 @@ export class SaveCloudPipeResponseDto extends FileDto {
   filePath: string;
 }
 
+export class GetTopologyPipeRequestDto extends FileDto {}
+
 export class GetTopologyRequestDto extends PaginationRequest {
   @ApiProperty({ description: Description.MAPNAME, example: 'Small' })
   @IsString()
@@ -171,7 +173,6 @@ export class DownloadMapRequestDto {
     description: Description.IS_FORCE,
     example: false,
   })
-  @IsBoolean()
   isForce: boolean;
 }
 

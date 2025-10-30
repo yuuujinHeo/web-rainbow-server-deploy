@@ -19,9 +19,24 @@ export enum RobotType {
   UNRECOGNIZED = -1,
 }
 
-export interface CreateRobotCacheRequest {
-  robotType: RobotType;
+export enum SocketType {
+  CLIENT = 0,
+  AMR = 1,
+  UNRECOGNIZED = -1,
+}
+
+export interface ExistsRobotCacheRequest {
   robotSerial: string;
+  robotType: RobotType;
+}
+
+export interface ExistsRobotCacheResponse {
+  exists: boolean;
+}
+
+export interface CreateRobotCacheRequest {
+  robotSerial: string;
+  robotType: RobotType;
   robotName?: string | undefined;
   robotIpAddress?: string | undefined;
   robotUri?: string | undefined;
@@ -29,8 +44,8 @@ export interface CreateRobotCacheRequest {
 }
 
 export interface CreateRobotCacheResponse {
-  robotType: RobotType;
   robotSerial: string;
+  robotType: RobotType;
   robotName: string;
   robotIpAddress: string;
   robotUri: string;
@@ -38,14 +53,14 @@ export interface CreateRobotCacheResponse {
 }
 
 export interface UpdateRobotCacheRequest {
-  robotType: RobotType;
   robotSerial: string;
-  robot?: UpdateRobotCacheRequest_Robot | undefined;
+  robotType: RobotType;
+  data?: UpdateRobotCacheRequest_Robot | undefined;
 }
 
 export interface UpdateRobotCacheRequest_Robot {
-  robotType?: RobotType | undefined;
   robotSerial?: string | undefined;
+  robotType?: RobotType | undefined;
   robotName?: string | undefined;
   robotIpAddress?: string | undefined;
   robotUri?: string | undefined;
@@ -53,8 +68,8 @@ export interface UpdateRobotCacheRequest_Robot {
 }
 
 export interface UpdateRobotCacheResponse {
-  robotType: RobotType;
   robotSerial: string;
+  robotType: RobotType;
   robotName: string;
   robotIpAddress: string;
   robotUri: string;
@@ -62,30 +77,43 @@ export interface UpdateRobotCacheResponse {
 }
 
 export interface ReadRobotCacheRequest {
+  robotSerial: string;
   robotType?: RobotType | undefined;
-  robotSerial?: string | undefined;
-  robotName?: string | undefined;
-  robotIpAddress?: string | undefined;
-  robotUri?: string | undefined;
-  robotApproveYn?: string | undefined;
 }
 
 export interface ReadRobotCacheResponse {
-  robotType: RobotType;
   robotSerial: string;
+  robotType: RobotType;
   robotName: string;
   robotIpAddress: string;
   robotUri: string;
   robotApproveYn: string;
 }
 
+export interface ReadRobotCacheListRequest {
+  pageNo?: number | undefined;
+  pageSize?: number | undefined;
+  searchType?: string | undefined;
+  searchText?: string | undefined;
+  robotSerial?: string | undefined;
+  robotType?: RobotType | undefined;
+  robotName?: string | undefined;
+  robotIpAddress?: string | undefined;
+  robotUri?: string | undefined;
+  robotApproveYn?: string | undefined;
+}
+
 export interface ReadRobotCacheListResponse {
+  pageNo: number;
+  pageSize: number;
+  totalCount: number;
+  totalPage: number;
   data: ReadRobotCacheListResponse_Robot[];
 }
 
 export interface ReadRobotCacheListResponse_Robot {
-  robotType: RobotType;
   robotSerial: string;
+  robotType: RobotType;
   robotName: string;
   robotIpAddress: string;
   robotUri: string;
@@ -93,13 +121,13 @@ export interface ReadRobotCacheListResponse_Robot {
 }
 
 export interface DeleteRobotCacheRequest {
-  robotType: RobotType;
   robotSerial: string;
+  robotType: RobotType;
 }
 
 export interface DeleteRobotCacheResponse {
-  robotType: RobotType;
   robotSerial: string;
+  robotType: RobotType;
   robotName: string;
   robotIpAddress: string;
   robotUri: string;
@@ -108,61 +136,74 @@ export interface DeleteRobotCacheResponse {
 
 export interface CreateSocketCacheRequest {
   socketKey: string;
-  socketType?: string | undefined;
+  socketType: SocketType;
   socketValue?: string | undefined;
 }
 
 export interface CreateSocketCacheResponse {
   socketKey: string;
-  socketType: string;
+  socketType: SocketType;
   socketValue: string;
 }
 
 export interface UpdateSocketCacheRequest {
   socketKey: string;
-  socket?: UpdateSocketCacheRequest_Socket | undefined;
+  socketType: SocketType;
+  data?: UpdateSocketCacheRequest_Socket | undefined;
 }
 
 export interface UpdateSocketCacheRequest_Socket {
-  socketType?: string | undefined;
-  socketKey?: string | undefined;
   socketValue?: string | undefined;
 }
 
 export interface UpdateSocketCacheResponse {
   socketKey: string;
-  socketType: string;
+  socketType: SocketType;
   socketValue: string;
 }
 
 export interface ReadSocketCacheRequest {
-  socketKey?: string | undefined;
-  socketType?: string | undefined;
+  socketKey: string;
+  socketType: SocketType;
 }
 
 export interface ReadSocketCacheResponse {
   socketKey: string;
-  socketType: string;
+  socketType: SocketType;
   socketValue: string;
 }
 
+export interface ReadSocketCacheListRequest {
+  pageNo?: number | undefined;
+  pageSize?: number | undefined;
+  searchType?: string | undefined;
+  searchText?: string | undefined;
+  socketKey?: string | undefined;
+  socketType?: SocketType | undefined;
+}
+
 export interface ReadSocketCacheListResponse {
+  pageNo: number;
+  pageSize: number;
+  totalCount: number;
+  totalPage: number;
   data: ReadSocketCacheListResponse_Socket[];
 }
 
 export interface ReadSocketCacheListResponse_Socket {
-  socketType?: string | undefined;
   socketKey?: string | undefined;
+  socketType?: SocketType | undefined;
   socketValue?: string | undefined;
 }
 
 export interface DeleteSocketCacheRequest {
   socketKey: string;
+  socketType: SocketType;
 }
 
 export interface DeleteSocketCacheResponse {
-  socketType: string;
   socketKey: string;
+  socketType: SocketType;
   socketValue: string;
 }
 
@@ -171,7 +212,10 @@ export const REDIS_PACKAGE_NAME = "redis";
 export interface RedisSocketCacheGrpcServiceClient {
   readSocketCache(request: ReadSocketCacheRequest, metadata?: Metadata): Observable<ReadSocketCacheResponse>;
 
-  readSocketCacheList(request: ReadSocketCacheRequest, metadata?: Metadata): Observable<ReadSocketCacheListResponse>;
+  readSocketCacheList(
+    request: ReadSocketCacheListRequest,
+    metadata?: Metadata,
+  ): Observable<ReadSocketCacheListResponse>;
 
   createSocketCache(request: CreateSocketCacheRequest, metadata?: Metadata): Observable<CreateSocketCacheResponse>;
 
@@ -187,7 +231,7 @@ export interface RedisSocketCacheGrpcServiceController {
   ): Promise<ReadSocketCacheResponse> | Observable<ReadSocketCacheResponse> | ReadSocketCacheResponse;
 
   readSocketCacheList(
-    request: ReadSocketCacheRequest,
+    request: ReadSocketCacheListRequest,
     metadata?: Metadata,
   ): Promise<ReadSocketCacheListResponse> | Observable<ReadSocketCacheListResponse> | ReadSocketCacheListResponse;
 
@@ -233,7 +277,9 @@ export const REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = "RedisSocketCacheGrpcService
 export interface RedisRobotCacheGrpcServiceClient {
   readRobotCache(request: ReadRobotCacheRequest, metadata?: Metadata): Observable<ReadRobotCacheResponse>;
 
-  readRobotCacheList(request: ReadRobotCacheRequest, metadata?: Metadata): Observable<ReadRobotCacheListResponse>;
+  existsRobotCache(request: ExistsRobotCacheRequest, metadata?: Metadata): Observable<ExistsRobotCacheResponse>;
+
+  readRobotCacheList(request: ReadRobotCacheListRequest, metadata?: Metadata): Observable<ReadRobotCacheListResponse>;
 
   createRobotCache(request: CreateRobotCacheRequest, metadata?: Metadata): Observable<CreateRobotCacheResponse>;
 
@@ -248,8 +294,13 @@ export interface RedisRobotCacheGrpcServiceController {
     metadata?: Metadata,
   ): Promise<ReadRobotCacheResponse> | Observable<ReadRobotCacheResponse> | ReadRobotCacheResponse;
 
+  existsRobotCache(
+    request: ExistsRobotCacheRequest,
+    metadata?: Metadata,
+  ): Promise<ExistsRobotCacheResponse> | Observable<ExistsRobotCacheResponse> | ExistsRobotCacheResponse;
+
   readRobotCacheList(
-    request: ReadRobotCacheRequest,
+    request: ReadRobotCacheListRequest,
     metadata?: Metadata,
   ): Promise<ReadRobotCacheListResponse> | Observable<ReadRobotCacheListResponse> | ReadRobotCacheListResponse;
 
@@ -273,6 +324,7 @@ export function RedisRobotCacheGrpcServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
       "readRobotCache",
+      "existsRobotCache",
       "readRobotCacheList",
       "createRobotCache",
       "updateRobotCache",

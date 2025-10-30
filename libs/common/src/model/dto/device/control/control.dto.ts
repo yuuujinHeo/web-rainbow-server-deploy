@@ -37,7 +37,6 @@ export class ControlRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsBoolean()
   @Expose()
   onoff?: boolean;
 
@@ -57,7 +56,6 @@ export class ControlRequestDto {
     example: 10,
     required: false,
   })
-  @IsNumber()
   @IsOptional()
   @Expose()
   frequency?: number;
@@ -70,7 +68,6 @@ export class ControlRequestDto {
     ],
     required: false,
   })
-  @IsArray()
   @IsOptional()
   mcuDio?: number[][];
 
@@ -85,7 +82,28 @@ export class ControlRequestDto {
   safetyField?: string;
 }
 
-export class ControlResponseDto extends ControlRequestDto {}
+export class ControlResponseDto extends ControlRequestDto {
+  @ApiProperty({
+    description: Description.RESULT,
+    example: 'accept',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  result: string;
+
+  @ApiProperty({
+    description: Description.MESSAGE,
+    example: '',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Length(1, 50)
+  @Expose()
+  message?: string;
+}
 
 export class ControlRequestSlamnav extends ControlRequestDto {
   @ApiProperty({
@@ -162,33 +180,27 @@ export class ControlResponseFrs {
 
 export class ObsBoxRequestDto {
   @ApiProperty({
-    description: '장애물감지영역 최소 z값 (0~5m)',
+    description: '장애물감지영역 최소 z값',
     example: '1.3',
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   minZ?: number;
 
   @ApiProperty({
-    description: '장애물감지영역 최대 z값 (0~5m)',
+    description: '장애물감지영역 최대 z값 ',
     example: '1.3',
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   maxZ?: number;
 
   @ApiProperty({
-    description: '장애물감지영역 맵 범위 (0~5m)',
+    description: '장애물감지영역 맵 범위',
     example: '1.3',
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   mapRange?: number;
 }
 
@@ -244,7 +256,6 @@ export class LEDRequestDto {
     type: 'boolean',
     required: true,
   })
-  @IsBoolean()
   @Expose()
   onoff: boolean;
 
@@ -263,7 +274,6 @@ export class LEDRequestDto {
 
 export class LEDResponseDto {
   @ApiProperty({ description: 'LED를 켰는지/껐는지 여부', example: true })
-  @IsBoolean()
   @Expose()
   onoff: boolean;
 
@@ -296,7 +306,6 @@ export class OnOffRequestDto {
     example: true,
     required: true,
   })
-  @IsBoolean()
   @Expose()
   onoff: boolean;
 
@@ -305,7 +314,6 @@ export class OnOffRequestDto {
       '기능에 따라 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
     example: 10,
   })
-  @IsNumber()
   @IsOptional()
   @Expose()
   frequency?: number;
@@ -327,7 +335,6 @@ export class OnOffResponseDto {
     example: true,
     required: true,
   })
-  @IsBoolean()
   @Expose()
   onoff: boolean;
 
@@ -336,7 +343,6 @@ export class OnOffResponseDto {
     example: 10,
     required: false,
   })
-  @IsNumber()
   @IsOptional()
   @Expose()
   frequency?: number;

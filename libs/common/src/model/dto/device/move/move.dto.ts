@@ -62,46 +62,26 @@ export class MoveRequestDto {
   method?: string;
 
   @ApiProperty({
-    description: Description.DIRECTION,
-    example: 'forward',
-    enum: ['forward', 'backward'],
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @Length(1, 50)
-  @Expose()
-  direction?: string;
-
-  @ApiProperty({
     description: Description.PRESET,
     example: 0,
     required: false,
   })
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
   @Expose()
   preset?: number;
 
   @ApiProperty({ description: Description.X, example: 0, required: false })
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
   @Expose()
   x?: number;
 
   @ApiProperty({ description: Description.Y, example: 0, required: false })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   @Expose()
   y?: number;
 
   @ApiProperty({ description: Description.Z, example: 0, required: false })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   @Expose()
   z?: number;
 
@@ -111,8 +91,6 @@ export class MoveRequestDto {
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   @Expose()
   rz?: number;
 
@@ -122,8 +100,6 @@ export class MoveRequestDto {
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   @Expose()
   vx?: number;
 
@@ -143,9 +119,36 @@ export class MoveRequestDto {
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   wz?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    description: 'linearXMove 이동거리 [m] | circularMove 이동거리 [deg] | rotateMove 이동거리 [deg]',
+    example: 0,
+  })
+  @Expose()
+  target?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    description: 'linearXMove 이동속도 [m/s] | circularMove 이동속도 [deg/s] | rotateMove 이동속도 [deg/s]',
+    example: 0,
+  })
+  @Expose()
+  speed?: number;
+
+  @IsOptional()
+  @IsString()
+  @Length(1, 50)
+  @ApiProperty({
+    description: 'circularMove 방향 [left, right]',
+    enum: ['left', 'right'],
+    example: 'left',
+  })
+  @Expose()
+  direction?: string;
 }
 
 export class MoveGoalCommandDto {
@@ -168,8 +171,6 @@ export class MoveGoalCommandDto {
 
   @ApiProperty({ description: Description.PRESET, example: 0 })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   @Expose()
   preset?: number;
 
@@ -191,29 +192,19 @@ export class MoveTargetCommandDto {
 
   @ApiProperty({ description: Description.PRESET, example: 0 })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   @Expose()
   preset?: number;
 
   @ApiProperty({ description: Description.X, example: 0 })
-  @IsNumber()
-  @Type(() => Number)
   x: number;
 
   @ApiProperty({ description: Description.Y, example: 0 })
-  @IsNumber()
-  @Type(() => Number)
   y: number;
 
   @ApiProperty({ description: Description.Z, example: 0 })
-  @IsNumber()
-  @Type(() => Number)
   z: number;
 
   @ApiProperty({ description: Description.RZ, example: 0 })
-  @IsNumber()
-  @Type(() => Number)
   rz: number;
 
   @ApiProperty({ description: Description.DIRECTION, example: 'forward' })
@@ -224,7 +215,28 @@ export class MoveTargetCommandDto {
   direction?: string;
 }
 
-export class MoveResponseDto extends MoveRequestDto {}
+export class MoveResponseDto extends MoveRequestDto {
+  @ApiProperty({
+    description: Description.RESULT,
+    example: 'accept',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  @Expose()
+  result: string;
+
+  @ApiProperty({
+    description: Description.MESSAGE,
+    example: '',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Length(1, 50)
+  @Expose()
+  message?: string;
+}
 
 export class MoveRequestSlamnav extends MoveRequestDto {
   @ApiProperty({
@@ -291,8 +303,6 @@ export class MoveLogResponseDto extends PaginationResponse<MoveLog> {}
 export class MoveLogLastRequestDto {
   @ApiProperty({ description: '조회할 로그 개수', example: 5 })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   num: number;
 
   @ApiProperty({ description: '조회할 명령', required: false })
@@ -319,4 +329,51 @@ export class MoveLogLastResponseDto {
   })
   @IsArray()
   list: MoveLog[];
+}
+
+enum LinearMoveCommand {
+  moveXLinear = 'xLinear',
+  movecircular = 'circular',
+  moveRotate = 'rotate',
+  linearStop = 'stop',
+}
+
+export class MoveLinearRequestDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Linear Move 명령구분',
+    example: LinearMoveCommand.moveXLinear,
+    enum: LinearMoveCommand,
+  })
+  command: string;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    description: 'linearXMove 이동거리 [m] | circularMove 이동거리 [deg] | rotateMove 이동거리 [deg]',
+    example: 0,
+  })
+  @Expose()
+  target?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    description: 'linearXMove 이동속도 [m/s] | circularMove 이동속도 [deg/s] | rotateMove 이동속도 [deg/s]',
+    example: 0,
+  })
+  @Expose()
+  speed?: number;
+
+  @IsOptional()
+  @IsString()
+  @Length(1, 50)
+  @ApiProperty({
+    description: 'circularMove 방향 [left, right]',
+    enum: ['left', 'right'],
+    example: 'left',
+  })
+  @Expose()
+  direction?: 'left' | 'right';
 }

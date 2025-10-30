@@ -85,12 +85,6 @@ export interface ReadCodeListResponse {
   pageSize: number;
   totalCount: number;
   totalPage: number;
-  searchType?: string | undefined;
-  searchText?: string | undefined;
-  createdAtStart?: string | undefined;
-  createdAtEnd?: string | undefined;
-  updatedAtStart?: string | undefined;
-  updatedAtEnd?: string | undefined;
   data: ReadCodeListResponse_Code[];
 }
 

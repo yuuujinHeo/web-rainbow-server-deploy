@@ -24,6 +24,8 @@ export interface OnOffControlResponse {
   command: string;
   onoff: boolean;
   frequency?: number | undefined;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface WorkControlRequest {
@@ -32,6 +34,8 @@ export interface WorkControlRequest {
 
 export interface WorkControlResponse {
   command: string;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface LEDControlRequest {
@@ -44,6 +48,8 @@ export interface LEDControlResponse {
   command: string;
   onoff: boolean;
   color?: string | undefined;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface ExAccessoryControlRequest {
@@ -54,6 +60,8 @@ export interface ExAccessoryControlRequest {
 export interface ExAccessoryControlResponse {
   command: string;
   pose?: string | undefined;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface SafetyField {
@@ -77,6 +85,28 @@ export interface SafetyIoControlResponse {
   message?: string | undefined;
 }
 
+export interface SetObsBoxRequest {
+  minZ?: number | undefined;
+  maxZ?: number | undefined;
+  mapRange?: number | undefined;
+}
+
+export interface SetObsBoxResponse {
+  minZ?: number | undefined;
+  maxZ?: number | undefined;
+  mapRange?: number | undefined;
+  result: string;
+  message?: string | undefined;
+}
+
+export interface GetObsBoxResponse {
+  minZ?: number | undefined;
+  maxZ?: number | undefined;
+  mapRange?: number | undefined;
+  result: string;
+  message?: string | undefined;
+}
+
 export const CONTROL_PACKAGE_NAME = "control";
 
 /** led, */
@@ -95,6 +125,10 @@ export interface ControlGrpcServiceClient {
   exAccessoryControl(request: ExAccessoryControlRequest, metadata?: Metadata): Observable<ExAccessoryControlResponse>;
 
   safetyIoControl(request: SafetyIoControlRequest, metadata?: Metadata): Observable<SafetyIoControlResponse>;
+
+  setObsBox(request: SetObsBoxRequest, metadata?: Metadata): Observable<SetObsBoxResponse>;
+
+  getObsBox(request: Empty, metadata?: Metadata): Observable<GetObsBoxResponse>;
 }
 
 /** led, */
@@ -131,6 +165,16 @@ export interface ControlGrpcServiceController {
     request: SafetyIoControlRequest,
     metadata?: Metadata,
   ): Promise<SafetyIoControlResponse> | Observable<SafetyIoControlResponse> | SafetyIoControlResponse;
+
+  setObsBox(
+    request: SetObsBoxRequest,
+    metadata?: Metadata,
+  ): Promise<SetObsBoxResponse> | Observable<SetObsBoxResponse> | SetObsBoxResponse;
+
+  getObsBox(
+    request: Empty,
+    metadata?: Metadata,
+  ): Promise<GetObsBoxResponse> | Observable<GetObsBoxResponse> | GetObsBoxResponse;
 }
 
 export function ControlGrpcServiceControllerMethods() {
@@ -143,6 +187,8 @@ export function ControlGrpcServiceControllerMethods() {
       "getSafetyField",
       "exAccessoryControl",
       "safetyIoControl",
+      "setObsBox",
+      "getObsBox",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

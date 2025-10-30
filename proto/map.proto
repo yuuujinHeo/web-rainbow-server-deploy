@@ -129,6 +129,8 @@ message LoadRequest {
 message LoadResponse {
     string command = 1;
     optional string mapName = 2;
+    string result = 3;
+    optional string message = 4;
 }
 
 message MappingRequest {
