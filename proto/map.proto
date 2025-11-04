@@ -33,6 +33,7 @@ message Pose {
 message Link {
     string id = 1;
     optional string info = 2;
+    optional float speed = 3;
 }
 
 message NewNode {

@@ -26,6 +26,7 @@ export interface Pose {
 export interface Link {
   id: string;
   info?: string | undefined;
+  speed?: number | undefined;
 }
 
 export interface NewNode {

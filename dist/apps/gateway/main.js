@@ -7714,11 +7714,10 @@ let MapApiService = class MapApiService {
             for (let i = 0; i < node.links.length; i++) {
                 const link = node.links[i];
                 if (typeof link === 'string') {
-                    node.links[i] = { id: link, info: '' };
+                    node.links[i] = { id: link };
                 }
             }
         }
-        console.log('dto : ', dto.data);
         return await (0, rxjs_1.lastValueFrom)(this.mapService.saveTopologyNew({ ...dto, data: dto.data }));
     }
     async mappingStart() {
