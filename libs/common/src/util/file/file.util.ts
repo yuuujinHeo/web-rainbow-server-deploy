@@ -285,6 +285,7 @@ export class FileUtil {
       /// 4) JSON 형식으로 변환하여 반환
       return JSON.parse(filecontent);
     } catch (error) {
+      console.error(error);
       if (error instanceof RpcException) throw error;
       //LoggerService.get('util').error(`[File] readJson : ${errorToJson(error)}`);
       throw new RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', GrpcCode.InternalError);

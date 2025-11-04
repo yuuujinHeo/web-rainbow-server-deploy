@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNumber, IsObject, IsString, Length } from 'class-validator';
+import { IsArray, IsNumber, IsObject, IsOptional, IsString, Length } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UrlUtil } from '@app/common/util';
 
@@ -16,6 +16,23 @@ export enum NodeType {
   route = 'ROUTE',
   goal = 'GOAL',
   init = 'INIT',
+}
+
+export class LinkDto {
+  @ApiProperty({
+    description: '노드가 연결되는 다른 노드의 id 값을 나타냅니다. 링크는 단방향입니다',
+    example: 'N_56593',
+    required: true,
+  })
+  id: string;
+
+  @ApiProperty({
+    description: '링크의 정보값을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+    example: '',
+    required: false,
+  })
+  @IsOptional()
+  info?: string;
 }
 
 export class PoseDto {
@@ -99,8 +116,60 @@ export class NodeDto {
     required: true,
   })
   @IsArray()
-  @IsString({ each: true })
   links: string[];
+
+  @ApiProperty({
+    description: Description.TYPE,
+    example: NodeType.goal,
+    enum: NodeType,
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  type: string;
+}
+
+export class NewNodeDto {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  id: string;
+
+  @ApiProperty({
+    description: Description.NAME,
+    example: 'N_15553',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  name: string;
+
+  @ApiProperty({ description: Description.POSE, required: true })
+  @IsObject()
+  pose: PoseDto;
+
+  @ApiProperty({
+    description: Description.INFO,
+    example: '',
+    required: true,
+  })
+  @IsString()
+  info: string;
+
+  @ApiProperty({
+    description: Description.LINKS,
+    example: [
+      { id: 'N_56593', info: '' },
+      { id: 'N_11448', info: '' },
+    ],
+    required: true,
+  })
+  @IsArray()
+  links: LinkDto[];
 
   @ApiProperty({
     description: Description.TYPE,

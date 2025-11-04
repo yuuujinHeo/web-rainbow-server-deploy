@@ -480,6 +480,8 @@ function MapGrpcServiceControllerMethods() {
             "saveCloud",
             "getTopology",
             "saveTopology",
+            "getTopologyNew",
+            "saveTopologyNew",
             "load",
             "mapping",
             "uploadMap",
@@ -1482,6 +1484,7 @@ class FileUtil {
             return JSON.parse(filecontent);
         }
         catch (error) {
+            console.error(error);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);

@@ -4,7 +4,7 @@ import { Expose, Transform } from 'class-transformer';
 import { IsArray, IsBoolean, IsOptional, IsString, Length } from 'class-validator';
 import { MapDto } from './type/map.type';
 import { PaginationRequest } from '@app/common/pagination';
-import { NodeDto } from './type/topo.type';
+import { NodeDto, NewNodeDto } from './type/topo.type';
 
 enum Description {
   MAPNAME = '맵 이름',
@@ -146,13 +146,13 @@ export class GetTopologyRequestDto extends PaginationRequest {
 export class GetTopologyResponseDto extends FileDto {
   @ApiProperty({ description: Description.TOPO, type: [NodeDto], required: true })
   @IsArray()
-  data: NodeDto[];
+  data: NodeDto[] | NewNodeDto[];
 }
 
 export class SaveTopologyRequestDto extends FileDto {
-  @ApiProperty({ description: Description.TOPO, type: [NodeDto], required: true })
+  @ApiProperty({ description: Description.TOPO, required: true })
   @IsArray()
-  data: NodeDto[];
+  data: NodeDto[] | NewNodeDto[];
 }
 export class SaveTopologyResponseDto extends SaveTopologyRequestDto {}
 

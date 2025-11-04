@@ -486,6 +486,8 @@ function MapGrpcServiceControllerMethods() {
             "saveCloud",
             "getTopology",
             "saveTopology",
+            "getTopologyNew",
+            "saveTopologyNew",
             "load",
             "mapping",
             "uploadMap",
@@ -1488,6 +1490,7 @@ class FileUtil {
             return JSON.parse(filecontent);
         }
         catch (error) {
+            console.error(error);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
@@ -1972,6 +1975,12 @@ let MapGrpcInputController = class MapGrpcInputController {
     saveTopology(request) {
         return this.mapService.saveTopology(request);
     }
+    getTopologyNew(request, metadata) {
+        return this.mapService.getTopologyNew(request);
+    }
+    saveTopologyNew(request, metadata) {
+        return this.mapService.saveTopologyNew(request);
+    }
     uploadMap(request, metadata) {
         return this.mapService.uploadMap(request);
     }
@@ -2145,6 +2154,12 @@ let MapService = class MapService {
                 else {
                     throw new rpc_code_exception_1.RpcCodeException('Topology 파일 형식이 올바르지 않습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
+                for (let link of node.links) {
+                    console.log('link : ', link, typeof link);
+                    if (typeof link !== 'string') {
+                        link = link.id;
+                    }
+                }
             });
             await util_1.FileUtil.saveJson(command.path, jsonData);
             command.statusChange(map_command_domain_1.CommandStatus.success);
@@ -2166,6 +2181,105 @@ let MapService = class MapService {
         let command = null;
         try {
             this.loggerService.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
+            command = new map_command_domain_1.MapCommandModel({
+                command: map_command_domain_1.MapCommand.getTopo,
+                mapName: request.mapName,
+                fileName: request.fileName,
+            });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            if (!(0, fs_1.existsSync)(command.path)) {
+                throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
+            }
+            const jsonData = await util_1.FileUtil.readJson(command.path);
+            const data = JSON.parse(JSON.stringify(jsonData)).map((node) => ({
+                id: node.id,
+                name: node.name,
+                pose: {
+                    x: node.pose.split(',')[0],
+                    y: node.pose.split(',')[1],
+                    rz: node.pose.split(',')[5],
+                },
+                info: node.info,
+                links: node.links,
+                type: node.type,
+            }));
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return { ...request, data };
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('Topology를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async saveTopologyNew(request) {
+        let command = null;
+        try {
+            this.loggerService.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
+            command = new map_command_domain_1.MapCommandModel({
+                command: map_command_domain_1.MapCommand.saveTopo,
+                topo: request.data,
+                mapName: request.mapName,
+                fileName: request.fileName,
+            });
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result.id.toString());
+            command.checkVariables();
+            const jsonData = JSON.parse(JSON.stringify(request.data));
+            jsonData.forEach((node) => {
+                if (node.pose.x != undefined) {
+                    node.pose =
+                        node.pose.x +
+                            ',' +
+                            node.pose.y +
+                            ',' +
+                            (node.pose.z ?? '0') +
+                            ',' +
+                            (node.pose.rx ?? '0') +
+                            ',' +
+                            (node.pose.ry ?? '0') +
+                            ',' +
+                            (node.pose.rz ?? '0');
+                }
+                else {
+                    throw new rpc_code_exception_1.RpcCodeException('Topology 파일 형식이 올바르지 않습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (request.fileName != 'node.json') {
+                    for (let i = 0; i < node.links.length; i++) {
+                        if (typeof node.links[i] !== 'string') {
+                            node.links[i] = node.links[i].id;
+                        }
+                    }
+                }
+            });
+            await util_1.FileUtil.saveJson(command.path, jsonData);
+            command.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(command);
+            return request;
+        }
+        catch (error) {
+            this.loggerService.error(`[Map] saveTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            if (command) {
+                command.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('Topology를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getTopologyNew(request) {
+        let command = null;
+        try {
+            this.loggerService.debug(`[Map] getTopologyNew : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({
                 command: map_command_domain_1.MapCommand.getTopo,
                 mapName: request.mapName,

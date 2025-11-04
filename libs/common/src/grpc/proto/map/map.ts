@@ -23,6 +23,20 @@ export interface Pose {
   rz: number;
 }
 
+export interface Link {
+  id: string;
+  info?: string | undefined;
+}
+
+export interface NewNode {
+  id: string;
+  name: string;
+  pose: Pose | undefined;
+  info: string;
+  links: Link[];
+  type: string;
+}
+
 export interface Node {
   id: string;
   name: string;
@@ -130,6 +144,31 @@ export interface SaveTopologyResponse {
   data: Node[];
 }
 
+export interface GetTopologyNewRequest {
+  mapName: string;
+  fileName: string;
+  type?: string | undefined;
+}
+
+export interface GetTopologyNewResponse {
+  mapName: string;
+  fileName: string;
+  type?: string | undefined;
+  data: NewNode[];
+}
+
+export interface SaveTopologyNewRequest {
+  mapName: string;
+  fileName: string;
+  data: NewNode[];
+}
+
+export interface SaveTopologyNewResponse {
+  mapName: string;
+  fileName: string;
+  data: NewNode[];
+}
+
 export interface LoadRequest {
   command: string;
   mapName?: string | undefined;
@@ -216,6 +255,10 @@ export interface MapGrpcServiceClient {
 
   saveTopology(request: SaveTopologyRequest, metadata?: Metadata): Observable<SaveTopologyResponse>;
 
+  getTopologyNew(request: GetTopologyNewRequest, metadata?: Metadata): Observable<GetTopologyNewResponse>;
+
+  saveTopologyNew(request: SaveTopologyNewRequest, metadata?: Metadata): Observable<SaveTopologyNewResponse>;
+
   load(request: LoadRequest, metadata?: Metadata): Observable<LoadResponse>;
 
   mapping(request: MappingRequest, metadata?: Metadata): Observable<MappingResponse>;
@@ -262,6 +305,16 @@ export interface MapGrpcServiceController {
     metadata?: Metadata,
   ): Promise<SaveTopologyResponse> | Observable<SaveTopologyResponse> | SaveTopologyResponse;
 
+  getTopologyNew(
+    request: GetTopologyNewRequest,
+    metadata?: Metadata,
+  ): Promise<GetTopologyNewResponse> | Observable<GetTopologyNewResponse> | GetTopologyNewResponse;
+
+  saveTopologyNew(
+    request: SaveTopologyNewRequest,
+    metadata?: Metadata,
+  ): Promise<SaveTopologyNewResponse> | Observable<SaveTopologyNewResponse> | SaveTopologyNewResponse;
+
   load(request: LoadRequest, metadata?: Metadata): Promise<LoadResponse> | Observable<LoadResponse> | LoadResponse;
 
   mapping(
@@ -304,6 +357,8 @@ export function MapGrpcServiceControllerMethods() {
       "saveCloud",
       "getTopology",
       "saveTopology",
+      "getTopologyNew",
+      "saveTopologyNew",
       "load",
       "mapping",
       "uploadMap",

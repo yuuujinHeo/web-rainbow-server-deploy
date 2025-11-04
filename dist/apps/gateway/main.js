@@ -876,6 +876,8 @@ function MapGrpcServiceControllerMethods() {
             "saveCloud",
             "getTopology",
             "saveTopology",
+            "getTopologyNew",
+            "saveTopologyNew",
             "load",
             "mapping",
             "uploadMap",
@@ -1878,6 +1880,7 @@ class FileUtil {
             return JSON.parse(filecontent);
         }
         catch (error) {
+            console.error(error);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
@@ -2664,7 +2667,7 @@ var ControlCommand;
     ControlCommand["safetyFieldControl"] = "safetyFieldControl";
     ControlCommand["setSafetyField"] = "setSafetyField";
     ControlCommand["getSafetyField"] = "getSafetyField";
-    ControlCommand["resetSafetyField"] = "resetSafetyField";
+    ControlCommand["resetSafetyFlag"] = "resetSafetyFlag";
     ControlCommand["footMove"] = "footMove";
     ControlCommand["footStop"] = "footStop";
     ControlCommand["getDigitalIO"] = "getDigitalIO";
@@ -7657,10 +7660,13 @@ let MapApiService = class MapApiService {
         return await (0, rxjs_1.lastValueFrom)(this.mapService.getMapTile({ mapName, z: Number(z), x: Number(x), y: Number(y) }));
     }
     async getTopologyPagination(dto) {
-        const resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({
-            mapName: dto.mapName,
-            fileName: dto.fileName,
-        }));
+        let resp;
+        if (dto.fileName == 'node.json') {
+            resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getTopologyNew({ mapName: dto.mapName, fileName: dto.fileName }));
+        }
+        else {
+            resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({ mapName: dto.mapName, fileName: dto.fileName }));
+        }
         const data = resp.data;
         const nodes = [];
         if (Array.isArray(data)) {
@@ -7696,10 +7702,24 @@ let MapApiService = class MapApiService {
         return new pagination_1.PaginationResponse(items, nodes.length, Number(dto.pageSize));
     }
     async getTopology(mapName, fileName) {
-        return await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({ mapName, fileName }));
+        if (fileName == 'node.json') {
+            return await (0, rxjs_1.lastValueFrom)(this.mapService.getTopologyNew({ mapName, fileName }));
+        }
+        else {
+            return await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({ mapName, fileName }));
+        }
     }
     async saveTopology(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.mapService.saveTopology(dto));
+        for (const node of dto.data) {
+            for (let i = 0; i < node.links.length; i++) {
+                const link = node.links[i];
+                if (typeof link === 'string') {
+                    node.links[i] = { id: link, info: '' };
+                }
+            }
+        }
+        console.log('dto : ', dto.data);
+        return await (0, rxjs_1.lastValueFrom)(this.mapService.saveTopologyNew({ ...dto, data: dto.data }));
     }
     async mappingStart() {
         return await (0, rxjs_1.lastValueFrom)(this.mapService.mapping({ command: map_command_domain_1.MapCommand.mappingStart }));
@@ -8453,7 +8473,7 @@ class SaveTopologyRequestDto extends FileDto {
 }
 exports.SaveTopologyRequestDto = SaveTopologyRequestDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: Description.TOPO, type: [topo_type_1.NodeDto], required: true }),
+    (0, swagger_1.ApiProperty)({ description: Description.TOPO, required: true }),
     (0, class_validator_1.IsArray)(),
     __metadata("design:type", Array)
 ], SaveTopologyRequestDto.prototype, "data", void 0);
@@ -8569,7 +8589,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NodeDto = exports.PoseDto = exports.NodeType = void 0;
+exports.NewNodeDto = exports.NodeDto = exports.PoseDto = exports.LinkDto = exports.NodeType = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
 const util_1 = __webpack_require__(37);
@@ -8588,6 +8608,26 @@ var NodeType;
     NodeType["goal"] = "GOAL";
     NodeType["init"] = "INIT";
 })(NodeType || (exports.NodeType = NodeType = {}));
+class LinkDto {
+}
+exports.LinkDto = LinkDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '노드가 연결되는 다른 노드의 id 값을 나타냅니다. 링크는 단방향입니다',
+        example: 'N_56593',
+        required: true,
+    }),
+    __metadata("design:type", String)
+], LinkDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '링크의 정보값을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], LinkDto.prototype, "info", void 0);
 class PoseDto {
 }
 exports.PoseDto = PoseDto;
@@ -8683,7 +8723,6 @@ __decorate([
         required: true,
     }),
     (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
 ], NodeDto.prototype, "links", void 0);
 __decorate([
@@ -8697,6 +8736,66 @@ __decorate([
     (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], NodeDto.prototype, "type", void 0);
+class NewNodeDto {
+}
+exports.NewNodeDto = NewNodeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ID,
+        example: util_1.UrlUtil.generateUUID(),
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], NewNodeDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.NAME,
+        example: 'N_15553',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], NewNodeDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: Description.POSE, required: true }),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", PoseDto)
+], NewNodeDto.prototype, "pose", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.INFO,
+        example: '',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], NewNodeDto.prototype, "info", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.LINKS,
+        example: [
+            { id: 'N_56593', info: '' },
+            { id: 'N_11448', info: '' },
+        ],
+        required: true,
+    }),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], NewNodeDto.prototype, "links", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.TYPE,
+        example: NodeType.goal,
+        enum: NodeType,
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], NewNodeDto.prototype, "type", void 0);
 
 
 /***/ }),
@@ -15890,7 +15989,7 @@ class ControlModel {
         this.frequency = param.frequency;
         this.color = this.parseColor(param.color);
         this.safetyField = param.safetyField;
-        this.resetField = param.resetField;
+        this.resetFlag = param.resetFlag;
         this.position = param.position;
         this.mcuDio = param.mcuDio;
         this.minZ = param.minZ;
@@ -15968,9 +16067,9 @@ class ControlModel {
             case control_type_1.ControlCommand.getSafetyField: {
                 break;
             }
-            case control_type_1.ControlCommand.resetSafetyField: {
-                if (this.resetField === undefined) {
-                    throw new rpc_code_exception_1.RpcCodeException('resetField 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            case control_type_1.ControlCommand.resetSafetyFlag: {
+                if (this.resetFlag === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('resetFlag 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
                 break;
             }

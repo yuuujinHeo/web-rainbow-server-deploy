@@ -9,6 +9,8 @@ service MapGrpcService {
     rpc SaveCloud(SaveCloudRequest) returns (SaveCloudResponse);
     rpc GetTopology(GetTopologyRequest) returns (GetTopologyResponse);
     rpc SaveTopology(SaveTopologyRequest) returns (SaveTopologyResponse);
+    rpc GetTopologyNew(GetTopologyNewRequest) returns (GetTopologyNewResponse);
+    rpc SaveTopologyNew(SaveTopologyNewRequest) returns (SaveTopologyNewResponse);
     rpc Load(LoadRequest) returns (LoadResponse);
     rpc Mapping(MappingRequest) returns (MappingResponse);
     rpc UploadMap(UploadMapRequest) returns (UploadMapResponse);
@@ -26,6 +28,20 @@ message Pose {
     float rx = 4;
     float ry = 5;
     float rz = 6;
+}
+
+message Link {
+    string id = 1;
+    optional string info = 2;
+}
+
+message NewNode {
+    string id = 1;
+    string name = 2;
+    Pose pose = 3;
+    string info = 4;
+    repeated Link links = 5;
+    string type = 6;
 }
 
 message Node {
@@ -120,6 +136,27 @@ message SaveTopologyResponse {
     string mapName = 1;
     string fileName = 2;
     repeated Node data = 3;
+}
+message GetTopologyNewRequest {
+    string mapName = 1;
+    string fileName = 2;
+    optional string type = 3;
+}
+message GetTopologyNewResponse {
+    string mapName = 1;
+    string fileName = 2;
+    optional string type = 3;
+    repeated NewNode data = 4;
+}
+message SaveTopologyNewRequest {
+    string mapName = 1;
+    string fileName = 2;
+    repeated NewNode data = 3;
+}
+message SaveTopologyNewResponse {
+    string mapName = 1;
+    string fileName = 2;
+    repeated NewNode data = 3;
 }
 
 message LoadRequest {

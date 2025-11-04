@@ -9,7 +9,7 @@ export enum ControlCommand {
   safetyFieldControl = 'safetyFieldControl',
   setSafetyField = 'setSafetyField',
   getSafetyField = 'getSafetyField',
-  resetSafetyField = 'resetSafetyField',
+  resetSafetyFlag = 'resetSafetyFlag',
   footMove = 'footMove',
   footStop = 'footStop',
   getDigitalIO = 'getDigitalIO',

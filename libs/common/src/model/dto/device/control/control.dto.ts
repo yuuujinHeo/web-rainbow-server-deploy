@@ -292,7 +292,7 @@ export class LEDResponseDto {
 
 export class OnOffRequestDto {
   @ApiProperty({
-    description: 'OnOff 명령을 사용할 Command를 입력하세요. 현재 사용가능한 Command는 lidarOnOff, pathOnOff, motorOnOff가 있습니다.',
+    description: `OnOff 명령을 사용할 Command를 입력하세요. `,
     example: 'lidarOnOff',
     required: true,
   })
@@ -311,8 +311,9 @@ export class OnOffRequestDto {
 
   @ApiProperty({
     description:
-      '기능에 따라 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
+      'pathOnOff 또는 lidarOnOff 명령의 onoff가 true일 시, 전송 주기를 입력하세요. 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다.',
     example: 10,
+    required: false,
   })
   @IsOptional()
   @Expose()
