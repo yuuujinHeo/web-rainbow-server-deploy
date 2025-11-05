@@ -1530,14 +1530,17 @@ class FileUtil {
             if (!fs.existsSync(path.dirname(dir))) {
                 fs.mkdirSync(path.dirname(dir), { recursive: true });
             }
+            if (fs.existsSync(dir)) {
+                fs.renameSync(dir, `${dir}.bak`);
+            }
             if (typeof data === 'string') {
                 data = JSON.parse(data);
             }
-            fs.renameSync(dir, `${dir}.bak`);
             fs.writeFileSync(dir, JSON.stringify(data, null, 2));
             return;
         }
         catch (error) {
+            console.error(error);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
@@ -2322,7 +2325,7 @@ let MapService = class MapService {
                         rz: node.pose.split(',')[5],
                     },
                     info: node.info,
-                    links: node.links.map((link) => {
+                    links: node.links?.map((link) => {
                         return {
                             id: link.id,
                             info: link.info,

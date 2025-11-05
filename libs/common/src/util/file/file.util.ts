@@ -343,18 +343,21 @@ export class FileUtil {
         fs.mkdirSync(path.dirname(dir), { recursive: true });
       }
 
+      if (fs.existsSync(dir)) {
+        /// 3) 기존 파일 백업
+        fs.renameSync(dir, `${dir}.bak`);
+      }
+
       /// 4) 파일 형식 JSON으로 변환
       if (typeof data === 'string') {
         data = JSON.parse(data);
       }
 
-      /// 4) 기존 파일 백업
-      fs.renameSync(dir, `${dir}.bak`);
-
       /// 5) 파일 작성
       fs.writeFileSync(dir, JSON.stringify(data, null, 2));
       return;
     } catch (error) {
+      console.error(error);
       if (error instanceof RpcException) throw error;
       //LoggerService.get('util').error(`[File] saveJson : ${errorToJson(error)}`);
       throw new RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', GrpcCode.InternalError);
