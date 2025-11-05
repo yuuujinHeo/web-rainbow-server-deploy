@@ -7713,10 +7713,12 @@ let MapApiService = class MapApiService {
     }
     async saveTopology(dto) {
         for (const node of dto.data) {
-            for (let i = 0; i < node.links.length; i++) {
-                const link = node.links[i];
-                if (typeof link === 'string') {
-                    node.links[i] = { id: link };
+            if (node.links) {
+                for (let i = 0; i < node.links.length; i++) {
+                    const link = node.links[i];
+                    if (typeof link === 'string') {
+                        node.links[i] = { id: link };
+                    }
                 }
             }
         }

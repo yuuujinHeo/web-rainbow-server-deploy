@@ -2255,22 +2255,27 @@ let MapService = class MapService {
                 else {
                     throw new rpc_code_exception_1.RpcCodeException('Topology 파일 형식이 올바르지 않습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
-                if (request.fileName != 'node.json') {
-                    for (let i = 0; i < node.links.length; i++) {
-                        if (typeof node.links[i] !== 'string') {
-                            node.links[i] = node.links[i].id;
+                if (node.links) {
+                    if (request.fileName != 'node.json') {
+                        for (let i = 0; i < node.links.length; i++) {
+                            if (typeof node.links[i] !== 'string') {
+                                node.links[i] = node.links[i].id;
+                            }
                         }
+                    }
+                    else {
+                        node.links.forEach((link) => {
+                            link.id = link.id;
+                            link.info = link.info;
+                            link.speed = link.speed;
+                            link.method = link.method;
+                            link.safety_field = link.safetyField;
+                            link.safetyField = undefined;
+                        });
                     }
                 }
                 else {
-                    node.links.forEach((link) => {
-                        link.id = link.id;
-                        link.info = link.info;
-                        link.speed = link.speed;
-                        link.method = link.method;
-                        link.safety_field = link.safetyField;
-                        link.safetyField = undefined;
-                    });
+                    node.links = [];
                 }
             });
             console.log('jsonData : ', JSON.stringify(jsonData));
