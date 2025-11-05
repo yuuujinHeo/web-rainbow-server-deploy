@@ -4597,6 +4597,7 @@ let MoveService = class MoveService {
         try {
             this.loggerService.warn(`[Move] frs Disconnected`);
             this.frs_connection = false;
+            this.Move({ command: move_type_1.MoveCommand.moveStop });
         }
         catch (error) {
             this.loggerService.error(`[Move] frs Disconnect : ${error}`);

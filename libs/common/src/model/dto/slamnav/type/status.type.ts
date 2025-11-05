@@ -281,6 +281,43 @@ export class StatusStateDto {
   })
   @Type(() => Boolean)
   power: boolean;
+
+  @ApiProperty({
+    description:
+      'Soft Safeguard Stop. 로봇의 안전장치(범퍼, EMO 등)가 모두 해제되어 로봇(AMR, Cobot)이 초기화 가능한 상태일때 true, 이미 로봇이 초기화 상태이거나 안전장치가 작동된 상태면 false',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  sss_recovery?: boolean;
+
+  @ApiProperty({
+    description: 'Reset(원점복귀) 버튼의 눌림 상태. true일때 눌림',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  sw_reset?: boolean;
+
+  @ApiProperty({
+    description: 'Stop 버튼의 눌림 상태. true일때 눌림',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  sw_stop?: boolean;
+
+  @ApiProperty({
+    description: 'Start 버튼의 눌림 상태. true일때 눌림',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  sw_start?: boolean;
 }
 
 export class StatusPowerDto {

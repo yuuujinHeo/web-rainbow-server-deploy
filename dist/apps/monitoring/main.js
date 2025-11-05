@@ -2578,6 +2578,46 @@ __decorate([
     (0, class_transformer_1.Type)(() => Boolean),
     __metadata("design:type", Boolean)
 ], StatusStateDto.prototype, "power", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Soft Safeguard Stop. 로봇의 안전장치(범퍼, EMO 등)가 모두 해제되어 로봇(AMR, Cobot)이 초기화 가능한 상태일때 true, 이미 로봇이 초기화 상태이거나 안전장치가 작동된 상태면 false',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sss_recovery", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Reset(원점복귀) 버튼의 눌림 상태. true일때 눌림',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sw_reset", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Stop 버튼의 눌림 상태. true일때 눌림',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sw_stop", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Start 버튼의 눌림 상태. true일때 눌림',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sw_start", void 0);
 class StatusPowerDto {
 }
 exports.StatusPowerDto = StatusPowerDto;

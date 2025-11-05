@@ -34,6 +34,8 @@ message Link {
     string id = 1;
     optional string info = 2;
     optional float speed = 3;
+    optional string method = 4;
+    optional int32 safety_field = 5;
 }
 
 message NewNode {

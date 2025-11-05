@@ -2193,18 +2193,21 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
             }
             const jsonData = await util_1.FileUtil.readJson(command.path);
-            const data = JSON.parse(JSON.stringify(jsonData)).map((node) => ({
-                id: node.id,
-                name: node.name,
-                pose: {
-                    x: node.pose.split(',')[0],
-                    y: node.pose.split(',')[1],
-                    rz: node.pose.split(',')[5],
-                },
-                info: node.info,
-                links: node.links,
-                type: node.type,
-            }));
+            const data = JSON.parse(JSON.stringify(jsonData)).map((node) => {
+                console.log('node : ', node);
+                return {
+                    id: node.id,
+                    name: node.name,
+                    pose: {
+                        x: node.pose.split(',')[0],
+                        y: node.pose.split(',')[1],
+                        rz: node.pose.split(',')[5],
+                    },
+                    info: node.info,
+                    links: node.links,
+                    type: node.type,
+                };
+            });
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
             return { ...request, data };
@@ -2259,7 +2262,18 @@ let MapService = class MapService {
                         }
                     }
                 }
+                else {
+                    node.links.forEach((link) => {
+                        link.id = link.id;
+                        link.info = link.info;
+                        link.speed = link.speed;
+                        link.method = link.method;
+                        link.safety_field = link.safetyField;
+                        link.safetyField = undefined;
+                    });
+                }
             });
+            console.log('jsonData : ', JSON.stringify(jsonData));
             await util_1.FileUtil.saveJson(command.path, jsonData);
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
@@ -2292,20 +2306,32 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
             }
             const jsonData = await util_1.FileUtil.readJson(command.path);
-            const data = JSON.parse(JSON.stringify(jsonData)).map((node) => ({
-                id: node.id,
-                name: node.name,
-                pose: {
-                    x: node.pose.split(',')[0],
-                    y: node.pose.split(',')[1],
-                    rz: node.pose.split(',')[5],
-                },
-                info: node.info,
-                links: node.links,
-                type: node.type,
-            }));
+            const data = JSON.parse(JSON.stringify(jsonData)).map((node) => {
+                console.log('node : ', node);
+                return {
+                    id: node.id,
+                    name: node.name,
+                    pose: {
+                        x: node.pose.split(',')[0],
+                        y: node.pose.split(',')[1],
+                        rz: node.pose.split(',')[5],
+                    },
+                    info: node.info,
+                    links: node.links.map((link) => {
+                        return {
+                            id: link.id,
+                            info: link.info,
+                            speed: link.speed,
+                            method: link.method,
+                            safetyField: link.safety_field,
+                        };
+                    }),
+                    type: node.type,
+                };
+            });
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
+            console.log('data : ', JSON.stringify(data));
             return { ...request, data };
         }
         catch (error) {
@@ -4275,6 +4301,46 @@ __decorate([
     (0, class_transformer_1.Type)(() => Boolean),
     __metadata("design:type", Boolean)
 ], StatusStateDto.prototype, "power", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Soft Safeguard Stop. 로봇의 안전장치(범퍼, EMO 등)가 모두 해제되어 로봇(AMR, Cobot)이 초기화 가능한 상태일때 true, 이미 로봇이 초기화 상태이거나 안전장치가 작동된 상태면 false',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sss_recovery", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Reset(원점복귀) 버튼의 눌림 상태. true일때 눌림',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sw_reset", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Stop 버튼의 눌림 상태. true일때 눌림',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sw_stop", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Start 버튼의 눌림 상태. true일때 눌림',
+        example: true,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], StatusStateDto.prototype, "sw_start", void 0);
 class StatusPowerDto {
 }
 exports.StatusPowerDto = StatusPowerDto;

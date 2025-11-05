@@ -27,6 +27,8 @@ export interface Link {
   id: string;
   info?: string | undefined;
   speed?: number | undefined;
+  method?: string | undefined;
+  safetyField?: number | undefined;
 }
 
 export interface NewNode {
