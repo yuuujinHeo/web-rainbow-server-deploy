@@ -6948,8 +6948,8 @@ exports.MapApiModule = MapApiModule = __decorate([
                             package: grpc_1.MapMicroservice.protobufPackage,
                             protoPath: (0, path_1.join)(process.cwd(), 'proto/map.proto'),
                             url: configService.get('MAP_GRPC_URL'),
-                            maxReceiveMessageLength: 10 * 1024 * 1024,
-                            maxSendMessageLength: 10 * 1024 * 1024,
+                            maxReceiveMessageLength: 100 * 1024 * 1024,
+                            maxSendMessageLength: 100 * 1024 * 1024,
                         },
                     }),
                 },
@@ -13722,6 +13722,7 @@ const constant_1 = __webpack_require__(65);
 const move_type_1 = __webpack_require__(98);
 const control_type_1 = __webpack_require__(62);
 const parse_util_1 = __webpack_require__(53);
+const rpc_code_exception_1 = __webpack_require__(50);
 let ClientSocketService = class ClientSocketService {
     constructor(mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice, settingMicroservice, soundMicroservice, networkMicroservice, updateMicroservice, taskMicroservice, tcpMicroservice, mapMicroservice) {
         this.mqttMicroservice = mqttMicroservice;
@@ -13739,6 +13740,16 @@ let ClientSocketService = class ClientSocketService {
     }
     onModuleInit() {
         this.moveService = this.moveMicroservice.getService('MoveGrpcService');
+        this.localizationService =
+            this.localizationMicroservice.getService('LocalizationGrpcService');
+        this.mapService = this.mapMicroservice.getService('MapGrpcService');
+        this.controlService = this.controlMicroservice.getService('ControlGrpcService');
+        this.settingService = this.settingMicroservice.getService('SettingGrpcService');
+        this.soundService = this.soundMicroservice.getService('SoundGrpcService');
+        this.networkService = this.networkMicroservice.getService('NetworkGrpcService');
+        this.updateService = this.updateMicroservice.getService('UpdateGrpcService');
+        this.taskService = this.taskMicroservice.getService('TaskGrpcService');
+        this.tcpService = this.tcpMicroservice.getService('TcpGrpcService');
     }
     setServer(server) {
         this.server = server;
@@ -13814,7 +13825,18 @@ let ClientSocketService = class ClientSocketService {
         }
     }
     localizationRequest(dto) {
-        this.localizationService.init(dto).subscribe();
+        try {
+            console.log('localizationRequest', dto);
+            this.localizationService.init(dto).subscribe();
+        }
+        catch (error) {
+            this.loggerService.error(`[Client] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            if (error instanceof websockets_1.WsException)
+                throw error;
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw new websockets_1.WsException(error.message);
+            throw new websockets_1.WsException('Localization명령을 처리하던 중 에러가 발생했습니다.');
+        }
     }
     loadRequest(dto) {
         this.mapService.load(dto).subscribe();
