@@ -2267,7 +2267,7 @@ let MapService = class MapService {
                         }
                     }
                     else {
-                        node.links.forEach((link) => {
+                        node.links?.forEach((link) => {
                             link.id = link.id;
                             link.info = link.info;
                             link.speed = link.speed;
@@ -4778,8 +4778,6 @@ class MapFileAdapter {
                             }
                         }
                     });
-                    console.log(cloudFiles);
-                    console.log(topoFiles);
                     list.push({
                         fileName: file.name,
                         fileType: file.isFile() ? 'file' : 'directory',

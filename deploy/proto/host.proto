@@ -1,0 +1,305 @@
+syntax = "proto3";
+
+package host;
+
+////////// -------------------------------- Map Service
+service HostMapGrpcService {
+  rpc ReadMapList(ReadMapListRequest) returns (ReadMapListResponse);
+  rpc ReadMapFile(ReadMapRequest) returns (ReadMapResponse);
+}
+message MapInfo {
+  string fileName = 1;
+  optional string createAt = 2;
+  optional string updateAt = 3;
+  optional string fileType = 4;
+  repeated FileInfo cloudFiles = 5;
+  repeated FileInfo topoFiles = 6;
+}
+message FileInfo {
+  string fileName = 1;
+  optional string createAt = 2;
+  optional string updateAt = 3;
+  optional string fileType = 4;
+}
+
+message ReadMapRequest {
+  string mapName = 1;
+  string fileName = 2;
+}
+message ReadMapResponse {
+  string mapNAme = 1;
+  string fileName = 2;
+  optional bytes data = 3;
+}
+
+////////// -------------------------------- File Service
+service HostFileGrpcService {
+  rpc ReadFileList(ReadFileListRequest) returns (ReadFileListResponse);
+  rpc ReadFile(ReadFileRequest) returns (ReadFileResponse);
+  rpc CreateFile(CreateFileRequest) returns (CreateFileResponse);
+  rpc UpdateFile(UpdateFileRequest) returns (UpdateFileResponse);
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+  rpc UploadFile(UploadFileRequest) returns (UploadFileResponse);
+  rpc DownloadFile(DownloadFileRequest) returns (DownloadFileResponse);
+}
+
+message ReadFileListRequest {
+  string path = 1;
+  optional int32 pageNo = 2;
+  optional int32 pageSize = 3;
+ // optional string searchType = 4;
+  //optional string searchText = 5;
+ // optional string sortOption = 6;
+  //optional string sortDirection = 7;
+ // optional string dateFrom = 8;
+ // optional string dateTo = 9;
+}
+
+message ReadFileListResponse {
+  repeated FileInfo list = 1;
+  optional int32 pageSize = 2;
+  optional int32 totalCount = 3;
+  optional int32 totalPage = 4;
+  //optional string searchType = 6;
+  //optional string searchText = 7;
+}
+
+message ReadMapListRequest {
+  optional int32 pageNo = 1;
+  optional int32 pageSize = 2;
+  optional string searchType = 3;
+  optional string searchText = 4;
+  optional string sortOption = 5;
+  optional string sortDirection = 6;
+}
+
+message ReadMapListResponse {
+  repeated MapInfo list = 1;
+  optional int32 pageSize = 2;
+  optional int32 totalCount = 3;
+  optional int32 totalPage = 4;
+}
+
+message ReadFileRequest {
+  string path = 1;
+}
+
+message CreateFileRequest {
+  string fileName = 1;
+  string originalName = 2;
+  string filePath = 3;
+  int64 fileSize = 4;
+  optional string fileType = 5;
+  optional string mimeType = 6;
+  optional string fileExtension = 7;
+  optional string checksum = 8;
+  optional string storageType = 9;
+  optional string storageLocation = 10;
+  optional string parentFolderId = 11;
+  optional bool isDirectory = 12;
+  string createdBy = 13;
+  repeated FileMetadata metadata = 14;
+  repeated string tags = 15;
+}
+
+message UpdateFileRequest {
+  string fileId = 1;
+  optional FileUpdateData data = 2;
+
+  message FileUpdateData {
+    optional string fileName = 1;
+    optional string parentFolderId = 2;
+    optional string status = 3;
+    optional string updatedBy = 4;
+    repeated FileMetadata metadata = 5;
+    repeated string tags = 6;
+  }
+}
+
+message DeleteFileRequest {
+  string fileId = 1;
+  optional bool permanentDelete = 2;
+}
+
+message UploadFileRequest {
+  string fileName = 1;
+  string originalName = 2;
+  bytes fileContent = 3;
+  optional string parentFolderId = 4;
+  string uploadedBy = 5;
+  repeated FileMetadata metadata = 6;
+  repeated string tags = 7;
+}
+
+message DownloadFileRequest {
+  string fileId = 1;
+  optional int32 versionNumber = 2;
+}
+
+message GetFileVersionsRequest {
+  string fileId = 1;
+  optional int32 pageNo = 2;
+  optional int32 pageSize = 3;
+}
+
+message FileMetadata {
+  string key = 1;
+  string value = 2;
+  optional string dataType = 3;
+}
+
+
+message ReadFileResponse {
+  FileInfo fileInfo = 1;
+}
+
+message CreateFileResponse {
+  string fileId = 1;
+  string message = 2;
+}
+
+message UpdateFileResponse {
+  string fileId = 1;
+  string message = 2;
+}
+
+message DeleteFileResponse {
+  string fileId = 1;
+  string message = 2;
+}
+
+message UploadFileResponse {
+  string fileId = 1;
+  string fileName = 2;
+  int64 fileSize = 3;
+  string message = 4;
+}
+
+message DownloadFileResponse {
+  string fileId = 1;
+  string fileName = 2;
+  string mimeType = 3;
+  bytes fileContent = 4;
+}
+
+
+
+////////// -------------------------------- Update Service
+service HostUpdateGrpcService {
+  rpc TestPing(TestPingRequest) returns (TestPingResponse);
+  rpc GetNewVersion(GetNewVersionRequest) returns (GetNewVersionResponse);
+  rpc GetCurrentVersion(GetCurrentVersionRequest) returns (GetCurrentVersionResponse);
+  rpc GetReleaseBranch(GetReleaseBranchRequest) returns (GetReleaseBranchResponse);
+  rpc GetReleaseVersion(GetReleaseVersionRequest) returns (GetReleaseVersionResponse);
+  rpc AddWebUI(AddWebUIRequest) returns (AddWebUIResponse);
+  rpc DeleteWebUI(DeleteWebUIRequest) returns (DeleteWebUIResponse);
+  rpc UpdateProgram(UpdateProgramRequest) returns (UpdateProgramResponse);
+}
+
+message TestPingRequest {
+  string target = 1;
+}
+
+message TestPingResponse {
+  string target = 1;
+  optional string message = 2;
+  optional string stdout = 3;
+  optional string stderr = 4;
+}
+message GetNewVersionRequest {
+  string software = 1;
+  optional string branch = 2;
+}
+message GetNewVersionResponse {
+  string software = 1;
+  optional string branch = 2;
+  optional string newVersion = 3;
+  optional bool hotfix = 4;
+}
+
+message GetCurrentVersionRequest {
+    string software = 1;
+}
+
+message GetCurrentVersionResponse {
+    string software = 1;
+    string version = 2;
+}
+
+message GetReleaseBranchRequest {
+  string token = 1;
+  optional int32 pageNo = 2;
+  optional int32 pageSize = 3; 
+}
+
+message Commit {
+  string sha = 1;
+  string url = 2;
+  string name = 3;
+  bool protected = 4;
+}
+
+message Branch {
+  Commit commit = 1;
+  string name = 2;
+  bool protected = 3;
+}
+
+message GetReleaseBranchResponse {
+  repeated Branch list = 1;
+  optional int32 pageSize = 2;
+  optional int32 totalCount = 3;
+  optional int32 totalPage = 4;
+}
+
+message GetReleaseVersionRequest {
+  string software = 1;
+  string token = 2;
+  optional string branch = 3;
+}
+
+message VersionLinks {
+  string self = 1;
+  string html = 2;
+  string git = 3;
+}
+message ReleaseVersion {
+  string name = 1;
+  string path = 2;
+  string sha = 3;
+  string url = 4;
+  int64 size = 5;
+  string download_url = 6;
+  VersionLinks _links = 7;
+}
+message GetReleaseVersionResponse {
+  repeated ReleaseVersion list = 1;
+}
+
+message AddWebUIRequest {
+  repeated string appNames = 1;
+  optional string branch = 2;
+  optional string fo = 3;
+}
+message AddWebUIResponse {
+  repeated string appNames = 1;
+  optional string branch = 2;
+  optional string fo = 3;
+}
+message DeleteWebUIRequest {
+  repeated string appNames = 1;
+}
+message DeleteWebUIResponse {
+  repeated string appNames = 1;
+}
+message UpdateProgramRequest {
+  string software = 1;
+  string branch = 2;
+  optional string version = 3;
+}
+
+message UpdateProgramResponse {
+  string software = 1;
+  string branch = 2;
+  optional string version = 3;
+}

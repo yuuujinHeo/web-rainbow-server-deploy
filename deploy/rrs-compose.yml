@@ -1,0 +1,230 @@
+services:
+  node_host_root:
+    build:
+      context: .
+      dockerfile: docker/host/Dockerfile-root.host
+    image: rainbowyujin/node_host_root
+  gateway:
+    container_name: gateway
+    image: rainbowyujin/node_host_root:latest
+    command: pnpm nodemon dist/apps/gateway/main.js
+    env_file:
+      - .env
+    depends_on:
+      microservice-device:
+        condition: service_healthy
+    network_mode: host
+    privileged: true
+    volumes:
+      - ./dist/apps/gateway:/usr/src/app/dist/apps/gateway
+      - ./libs:/usr/src/app/libs
+      - ./log:/log
+      - ./.env:/usr/src/app/.env
+      - ./proto:/usr/src/app/proto
+      - /usr/src/app/node_modules
+      - /var/run/dbus:/var/run/dbus
+      - /run/dbus:/run/dbus
+      - ${HOST_DATA_DIR}:/data
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+  microservice-monitoring:
+    container_name: microservice-monitoring
+    image: rainbowyujin/node_host_root:latest
+    command: pnpm nodemon dist/apps/monitoring/main.js
+    network_mode: host
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./dist/apps/monitoring:/usr/src/app/dist/apps/monitoring
+      - ./public:/usr/src/app/public
+      - ./libs:/usr/src/app/libs
+      - ./log:/log
+      - ./.env:/usr/src/app/.env
+      - ./proto:/usr/src/app/proto
+      - /usr/src/app/node_modules
+      - ${HOST_DATA_DIR}/log:/data/log
+  microservice-device:
+    container_name: microservice-device
+    image: rainbowyujin/node_host_root:latest
+    command: pnpm nodemon dist/apps/device/main.js
+    network_mode: host
+    privileged: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mqtt_microservices:
+        condition: service_started
+    volumes:
+      - ./dist/apps/device:/usr/src/app/dist/apps/device
+      - ./libs:/usr/src/app/libs
+      - ./proto:/usr/src/app/proto
+      - ./log:/log
+      - ./.env:/usr/src/app/.env
+      - /usr/src/app/node_modules
+      - /var/run/dbus:/var/run/dbus
+      - /run/dbus:/run/dbus
+      - ${HOST_DATA_DIR}:/data
+    healthcheck:
+      test: ['CMD', 'sh', '-c', 'netstat -tuln 4002']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+  microservice-config:
+    container_name: microservice-config
+    image: rainbowyujin/node_host_root:latest
+    command: pnpm nodemon dist/apps/config/main.js
+    network_mode: host
+    security_opt:
+      - apparmor=unconfined
+    privileged: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 4004:4004
+      - 4005:4005
+    volumes:
+      - ./dist/apps/config:/usr/src/app/dist/apps/config
+      - ./libs:/usr/src/app/libs
+      - ./.env:/usr/src/app/.env
+      - ./proto:/usr/src/app/proto
+      - /usr/src/app/node_modules
+      - ./log:/usr/src/app/log
+      - ${HOST_DATA_DIR}:/data
+    healthcheck:
+      test: ['CMD', 'sh', '-c', 'netstat -tuln 4004']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+  # microservice-file:
+  #   container_name: microservice-file
+  #   image: rainbowyujin/node_host_root:latest
+  #   command: pnpm nodemon dist/apps/file/main.js
+  #   environment:
+  #     - PULSE_SERVER=unix:/run/user/1000/pulse/native
+  #   # devices:
+  #   # - /dev/snd:/dev/snd
+  #   # - /dev/snd/by-id/usb-ZhuHai_JieLi_Technology_JieLi_BR21_20180105-01:/dev/snd/by-id/usb-ZhuHai_JieLi_Technology_JieLi_BR21_20180105-01
+  #   network_mode: host
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     mqtt_microservices:
+  #       condition: service_started
+  #   # ports:
+  #   #   - 4006:4006
+  #   #   - 4007:4007
+  #   volumes:
+  #     - ./dist/apps/file:/usr/src/app/dist/apps/file
+  #     - ./public:/usr/src/app/public
+  #     - ./libs:/usr/src/app/libs
+  #     - ./log:/log
+  #     - ./.env:/usr/src/app/.env
+  #     - ./proto:/usr/src/app/proto
+  #     - /data/maps:/data/maps
+  #     - /usr/src/app/node_modules
+  #     - /run/user/1000/pulse/native:/run/user/1000/pulse/native
+  #     - ~/.config/pulse/cookie:/run/user/1000/pulse/cookie:ro
+  #     - ${HOST_DATA_DIR}:/data
+  #   tty: true
+  #   stdin_open: true
+  #   healthcheck:
+  #     test: ['CMD', 'sh', '-c', 'netstat -tuln 4006']
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 5s
+  microservice-task:
+    container_name: microservice-task
+    image: rainbowyujin/node_host_root:latest
+    command: pnpm nodemon dist/apps/task/main.js
+    network_mode: host
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 4008:4008
+    volumes:
+      - ./dist/apps/task:/usr/src/app/dist/apps/task
+      - ./public:/usr/src/app/public
+      - ./libs:/usr/src/app/libs
+      - ./log:/log
+      - ./.env:/usr/src/app/.env
+      - ./proto:/usr/src/app/proto
+      - /usr/src/app/node_modules
+      - /data/maps:/data/maps
+      - ${HOST_DATA_DIR}:/data
+    healthcheck:
+      test: ['CMD', 'sh', '-c', 'netstat -tuln 4008']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    #   POSTGRES_DB: server
+    ports:
+      - '7000:5432'
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+  mqtt_microservices:
+    image: eclipse-mosquitto
+    container_name: mqtt_microservices
+    ports:
+      - '6000:1883'
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+  mongo_slamnav:
+    container_name: mongo_slamnav
+    image: mongo:8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - '7001:27017'
+    volumes:
+      - ./mongo/slamnav:/data/lib
+    command: mongod --quiet --logpath /dev/null
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+  influxdb2:
+    container_name: influxdb2
+    image: influxdb:2
+    ports:
+      - 7002:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: rainbow
+      DOCKER_INFLUXDB_INIT_PASSWORD: rainbow
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: rainbow2011!
+      DOCKER_INFLUXDB_INIT_ORG: rainbow
+      DOCKER_INFLUXDB_INIT_BUCKET: slamnav
+    volumes:
+      - ./influxdb2-data:/var/lib/influxdb2
+      - ./influxdb2-config:/etc/influxdb2
+    restart: unless-stopped
+volumes:
+  influxdb2-data:
+  influxdb2-config:

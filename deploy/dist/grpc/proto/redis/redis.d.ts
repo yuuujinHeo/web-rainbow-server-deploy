@@ -1,0 +1,168 @@
+import { Metadata } from "@grpc/grpc-js";
+import { Observable } from "rxjs";
+export declare const protobufPackage = "redis";
+export declare enum RobotType {
+    UNKNOWN = 0,
+    MOBILE = 1,
+    MANIPULATOR = 2,
+    SENSOR = 3,
+    UNRECOGNIZED = -1
+}
+export interface CreateRobotCacheRequest {
+    robotType: RobotType;
+    robotSerial: string;
+    robotName?: string | undefined;
+    robotIpAddress?: string | undefined;
+    robotUri?: string | undefined;
+    robotApproveYn: string;
+}
+export interface CreateRobotCacheResponse {
+    robotType: RobotType;
+    robotSerial: string;
+    robotName: string;
+    robotIpAddress: string;
+    robotUri: string;
+    robotApproveYn: string;
+}
+export interface UpdateRobotCacheRequest {
+    robotType: RobotType;
+    robotSerial: string;
+    robot?: UpdateRobotCacheRequest_Robot | undefined;
+}
+export interface UpdateRobotCacheRequest_Robot {
+    robotType?: RobotType | undefined;
+    robotSerial?: string | undefined;
+    robotName?: string | undefined;
+    robotIpAddress?: string | undefined;
+    robotUri?: string | undefined;
+    robotApproveYn?: string | undefined;
+}
+export interface UpdateRobotCacheResponse {
+    robotType: RobotType;
+    robotSerial: string;
+    robotName: string;
+    robotIpAddress: string;
+    robotUri: string;
+    robotApproveYn: string;
+}
+export interface ReadRobotCacheRequest {
+    robotType?: RobotType | undefined;
+    robotSerial?: string | undefined;
+    robotName?: string | undefined;
+    robotIpAddress?: string | undefined;
+    robotUri?: string | undefined;
+    robotApproveYn?: string | undefined;
+}
+export interface ReadRobotCacheResponse {
+    robotType: RobotType;
+    robotSerial: string;
+    robotName: string;
+    robotIpAddress: string;
+    robotUri: string;
+    robotApproveYn: string;
+}
+export interface ReadRobotCacheListResponse {
+    data: ReadRobotCacheListResponse_Robot[];
+}
+export interface ReadRobotCacheListResponse_Robot {
+    robotType: RobotType;
+    robotSerial: string;
+    robotName: string;
+    robotIpAddress: string;
+    robotUri: string;
+    robotApproveYn: string;
+}
+export interface DeleteRobotCacheRequest {
+    robotType: RobotType;
+    robotSerial: string;
+}
+export interface DeleteRobotCacheResponse {
+    robotType: RobotType;
+    robotSerial: string;
+    robotName: string;
+    robotIpAddress: string;
+    robotUri: string;
+    robotApproveYn: string;
+}
+export interface CreateSocketCacheRequest {
+    socketKey: string;
+    socketType?: string | undefined;
+    socketValue?: string | undefined;
+}
+export interface CreateSocketCacheResponse {
+    socketKey: string;
+    socketType: string;
+    socketValue: string;
+}
+export interface UpdateSocketCacheRequest {
+    socketKey: string;
+    socket?: UpdateSocketCacheRequest_Socket | undefined;
+}
+export interface UpdateSocketCacheRequest_Socket {
+    socketType?: string | undefined;
+    socketKey?: string | undefined;
+    socketValue?: string | undefined;
+}
+export interface UpdateSocketCacheResponse {
+    socketKey: string;
+    socketType: string;
+    socketValue: string;
+}
+export interface ReadSocketCacheRequest {
+    socketKey?: string | undefined;
+    socketType?: string | undefined;
+}
+export interface ReadSocketCacheResponse {
+    socketKey: string;
+    socketType: string;
+    socketValue: string;
+}
+export interface ReadSocketCacheListResponse {
+    data: ReadSocketCacheListResponse_Socket[];
+}
+export interface ReadSocketCacheListResponse_Socket {
+    socketType?: string | undefined;
+    socketKey?: string | undefined;
+    socketValue?: string | undefined;
+}
+export interface DeleteSocketCacheRequest {
+    socketKey: string;
+}
+export interface DeleteSocketCacheResponse {
+    socketType: string;
+    socketKey: string;
+    socketValue: string;
+}
+export declare const REDIS_PACKAGE_NAME = "redis";
+export interface RedisSocketCacheGrpcServiceClient {
+    readSocketCache(request: ReadSocketCacheRequest, metadata?: Metadata): Observable<ReadSocketCacheResponse>;
+    readSocketCacheList(request: ReadSocketCacheRequest, metadata?: Metadata): Observable<ReadSocketCacheListResponse>;
+    createSocketCache(request: CreateSocketCacheRequest, metadata?: Metadata): Observable<CreateSocketCacheResponse>;
+    updateSocketCache(request: UpdateSocketCacheRequest, metadata?: Metadata): Observable<UpdateSocketCacheResponse>;
+    deleteSocketCache(request: DeleteSocketCacheRequest, metadata?: Metadata): Observable<DeleteSocketCacheResponse>;
+}
+export interface RedisSocketCacheGrpcServiceController {
+    readSocketCache(request: ReadSocketCacheRequest, metadata?: Metadata): Promise<ReadSocketCacheResponse> | Observable<ReadSocketCacheResponse> | ReadSocketCacheResponse;
+    readSocketCacheList(request: ReadSocketCacheRequest, metadata?: Metadata): Promise<ReadSocketCacheListResponse> | Observable<ReadSocketCacheListResponse> | ReadSocketCacheListResponse;
+    createSocketCache(request: CreateSocketCacheRequest, metadata?: Metadata): Promise<CreateSocketCacheResponse> | Observable<CreateSocketCacheResponse> | CreateSocketCacheResponse;
+    updateSocketCache(request: UpdateSocketCacheRequest, metadata?: Metadata): Promise<UpdateSocketCacheResponse> | Observable<UpdateSocketCacheResponse> | UpdateSocketCacheResponse;
+    deleteSocketCache(request: DeleteSocketCacheRequest, metadata?: Metadata): Promise<DeleteSocketCacheResponse> | Observable<DeleteSocketCacheResponse> | DeleteSocketCacheResponse;
+}
+export declare function RedisSocketCacheGrpcServiceControllerMethods(): (constructor: Function) => void;
+export declare const REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = "RedisSocketCacheGrpcService";
+export interface RedisRobotCacheGrpcServiceClient {
+    readRobotCache(request: ReadRobotCacheRequest, metadata?: Metadata): Observable<ReadRobotCacheResponse>;
+    readRobotCacheList(request: ReadRobotCacheRequest, metadata?: Metadata): Observable<ReadRobotCacheListResponse>;
+    createRobotCache(request: CreateRobotCacheRequest, metadata?: Metadata): Observable<CreateRobotCacheResponse>;
+    updateRobotCache(request: UpdateRobotCacheRequest, metadata?: Metadata): Observable<UpdateRobotCacheResponse>;
+    deleteRobotCache(request: DeleteRobotCacheRequest, metadata?: Metadata): Observable<DeleteRobotCacheResponse>;
+}
+export interface RedisRobotCacheGrpcServiceController {
+    readRobotCache(request: ReadRobotCacheRequest, metadata?: Metadata): Promise<ReadRobotCacheResponse> | Observable<ReadRobotCacheResponse> | ReadRobotCacheResponse;
+    readRobotCacheList(request: ReadRobotCacheRequest, metadata?: Metadata): Promise<ReadRobotCacheListResponse> | Observable<ReadRobotCacheListResponse> | ReadRobotCacheListResponse;
+    createRobotCache(request: CreateRobotCacheRequest, metadata?: Metadata): Promise<CreateRobotCacheResponse> | Observable<CreateRobotCacheResponse> | CreateRobotCacheResponse;
+    updateRobotCache(request: UpdateRobotCacheRequest, metadata?: Metadata): Promise<UpdateRobotCacheResponse> | Observable<UpdateRobotCacheResponse> | UpdateRobotCacheResponse;
+    deleteRobotCache(request: DeleteRobotCacheRequest, metadata?: Metadata): Promise<DeleteRobotCacheResponse> | Observable<DeleteRobotCacheResponse> | DeleteRobotCacheResponse;
+}
+export declare function RedisRobotCacheGrpcServiceControllerMethods(): (constructor: Function) => void;
+export declare const REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = "RedisRobotCacheGrpcService";

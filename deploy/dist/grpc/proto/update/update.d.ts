@@ -1,0 +1,124 @@
+import { Metadata } from "@grpc/grpc-js";
+import { Observable } from "rxjs";
+export declare const protobufPackage = "update";
+export interface TestPingRequest {
+    target: string;
+}
+export interface TestPingResponse {
+    target: string;
+    message?: string | undefined;
+    stdout?: string | undefined;
+}
+export interface GetNewVersionRequest {
+    software: string;
+    branch?: string | undefined;
+}
+export interface GetNewVersionResponse {
+    software: string;
+    branch?: string | undefined;
+    version?: string | undefined;
+    hotfix?: boolean | undefined;
+}
+export interface GetCurrentVersionRequest {
+    software: string;
+}
+export interface GetCurrentVersionResponse {
+    software: string;
+    version: string;
+    branch: string;
+}
+export interface GetReleaseBranchRequest {
+    token: string;
+    pageNo?: number | undefined;
+    pageSize?: number | undefined;
+}
+export interface Commit {
+    sha: string;
+    url: string;
+    name: string;
+    protected: boolean;
+}
+export interface Branch {
+    commit: Commit | undefined;
+    name: string;
+    protected: boolean;
+}
+export interface GetReleaseBranchResponse {
+    list: Branch[];
+    pageSize?: number | undefined;
+    totalCount?: number | undefined;
+    totalPage?: number | undefined;
+}
+export interface GetReleaseVersionRequest {
+    software: string;
+    token: string;
+    branch?: string | undefined;
+}
+export interface VersionLinks {
+    self: string;
+    html: string;
+    git: string;
+}
+export interface ReleaseVersion {
+    name: string;
+    path: string;
+    sha: string;
+    url: string;
+    size: number;
+    downloadUrl: string;
+    Links: VersionLinks | undefined;
+}
+export interface GetReleaseVersionResponse {
+    list: ReleaseVersion[];
+}
+export interface AddWebUIRequest {
+    appNames: string[];
+    branch?: string | undefined;
+    fo?: string | undefined;
+}
+export interface AddWebUIResponse {
+    appNames: string[];
+    branch?: string | undefined;
+    fo?: string | undefined;
+}
+export interface DeleteWebUIRequest {
+    appNames: string[];
+}
+export interface DeleteWebUIResponse {
+    appNames: string[];
+}
+export interface UpdateProgramRequest {
+    software: string;
+    branch: string;
+    version?: string | undefined;
+}
+export interface UpdateProgramResponse {
+    software: string;
+    branch: string;
+    version?: string | undefined;
+    result: string;
+    message?: string | undefined;
+}
+export declare const UPDATE_PACKAGE_NAME = "update";
+export interface UpdateGrpcServiceClient {
+    testPing(request: TestPingRequest, metadata?: Metadata): Observable<TestPingResponse>;
+    getNewVersion(request: GetNewVersionRequest, metadata?: Metadata): Observable<GetNewVersionResponse>;
+    getCurrentVersion(request: GetCurrentVersionRequest, metadata?: Metadata): Observable<GetCurrentVersionResponse>;
+    getReleaseBranch(request: GetReleaseBranchRequest, metadata?: Metadata): Observable<GetReleaseBranchResponse>;
+    getReleaseVersion(request: GetReleaseVersionRequest, metadata?: Metadata): Observable<GetReleaseVersionResponse>;
+    addWebUi(request: AddWebUIRequest, metadata?: Metadata): Observable<AddWebUIResponse>;
+    deleteWebUi(request: DeleteWebUIRequest, metadata?: Metadata): Observable<DeleteWebUIResponse>;
+    updateProgram(request: UpdateProgramRequest, metadata?: Metadata): Observable<UpdateProgramResponse>;
+}
+export interface UpdateGrpcServiceController {
+    testPing(request: TestPingRequest, metadata?: Metadata): Promise<TestPingResponse> | Observable<TestPingResponse> | TestPingResponse;
+    getNewVersion(request: GetNewVersionRequest, metadata?: Metadata): Promise<GetNewVersionResponse> | Observable<GetNewVersionResponse> | GetNewVersionResponse;
+    getCurrentVersion(request: GetCurrentVersionRequest, metadata?: Metadata): Promise<GetCurrentVersionResponse> | Observable<GetCurrentVersionResponse> | GetCurrentVersionResponse;
+    getReleaseBranch(request: GetReleaseBranchRequest, metadata?: Metadata): Promise<GetReleaseBranchResponse> | Observable<GetReleaseBranchResponse> | GetReleaseBranchResponse;
+    getReleaseVersion(request: GetReleaseVersionRequest, metadata?: Metadata): Promise<GetReleaseVersionResponse> | Observable<GetReleaseVersionResponse> | GetReleaseVersionResponse;
+    addWebUi(request: AddWebUIRequest, metadata?: Metadata): Promise<AddWebUIResponse> | Observable<AddWebUIResponse> | AddWebUIResponse;
+    deleteWebUi(request: DeleteWebUIRequest, metadata?: Metadata): Promise<DeleteWebUIResponse> | Observable<DeleteWebUIResponse> | DeleteWebUIResponse;
+    updateProgram(request: UpdateProgramRequest, metadata?: Metadata): Promise<UpdateProgramResponse> | Observable<UpdateProgramResponse> | UpdateProgramResponse;
+}
+export declare function UpdateGrpcServiceControllerMethods(): (constructor: Function) => void;
+export declare const UPDATE_GRPC_SERVICE_NAME = "UpdateGrpcService";

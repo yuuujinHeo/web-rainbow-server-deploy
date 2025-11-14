@@ -1,0 +1,11 @@
+/**
+ * ┌─────────────────────────────────────────────────┐
+ * │  Project: web-rainbow-server
+ * │  File: index
+ * │  Developer: kjlee
+ * │  Created: 25. 8. 13.
+ * │  Description: index 모듈
+ * └─────────────────────────────────────────────────┘
+ */
+
+export * from './base-socket-gateway.abstract';

@@ -1,0 +1,232 @@
+syntax = "proto3";
+
+package map;
+
+service MapGrpcService {
+    rpc GetMapList(ReadMapListRequest) returns (ReadMapListResponse);
+    rpc GetCurrentMap(Empty) returns (GetCurrentMapResponse);
+    rpc GetCloud(GetCloudRequest) returns (GetCloudResponse);
+    rpc SaveCloud(SaveCloudRequest) returns (SaveCloudResponse);
+    rpc GetTopology(GetTopologyRequest) returns (GetTopologyResponse);
+    rpc SaveTopology(SaveTopologyRequest) returns (SaveTopologyResponse);
+    rpc GetTopologyNew(GetTopologyNewRequest) returns (GetTopologyNewResponse);
+    rpc SaveTopologyNew(SaveTopologyNewRequest) returns (SaveTopologyNewResponse);
+    rpc Load(LoadRequest) returns (LoadResponse);
+    rpc Mapping(MappingRequest) returns (MappingResponse);
+    rpc UploadMap(UploadMapRequest) returns (UploadMapResponse);
+    rpc DownloadMap(DownloadMapRequest) returns (DownloadMapResponse);
+    rpc PublishMap(PublishMapRequest) returns (PublishMapResponse);
+    rpc GetMapTileExist(GetMapTileRequest) returns (GetMapTilesExistResponse);
+    rpc GetMapTile(GetMapTileRequest) returns (GetMapTileResponse);
+}
+
+message Empty {}
+message Pose {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float rx = 4;
+    float ry = 5;
+    float rz = 6;
+}
+
+message Link {
+    string id = 1;
+    optional string info = 2;
+    optional float speed = 3;
+    optional string method = 4;
+    optional int32 safety_field = 5;
+}
+
+message NewNode {
+    string id = 1;
+    string name = 2;
+    Pose pose = 3;
+    string info = 4;
+    repeated Link links = 5;
+    string type = 6;
+}
+
+message Node {
+    string id = 1;
+    string name = 2;
+    Pose pose = 3;
+    string info = 4;
+    repeated string links = 5;
+    string type = 6;
+}
+
+message FileInfo {
+  string fileName = 1;
+  optional string createAt = 2;
+  optional string updateAt = 3;
+  optional string fileType = 4;
+  optional int32 fileSize = 5;
+}
+message MapInfo {
+  string fileName = 1;
+  optional string createAt = 2;
+  optional string updateAt = 3;
+  optional string fileType = 4;
+  repeated FileInfo cloudFiles = 5;
+  repeated FileInfo topoFiles = 6;
+}
+
+message ReadMapListRequest {
+  optional int32 pageNo = 1;
+  optional int32 pageSize = 2;
+  optional string searchType = 3;
+  optional string searchText = 4;
+  optional string sortOption = 5;
+  optional string sortDirection = 6;
+}
+
+message ReadMapListResponse {
+  repeated MapInfo list = 1;
+  optional int32 pageSize = 2;
+  optional int32 totalCount = 3;
+  optional int32 totalPage = 4;
+}
+message GetMapListResponse {
+    repeated MapInfo list = 1;
+}
+message GetCurrentMapResponse {
+    string mapName = 1;
+}
+
+//--Cloud
+//string[][]을 위한 편법
+message CloudPoint {
+    repeated string row = 1;
+}
+message GetCloudRequest {
+    string mapName = 1;
+    string fileName = 2;
+}
+message GetCloudResponse {
+    string mapName = 1;
+    string fileName = 2;
+    repeated CloudPoint cloud = 3;
+}
+message SaveCloudRequest {
+    string mapName = 1;
+    string fileName = 2;
+    repeated CloudPoint cloud = 3;
+}
+message SaveCloudResponse {
+    string mapName = 1;
+    string fileName = 2;
+    repeated CloudPoint cloud = 3;
+}
+//--Topology
+message GetTopologyRequest {
+    string mapName = 1;
+    string fileName = 2;
+    optional string type = 3;
+}
+message GetTopologyResponse {
+    string mapName = 1;
+    string fileName = 2;
+    optional string type = 3;
+    repeated Node data = 4;
+}
+message SaveTopologyRequest {
+    string mapName = 1;
+    string fileName = 2;
+    repeated Node data = 3;
+}
+message SaveTopologyResponse {
+    string mapName = 1;
+    string fileName = 2;
+    repeated Node data = 3;
+}
+message GetTopologyNewRequest {
+    string mapName = 1;
+    string fileName = 2;
+    optional string type = 3;
+}
+message GetTopologyNewResponse {
+    string mapName = 1;
+    string fileName = 2;
+    optional string type = 3;
+    repeated NewNode data = 4;
+}
+message SaveTopologyNewRequest {
+    string mapName = 1;
+    string fileName = 2;
+    repeated NewNode data = 3;
+}
+message SaveTopologyNewResponse {
+    string mapName = 1;
+    string fileName = 2;
+    repeated NewNode data = 3;
+}
+
+message LoadRequest {
+    string command = 1;
+    optional string mapName = 2;
+}
+message LoadResponse {
+    string command = 1;
+    optional string mapName = 2;
+    string result = 3;
+    optional string message = 4;
+}
+
+message MappingRequest {
+    string command = 1;
+    optional string mapName = 2;
+}
+message MappingResponse {
+    string command = 1;
+    optional string mapName = 2;
+}
+
+message UploadMapRequest {
+    string mapName = 1;
+    optional string newMapName = 2;
+}
+
+message UploadMapResponse {
+    string mapName = 1;
+    string newMapName = 2;
+}
+
+message DownloadMapRequest {
+    string fileName = 1;
+    optional string newMapName = 2;
+    bool isForce = 3;
+}
+
+message DownloadMapResponse {
+    string fileName = 1;
+    string newMapName = 2;
+    bool isForce = 3;
+}
+
+message PublishMapRequest {
+    string fileName = 1;
+    string newMapName = 2;
+    bool isForce = 3;
+}
+
+message PublishMapResponse {
+    string fileName = 1;
+    string newMapName = 2;
+    bool isForce = 3;
+}
+
+message GetMapTilesExistResponse {
+    bool exist = 1;
+}
+
+message GetMapTileRequest {
+    string mapName = 1;
+    optional float z = 2;
+    optional float x = 3;
+    optional float y = 4;
+}
+
+message GetMapTileResponse {
+    bytes data = 1;
+}

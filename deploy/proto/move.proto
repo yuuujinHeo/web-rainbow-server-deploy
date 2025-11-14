@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package move;
+
+service MoveGrpcService {
+    //Move
+    rpc MoveCommand(MoveCommandResquest) returns (MoveCommandResponse);
+    rpc MoveGoal(MoveCommandResquest) returns (MoveCommandResponse);
+    rpc MoveTarget(MoveCommandResquest) returns (MoveCommandResponse);
+    rpc MoveJog(MoveCommandResquest) returns (Empty);
+    rpc MovePause(Empty) returns (Empty);
+    rpc MoveResume(Empty) returns (Empty);
+    rpc MoveStop(Empty) returns (Empty);
+    rpc MoveLastGoal(Empty) returns (Empty);
+
+    //MoveLog
+    rpc MoveLogLast(MoveLogLastRequest) returns (MoveLogLastResponse);
+    rpc MoveLog(MoveLogRequest) returns (MoveLogResponse);
+}
+
+message Empty {}
+
+message MoveLog{
+    string id = 1;
+    string command = 2;
+    string status = 3;
+    optional string mapName = 4;
+    optional string goalId = 5;
+    optional string goalName = 6;
+    optional float x = 7;
+    optional float y = 8;
+    optional float rz = 9;
+    optional float vx = 10;
+    optional float vy = 11;
+    optional float wz = 12;
+    optional string createdAt = 13;
+    optional string updatedAt = 14;
+    optional string direction = 15;
+    optional float speed = 16;
+    optional float target = 17;
+}
+
+message MoveLogLastRequest {
+    int32 num = 1;
+    optional string command = 2;
+}
+
+message MoveLogLastResponse {
+    repeated MoveLog list = 1;
+}
+
+message MoveLogRequest {
+    optional int32 pageNo = 1;
+    optional int32 pageSize = 2;
+    optional string searchText = 3;
+    optional string searchType = 4;
+    optional string sortOption = 5;
+    optional string sortDirection = 6;
+    optional string dateFrom = 7;
+    optional string dateTo = 8;
+}
+
+message MoveLogResponse {
+    repeated MoveLog list = 1;
+    optional int32 pageSize = 2;
+    optional int32 totalCount = 3;
+    optional int32 totalPage = 4;
+}
+
+message MoveCommandResquest {
+    string command = 1;
+    optional string method = 2;
+    optional int32 preset = 3;
+    optional string goalId = 4;
+    optional float x = 5;
+    optional float y = 6;
+    optional float z = 7;
+    optional float rz = 8;
+    optional float vx = 9;
+    optional float vy = 10;
+    optional float wz = 11;
+    optional string direction = 12;
+    optional float target = 13;
+    optional float speed = 14;
+}
+
+message MoveCommandResponse {
+    string command = 1;
+    optional string method = 2;
+    optional int32 preset = 3;
+    optional string goalId = 4;
+    optional float x = 5;
+    optional float y = 6;
+    optional float z = 7;
+    optional float rz = 8;
+    optional float vx = 9;
+    optional float vy = 10;
+    optional float wz = 11;
+    optional string direction = 12;
+    optional float target = 13;
+    optional float speed = 14;
+    string result = 15;
+    optional string message = 16;
+}

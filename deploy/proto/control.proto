@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package control;
+
+//led, 
+service ControlGrpcService {
+    rpc OnOffControl(OnOffControlRequest) returns (OnOffControlResponse);
+    rpc WorkControl(WorkControlRequest) returns (WorkControlResponse);
+    rpc LEDControl(LEDControlRequest) returns (LEDControlResponse);
+    rpc SetSafetyField(SafetyField) returns (SafetyField);
+    rpc GetSafetyField(Empty) returns (SafetyField);
+    rpc ExAccessoryControl(ExAccessoryControlRequest) returns (ExAccessoryControlResponse);
+    rpc SafetyIoControl(SafetyIoControlRequest) returns (SafetyIoControlResponse);
+    rpc SetObsBox(SetObsBoxRequest) returns (SetObsBoxResponse);
+    rpc GetObsBox(Empty) returns (GetObsBoxResponse);
+}
+
+message Empty {
+
+}
+message OnOffControlRequest {
+    string command = 1;
+    bool onoff = 2;
+    optional int32 frequency = 3;
+}
+
+message OnOffControlResponse {
+    string command = 1;
+    bool onoff = 2;
+    optional int32 frequency = 3;
+    optional string result = 4;
+    optional string message = 5;
+}
+
+message WorkControlRequest {
+    string command = 1;
+}
+
+message WorkControlResponse {
+    string command = 1;
+    optional string result = 2;
+    optional string message = 3;
+}
+
+message LEDControlRequest {
+    string command = 1;
+    bool onoff = 2;
+    optional string color = 3;
+}
+
+message LEDControlResponse {
+    string command = 1;
+    bool onoff = 2;
+    optional string color = 3;
+    optional string result = 4;
+    optional string message = 5;
+}
+
+message ExAccessoryControlRequest {
+    string command = 1;
+    optional string pose = 2;
+}
+
+message ExAccessoryControlResponse {
+    string command = 1;
+    optional string pose = 2;
+    optional string result = 3;
+    optional string message = 4;
+}
+
+message SafetyField {
+    string safetyField = 1;
+}
+
+message McuDio {
+    repeated int32 channel = 1;
+}
+
+message SafetyIoControlRequest {
+    string command = 1;
+    repeated McuDio mcuDio = 2;
+}
+
+message SafetyIoControlResponse {
+    string command = 1;
+    repeated McuDio mcuDio = 2;
+    repeated McuDio mcuDin = 3;
+    string result = 4;
+    optional string message = 5;
+}
+
+message SetObsBoxRequest {
+    optional float minZ = 1;
+    optional float maxZ = 2;
+    optional float mapRange = 3;
+}
+
+message SetObsBoxResponse {
+    optional float minZ = 1;
+    optional float maxZ = 2;
+    optional float mapRange = 3;
+    string result = 4;
+    optional string message = 5;
+}
+
+message GetObsBoxResponse {
+    optional float minZ = 1;
+    optional float maxZ = 2;
+    optional float mapRange = 3;
+    string result = 4;
+    optional string message = 5;
+}
