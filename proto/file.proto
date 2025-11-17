@@ -13,7 +13,7 @@ service FileGrpcService {
 }
 
 message ReadFileListRequest {
-  int32 pageNo = 1;
+  int32 pageNo = 1; 
   int32 pageSize = 2;
   optional string searchType = 3;
   optional string searchText = 4;
