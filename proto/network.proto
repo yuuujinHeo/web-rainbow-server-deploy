@@ -26,8 +26,8 @@ message Network {
     optional string state = 7;
     string mask = 8;
     repeated string dns = 9;
-    optional float signalLevel = 10;
-    optional float quality = 11;
+    optional double signalLevel = 10;
+    optional double quality = 11;
     optional string security = 12;
     optional bool dhcp = 13;
 }
@@ -81,7 +81,7 @@ message WIFI {
     int32 channel = 4;
     int32 frequency = 5;
     int32 signal_level = 6;
-    float quality = 7;
+    double quality = 7;
     string security = 8;
     repeated string security_flags = 9;
     optional string mode = 10;

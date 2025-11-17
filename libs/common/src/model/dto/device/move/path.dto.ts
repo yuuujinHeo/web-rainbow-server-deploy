@@ -1,34 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString, Length } from 'class-validator';
 
-export class Path {
-  @ApiProperty({
-    description: 'Path 단위노드의 X값',
-    example: '0.0',
-    required: false,
-  })
-  @IsString()
-  @Length(1, 50)
-  x: string;
+// export class Path {
+//   @ApiProperty({
+//     description: 'Path 단위노드의 X값',
+//     example: '0.0',
+//     required: false,
+//   })
+//   @IsString()
+//   @Length(1, 50)
+//   x: string;
 
-  @ApiProperty({
-    description: 'Path 단위노드의 Y값',
-    example: '0.0',
-    required: false,
-  })
-  @IsString()
-  @Length(1, 50)
-  y: string;
+//   @ApiProperty({
+//     description: 'Path 단위노드의 Y값',
+//     example: '0.0',
+//     required: false,
+//   })
+//   @IsString()
+//   @Length(1, 50)
+//   y: string;
 
-  @ApiProperty({
-    description: 'Path 단위노드의 RZ값',
-    example: '0.0',
-    required: false,
-  })
-  @IsString()
-  @Length(1, 50)
-  rz: string;
-}
+//   @ApiProperty({
+//     description: 'Path 단위노드의 RZ값',
+//     example: '0.0',
+//     required: false,
+//   })
+//   @IsString()
+//   @Length(1, 50)
+//   rz: string;
+// }
 
 export class PathSlamnav {
   @ApiProperty({
@@ -40,7 +40,7 @@ export class PathSlamnav {
     ],
     required: false,
   })
-  path: Array<Array<string>>;
+  path: Array<Array<number>>;
 
   @ApiProperty({
     description: 'Path 단위노드의 시간값',

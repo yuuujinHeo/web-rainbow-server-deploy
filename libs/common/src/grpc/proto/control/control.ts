@@ -86,12 +86,20 @@ export interface SafetyIoControlResponse {
 }
 
 export interface SetObsBoxRequest {
+  minX?: number | undefined;
+  maxX?: number | undefined;
+  minY?: number | undefined;
+  maxY?: number | undefined;
   minZ?: number | undefined;
   maxZ?: number | undefined;
   mapRange?: number | undefined;
 }
 
 export interface SetObsBoxResponse {
+  minX?: number | undefined;
+  maxX?: number | undefined;
+  minY?: number | undefined;
+  maxY?: number | undefined;
   minZ?: number | undefined;
   maxZ?: number | undefined;
   mapRange?: number | undefined;
@@ -100,6 +108,10 @@ export interface SetObsBoxResponse {
 }
 
 export interface GetObsBoxResponse {
+  minX?: number | undefined;
+  maxX?: number | undefined;
+  minY?: number | undefined;
+  maxY?: number | undefined;
   minZ?: number | undefined;
   maxZ?: number | undefined;
   mapRange?: number | undefined;

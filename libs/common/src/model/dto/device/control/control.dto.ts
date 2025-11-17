@@ -180,8 +180,40 @@ export class ControlResponseFrs {
 
 export class ObsBoxRequestDto {
   @ApiProperty({
+    description: '장애물감지영역 최소 x값',
+    example: 1.3,
+    required: false,
+  })
+  @IsOptional()
+  minX?: number;
+
+  @ApiProperty({
+    description: '장애물감지영역 최대 x값',
+    example: 1.3,
+    required: false,
+  })
+  @IsOptional()
+  maxX?: number;
+
+  @ApiProperty({
+    description: '장애물감지영역 최소 y값',
+    example: 1.3,
+    required: false,
+  })
+  @IsOptional()
+  minY?: number;
+
+  @ApiProperty({
+    description: '장애물감지영역 최대 y값',
+    example: 1.3,
+    required: false,
+  })
+  @IsOptional()
+  maxY?: number;
+
+  @ApiProperty({
     description: '장애물감지영역 최소 z값',
-    example: '1.3',
+    example: 1.3,
     required: false,
   })
   @IsOptional()
@@ -189,7 +221,7 @@ export class ObsBoxRequestDto {
 
   @ApiProperty({
     description: '장애물감지영역 최대 z값 ',
-    example: '1.3',
+    example: 1.3,
     required: false,
   })
   @IsOptional()
@@ -197,7 +229,7 @@ export class ObsBoxRequestDto {
 
   @ApiProperty({
     description: '장애물감지영역 맵 범위',
-    example: '1.3',
+    example: 1.3,
     required: false,
   })
   @IsOptional()

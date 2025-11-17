@@ -480,8 +480,6 @@ function MapGrpcServiceControllerMethods() {
             "saveCloud",
             "getTopology",
             "saveTopology",
-            "getTopologyNew",
-            "saveTopologyNew",
             "load",
             "mapping",
             "uploadMap",
@@ -2227,7 +2225,16 @@ let ControlService = class ControlService {
         let command = null;
         try {
             this.loggerService.info(`[Control] setObsBox : ${JSON.stringify(request)}`);
-            command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.setObsBox, minZ: request.minZ, maxZ: request.maxZ, mapRange: request.mapRange });
+            command = new control_domain_1.ControlModel({
+                command: control_type_1.ControlCommand.setObsBox,
+                minX: request.minX,
+                maxX: request.maxX,
+                minY: request.minY,
+                maxY: request.maxY,
+                minZ: request.minZ,
+                maxZ: request.maxZ,
+                mapRange: request.mapRange,
+            });
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
@@ -2238,7 +2245,16 @@ let ControlService = class ControlService {
             this.loggerService.info(`[Control] setObsBox Response : ${JSON.stringify(resp)}`);
             command.statusChange('accept');
             await this.databaseOutput.update(command);
-            return { ...resp, minZ: request.minZ, maxZ: request.maxZ, mapRange: request.mapRange };
+            return {
+                ...resp,
+                minX: request.minX,
+                maxX: request.maxX,
+                minY: request.minY,
+                maxY: request.maxY,
+                minZ: request.minZ,
+                maxZ: request.maxZ,
+                mapRange: request.mapRange,
+            };
         }
         catch (error) {
             this.loggerService.error(`[Control] setObsBox : ${(0, common_2.errorToJson)(error)}`);
@@ -2445,6 +2461,10 @@ class ControlModel {
         this.resetFlag = param.resetFlag;
         this.position = param.position;
         this.mcuDio = param.mcuDio;
+        this.minX = param.minX;
+        this.maxX = param.maxX;
+        this.minY = param.minY;
+        this.maxY = param.maxY;
         this.minZ = param.minZ;
         this.maxZ = param.maxZ;
         this.mapRange = param.mapRange;
@@ -2542,8 +2562,17 @@ class ControlModel {
                 break;
             }
             case control_type_1.ControlCommand.setObsBox: {
-                if (this.minZ === undefined || this.maxZ === undefined || this.mapRange === undefined) {
-                    throw new rpc_code_exception_1.RpcCodeException('minZ, maxZ, mapRange 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                if (this.minZ === undefined || this.maxZ === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minZ, maxZ 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.minX === undefined || this.maxX === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minX, maxX 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.minY === undefined || this.maxY === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minY, maxY 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.mapRange === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('mapRange 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
                 break;
             }
@@ -3304,8 +3333,44 @@ class ObsBoxRequestDto {
 exports.ObsBoxRequestDto = ObsBoxRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최소 x값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "minX", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최대 x값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "maxX", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최소 y값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "minY", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최대 y값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "maxY", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
         description: '장애물감지영역 최소 z값',
-        example: '1.3',
+        example: 1.3,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
@@ -3314,7 +3379,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '장애물감지영역 최대 z값 ',
-        example: '1.3',
+        example: 1.3,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
@@ -3323,7 +3388,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '장애물감지영역 맵 범위',
-        example: '1.3',
+        example: 1.3,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
