@@ -713,8 +713,6 @@ function MapGrpcServiceControllerMethods() {
             "saveCloud",
             "getTopology",
             "saveTopology",
-            "getTopologyNew",
-            "saveTopologyNew",
             "load",
             "mapping",
             "uploadMap",

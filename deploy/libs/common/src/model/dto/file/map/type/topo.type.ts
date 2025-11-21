@@ -33,6 +33,27 @@ export class LinkDto {
   })
   @IsOptional()
   info?: string;
+
+  @ApiProperty({
+    description: '링크의 속도값을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+    example: 0,
+    required: false,
+  })
+  speed?: number;
+
+  @ApiProperty({
+    description: '링크의 방법을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+    example: 'DIRECT',
+    required: false,
+  })
+  method?: string;
+
+  @ApiProperty({
+    description: '링크의 안전 필드값을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+    example: 0,
+    required: false,
+  })
+  safetyField?: number;
 }
 
 export class PoseDto {
@@ -80,56 +101,6 @@ export class PoseDto {
 }
 
 export class NodeDto {
-  @ApiProperty({
-    description: Description.ID,
-    example: UrlUtil.generateUUID(),
-    required: true,
-  })
-  @IsString()
-  @Length(1, 50)
-  id: string;
-
-  @ApiProperty({
-    description: Description.NAME,
-    example: 'N_15553',
-    required: true,
-  })
-  @IsString()
-  @Length(1, 50)
-  name: string;
-
-  @ApiProperty({ description: Description.POSE, required: true })
-  @IsObject()
-  pose: PoseDto;
-
-  @ApiProperty({
-    description: Description.INFO,
-    example: '',
-    required: true,
-  })
-  @IsString()
-  info: string;
-
-  @ApiProperty({
-    description: Description.LINKS,
-    example: ['N_56593', 'N_11448'],
-    required: true,
-  })
-  @IsArray()
-  links: string[];
-
-  @ApiProperty({
-    description: Description.TYPE,
-    example: NodeType.goal,
-    enum: NodeType,
-    required: true,
-  })
-  @IsString()
-  @Length(1, 50)
-  type: string;
-}
-
-export class NewNodeDto {
   @ApiProperty({
     description: Description.ID,
     example: UrlUtil.generateUUID(),

@@ -1,13 +1,12 @@
 // grpc-to-http.filter.ts
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { errorToJson, LoggerService } from '@app/common/logger';
+import { errorToJson } from '@app/common/logger';
 import { GrpcCode } from '../constant';
 
 // RpcCodeException 등의 예외를 HttpException으로 변환하여 처리
 @Catch()
 export class GrpcToHttpFilter implements ExceptionFilter {
-  loggerService: LoggerService = LoggerService.get('filter');
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -16,7 +15,7 @@ export class GrpcToHttpFilter implements ExceptionFilter {
         if ('code' in exception && 'details' in exception) {
           const statusCode = mapGrpcToHttpStatus(exception.code as number);
 
-          this.loggerService.info(`[Grpc] RpcException : ${exception.details} ${statusCode}(${exception.code})`);
+          // this.logger.info(`[Grpc] RpcException : ${exception.details} ${statusCode}(${exception.code})`);
 
           return response.status(statusCode).json({
             statusCode,
@@ -26,11 +25,11 @@ export class GrpcToHttpFilter implements ExceptionFilter {
           const statusCode = exception.getStatus();
           const message = exception.message;
 
-          this.loggerService.info(`[Grpc] caught HttpException : ${statusCode}, ${message}`);
+          // this.logger.info(`[Grpc] caught HttpException : ${statusCode}, ${message}`);
 
           return response.status(statusCode).json({ statusCode, message });
         } else {
-          this.loggerService.info(`[Grpc] caught Error : ${exception.message}`);
+          // this.logger.info(`[Grpc] caught Error : ${exception.message}`);
 
           return response.status(500).json({
             statusCode: 500,
@@ -38,14 +37,14 @@ export class GrpcToHttpFilter implements ExceptionFilter {
           });
         }
       } else {
-        this.loggerService.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
+        // this.logger.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
         return response.status(500).json({
           statusCode: 500,
           message: 'Internal server error',
         });
       }
     } catch (error) {
-      this.loggerService.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
+      // this.logger.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
       return response.status(500).json({
         statusCode: 500,
         message: 'Internal server error',

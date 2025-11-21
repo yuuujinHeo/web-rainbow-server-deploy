@@ -486,8 +486,6 @@ function MapGrpcServiceControllerMethods() {
             "saveCloud",
             "getTopology",
             "saveTopology",
-            "getTopologyNew",
-            "saveTopologyNew",
             "load",
             "mapping",
             "uploadMap",
@@ -1978,12 +1976,6 @@ let MapGrpcInputController = class MapGrpcInputController {
     saveTopology(request) {
         return this.mapService.saveTopology(request);
     }
-    getTopologyNew(request, metadata) {
-        return this.mapService.getTopologyNew(request);
-    }
-    saveTopologyNew(request, metadata) {
-        return this.mapService.saveTopologyNew(request);
-    }
     uploadMap(request, metadata) {
         return this.mapService.uploadMap(request);
     }
@@ -2095,7 +2087,7 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
             }
             const csvData = await util_1.FileUtil.readCSV(command.path);
-            const cloud = csvData.map((e) => ({ row: e }));
+            const cloud = csvData.map((e) => ({ row: e.map((e) => Number(e)) }));
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
             return { ...request, cloud: cloud };
@@ -2120,7 +2112,7 @@ let MapService = class MapService {
             command.assignId(result.id.toString());
             command.checkVariables();
             const list = request.cloud.map((row) => row.row);
-            await util_1.FileUtil.saveCSV(command.path, list);
+            await util_1.FileUtil.saveCSV(command.path, list.map((row) => row.map((e) => e.toString())));
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
             return request;
@@ -2146,91 +2138,7 @@ let MapService = class MapService {
                 mapName: request.mapName,
                 fileName: request.fileName,
             });
-            const result = await this.databaseOutput.save(command);
-            command.assignId(result.id.toString());
-            command.checkVariables();
-            const jsonData = JSON.parse(JSON.stringify(request.data));
-            jsonData.forEach((node) => {
-                if (node.pose.x != undefined) {
-                    node.pose = node.pose.x + ',' + node.pose.y + ',' + node.pose.z + ',' + node.pose.rx + ',' + node.pose.ry + ',' + node.pose.rz;
-                }
-                else {
-                    throw new rpc_code_exception_1.RpcCodeException('Topology 파일 형식이 올바르지 않습니다.', constant_1.GrpcCode.InvalidArgument);
-                }
-                for (let link of node.links) {
-                    console.log('link : ', link, typeof link);
-                    if (typeof link !== 'string') {
-                        link = link.id;
-                    }
-                }
-            });
-            await util_1.FileUtil.saveJson(command.path, jsonData);
-            command.statusChange(map_command_domain_1.CommandStatus.success);
-            await this.databaseOutput.update(command);
-            return request;
-        }
-        catch (error) {
-            this.loggerService.error(`[Map] saveTopology : ${util_1.ParseUtil.errorToJson(error)}`);
-            if (command) {
-                command.statusChange(map_command_domain_1.CommandStatus.fail);
-                await this.databaseOutput.update(command);
-            }
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('Topology를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    async getTopology(request) {
-        let command = null;
-        try {
-            this.loggerService.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
-            command = new map_command_domain_1.MapCommandModel({
-                command: map_command_domain_1.MapCommand.getTopo,
-                mapName: request.mapName,
-                fileName: request.fileName,
-            });
-            const result = await this.databaseOutput.save(command);
-            command.assignId(result.id.toString());
-            command.checkVariables();
-            if (!(0, fs_1.existsSync)(command.path)) {
-                throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
-            }
-            const jsonData = await util_1.FileUtil.readJson(command.path);
-            const data = JSON.parse(JSON.stringify(jsonData)).map((node) => {
-                console.log('node : ', node);
-                return {
-                    id: node.id,
-                    name: node.name,
-                    pose: {
-                        x: node.pose.split(',')[0],
-                        y: node.pose.split(',')[1],
-                        rz: node.pose.split(',')[5],
-                    },
-                    info: node.info,
-                    links: node.links,
-                    type: node.type,
-                };
-            });
-            command.statusChange(map_command_domain_1.CommandStatus.success);
-            await this.databaseOutput.update(command);
-            return { ...request, data };
-        }
-        catch (error) {
-            this.loggerService.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
-            if (command) {
-                command.statusChange(map_command_domain_1.CommandStatus.fail);
-                await this.databaseOutput.update(command);
-            }
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('Topology를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    async saveTopologyNew(request) {
-        let command = null;
-        try {
-            this.loggerService.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
-            command = new map_command_domain_1.MapCommandModel({
+            command.setTopology({
                 command: map_command_domain_1.MapCommand.saveTopo,
                 topo: request.data,
                 mapName: request.mapName,
@@ -2242,18 +2150,7 @@ let MapService = class MapService {
             const jsonData = JSON.parse(JSON.stringify(request.data));
             jsonData.forEach((node) => {
                 if (node.pose.x != undefined) {
-                    node.pose =
-                        node.pose.x +
-                            ',' +
-                            node.pose.y +
-                            ',' +
-                            (node.pose.z ?? '0') +
-                            ',' +
-                            (node.pose.rx ?? '0') +
-                            ',' +
-                            (node.pose.ry ?? '0') +
-                            ',' +
-                            (node.pose.rz ?? '0');
+                    node.pose = node.pose.x + ',' + node.pose.y + ',' + node.pose.z + ',' + node.pose.rx + ',' + node.pose.ry + ',' + node.pose.rz;
                 }
                 else {
                     throw new rpc_code_exception_1.RpcCodeException('Topology 파일 형식이 올바르지 않습니다.', constant_1.GrpcCode.InvalidArgument);
@@ -2267,21 +2164,13 @@ let MapService = class MapService {
                         }
                     }
                     else {
-                        node.links?.forEach((link) => {
-                            link.id = link.id;
-                            link.info = link.info;
-                            link.speed = link.speed;
-                            link.method = link.method;
-                            link.safety_field = link.safetyField;
-                            link.safetyField = undefined;
-                        });
+                        node.links = node.links.map((link) => this.setLinkDto(link));
                     }
                 }
                 else {
                     node.links = [];
                 }
             });
-            console.log('jsonData : ', JSON.stringify(jsonData));
             await util_1.FileUtil.saveJson(command.path, jsonData);
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
@@ -2298,23 +2187,55 @@ let MapService = class MapService {
             throw new rpc_code_exception_1.RpcCodeException('Topology를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
-    async getTopologyNew(request) {
-        let command = null;
+    getLinkDto(link) {
+        if (typeof link === 'string') {
+            return {
+                id: link,
+            };
+        }
+        else {
+            return {
+                id: link.id,
+                info: link.info,
+                speed: link.speed,
+                method: link.method,
+                safetyField: link.safety_field,
+            };
+        }
+    }
+    setLinkDto(link) {
+        return {
+            id: link.id,
+            info: link.info,
+            speed: link.speed,
+            method: link.method,
+            safety_field: link.safetyField,
+            safetyField: undefined,
+        };
+    }
+    async getTopology(request) {
+        let model = null;
         try {
-            this.loggerService.debug(`[Map] getTopologyNew : ${JSON.stringify(request)})`);
-            command = new map_command_domain_1.MapCommandModel({
+            this.loggerService.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
+            model = new map_command_domain_1.MapCommandModel({
                 command: map_command_domain_1.MapCommand.getTopo,
                 mapName: request.mapName,
                 fileName: request.fileName,
             });
-            const result = await this.databaseOutput.save(command);
-            command.assignId(result.id.toString());
-            command.checkVariables();
-            if (!(0, fs_1.existsSync)(command.path)) {
-                throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${command.mapName}/${command.fileName})`, constant_1.GrpcCode.NotFound);
+            model.setTopology({
+                command: map_command_domain_1.MapCommand.getTopo,
+                mapName: request.mapName,
+                fileName: request.fileName,
+            });
+            const result = await this.databaseOutput.save(model);
+            model.assignId(result.id.toString());
+            model.checkVariables();
+            if (!(0, fs_1.existsSync)(model.path)) {
+                throw new rpc_code_exception_1.RpcCodeException(`파일을 찾을 수 없습니다. (${model.mapName}/${model.fileName})`, constant_1.GrpcCode.NotFound);
             }
-            const jsonData = await util_1.FileUtil.readJson(command.path);
-            const data = JSON.parse(JSON.stringify(jsonData)).map((node) => {
+            let data = [];
+            const jsonData = await util_1.FileUtil.readJson(model.path);
+            data = JSON.parse(JSON.stringify(jsonData)).map((node) => {
                 console.log('node : ', node);
                 return {
                     id: node.id,
@@ -2322,31 +2243,25 @@ let MapService = class MapService {
                     pose: {
                         x: node.pose.split(',')[0],
                         y: node.pose.split(',')[1],
+                        z: node.pose.split(',')[2],
+                        rx: node.pose.split(',')[3],
+                        ry: node.pose.split(',')[4],
                         rz: node.pose.split(',')[5],
                     },
                     info: node.info,
-                    links: node.links?.map((link) => {
-                        return {
-                            id: link.id,
-                            info: link.info,
-                            speed: link.speed,
-                            method: link.method,
-                            safetyField: link.safety_field,
-                        };
-                    }),
+                    links: node.links?.map((link) => this.getLinkDto(link)),
                     type: node.type,
                 };
             });
-            command.statusChange(map_command_domain_1.CommandStatus.success);
-            await this.databaseOutput.update(command);
-            console.log('data : ', JSON.stringify(data));
-            return { ...request, data };
+            model.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.databaseOutput.update(model);
+            return { ...request, fileName: model.fileName, data };
         }
         catch (error) {
             this.loggerService.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
-            if (command) {
-                command.statusChange(map_command_domain_1.CommandStatus.fail);
-                await this.databaseOutput.update(command);
+            if (model) {
+                model.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.databaseOutput.update(model);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
@@ -2756,6 +2671,7 @@ exports.MapCommandModel = exports.MapCommand = exports.CommandStatus = void 0;
 const rpc_code_exception_1 = __webpack_require__(46);
 const constant_1 = __webpack_require__(47);
 const path_1 = __webpack_require__(40);
+const fs_1 = __webpack_require__(39);
 var CommandStatus;
 (function (CommandStatus) {
     CommandStatus["pending"] = "pending";
@@ -2795,8 +2711,30 @@ class MapCommandModel {
         this.cloud = param.cloud;
         this.topo = param.topo;
     }
+    setTopology(param) {
+        this.command = param.command;
+        this.mapName = param.mapName;
+        this.fileName = this.getFileName(param.fileName);
+        this.newMapName = param.newMapName;
+        this.isForce = param.isForce;
+        this.status = CommandStatus.pending;
+        this.path = this.getMapsDir();
+        this.cloud = param.cloud;
+        this.topo = param.topo;
+    }
     assignId(id) {
         this.id = id;
+    }
+    getFileName(fileName) {
+        const paths = this.getMapsDir(this.mapName);
+        if ((0, fs_1.existsSync)((0, path_1.join)(paths, 'node.json'))) {
+            console.log('getFileName1 : node.json');
+            return 'node.json';
+        }
+        else {
+            console.log('getFileName2 : ', fileName);
+            return fileName;
+        }
     }
     getMapsDir(mapName, fileName) {
         const paths = ['/data/maps'];

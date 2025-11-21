@@ -876,8 +876,6 @@ function MapGrpcServiceControllerMethods() {
             "saveCloud",
             "getTopology",
             "saveTopology",
-            "getTopologyNew",
-            "saveTopologyNew",
             "load",
             "mapping",
             "uploadMap",
@@ -2412,8 +2410,44 @@ class ObsBoxRequestDto {
 exports.ObsBoxRequestDto = ObsBoxRequestDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최소 x값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "minX", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최대 x값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "maxX", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최소 y값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "minY", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '장애물감지영역 최대 y값',
+        example: 1.3,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ObsBoxRequestDto.prototype, "maxY", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
         description: '장애물감지영역 최소 z값',
-        example: '1.3',
+        example: 1.3,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
@@ -2422,7 +2456,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '장애물감지영역 최대 z값 ',
-        example: '1.3',
+        example: 1.3,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
@@ -2431,7 +2465,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '장애물감지영역 맵 범위',
-        example: '1.3',
+        example: 1.3,
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
@@ -7055,7 +7089,7 @@ let MapApiController = class MapApiController {
                 .split('\n')
                 .filter((line) => line.trim())
                 .map((line) => line.split(',').map((val) => val.trim()));
-            await this.mapService.saveCloud({ ...dto, cloud: cloudData });
+            await this.mapService.saveCloud({ ...dto, cloud: cloudData.map((e) => e.map((val) => Number(val))) });
             const filePath = `/uploads/${dto.mapName}_${dto.fileName}`;
             fs.writeFileSync(filePath, JSON.stringify(cloudData), 'utf-8');
             return {
@@ -7639,6 +7673,7 @@ let MapApiService = class MapApiService {
     }
     async getCloud(dto) {
         const resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getCloud(dto));
+        console.log('resp : ', JSON.stringify(resp));
         const cloud = resp.cloud.map((p) => p.row);
         return {
             mapName: resp.mapName,
@@ -7664,12 +7699,7 @@ let MapApiService = class MapApiService {
     }
     async getTopologyPagination(dto) {
         let resp;
-        if (dto.fileName == 'node.json') {
-            resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getTopologyNew({ mapName: dto.mapName, fileName: dto.fileName }));
-        }
-        else {
-            resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({ mapName: dto.mapName, fileName: dto.fileName }));
-        }
+        resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({ mapName: dto.mapName, fileName: dto.fileName }));
         const data = resp.data;
         const nodes = [];
         if (Array.isArray(data)) {
@@ -7705,14 +7735,7 @@ let MapApiService = class MapApiService {
         return new pagination_1.PaginationResponse(items, nodes.length, Number(dto.pageSize));
     }
     async getTopology(mapName, fileName) {
-        if (fileName == 'node.json') {
-            const data = await (0, rxjs_1.lastValueFrom)(this.mapService.getTopologyNew({ mapName, fileName }));
-            console.log('data : ', JSON.stringify(data));
-            return data;
-        }
-        else {
-            return await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({ mapName, fileName }));
-        }
+        return await (0, rxjs_1.lastValueFrom)(this.mapService.getTopology({ mapName, fileName }));
     }
     async saveTopology(dto) {
         for (const node of dto.data) {
@@ -7725,7 +7748,7 @@ let MapApiService = class MapApiService {
                 }
             }
         }
-        return await (0, rxjs_1.lastValueFrom)(this.mapService.saveTopologyNew({ ...dto, data: dto.data }));
+        return await (0, rxjs_1.lastValueFrom)(this.mapService.saveTopology({ ...dto, data: dto.data }));
     }
     async mappingStart() {
         return await (0, rxjs_1.lastValueFrom)(this.mapService.mapping({ command: map_command_domain_1.MapCommand.mappingStart }));
@@ -7767,6 +7790,7 @@ exports.MapCommandModel = exports.MapCommand = exports.CommandStatus = void 0;
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const path_1 = __webpack_require__(44);
+const fs_1 = __webpack_require__(43);
 var CommandStatus;
 (function (CommandStatus) {
     CommandStatus["pending"] = "pending";
@@ -7806,8 +7830,30 @@ class MapCommandModel {
         this.cloud = param.cloud;
         this.topo = param.topo;
     }
+    setTopology(param) {
+        this.command = param.command;
+        this.mapName = param.mapName;
+        this.fileName = this.getFileName(param.fileName);
+        this.newMapName = param.newMapName;
+        this.isForce = param.isForce;
+        this.status = CommandStatus.pending;
+        this.path = this.getMapsDir();
+        this.cloud = param.cloud;
+        this.topo = param.topo;
+    }
     assignId(id) {
         this.id = id;
+    }
+    getFileName(fileName) {
+        const paths = this.getMapsDir(this.mapName);
+        if ((0, fs_1.existsSync)((0, path_1.join)(paths, 'node.json'))) {
+            console.log('getFileName1 : node.json');
+            return 'node.json';
+        }
+        else {
+            console.log('getFileName2 : ', fileName);
+            return fileName;
+        }
     }
     getMapsDir(mapName, fileName) {
         const paths = ['/data/maps'];
@@ -8365,10 +8411,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.CLOUD,
         example: [
-            ['1.394410', '1.240310', '0.000000', '44.000000'],
-            ['1.407336', '1.244450', '0.000000', '48.000000'],
-            ['3.278415', '2.045071', '0.000000', '30.000000'],
-            ['3.263314', '1.578665', '0.000000', '54.000000'],
+            [1.39441, 1.24031, 0.0, 44.0],
+            [1.407336, 1.24445, 0.0, 48.0],
+            [3.278415, 2.045071, 0.0, 30.0],
+            [3.263314, 1.578665, 0.0, 54.0],
         ],
     }),
     (0, class_validator_1.IsArray)(),
@@ -8381,10 +8427,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.CLOUD,
         example: [
-            ['1.394410', '1.240310', '0.000000', '44.000000'],
-            ['1.407336', '1.244450', '0.000000', '48.000000'],
-            ['3.278415', '2.045071', '0.000000', '30.000000'],
-            ['3.263314', '1.578665', '0.000000', '54.000000'],
+            [1.39441, 1.24031, 0.0, 44.0],
+            [1.407336, 1.24445, 0.0, 48.0],
+            [3.278415, 2.045071, 0.0, 30.0],
+            [3.263314, 1.578665, 0.0, 54.0],
         ],
     }),
     (0, class_validator_1.IsArray)(),
@@ -8595,7 +8641,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NewNodeDto = exports.NodeDto = exports.PoseDto = exports.LinkDto = exports.NodeType = void 0;
+exports.NodeDto = exports.PoseDto = exports.LinkDto = exports.NodeType = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
 const util_1 = __webpack_require__(37);
@@ -8634,6 +8680,30 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], LinkDto.prototype, "info", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '링크의 속도값을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+        example: 0,
+        required: false,
+    }),
+    __metadata("design:type", Number)
+], LinkDto.prototype, "speed", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '링크의 방법을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+        example: 'DIRECT',
+        required: false,
+    }),
+    __metadata("design:type", String)
+], LinkDto.prototype, "method", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '링크의 안전 필드값을 나타냅니다. 값이 존재하는 경우에만 필드가 존재합니다',
+        example: 0,
+        required: false,
+    }),
+    __metadata("design:type", Number)
+], LinkDto.prototype, "safetyField", void 0);
 class PoseDto {
 }
 exports.PoseDto = PoseDto;
@@ -8725,7 +8795,10 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: Description.LINKS,
-        example: ['N_56593', 'N_11448'],
+        example: [
+            { id: 'N_56593', info: '' },
+            { id: 'N_11448', info: '' },
+        ],
         required: true,
     }),
     (0, class_validator_1.IsArray)(),
@@ -8742,66 +8815,6 @@ __decorate([
     (0, class_validator_1.Length)(1, 50),
     __metadata("design:type", String)
 ], NodeDto.prototype, "type", void 0);
-class NewNodeDto {
-}
-exports.NewNodeDto = NewNodeDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ID,
-        example: util_1.UrlUtil.generateUUID(),
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], NewNodeDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.NAME,
-        example: 'N_15553',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], NewNodeDto.prototype, "name", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: Description.POSE, required: true }),
-    (0, class_validator_1.IsObject)(),
-    __metadata("design:type", PoseDto)
-], NewNodeDto.prototype, "pose", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.INFO,
-        example: '',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], NewNodeDto.prototype, "info", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.LINKS,
-        example: [
-            { id: 'N_56593', info: '' },
-            { id: 'N_11448', info: '' },
-        ],
-        required: true,
-    }),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], NewNodeDto.prototype, "links", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.TYPE,
-        example: NodeType.goal,
-        enum: NodeType,
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], NewNodeDto.prototype, "type", void 0);
 
 
 /***/ }),
@@ -14433,42 +14446,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PathResponseSlamnav = exports.PathResponseDto = exports.PathSlamnav = exports.Path = void 0;
+exports.PathResponseSlamnav = exports.PathResponseDto = exports.PathSlamnav = void 0;
 const swagger_1 = __webpack_require__(58);
 const class_validator_1 = __webpack_require__(61);
-class Path {
-}
-exports.Path = Path;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 X값',
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], Path.prototype, "x", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 Y값',
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], Path.prototype, "y", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Path 단위노드의 RZ값',
-        example: '0.0',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], Path.prototype, "rz", void 0);
 class PathSlamnav {
 }
 exports.PathSlamnav = PathSlamnav;
@@ -16060,6 +16040,10 @@ class ControlModel {
         this.resetFlag = param.resetFlag;
         this.position = param.position;
         this.mcuDio = param.mcuDio;
+        this.minX = param.minX;
+        this.maxX = param.maxX;
+        this.minY = param.minY;
+        this.maxY = param.maxY;
         this.minZ = param.minZ;
         this.maxZ = param.maxZ;
         this.mapRange = param.mapRange;
@@ -16157,8 +16141,17 @@ class ControlModel {
                 break;
             }
             case control_type_1.ControlCommand.setObsBox: {
-                if (this.minZ === undefined || this.maxZ === undefined || this.mapRange === undefined) {
-                    throw new rpc_code_exception_1.RpcCodeException('minZ, maxZ, mapRange 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                if (this.minZ === undefined || this.maxZ === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minZ, maxZ 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.minX === undefined || this.maxX === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minX, maxX 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.minY === undefined || this.maxY === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('minY, maxY 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                if (this.mapRange === undefined) {
+                    throw new rpc_code_exception_1.RpcCodeException('mapRange 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
                 break;
             }

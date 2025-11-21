@@ -90,23 +90,35 @@ message SafetyIoControlResponse {
 }
 
 message SetObsBoxRequest {
-    optional float minZ = 1;
-    optional float maxZ = 2;
-    optional float mapRange = 3;
+    optional double minX = 1;
+    optional double maxX = 2;
+    optional double minY = 3;
+    optional double maxY = 4;
+    optional double minZ = 5;
+    optional double maxZ = 6;
+    optional double mapRange = 7;
 }
 
 message SetObsBoxResponse {
-    optional float minZ = 1;
-    optional float maxZ = 2;
-    optional float mapRange = 3;
-    string result = 4;
-    optional string message = 5;
+    optional double minX = 1;
+    optional double maxX = 2;
+    optional double minY = 3;
+    optional double maxY = 4;
+    optional double minZ = 5;
+    optional double maxZ = 6;
+    optional double mapRange = 7;
+    string result = 8;
+    optional string message = 9;
 }
 
 message GetObsBoxResponse {
-    optional float minZ = 1;
-    optional float maxZ = 2;
-    optional float mapRange = 3;
-    string result = 4;
-    optional string message = 5;
+    optional double minX = 1;
+    optional double maxX = 2;
+    optional double minY = 3;
+    optional double maxY = 4;
+    optional double minZ = 5;
+    optional double maxZ = 6;
+    optional double mapRange = 7;
+    string result = 8;
+    optional string message = 9;
 }

@@ -42,7 +42,7 @@ export class PathDto {
   })
   @IsArray()
   @Length(1, 50)
-  path: Array<Array<string>>;
+  path: Array<Array<number>>;
 
   @ApiProperty({
     description: 'Path 단위노드의 시간값',

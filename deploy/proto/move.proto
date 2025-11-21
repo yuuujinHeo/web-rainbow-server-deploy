@@ -27,17 +27,17 @@ message MoveLog{
     optional string mapName = 4;
     optional string goalId = 5;
     optional string goalName = 6;
-    optional float x = 7;
-    optional float y = 8;
-    optional float rz = 9;
-    optional float vx = 10;
-    optional float vy = 11;
-    optional float wz = 12;
+    optional double x = 7;
+    optional double y = 8;
+    optional double rz = 9;
+    optional double vx = 10;
+    optional double vy = 11;
+    optional double wz = 12;
     optional string createdAt = 13;
     optional string updatedAt = 14;
     optional string direction = 15;
-    optional float speed = 16;
-    optional float target = 17;
+    optional double speed = 16;
+    optional double target = 17;
 }
 
 message MoveLogLastRequest {
@@ -72,16 +72,16 @@ message MoveCommandResquest {
     optional string method = 2;
     optional int32 preset = 3;
     optional string goalId = 4;
-    optional float x = 5;
-    optional float y = 6;
-    optional float z = 7;
-    optional float rz = 8;
-    optional float vx = 9;
-    optional float vy = 10;
-    optional float wz = 11;
+    optional double x = 5;
+    optional double y = 6;
+    optional double z = 7;
+    optional double rz = 8;
+    optional double vx = 9;
+    optional double vy = 10;
+    optional double wz = 11;
     optional string direction = 12;
-    optional float target = 13;
-    optional float speed = 14;
+    optional double target = 13;
+    optional double speed = 14;
 }
 
 message MoveCommandResponse {
@@ -89,16 +89,16 @@ message MoveCommandResponse {
     optional string method = 2;
     optional int32 preset = 3;
     optional string goalId = 4;
-    optional float x = 5;
-    optional float y = 6;
-    optional float z = 7;
-    optional float rz = 8;
-    optional float vx = 9;
-    optional float vy = 10;
-    optional float wz = 11;
+    optional double x = 5;
+    optional double y = 6;
+    optional double z = 7;
+    optional double rz = 8;
+    optional double vx = 9;
+    optional double vy = 10;
+    optional double wz = 11;
     optional string direction = 12;
-    optional float target = 13;
-    optional float speed = 14;
+    optional double target = 13;
+    optional double speed = 14;
     string result = 15;
     optional string message = 16;
 }

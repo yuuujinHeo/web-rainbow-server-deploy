@@ -4,8 +4,7 @@ import { Expose, Transform } from 'class-transformer';
 import { IsArray, IsBoolean, IsOptional, IsString, Length } from 'class-validator';
 import { MapDto } from './type/map.type';
 import { PaginationRequest } from '@app/common/pagination';
-import { NodeDto, NewNodeDto } from './type/topo.type';
-
+import { NodeDto } from './type/topo.type';
 enum Description {
   MAPNAME = '맵 이름',
   UPDATE_DT = '맵 업데이터 시간',
@@ -54,28 +53,28 @@ export class GetCloudResponseDto extends GetCloudRequestDto {
   @ApiProperty({
     description: Description.CLOUD,
     example: [
-      ['1.394410', '1.240310', '0.000000', '44.000000'],
-      ['1.407336', '1.244450', '0.000000', '48.000000'],
-      ['3.278415', '2.045071', '0.000000', '30.000000'],
-      ['3.263314', '1.578665', '0.000000', '54.000000'],
+      [1.39441, 1.24031, 0.0, 44.0],
+      [1.407336, 1.24445, 0.0, 48.0],
+      [3.278415, 2.045071, 0.0, 30.0],
+      [3.263314, 1.578665, 0.0, 54.0],
     ],
   })
   @IsArray()
-  cloud: Array<Array<string>>;
+  cloud: Array<Array<number>>;
 }
 
 export class SaveCloudRequestDto extends FileDto {
   @ApiProperty({
     description: Description.CLOUD,
     example: [
-      ['1.394410', '1.240310', '0.000000', '44.000000'],
-      ['1.407336', '1.244450', '0.000000', '48.000000'],
-      ['3.278415', '2.045071', '0.000000', '30.000000'],
-      ['3.263314', '1.578665', '0.000000', '54.000000'],
+      [1.39441, 1.24031, 0.0, 44.0],
+      [1.407336, 1.24445, 0.0, 48.0],
+      [3.278415, 2.045071, 0.0, 30.0],
+      [3.263314, 1.578665, 0.0, 54.0],
     ],
   })
   @IsArray()
-  cloud: Array<Array<string>>;
+  cloud: Array<Array<number>>;
 }
 
 export class SaveCloudResponseDto extends SaveCloudRequestDto {}
@@ -146,13 +145,13 @@ export class GetTopologyRequestDto extends PaginationRequest {
 export class GetTopologyResponseDto extends FileDto {
   @ApiProperty({ description: Description.TOPO, type: [NodeDto], required: true })
   @IsArray()
-  data: NodeDto[] | NewNodeDto[];
+  data: NodeDto[];
 }
 
 export class SaveTopologyRequestDto extends FileDto {
   @ApiProperty({ description: Description.TOPO, required: true })
   @IsArray()
-  data: NodeDto[] | NewNodeDto[];
+  data: NodeDto[];
 }
 export class SaveTopologyResponseDto extends SaveTopologyRequestDto {}
 

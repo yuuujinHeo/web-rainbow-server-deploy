@@ -13,19 +13,19 @@ service LocalizationGrpcService {
 
 message InitRequest {
     string command = 1;
-    optional float x = 2;
-    optional float y = 3;
-    optional float z = 4;
-    optional float rz = 5;
+    optional double x = 2;
+    optional double y = 3;
+    optional double z = 4;
+    optional double rz = 5;
     optional string randomSeed = 6;
 }
 
 message InitResponse {
     string command = 1;
-    optional float x = 2;
-    optional float y = 3;
-    optional float z = 4;
-    optional float rz = 5;
+    optional double x = 2;
+    optional double y = 3;
+    optional double z = 4;
+    optional double rz = 5;
     optional string randomSeed = 6;
     string result = 7;
     optional string message = 8;

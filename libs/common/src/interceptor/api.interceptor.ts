@@ -1,11 +1,12 @@
 // logging.interceptor.ts
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
-import { LoggerService } from '../logger';
+// import { LoggerService } from '../logger';
+import { LogService } from '../log/saveLog.service';
 
 @Injectable()
 export class APILogInterceptor implements NestInterceptor {
-  loggerService = LoggerService.get('gateway');
+  logger: LogService; //.get('gateway');
   //   private readonly bannedIps = ['127.0.0.1', '::1'];
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -20,9 +21,9 @@ export class APILogInterceptor implements NestInterceptor {
     // }
 
     if (body) {
-      // this.loggerService.debug(`[${method}] ${url} (${ip}) : ${JSON.stringify(body).substring(0, 100)}`);
+      // this.logger.debug(`[${method}] ${url} (${ip}) : ${JSON.stringify(body).substring(0, 100)}`);
     } else {
-      // this.loggerService.debug(`[${method}] ${url} (${ip})`);
+      // this.logger.debug(`[${method}] ${url} (${ip})`);
     }
 
     return next.handle().pipe(
@@ -32,9 +33,9 @@ export class APILogInterceptor implements NestInterceptor {
 
         // 응답 이후 처리할 로그가 있다면 여기에 추가
         if (data) {
-          // this.loggerService.debug(`[${method} RESPONSE] ${url} (${ip}) : ${JSON.stringify(data).substring(0, 100)} -> ${responseTime}`);
+          // this.logger.debug(`[${method} RESPONSE] ${url} (${ip}) : ${JSON.stringify(data).substring(0, 100)} -> ${responseTime}`);
         } else {
-          // this.loggerService.debug(`[${method} RESPONSE] ${url} (${ip}) -> ${responseTime}`);
+          // this.logger.debug(`[${method} RESPONSE] ${url} (${ip}) -> ${responseTime}`);
         }
       }),
     );

@@ -2,7 +2,8 @@ import winston, { createLogger, format, transports } from 'winston';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
 import { DateUtil } from '@app/common/util';
 import chalk from 'chalk';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { chownSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { CleanLogService } from './cleanLog.service';
 
 const levelColorMap = {
   error: chalk.red,
@@ -27,7 +28,7 @@ function formatLogMessage(message: string): string {
     }
 
     // JSON 형태의 데이터를 찾아서 처리
-    const jsonRegex = /:\s*(\[.*?\]|\{.*?\})/g;
+    const jsonRegex = /:\s*(\[[\s\S]*?\]|\{[\s\S]*?\})/g;
     return message.replace(jsonRegex, (match, jsonStr) => {
       try {
         const data = JSON.parse(jsonStr);
@@ -47,21 +48,15 @@ function formatDataRecursive(data: any): string {
   if (Array.isArray(data)) {
     if (data.length <= 4) {
       // 4개 이하일 때는 그냥 배열 표시
-      const items = data.map((item) => {
-        if (typeof item === 'object' && item !== null) {
-          return formatDataRecursive(item);
-        }
-        return cleanJsonString(JSON.stringify(item));
-      });
+      const items = data.map((item) =>
+        typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item)),
+      );
       return `[${items.join(', ')}]`;
     } else {
       // 5개 이상일 때만 축소 표시
-      const items = data.slice(0, 4).map((item) => {
-        if (typeof item === 'object' && item !== null) {
-          return formatDataRecursive(item);
-        }
-        return cleanJsonString(JSON.stringify(item));
-      });
+      const items = data
+        .slice(0, 4)
+        .map((item) => (typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item))));
       return `[${data.length} items: [${items.join(', ')}]...]`;
     }
   }
@@ -118,10 +113,10 @@ const fileFormat = format.printf(({ timestamp, level, message }) => {
     const contextTag = message ? chalk.yellow(`[${message}]`) : '';
 
     // 카테고리 태그만 추출 (배열의 []는 제외)
-    const categoryMatches = message.match(/\[([^\]]+)\]/g);
+    const categoryMatches = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/g);
     const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
     // 카테고리 태그만 제거하고 배열의 []는 보존
-    const logtext = message.replace(/\[[^\]]+\]/g, '').trim();
+    let logtext = message.replace(/\[(?!['"])[A-Za-z0-9 _-]+\]/g, '').trim();
     return `[${levelText}] ${pid}  - ${DateUtil.formatDateKST(new Date(timestamp as string))}   LOG [${category}] ${logtext}`;
   }
 });
@@ -129,14 +124,24 @@ const loggers = new Map<string, LoggerService>();
 
 export class LoggerService {
   private logger: winston.Logger;
+  private cleanLogService: CleanLogService;
   constructor(service: string) {
     const logPath = '/data/log/' + service;
+
+    // 로그 폴더 존재 여부 확인 및 생성
     if (!existsSync(logPath)) {
       mkdirSync(logPath, { recursive: true });
     }
 
+    try {
+      chownSync(logPath, 1000, 1000);
+    } catch (error) {
+      console.error('LoggerService ChwonSync Error : ', error);
+    }
+
+    this.cleanLogService = new CleanLogService(logPath, 14);
+
     chalk.level = 3; // force enable full color
-    // writeFileSync(`./data/log/${service}/test.log`, 'hello');
     this.logger = createLogger({
       level: 'debug',
       // format: format.combine(
@@ -149,6 +154,9 @@ export class LoggerService {
           datePattern: 'YYYY-MM-DD',
           level: 'debug',
           format: format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
+          zippedArchive: true,
+          maxSize: '10m',
+          maxFiles: '14d',
         }),
         new transports.Console({
           level: 'debug',
@@ -181,4 +189,6 @@ export class LoggerService {
   debug(str: string) {
     this.logger.debug(str);
   }
+
+  cleanLogFiles() {}
 }

@@ -62,7 +62,7 @@ export class LidarCloudDto {
   })
   @IsArray()
   @Length(1, 50)
-  data: Array<Array<string>>;
+  data: Array<Array<number>>;
 
   @ApiProperty({ description: Description.STATUS_POSE, required: true })
   pose: PoseStatusDto;
@@ -90,7 +90,7 @@ export class MappingCloudDto {
   })
   @IsArray()
   @Length(1, 50)
-  data: Array<CloudDto>;
+  data: Array<Array<number>>;
 
   @ApiProperty({
     description: Description.TIME,
