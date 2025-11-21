@@ -30,29 +30,44 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RRSApiModule = void 0;
 const common_1 = __webpack_require__(5);
 const control_api_module_1 = __webpack_require__(6);
-const localization_api_module_1 = __webpack_require__(74);
-const network_api_module_1 = __webpack_require__(80);
-const config_api_module_1 = __webpack_require__(84);
-const setting_api_module_1 = __webpack_require__(90);
-const move_api_module_1 = __webpack_require__(94);
-const task_api_module_1 = __webpack_require__(103);
-const map_api_module_1 = __webpack_require__(108);
-const sound_api_module_1 = __webpack_require__(121);
-const log_api_module_1 = __webpack_require__(125);
-const update_api_module_1 = __webpack_require__(129);
-const cobot_api_module_1 = __webpack_require__(137);
-const tcp_api_module_1 = __webpack_require__(141);
-const socket_api_module_1 = __webpack_require__(144);
+const localization_api_module_1 = __webpack_require__(77);
+const network_api_module_1 = __webpack_require__(83);
+const config_api_module_1 = __webpack_require__(87);
+const setting_api_module_1 = __webpack_require__(93);
+const move_api_module_1 = __webpack_require__(97);
+const task_api_module_1 = __webpack_require__(106);
+const map_api_module_1 = __webpack_require__(111);
+const sound_api_module_1 = __webpack_require__(124);
+const log_api_module_1 = __webpack_require__(128);
+const update_api_module_1 = __webpack_require__(132);
+const cobot_api_module_1 = __webpack_require__(140);
+const tcp_api_module_1 = __webpack_require__(144);
+const socket_api_module_1 = __webpack_require__(147);
+const schedule_1 = __webpack_require__(76);
+const log_module_1 = __webpack_require__(74);
+const saveLog_service_1 = __webpack_require__(42);
+const cleanLog_service_1 = __webpack_require__(75);
 let RRSApiModule = class RRSApiModule {
+    constructor(saveLogService, cleanLogService) {
+        this.saveLogService = saveLogService;
+        this.cleanLogService = cleanLogService;
+        this.cleanLogService.setLogger(this.saveLogService.get(''), '/data/log', 30);
+    }
 };
 exports.RRSApiModule = RRSApiModule;
 exports.RRSApiModule = RRSApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            schedule_1.ScheduleModule.forRoot(),
+            log_module_1.LogModule,
             control_api_module_1.ControlApiModule,
             setting_api_module_1.SettingApiModule,
             localization_api_module_1.LocalizationApiModule,
@@ -70,7 +85,8 @@ exports.RRSApiModule = RRSApiModule = __decorate([
         ],
         controllers: [],
         providers: [],
-    })
+    }),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object, typeof (_b = typeof cleanLog_service_1.CleanLogService !== "undefined" && cleanLog_service_1.CleanLogService) === "function" ? _b : Object])
 ], RRSApiModule);
 
 
@@ -95,18 +111,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiModule = void 0;
 const common_1 = __webpack_require__(5);
 const control_api_controller_1 = __webpack_require__(7);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(65);
-const control_api_service_1 = __webpack_require__(64);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(34);
+const control_api_service_1 = __webpack_require__(33);
+const log_module_1 = __webpack_require__(74);
 let ControlApiModule = class ControlApiModule {
 };
 exports.ControlApiModule = ControlApiModule;
 exports.ControlApiModule = ControlApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -164,18 +182,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiController = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const control_dto_1 = __webpack_require__(59);
-const error_response_dto_1 = __webpack_require__(63);
-const control_api_service_1 = __webpack_require__(64);
-const safety_io_dto_1 = __webpack_require__(72);
-const control_type_1 = __webpack_require__(62);
+const common_1 = __webpack_require__(5);
+const swagger_1 = __webpack_require__(8);
+const control_dto_1 = __webpack_require__(9);
+const error_response_dto_1 = __webpack_require__(32);
+const control_api_service_1 = __webpack_require__(33);
+const safety_io_dto_1 = __webpack_require__(46);
+const control_type_1 = __webpack_require__(12);
 let ControlApiController = class ControlApiController {
     constructor(controlService) {
         this.controlService = controlService;
-        this.loggerService = common_1.LoggerService.get('gateway');
     }
     async OnOff(dto) {
         return this.controlService.OnOff(dto);
@@ -213,7 +229,7 @@ let ControlApiController = class ControlApiController {
 };
 exports.ControlApiController = ControlApiController;
 __decorate([
-    (0, common_2.Post)('onoff'),
+    (0, common_1.Post)('onoff'),
     (0, swagger_1.ApiOperation)({
         summary: '기능 OnOff 요청',
         description: `특정 기능을 켜고 끄는 요청을 합니다. \n\n
@@ -230,13 +246,13 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _b : Object]),
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], ControlApiController.prototype, "OnOff", null);
 __decorate([
-    (0, common_2.Post)('work'),
+    (0, common_1.Post)('work'),
     (0, swagger_1.ApiOperation)({
         summary: '특정 기능 실행 요청',
         description: '특정 기능을 실행 합니다.',
@@ -250,13 +266,13 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], ControlApiController.prototype, "Work", null);
 __decorate([
-    (0, common_2.Post)('work/dock'),
+    (0, common_1.Post)('work/dock'),
     (0, swagger_1.ApiOperation)({
         summary: '도킹 실행 요청',
         description: '도킹 명령을 요청합니다.',
@@ -275,7 +291,7 @@ __decorate([
     __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], ControlApiController.prototype, "WorkDock", null);
 __decorate([
-    (0, common_2.Post)('work/undock'),
+    (0, common_1.Post)('work/undock'),
     (0, swagger_1.ApiOperation)({
         summary: '언도킹 실행 요청',
         description: '언도킹 명령을 요청합니다. 도킹 명령 후 언도킹 명령을 요청해야 합니다.',
@@ -294,7 +310,7 @@ __decorate([
     __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], ControlApiController.prototype, "WorkUnDock", null);
 __decorate([
-    (0, common_2.Get)('safetyField'),
+    (0, common_1.Get)('safetyField'),
     (0, swagger_1.ApiOperation)({
         summary: '세이프티영역 조회',
         description: '현재 설정된 세이프티 영역을 조회합니다.',
@@ -313,7 +329,7 @@ __decorate([
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], ControlApiController.prototype, "GetSafetyField", null);
 __decorate([
-    (0, common_2.Post)('safetyField'),
+    (0, common_1.Post)('safetyField'),
     (0, swagger_1.ApiOperation)({
         summary: '세이프티영역 설정',
         description: '세이프티 영역을 설정합니다.',
@@ -327,13 +343,13 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_j = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], ControlApiController.prototype, "SetSafetyField", null);
 __decorate([
-    (0, common_2.Post)('led'),
+    (0, common_1.Post)('led'),
     (0, swagger_1.ApiOperation)({
         summary: 'LED 제어 요청',
         description: 'LED의 수동 제어를 요청합니다.',
@@ -347,13 +363,13 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_l = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _l : Object]),
     __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], ControlApiController.prototype, "Led", null);
 __decorate([
-    (0, common_2.Post)('safetyIo'),
+    (0, common_1.Post)('safetyIo'),
     (0, swagger_1.ApiOperation)({
         summary: '세이프티 IO 제어 요청',
         description: '세이프티 IO를 제어합니다.',
@@ -362,13 +378,13 @@ __decorate([
         description: '세이프티 IO 제어 요청 성공',
         type: safety_io_dto_1.SafetyIoResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_o = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _o : Object]),
     __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], ControlApiController.prototype, "SafetyIo", null);
 __decorate([
-    (0, common_2.Get)('safetyIo'),
+    (0, common_1.Get)('safetyIo'),
     (0, swagger_1.ApiOperation)({
         summary: '세이프티 IO 조회 요청',
         description: '세이프티 IO를 조회합니다.',
@@ -382,7 +398,7 @@ __decorate([
     __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
 ], ControlApiController.prototype, "GetSafetyIo", null);
 __decorate([
-    (0, common_2.Get)('obsbox'),
+    (0, common_1.Get)('obsbox'),
     (0, swagger_1.ApiOperation)({
         summary: '장애물감지 영역 설정 조회',
         description: 'AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.',
@@ -392,1805 +408,31 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ControlApiController.prototype, "getObsboxControl", null);
 __decorate([
-    (0, common_2.Post)('obsbox'),
+    (0, common_1.Post)('obsbox'),
     (0, swagger_1.ApiOperation)({
         summary: '장애물감지 영역 설정',
         description: 'AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.',
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _r : Object]),
     __metadata("design:returntype", Promise)
 ], ControlApiController.prototype, "setObsboxControl", null);
 exports.ControlApiController = ControlApiController = __decorate([
     (0, swagger_1.ApiTags)('SLAMNAV 컨트롤 API'),
-    (0, common_2.Controller)('control'),
+    (0, common_1.Controller)('control'),
     __metadata("design:paramtypes", [typeof (_a = typeof control_api_service_1.ControlApiService !== "undefined" && control_api_service_1.ControlApiService) === "function" ? _a : Object])
 ], ControlApiController);
 
 
 /***/ }),
 /* 8 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(9), exports);
-__exportStar(__webpack_require__(30), exports);
-__exportStar(__webpack_require__(33), exports);
-
-
-/***/ }),
-/* 9 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(10), exports);
-
-
-/***/ }),
-/* 10 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
-exports.UserMicroservice = __webpack_require__(11);
-exports.AuthMicroservice = __webpack_require__(12);
-exports.AmrMicroservice = __webpack_require__(13);
-exports.RedisMicroservice = __webpack_require__(14);
-exports.ConfigMicroservice = __webpack_require__(15);
-exports.ControlMicroservice = __webpack_require__(16);
-exports.CodeMicroservice = __webpack_require__(17);
-exports.MoveMicroservice = __webpack_require__(18);
-exports.LocalizationMicroservice = __webpack_require__(19);
-exports.NetworkMicroservice = __webpack_require__(20);
-exports.MapMicroservice = __webpack_require__(21);
-exports.OnvifMicroservice = __webpack_require__(22);
-exports.TaskMicroservice = __webpack_require__(23);
-exports.SettingMicroservice = __webpack_require__(24);
-exports.SoundMicroservice = __webpack_require__(25);
-exports.CobotMicroservice = __webpack_require__(26);
-exports.LogMicroservice = __webpack_require__(27);
-exports.UpdateMicroservice = __webpack_require__(28);
-exports.TcpMicroservice = __webpack_require__(29);
-
-
-/***/ }),
-/* 11 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.USER_GRPC_SERVICE_NAME = exports.USER_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.UserGrpcServiceControllerMethods = UserGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "user";
-exports.USER_PACKAGE_NAME = "user";
-function UserGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "readUserList",
-            "readUser",
-            "readUserForLogin",
-            "createUser",
-            "updateUser",
-            "deleteUser",
-            "readUserToken",
-            "createUserToken",
-            "updateUserToken",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("UserGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("UserGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.USER_GRPC_SERVICE_NAME = "UserGrpcService";
-
-
-/***/ }),
-/* 12 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AUTH_GRPC_SERVICE_NAME = exports.AUTH_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.AuthGrpcServiceControllerMethods = AuthGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "auth";
-exports.AUTH_PACKAGE_NAME = "auth";
-function AuthGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = ["join", "login", "refreshToken"];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("AuthGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("AuthGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.AUTH_GRPC_SERVICE_NAME = "AuthGrpcService";
-
-
-/***/ }),
-/* 13 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AMR_GRPC_SERVICE_NAME = exports.AMR_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.AmrGrpcServiceControllerMethods = AmrGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "amr";
-exports.AMR_PACKAGE_NAME = "amr";
-function AmrGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = ["readAmrList", "readAmr", "existsAmr", "createAmr", "updateAmr", "deleteAmr"];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.AMR_GRPC_SERVICE_NAME = "AmrGrpcService";
-
-
-/***/ }),
-/* 14 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.SocketType = exports.RobotType = exports.protobufPackage = void 0;
-exports.RedisSocketCacheGrpcServiceControllerMethods = RedisSocketCacheGrpcServiceControllerMethods;
-exports.RedisRobotCacheGrpcServiceControllerMethods = RedisRobotCacheGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "redis";
-var RobotType;
-(function (RobotType) {
-    RobotType[RobotType["UNKNOWN"] = 0] = "UNKNOWN";
-    RobotType[RobotType["MOBILE"] = 1] = "MOBILE";
-    RobotType[RobotType["MANIPULATOR"] = 2] = "MANIPULATOR";
-    RobotType[RobotType["SENSOR"] = 3] = "SENSOR";
-    RobotType[RobotType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(RobotType || (exports.RobotType = RobotType = {}));
-var SocketType;
-(function (SocketType) {
-    SocketType[SocketType["CLIENT"] = 0] = "CLIENT";
-    SocketType[SocketType["AMR"] = 1] = "AMR";
-    SocketType[SocketType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(SocketType || (exports.SocketType = SocketType = {}));
-exports.REDIS_PACKAGE_NAME = "redis";
-function RedisSocketCacheGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "readSocketCache",
-            "readSocketCacheList",
-            "createSocketCache",
-            "updateSocketCache",
-            "deleteSocketCache",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("RedisSocketCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("RedisSocketCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = "RedisSocketCacheGrpcService";
-function RedisRobotCacheGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "readRobotCache",
-            "existsRobotCache",
-            "readRobotCacheList",
-            "createRobotCache",
-            "updateRobotCache",
-            "deleteRobotCache",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("RedisRobotCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("RedisRobotCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = "RedisRobotCacheGrpcService";
-
-
-/***/ }),
-/* 15 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CONFIG_GRPC_SERVICE_NAME = exports.CONFIG_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.ConfigGrpcServiceControllerMethods = ConfigGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "config";
-exports.CONFIG_PACKAGE_NAME = "config";
-function ConfigGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "getConfig",
-            "setConfig",
-            "getConfigAll",
-            "setConfigs",
-            "deleteConfig",
-            "deleteConfigs",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("ConfigGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("ConfigGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.CONFIG_GRPC_SERVICE_NAME = "ConfigGrpcService";
-
-
-/***/ }),
-/* 16 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "control";
-exports.CONTROL_PACKAGE_NAME = "control";
-function ControlGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "onOffControl",
-            "workControl",
-            "ledControl",
-            "setSafetyField",
-            "getSafetyField",
-            "exAccessoryControl",
-            "safetyIoControl",
-            "setObsBox",
-            "getObsBox",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
-
-
-/***/ }),
-/* 17 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CODE_GRPC_SERVICE_NAME = exports.CODE_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.CodeGrpcServiceControllerMethods = CodeGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "code";
-exports.CODE_PACKAGE_NAME = "code";
-function CodeGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = ["readCodeList", "readCode", "createCode", "updateCode", "deleteCode"];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("CodeGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("CodeGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.CODE_GRPC_SERVICE_NAME = "CodeGrpcService";
-
-
-/***/ }),
-/* 18 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MOVE_GRPC_SERVICE_NAME = exports.MOVE_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.MoveGrpcServiceControllerMethods = MoveGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "move";
-exports.MOVE_PACKAGE_NAME = "move";
-function MoveGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "moveCommand",
-            "moveGoal",
-            "moveTarget",
-            "moveJog",
-            "movePause",
-            "moveResume",
-            "moveStop",
-            "moveLastGoal",
-            "moveLogLast",
-            "moveLog",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("MoveGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("MoveGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.MOVE_GRPC_SERVICE_NAME = "MoveGrpcService";
-
-
-/***/ }),
-/* 19 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LOCALIZATION_GRPC_SERVICE_NAME = exports.LOCALIZATION_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.LocalizationGrpcServiceControllerMethods = LocalizationGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "localization";
-exports.LOCALIZATION_PACKAGE_NAME = "localization";
-function LocalizationGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = ["init", "autoInit", "randomInit", "semiAutoInit", "start", "stop"];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("LocalizationGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("LocalizationGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.LOCALIZATION_GRPC_SERVICE_NAME = "LocalizationGrpcService";
-
-
-/***/ }),
-/* 20 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NETWORK_GRPC_SERVICE_NAME = exports.NETWORK_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.NetworkGrpcServiceControllerMethods = NetworkGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "network";
-exports.NETWORK_PACKAGE_NAME = "network";
-function NetworkGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "getNetwork",
-            "getDevice",
-            "getEthernet",
-            "getWifi",
-            "getBluetooth",
-            "setNetwork",
-            "connectWifi",
-            "getWifiList",
-            "scanWifi",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("NetworkGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("NetworkGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.NETWORK_GRPC_SERVICE_NAME = "NetworkGrpcService";
-
-
-/***/ }),
-/* 21 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MAP_GRPC_SERVICE_NAME = exports.MAP_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.MapGrpcServiceControllerMethods = MapGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "map";
-exports.MAP_PACKAGE_NAME = "map";
-function MapGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "getMapList",
-            "getCurrentMap",
-            "getCloud",
-            "saveCloud",
-            "getTopology",
-            "saveTopology",
-            "load",
-            "mapping",
-            "uploadMap",
-            "downloadMap",
-            "publishMap",
-            "getMapTileExist",
-            "getMapTile",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("MapGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("MapGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.MAP_GRPC_SERVICE_NAME = "MapGrpcService";
-
-
-/***/ }),
-/* 22 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ONVIF_SERVICE_NAME = exports.ONVIF_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.OnvifServiceControllerMethods = OnvifServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = 'onvif';
-exports.ONVIF_PACKAGE_NAME = 'onvif';
-function OnvifServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = ['deviceService', 'mediaService', 'snapshot', 'ptzService', 'deviceIoService', 'eventService'];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)('OnvifService', method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)('OnvifService', method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.ONVIF_SERVICE_NAME = 'OnvifService';
-
-
-/***/ }),
-/* 23 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TASK_GRPC_SERVICE_NAME = exports.TASK_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.TaskGrpcServiceControllerMethods = TaskGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "task";
-exports.TASK_PACKAGE_NAME = "task";
-function TaskGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "getTaskState",
-            "getTaskVariables",
-            "task",
-            "getList",
-            "getTask",
-            "saveTask",
-            "deleteTask",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("TaskGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("TaskGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.TASK_GRPC_SERVICE_NAME = "TaskGrpcService";
-
-
-/***/ }),
-/* 24 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SETTING_GRPC_SERVICE_NAME = exports.SETTING_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.SettingGrpcServiceControllerMethods = SettingGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "setting";
-exports.SETTING_PACKAGE_NAME = "setting";
-function SettingGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "getType",
-            "getSetting",
-            "saveSetting",
-            "saveSettingAll",
-            "getPresetList",
-            "getPreset",
-            "createPreset",
-            "deletePreset",
-            "savePreset",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("SettingGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("SettingGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.SETTING_GRPC_SERVICE_NAME = "SettingGrpcService";
-
-
-/***/ }),
-/* 25 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SOUND_GRPC_SERVICE_NAME = exports.SOUND_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.SoundGrpcServiceControllerMethods = SoundGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "sound";
-exports.SOUND_PACKAGE_NAME = "sound";
-function SoundGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying"];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.SOUND_GRPC_SERVICE_NAME = "SoundGrpcService";
-
-
-/***/ }),
-/* 26 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.COBOT_GRPC_SERVICE_NAME = exports.COBOT_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.CobotGrpcServiceControllerMethods = CobotGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "cobot";
-exports.COBOT_PACKAGE_NAME = "cobot";
-function CobotGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "cobotConnect",
-            "cobotDisconnect",
-            "cobotConnectCommand",
-            "cobotConnectData",
-            "cobotDisConnectCommand",
-            "cobotDisConnectData",
-            "getConnectState",
-            "cobotCommand",
-            "cobotProgram",
-            "getCobotData",
-            "cobotModeChange",
-            "cobotInit",
-            "cobotMove",
-            "cobotSpeed",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.COBOT_GRPC_SERVICE_NAME = "CobotGrpcService";
-
-
-/***/ }),
-/* 27 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SEM_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.SEMLogGrpcServiceControllerMethods = SEMLogGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "log";
-exports.LOG_PACKAGE_NAME = "log";
-function SEMLogGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "getSemAlarmDefine",
-            "postSemAlarmDefine",
-            "deleteSemAlarmDefine",
-            "deleteSemAlarmDefineAll",
-            "getSemAlarmActive",
-            "semAlarm",
-            "deleteSemAlarm",
-            "deleteSemAlarmAll",
-            "getSemAlarmLog",
-            "postSemAlarmLog",
-            "deleteSemAlarmLog",
-            "getSemGeneralLog",
-            "deleteSemGeneralLog",
-            "postSemGeneralLog",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("SEMLogGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("SEMLogGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.SEM_LOG_GRPC_SERVICE_NAME = "SEMLogGrpcService";
-
-
-/***/ }),
-/* 28 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UPDATE_GRPC_SERVICE_NAME = exports.UPDATE_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.UpdateGrpcServiceControllerMethods = UpdateGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "update";
-exports.UPDATE_PACKAGE_NAME = "update";
-function UpdateGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "testPing",
-            "getNewVersion",
-            "getCurrentVersion",
-            "getReleaseBranch",
-            "getReleaseVersion",
-            "addWebUi",
-            "deleteWebUi",
-            "updateProgram",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("UpdateGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("UpdateGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.UPDATE_GRPC_SERVICE_NAME = "UpdateGrpcService";
-
-
-/***/ }),
-/* 29 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TCP_GRPC_SERVICE_NAME = exports.TCP_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.TcpGrpcServiceControllerMethods = TcpGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "tcp";
-exports.TCP_PACKAGE_NAME = "tcp";
-function TcpGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = ["getServerState", "openServer", "closeServer"];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("TcpGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("TcpGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.TCP_GRPC_SERVICE_NAME = "TcpGrpcService";
-
-
-/***/ }),
-/* 30 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(31), exports);
-
-
-/***/ }),
-/* 31 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcInterceptor = void 0;
-const rxjs_1 = __webpack_require__(32);
-class GrpcInterceptor {
-    intercept(context, next) {
-        const data = context.switchToRpc().getData();
-        const ctx = context.switchToRpc().getContext();
-        const meta = ctx.getMap();
-        const targetClass = context.getClass().name;
-        const targetHandler = context.getHandler().name;
-        const traceId = meta['trace-id'];
-        const clientService = meta['client-service'];
-        const clientClass = meta['client-class'];
-        const clientMethod = meta['client-method'];
-        const from = `${clientService}/${clientClass}/${clientMethod}`;
-        const to = `${targetClass}/${targetHandler}`;
-        const requestTimestamp = new Date();
-        const receivedRequestLog = {
-            type: 'RECEIVED_REQUEST',
-            traceId,
-            from,
-            to,
-            data,
-            timestamp: requestTimestamp.toUTCString(),
-        };
-        return next.handle().pipe((0, rxjs_1.map)((data) => {
-            const responseTimestamp = new Date();
-            const responseTime = `${+responseTimestamp - +requestTimestamp}ms`;
-            const responseLog = {
-                type: 'RETURN_RESPONSE',
-                traceId,
-                from,
-                to,
-                data,
-                responseTime,
-                timestamp: responseTimestamp.toUTCString(),
-            };
-            return data;
-        }));
-    }
-}
-exports.GrpcInterceptor = GrpcInterceptor;
-
-
-/***/ }),
-/* 32 */
-/***/ ((module) => {
-
-module.exports = require("rxjs");
-
-/***/ }),
-/* 33 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(34), exports);
-__exportStar(__webpack_require__(57), exports);
-
-
-/***/ }),
-/* 34 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoggerService = void 0;
-const winston_1 = __webpack_require__(35);
-const DailyRotateFile = __webpack_require__(36);
-const util_1 = __webpack_require__(37);
-const chalk_1 = __webpack_require__(56);
-const fs_1 = __webpack_require__(43);
-const levelColorMap = {
-    error: chalk_1.default.red,
-    warn: chalk_1.default.magenta,
-    info: chalk_1.default.blue,
-    debug: chalk_1.default.white,
-};
-const levelTextMap = {
-    error: 'Error',
-    warn: 'Warn',
-    info: 'Info',
-    debug: 'Debug',
-};
-function formatLogMessage(message) {
-    try {
-        if (message.includes('items:')) {
-            return message;
-        }
-        const jsonRegex = /:\s*(\[.*?\]|\{.*?\})/g;
-        return message.replace(jsonRegex, (match, jsonStr) => {
-            try {
-                const data = JSON.parse(jsonStr);
-                const formatted = formatDataRecursive(data);
-                return `: ${formatted}`;
-            }
-            catch {
-                return match;
-            }
-        });
-    }
-    catch {
-        return message;
-    }
-}
-function formatDataRecursive(data) {
-    if (Array.isArray(data)) {
-        if (data.length <= 4) {
-            const items = data.map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
-            return `[${items.join(', ')}]`;
-        }
-        else {
-            const items = data.slice(0, 4).map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
-            return `[${data.length} items: [${items.join(', ')}]...]`;
-        }
-    }
-    if (typeof data === 'object' && data !== null) {
-        const formatted = { ...data };
-        for (const [key, value] of Object.entries(formatted)) {
-            if (Array.isArray(value)) {
-                formatted[key] = formatDataRecursive(value);
-            }
-            else if (typeof value === 'object' && value !== null) {
-                formatted[key] = formatDataRecursive(value);
-            }
-        }
-        return cleanJsonString(JSON.stringify(formatted));
-    }
-    return cleanJsonString(JSON.stringify(data));
-}
-function cleanJsonString(jsonStr) {
-    return jsonStr.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-}
-const customFormat = winston_1.format.printf(({ timestamp, level, message }) => {
-    const pid = process.pid;
-    const levelColor = levelColorMap[level] || chalk_1.default.white;
-    const levelText = levelTextMap[level] || level;
-    if (typeof message === 'string') {
-        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        let logtext = message.replace(/\[(?!['"])[A-Za-z0-9 _-]+\]/g, '').trim();
-        logtext = formatLogMessage(logtext);
-        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
-    }
-    return '';
-});
-const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
-    const pid = process.pid;
-    const levelText = levelTextMap[level] || level;
-    if (typeof message === 'string') {
-        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[([^\]]+)\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        const logtext = message.replace(/\[[^\]]+\]/g, '').trim();
-        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
-    }
-});
-const loggers = new Map();
-class LoggerService {
-    constructor(service) {
-        const logPath = '/data/log/' + service;
-        if (!(0, fs_1.existsSync)(logPath)) {
-            (0, fs_1.mkdirSync)(logPath, { recursive: true });
-        }
-        chalk_1.default.level = 3;
-        this.logger = (0, winston_1.createLogger)({
-            level: 'debug',
-            transports: [
-                new DailyRotateFile({
-                    filename: logPath + '/%DATE%.log',
-                    datePattern: 'YYYY-MM-DD',
-                    level: 'debug',
-                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
-                }),
-                new winston_1.transports.Console({
-                    level: 'debug',
-                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), customFormat),
-                }),
-            ],
-        });
-    }
-    static get(service) {
-        if (!loggers.has(service)) {
-            loggers.set(service, new LoggerService(service));
-        }
-        return loggers.get(service);
-    }
-    error(str) {
-        this.logger.error(str);
-    }
-    warn(str) {
-        this.logger.warn(str);
-    }
-    info(str) {
-        this.logger.info(str);
-    }
-    debug(str) {
-        this.logger.debug(str);
-    }
-}
-exports.LoggerService = LoggerService;
-
-
-/***/ }),
-/* 35 */
-/***/ ((module) => {
-
-module.exports = require("winston");
-
-/***/ }),
-/* 36 */
-/***/ ((module) => {
-
-module.exports = require("winston-daily-rotate-file");
-
-/***/ }),
-/* 37 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(38);
-Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(40);
-Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(42);
-Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(53);
-Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(54);
-Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(55);
-Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
-
-
-/***/ }),
-/* 38 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(39);
-class UrlUtil {
-    static generateUUID() {
-        return (0, uuid_1.v4)();
-    }
-}
-exports.UrlUtil = UrlUtil;
-
-
-/***/ }),
-/* 39 */
-/***/ ((module) => {
-
-module.exports = require("uuid");
-
-/***/ }),
-/* 40 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(41);
-class DateUtil {
-    static toDatetimeString(date) {
-        return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
-    }
-    static getTimeString() {
-        return new Date().getTime().toString();
-    }
-    static convertTargetsToDatetimeString(param, targets) {
-        const sParam = { ...param };
-        targets.forEach((target) => {
-            if (sParam[target]) {
-                sParam[target] = DateUtil.toDatetimeString(new Date(sParam[target]));
-            }
-        });
-        return sParam;
-    }
-    static formatDate(date) {
-        const pad = (n) => n.toString().padStart(2, '0');
-        return (`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
-    }
-    static formatDateKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.year}-${obj.month}-${obj.day} ${obj.hour}:${obj.minute}:${obj.second}`;
-    }
-    static formatTimeKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.hour}:${obj.minute}:${obj.second}`;
-    }
-    static formatTimeYearKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.year}`;
-    }
-    static formatTimeMonthKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.month}`;
-    }
-    static formatTimeDayKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.day}`;
-    }
-    static formatTimeHourKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.hour}`;
-    }
-    static formatTimeMinuteKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.minute}`;
-    }
-    static formatTimeSecondKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.second}`;
-    }
-}
-exports.DateUtil = DateUtil;
-
-
-/***/ }),
-/* 41 */
-/***/ ((module) => {
-
-module.exports = require("date-fns");
-
-/***/ }),
-/* 42 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FileUtil = void 0;
-const fs = __webpack_require__(43);
-const path = __webpack_require__(44);
-const unzipper = __webpack_require__(45);
-const il = __webpack_require__(46);
-const uuid_1 = __webpack_require__(39);
-const archiver_1 = __webpack_require__(47);
-const csv = __webpack_require__(48);
-const zlib_1 = __webpack_require__(49);
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
-const microservices_1 = __webpack_require__(3);
-class FileUtil {
-    static checkBasePath() {
-        this.basePath = '';
-    }
-    static async getFile(filename, filePath) {
-        try {
-            this.checkBasePath();
-            const fileFullPath = path.join(this.basePath, filePath, filename);
-            if (!fs.existsSync(fileFullPath)) {
-                throw new Error(`File not found: ${fileFullPath}`);
-            }
-            return await fs.promises.readFile(fileFullPath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async getFileAt(filename, filePath) {
-        try {
-            this.checkBasePath();
-            const fileFullPath = path.join(filePath, filename);
-            return fs.existsSync(fileFullPath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async uploadFile(fileBuffer, filename) {
-        try {
-            this.checkBasePath();
-            const uniqueName = `${(0, uuid_1.v4)()}${path.extname(filename)}`;
-            const filePath = path.join(this.basePath, uniqueName);
-            fs.writeFileSync(filePath, fileBuffer);
-            return { filePath: filePath, fileName: uniqueName };
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async downloadFile(filename, compress) {
-        try {
-            this.checkBasePath();
-            const filePath = path.join(this.basePath, filename);
-            const fileExtension = path.extname(filename);
-            if (!fs.existsSync(filePath)) {
-                throw new Error(`File not found: ${filePath}`);
-            }
-            if (compress && fileExtension.toUpperCase() !== '.ZIP') {
-                const outputPath = path.join(this.basePath, filename.substring(0, filename.lastIndexOf(fileExtension)));
-                await this.compressFile(filePath, outputPath);
-                const fileContent = await fs.promises.readFile(outputPath);
-                await fs.promises.unlink(outputPath);
-                return fileContent;
-            }
-            return await fs.promises.readFile(filePath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async deleteFile(filename) {
-        try {
-            this.checkBasePath();
-            const filePath = path.join(this.basePath, filename);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async compressFile(filePath, outputPath, outputName) {
-        try {
-            this.checkBasePath();
-            const compressPath = outputName ? path.join(this.basePath, `${outputName}.zip`) : outputPath;
-            const output = fs.createWriteStream(compressPath);
-            const archive = (0, archiver_1.default)('zip', {
-                zlib: { level: 9 },
-            });
-            archive.pipe(output);
-            archive.directory(filePath, false);
-            await archive.finalize();
-            return compressPath;
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async decompressFile(filePath, outputPath) {
-        try {
-            this.checkBasePath();
-            if (!outputPath) {
-                outputPath = filePath.substring(0, filePath.indexOf(path.extname(filePath)));
-            }
-            if (!fs.existsSync(outputPath)) {
-                await fs.promises.mkdir(outputPath, { recursive: true });
-            }
-            const directory = await unzipper.Open.file(filePath);
-            for (const entry of directory.files) {
-                const entryPath = entry.isUnicode ? entry.path : il.decode(entry.pathBuffer, 'euc-kr');
-                const fullPath = path.join(outputPath, entryPath);
-                if (entry.type === 'File') {
-                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-                    const readStream = entry.stream();
-                    const writeStream = fs.createWriteStream(fullPath);
-                    readStream.pipe(writeStream);
-                    await new Promise((resolve, reject) => {
-                        writeStream.on('finish', () => resolve);
-                        writeStream.on('error', reject);
-                    });
-                }
-                else {
-                    await fs.promises.mkdir(fullPath, { recursive: true });
-                }
-            }
-            return outputPath;
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async readCSV(path) {
-        return new Promise((resolve, reject) => {
-            try {
-                if (!fs.existsSync(path)) {
-                    reject(new rpc_code_exception_1.RpcCodeException('파일이 존재하지 않습니다', constant_1.GrpcCode.NotFound));
-                }
-                fs.accessSync(path, fs.constants.R_OK);
-                const results = [];
-                fs.createReadStream(path)
-                    .pipe(csv.parse({
-                    skip_empty_lines: true,
-                    skip_records_with_error: true,
-                }))
-                    .on('data', (row) => {
-                    results.push(row);
-                })
-                    .on('error', (error) => {
-                    reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-                })
-                    .on('end', () => {
-                    resolve(results);
-                });
-            }
-            catch (error) {
-                if (error instanceof microservices_1.RpcException)
-                    throw error;
-                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-            }
-        });
-    }
-    static async readCSVPipe(path, res) {
-        return new Promise((resolve, reject) => {
-            try {
-                fs.open(path, 'r', (err) => {
-                    if (err) {
-                        reject(new rpc_code_exception_1.RpcCodeException('파일을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound));
-                    }
-                    else {
-                        res.setHeader('Content-Type', 'text/csv');
-                        res.setHeader('Content-Encoding', 'gzip');
-                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
-                        const fileStream = fs.createReadStream(path);
-                        const gzip = (0, zlib_1.createGzip)();
-                        fileStream
-                            .pipe(gzip)
-                            .pipe(res)
-                            .on('finish', () => {
-                            resolve();
-                        })
-                            .on('error', (error) => {
-                            reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-                        });
-                    }
-                });
-            }
-            catch (error) {
-                if (error instanceof microservices_1.RpcException)
-                    throw error;
-                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-            }
-        });
-    }
-    static async saveCSV(path, data) {
-        try {
-            const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
-            if (data === undefined || data.length === 0) {
-                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            fs.writeFileSync(path, csvData);
-            return;
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async readJson(dir) {
-        try {
-            if (dir === undefined || dir === '') {
-                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (!fs.openSync(dir, 'r')) {
-                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${dir})`, constant_1.GrpcCode.NotFound);
-            }
-            const filecontent = fs.readFileSync(dir, 'utf-8');
-            return JSON.parse(filecontent);
-        }
-        catch (error) {
-            console.error(error);
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async readJSONPipe(path, res) {
-        try {
-            if (path === undefined || path === '') {
-                throw new rpc_code_exception_1.RpcCodeException('path 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (!fs.openSync(path, 'r')) {
-                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${path})`, constant_1.GrpcCode.NotFound);
-            }
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
-            const fileStream = fs.createReadStream(path);
-            const gzip = (0, zlib_1.createGzip)();
-            fileStream.pipe(gzip).pipe(res);
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async saveJson(dir, data) {
-        try {
-            if (dir === undefined || dir === '') {
-                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (data === undefined || data === '' || JSON.stringify(data) === '') {
-                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            console.log('--------------------------------------');
-            console.log(dir);
-            if (!fs.existsSync(path.dirname(dir))) {
-                fs.mkdirSync(path.dirname(dir), { recursive: true });
-            }
-            if (fs.existsSync(dir)) {
-                fs.renameSync(dir, `${dir}.bak`);
-            }
-            if (typeof data === 'string') {
-                data = JSON.parse(data);
-            }
-            fs.writeFileSync(dir, JSON.stringify(data, null, 2));
-            return;
-        }
-        catch (error) {
-            console.error(error);
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-}
-exports.FileUtil = FileUtil;
-
-
-/***/ }),
-/* 43 */
-/***/ ((module) => {
-
-module.exports = require("fs");
-
-/***/ }),
-/* 44 */
-/***/ ((module) => {
-
-module.exports = require("path");
-
-/***/ }),
-/* 45 */
-/***/ ((module) => {
-
-module.exports = require("unzipper");
-
-/***/ }),
-/* 46 */
-/***/ ((module) => {
-
-module.exports = require("iconv-lite");
-
-/***/ }),
-/* 47 */
-/***/ ((module) => {
-
-module.exports = require("archiver");
-
-/***/ }),
-/* 48 */
-/***/ ((module) => {
-
-module.exports = require("csv");
-
-/***/ }),
-/* 49 */
-/***/ ((module) => {
-
-module.exports = require("zlib");
-
-/***/ }),
-/* 50 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RpcCodeException = void 0;
-const microservices_1 = __webpack_require__(3);
-class RpcCodeException extends microservices_1.RpcException {
-    constructor(details, statusCode) {
-        super({ details: details, code: statusCode });
-        this.statusCode = statusCode;
-    }
-}
-exports.RpcCodeException = RpcCodeException;
-
-
-/***/ }),
-/* 51 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(52), exports);
-
-
-/***/ }),
-/* 52 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcCode = void 0;
-var GrpcCode;
-(function (GrpcCode) {
-    GrpcCode[GrpcCode["OK"] = 0] = "OK";
-    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
-    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
-    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
-    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
-    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
-    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
-    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
-    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
-    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
-    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
-    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
-    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
-    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
-    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
-    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
-    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
-    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
-})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
-
-
-/***/ }),
-/* 53 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ParseUtil = void 0;
-class ParseUtil {
-    static errorToJson(error) {
-        try {
-            if (error instanceof Error) {
-                const errorJson = {
-                    name: error.name,
-                    message: JSON.stringify(error.message),
-                };
-                if (error['error'] && error['error'].details) {
-                    errorJson['details'] = error['error'].details;
-                    errorJson['code'] = error['error'].code;
-                }
-                return JSON.stringify(errorJson);
-            }
-            else {
-                const json = JSON.parse(error);
-                return JSON.stringify(json);
-            }
-        }
-        catch (err) {
-            return JSON.stringify(err);
-        }
-    }
-    static stringToCamelCase(str) {
-        return str.toLowerCase().replace(/([-_][a-z])/gi, (group) => {
-            return group.toUpperCase().replace('-', '').replace('_', '');
-        });
-    }
-    static stringifyAllValues(obj) {
-        for (const key in obj) {
-            if (typeof obj[key] === 'object') {
-                this.stringifyAllValues(obj[key]);
-            }
-            else {
-                obj[key] = String(obj[key]);
-            }
-        }
-        return obj;
-    }
-}
-exports.ParseUtil = ParseUtil;
-
-
-/***/ }),
-/* 54 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CryptoUtil = void 0;
-class CryptoUtil {
-}
-exports.CryptoUtil = CryptoUtil;
-
-
-/***/ }),
-/* 55 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationUtil = void 0;
-class ValidationUtil {
-    static isEmpty(param) {
-        if (param === undefined || param === null) {
-            return true;
-        }
-        switch (true) {
-            case Array.isArray(param):
-                return param.length === 0 || param.every((item) => this.isEmpty(item));
-            case typeof param === 'object':
-                return Object.keys(param).length === 0;
-            case typeof param === 'string':
-                return param.trim().length === 0;
-            case typeof param === 'number':
-                return isNaN(param);
-            case typeof param === 'boolean':
-                return false;
-            default:
-                return true;
-        }
-    }
-    static isNotEmpty(param) {
-        return !this.isEmpty(param);
-    }
-}
-exports.ValidationUtil = ValidationUtil;
-
-
-/***/ }),
-/* 56 */
-/***/ ((module) => {
-
-module.exports = require("chalk");
-
-/***/ }),
-/* 57 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.errorToJson = errorToJson;
-function errorToJson(error) {
-    try {
-        if (error instanceof Error) {
-            const errorJson = {
-                name: error.name,
-                message: JSON.stringify(error.message),
-            };
-            if (error['error'] && error['error'].details) {
-                errorJson['details'] = error['error'].details;
-                errorJson['code'] = error['error'].code;
-            }
-            return JSON.stringify(errorJson);
-        }
-        else {
-            const json = JSON.parse(error);
-            return JSON.stringify(json);
-        }
-    }
-    catch (err) {
-        return JSON.stringify(error);
-    }
-}
-
-
-/***/ }),
-/* 58 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 59 */
+/* 9 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2206,11 +448,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_transformer_1 = __webpack_require__(60);
-const class_validator_1 = __webpack_require__(61);
-const control_type_1 = __webpack_require__(62);
-const util_1 = __webpack_require__(37);
+const swagger_1 = __webpack_require__(8);
+const class_transformer_1 = __webpack_require__(10);
+const class_validator_1 = __webpack_require__(11);
+const control_type_1 = __webpack_require__(12);
+const util_1 = __webpack_require__(13);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uC2E4\uD589\uD560 \uCEE8\uD2B8\uB864 \uBA85\uB839";
@@ -2674,19 +916,19 @@ exports.SafetyFieldResponseDto = SafetyFieldResponseDto;
 
 
 /***/ }),
-/* 60 */
+/* 10 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 61 */
+/* 11 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 62 */
+/* 12 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2732,7 +974,706 @@ var LEDColor;
 
 
 /***/ }),
-/* 63 */
+/* 13 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
+var url_util_1 = __webpack_require__(14);
+Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
+var date_util_1 = __webpack_require__(16);
+Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
+var file_util_1 = __webpack_require__(18);
+Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
+var parse_util_1 = __webpack_require__(29);
+Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
+var crypto_util_1 = __webpack_require__(30);
+Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
+var validation_util_1 = __webpack_require__(31);
+Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
+
+
+/***/ }),
+/* 14 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UrlUtil = void 0;
+const uuid_1 = __webpack_require__(15);
+class UrlUtil {
+    static generateUUID() {
+        return (0, uuid_1.v4)();
+    }
+}
+exports.UrlUtil = UrlUtil;
+
+
+/***/ }),
+/* 15 */
+/***/ ((module) => {
+
+module.exports = require("uuid");
+
+/***/ }),
+/* 16 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DateUtil = void 0;
+const date_fns_1 = __webpack_require__(17);
+class DateUtil {
+    static toDatetimeString(date) {
+        return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
+    }
+    static getTimeString() {
+        return new Date().getTime().toString();
+    }
+    static convertTargetsToDatetimeString(param, targets) {
+        const sParam = { ...param };
+        targets.forEach((target) => {
+            if (sParam[target]) {
+                sParam[target] = DateUtil.toDatetimeString(new Date(sParam[target]));
+            }
+        });
+        return sParam;
+    }
+    static formatDate(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return (`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
+    }
+    static formatDateKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}-${obj.month}-${obj.day} ${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeYearKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}`;
+    }
+    static formatTimeMonthKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.month}`;
+    }
+    static formatTimeDayKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.day}`;
+    }
+    static formatTimeHourKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}`;
+    }
+    static formatTimeMinuteKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.minute}`;
+    }
+    static formatTimeSecondKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.second}`;
+    }
+}
+exports.DateUtil = DateUtil;
+
+
+/***/ }),
+/* 17 */
+/***/ ((module) => {
+
+module.exports = require("date-fns");
+
+/***/ }),
+/* 18 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FileUtil = void 0;
+const fs = __webpack_require__(19);
+const path = __webpack_require__(20);
+const unzipper = __webpack_require__(21);
+const il = __webpack_require__(22);
+const uuid_1 = __webpack_require__(15);
+const archiver_1 = __webpack_require__(23);
+const csv = __webpack_require__(24);
+const zlib_1 = __webpack_require__(25);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const microservices_1 = __webpack_require__(3);
+class FileUtil {
+    static checkBasePath() {
+        this.basePath = '';
+    }
+    static async getFile(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(this.basePath, filePath, filename);
+            if (!fs.existsSync(fileFullPath)) {
+                throw new Error(`File not found: ${fileFullPath}`);
+            }
+            return await fs.promises.readFile(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async getFileAt(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(filePath, filename);
+            return fs.existsSync(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async uploadFile(fileBuffer, filename) {
+        try {
+            this.checkBasePath();
+            const uniqueName = `${(0, uuid_1.v4)()}${path.extname(filename)}`;
+            const filePath = path.join(this.basePath, uniqueName);
+            fs.writeFileSync(filePath, fileBuffer);
+            return { filePath: filePath, fileName: uniqueName };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async downloadFile(filename, compress) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            const fileExtension = path.extname(filename);
+            if (!fs.existsSync(filePath)) {
+                throw new Error(`File not found: ${filePath}`);
+            }
+            if (compress && fileExtension.toUpperCase() !== '.ZIP') {
+                const outputPath = path.join(this.basePath, filename.substring(0, filename.lastIndexOf(fileExtension)));
+                await this.compressFile(filePath, outputPath);
+                const fileContent = await fs.promises.readFile(outputPath);
+                await fs.promises.unlink(outputPath);
+                return fileContent;
+            }
+            return await fs.promises.readFile(filePath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async deleteFile(filename) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async compressFile(filePath, outputPath, outputName) {
+        try {
+            this.checkBasePath();
+            const compressPath = outputName ? path.join(this.basePath, `${outputName}.zip`) : outputPath;
+            const output = fs.createWriteStream(compressPath);
+            const archive = (0, archiver_1.default)('zip', {
+                zlib: { level: 9 },
+            });
+            archive.pipe(output);
+            archive.directory(filePath, false);
+            await archive.finalize();
+            return compressPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async decompressFile(filePath, outputPath) {
+        try {
+            this.checkBasePath();
+            if (!outputPath) {
+                outputPath = filePath.substring(0, filePath.indexOf(path.extname(filePath)));
+            }
+            if (!fs.existsSync(outputPath)) {
+                await fs.promises.mkdir(outputPath, { recursive: true });
+            }
+            const directory = await unzipper.Open.file(filePath);
+            for (const entry of directory.files) {
+                const entryPath = entry.isUnicode ? entry.path : il.decode(entry.pathBuffer, 'euc-kr');
+                const fullPath = path.join(outputPath, entryPath);
+                if (entry.type === 'File') {
+                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+                    const readStream = entry.stream();
+                    const writeStream = fs.createWriteStream(fullPath);
+                    readStream.pipe(writeStream);
+                    await new Promise((resolve, reject) => {
+                        writeStream.on('finish', () => resolve);
+                        writeStream.on('error', reject);
+                    });
+                }
+                else {
+                    await fs.promises.mkdir(fullPath, { recursive: true });
+                }
+            }
+            return outputPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async readCSV(path) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!fs.existsSync(path)) {
+                    reject(new rpc_code_exception_1.RpcCodeException('파일이 존재하지 않습니다', constant_1.GrpcCode.NotFound));
+                }
+                fs.accessSync(path, fs.constants.R_OK);
+                const results = [];
+                fs.createReadStream(path)
+                    .pipe(csv.parse({
+                    skip_empty_lines: true,
+                    skip_records_with_error: true,
+                }))
+                    .on('data', (row) => {
+                    results.push(row);
+                })
+                    .on('error', (error) => {
+                    reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                })
+                    .on('end', () => {
+                    resolve(results);
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async readCSVPipe(path, res) {
+        return new Promise((resolve, reject) => {
+            try {
+                fs.open(path, 'r', (err) => {
+                    if (err) {
+                        reject(new rpc_code_exception_1.RpcCodeException('파일을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound));
+                    }
+                    else {
+                        res.setHeader('Content-Type', 'text/csv');
+                        res.setHeader('Content-Encoding', 'gzip');
+                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
+                        const fileStream = fs.createReadStream(path);
+                        const gzip = (0, zlib_1.createGzip)();
+                        fileStream
+                            .pipe(gzip)
+                            .pipe(res)
+                            .on('finish', () => {
+                            resolve();
+                        })
+                            .on('error', (error) => {
+                            reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                        });
+                    }
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async saveCSV(path, data) {
+        try {
+            const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
+            if (data === undefined || data.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            fs.writeFileSync(path, csvData);
+            return;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJson(dir) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(dir, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${dir})`, constant_1.GrpcCode.NotFound);
+            }
+            const filecontent = fs.readFileSync(dir, 'utf-8');
+            return JSON.parse(filecontent);
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJSONPipe(path, res) {
+        try {
+            if (path === undefined || path === '') {
+                throw new rpc_code_exception_1.RpcCodeException('path 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(path, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${path})`, constant_1.GrpcCode.NotFound);
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Encoding', 'gzip');
+            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
+            const fileStream = fs.createReadStream(path);
+            const gzip = (0, zlib_1.createGzip)();
+            fileStream.pipe(gzip).pipe(res);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async saveJson(dir, data) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (data === undefined || data === '' || JSON.stringify(data) === '') {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            console.log('--------------------------------------');
+            console.log(dir);
+            if (!fs.existsSync(path.dirname(dir))) {
+                fs.mkdirSync(path.dirname(dir), { recursive: true });
+            }
+            if (fs.existsSync(dir)) {
+                fs.renameSync(dir, `${dir}.bak`);
+            }
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+            fs.writeFileSync(dir, JSON.stringify(data, null, 2));
+            return;
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+}
+exports.FileUtil = FileUtil;
+
+
+/***/ }),
+/* 19 */
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 20 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 21 */
+/***/ ((module) => {
+
+module.exports = require("unzipper");
+
+/***/ }),
+/* 22 */
+/***/ ((module) => {
+
+module.exports = require("iconv-lite");
+
+/***/ }),
+/* 23 */
+/***/ ((module) => {
+
+module.exports = require("archiver");
+
+/***/ }),
+/* 24 */
+/***/ ((module) => {
+
+module.exports = require("csv");
+
+/***/ }),
+/* 25 */
+/***/ ((module) => {
+
+module.exports = require("zlib");
+
+/***/ }),
+/* 26 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcCodeException = void 0;
+const microservices_1 = __webpack_require__(3);
+class RpcCodeException extends microservices_1.RpcException {
+    constructor(details, statusCode) {
+        super({ details: details, code: statusCode });
+        this.statusCode = statusCode;
+    }
+}
+exports.RpcCodeException = RpcCodeException;
+
+
+/***/ }),
+/* 27 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(28), exports);
+
+
+/***/ }),
+/* 28 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcCode = void 0;
+var GrpcCode;
+(function (GrpcCode) {
+    GrpcCode[GrpcCode["OK"] = 0] = "OK";
+    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
+    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
+    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
+    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
+    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
+    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
+    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
+    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
+    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
+    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
+    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
+    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
+    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
+    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
+    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
+    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
+    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
+})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
+
+
+/***/ }),
+/* 29 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ParseUtil = void 0;
+class ParseUtil {
+    static errorToJson(error) {
+        try {
+            if (error instanceof Error) {
+                const errorJson = {
+                    name: error.name,
+                    message: JSON.stringify(error.message),
+                };
+                if (error['error'] && error['error'].details) {
+                    errorJson['details'] = error['error'].details;
+                    errorJson['code'] = error['error'].code;
+                }
+                return JSON.stringify(errorJson);
+            }
+            else {
+                const json = JSON.parse(error);
+                return JSON.stringify(json);
+            }
+        }
+        catch (err) {
+            return JSON.stringify(err);
+        }
+    }
+    static stringToCamelCase(str) {
+        return str.toLowerCase().replace(/([-_][a-z])/gi, (group) => {
+            return group.toUpperCase().replace('-', '').replace('_', '');
+        });
+    }
+    static stringifyAllValues(obj) {
+        for (const key in obj) {
+            if (typeof obj[key] === 'object') {
+                this.stringifyAllValues(obj[key]);
+            }
+            else {
+                obj[key] = String(obj[key]);
+            }
+        }
+        return obj;
+    }
+}
+exports.ParseUtil = ParseUtil;
+
+
+/***/ }),
+/* 30 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CryptoUtil = void 0;
+class CryptoUtil {
+}
+exports.CryptoUtil = CryptoUtil;
+
+
+/***/ }),
+/* 31 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = void 0;
+class ValidationUtil {
+    static isEmpty(param) {
+        if (param === undefined || param === null) {
+            return true;
+        }
+        switch (true) {
+            case Array.isArray(param):
+                return param.length === 0 || param.every((item) => this.isEmpty(item));
+            case typeof param === 'object':
+                return Object.keys(param).length === 0;
+            case typeof param === 'string':
+                return param.trim().length === 0;
+            case typeof param === 'number':
+                return isNaN(param);
+            case typeof param === 'boolean':
+                return false;
+            default:
+                return true;
+        }
+    }
+    static isNotEmpty(param) {
+        return !this.isEmpty(param);
+    }
+}
+exports.ValidationUtil = ValidationUtil;
+
+
+/***/ }),
+/* 32 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2747,7 +1688,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ErrorResponseDto = void 0;
-const swagger_1 = __webpack_require__(58);
+const swagger_1 = __webpack_require__(8);
 class ErrorResponseDto {
 }
 exports.ErrorResponseDto = ErrorResponseDto;
@@ -2768,7 +1709,7 @@ __decorate([
 
 
 /***/ }),
-/* 64 */
+/* 33 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2784,20 +1725,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiService = void 0;
-const constant_1 = __webpack_require__(65);
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const constant_1 = __webpack_require__(34);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const control_type_1 = __webpack_require__(62);
+const rxjs_1 = __webpack_require__(41);
+const control_type_1 = __webpack_require__(12);
+const saveLog_service_1 = __webpack_require__(42);
 let ControlApiService = class ControlApiService {
-    constructor(controlMicroservice, cobotMicroservice) {
+    constructor(controlMicroservice, cobotMicroservice, saveLogService) {
         this.controlMicroservice = controlMicroservice;
         this.cobotMicroservice = cobotMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.controlService = this.controlMicroservice.getService('ControlGrpcService');
@@ -2835,15 +1777,15 @@ let ControlApiService = class ControlApiService {
 };
 exports.ControlApiService = ControlApiService;
 exports.ControlApiService = ControlApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.CONTROL_SERVICE)),
-    __param(1, (0, common_2.Inject)(constant_1.COBOT_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
+    __param(1, (0, common_1.Inject)(constant_1.COBOT_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], ControlApiService);
 
 
 /***/ }),
-/* 65 */
+/* 34 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2863,14 +1805,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.message = exports.environment = void 0;
-__exportStar(__webpack_require__(66), exports);
-__exportStar(__webpack_require__(67), exports);
-exports.environment = __webpack_require__(68);
-exports.message = __webpack_require__(70);
+__exportStar(__webpack_require__(35), exports);
+__exportStar(__webpack_require__(36), exports);
+exports.environment = __webpack_require__(37);
+exports.message = __webpack_require__(39);
 
 
 /***/ }),
-/* 66 */
+/* 35 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2901,7 +1843,7 @@ exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
 /***/ }),
-/* 67 */
+/* 36 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2909,7 +1851,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 68 */
+/* 37 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2928,11 +1870,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(69), exports);
+__exportStar(__webpack_require__(38), exports);
 
 
 /***/ }),
-/* 69 */
+/* 38 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2956,7 +1898,7 @@ exports.SYSTEM = {
 
 
 /***/ }),
-/* 70 */
+/* 39 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2975,11 +1917,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(71), exports);
+__exportStar(__webpack_require__(40), exports);
 
 
 /***/ }),
-/* 71 */
+/* 40 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3038,7 +1980,194 @@ exports.SUCCESS_MESSAGES = {
 
 
 /***/ }),
-/* 72 */
+/* 41 */
+/***/ ((module) => {
+
+module.exports = require("rxjs");
+
+/***/ }),
+/* 42 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SaveLogService = void 0;
+const common_1 = __webpack_require__(5);
+const winston_1 = __webpack_require__(43);
+const DailyRotateFile = __webpack_require__(44);
+const util_1 = __webpack_require__(13);
+const chalk_1 = __webpack_require__(45);
+const fs_1 = __webpack_require__(19);
+const levelColorMap = {
+    error: chalk_1.default.red,
+    warn: chalk_1.default.magenta,
+    info: chalk_1.default.blue,
+    debug: chalk_1.default.white,
+};
+const levelTextMap = {
+    error: 'Error',
+    warn: 'Warn',
+    info: 'Info',
+    debug: 'Debug',
+};
+function formatLogMessage(message) {
+    try {
+        if (message.includes('items:')) {
+            return message;
+        }
+        const jsonRegex = /:\s*(\[[\s\S]*?\]|\{[\s\S]*?\})/g;
+        return message.replace(jsonRegex, (match, jsonStr) => {
+            try {
+                const data = JSON.parse(jsonStr);
+                const formatted = formatDataRecursive(data);
+                return `: ${formatted}`;
+            }
+            catch {
+                return match;
+            }
+        });
+    }
+    catch {
+        return message;
+    }
+}
+function formatDataRecursive(data) {
+    if (Array.isArray(data)) {
+        if (data.length <= 4) {
+            const items = data.map((item) => typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item)));
+            return `[${items.join(', ')}]`;
+        }
+        else {
+            const items = data
+                .slice(0, 4)
+                .map((item) => (typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item))));
+            return `[${data.length} items: [${items.join(', ')}]...]`;
+        }
+    }
+    if (typeof data === 'object' && data !== null) {
+        const formatted = { ...data };
+        for (const [key, value] of Object.entries(formatted)) {
+            if (Array.isArray(value)) {
+                formatted[key] = formatDataRecursive(value);
+            }
+            else if (typeof value === 'object' && value !== null) {
+                formatted[key] = formatDataRecursive(value);
+            }
+        }
+        return cleanJsonString(JSON.stringify(formatted));
+    }
+    return cleanJsonString(JSON.stringify(data));
+}
+function cleanJsonString(jsonStr) {
+    return jsonStr.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
+const customFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelColor = levelColorMap[level] || chalk_1.default.white;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
+        logtext = formatLogMessage(logtext);
+        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
+    }
+    return '';
+});
+const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
+        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
+    }
+});
+let SaveLogService = class SaveLogService {
+    constructor() {
+        this.loggers = new Map();
+        this.rootPath = '/data/log';
+        this.logPath = this.rootPath;
+        chalk_1.default.level = 3;
+    }
+    get(service) {
+        let logger = this.loggers.get(service);
+        if (!logger) {
+            logger = this.createLogger(service);
+            this.loggers.set(service, logger);
+        }
+        return logger;
+    }
+    createLogger(service) {
+        this.logPath = `${this.rootPath}/${service}`;
+        if (!(0, fs_1.existsSync)(this.logPath)) {
+            (0, fs_1.mkdirSync)(this.logPath, { recursive: true });
+        }
+        try {
+            (0, fs_1.chownSync)(this.logPath, 1000, 1000);
+        }
+        catch (error) {
+            console.error('LoggerService chownSync Error : ', error);
+        }
+        return (0, winston_1.createLogger)({
+            level: 'debug',
+            transports: [
+                new DailyRotateFile({
+                    filename: `${this.logPath}/%DATE%.log`,
+                    datePattern: 'YYYY-MM-DD',
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
+                    zippedArchive: true,
+                    maxSize: '10m',
+                    maxFiles: '14d',
+                }),
+                new winston_1.transports.Console({
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), customFormat),
+                }),
+            ],
+        });
+    }
+};
+exports.SaveLogService = SaveLogService;
+exports.SaveLogService = SaveLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], SaveLogService);
+
+
+/***/ }),
+/* 43 */
+/***/ ((module) => {
+
+module.exports = require("winston");
+
+/***/ }),
+/* 44 */
+/***/ ((module) => {
+
+module.exports = require("winston-daily-rotate-file");
+
+/***/ }),
+/* 45 */
+/***/ ((module) => {
+
+module.exports = require("chalk");
+
+/***/ }),
+/* 46 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3053,10 +2182,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SafetyIoResponseSlamnav = exports.SafetyIoResponseDto = exports.SafetyIoRequestSlamnav = exports.SafetyIoRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const control_type_1 = __webpack_require__(62);
-const class_transformer_1 = __webpack_require__(60);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const control_type_1 = __webpack_require__(12);
+const class_transformer_1 = __webpack_require__(10);
+const class_validator_1 = __webpack_require__(11);
 class SafetyIoRequestDto {
 }
 exports.SafetyIoRequestDto = SafetyIoRequestDto;
@@ -3132,10 +2261,906 @@ __decorate([
 
 
 /***/ }),
-/* 73 */
+/* 47 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/config");
+
+/***/ }),
+/* 48 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(49), exports);
+__exportStar(__webpack_require__(70), exports);
+__exportStar(__webpack_require__(72), exports);
+
+
+/***/ }),
+/* 49 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(50), exports);
+
+
+/***/ }),
+/* 50 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
+exports.UserMicroservice = __webpack_require__(51);
+exports.AuthMicroservice = __webpack_require__(52);
+exports.AmrMicroservice = __webpack_require__(53);
+exports.RedisMicroservice = __webpack_require__(54);
+exports.ConfigMicroservice = __webpack_require__(55);
+exports.ControlMicroservice = __webpack_require__(56);
+exports.CodeMicroservice = __webpack_require__(57);
+exports.MoveMicroservice = __webpack_require__(58);
+exports.LocalizationMicroservice = __webpack_require__(59);
+exports.NetworkMicroservice = __webpack_require__(60);
+exports.MapMicroservice = __webpack_require__(61);
+exports.OnvifMicroservice = __webpack_require__(62);
+exports.TaskMicroservice = __webpack_require__(63);
+exports.SettingMicroservice = __webpack_require__(64);
+exports.SoundMicroservice = __webpack_require__(65);
+exports.CobotMicroservice = __webpack_require__(66);
+exports.LogMicroservice = __webpack_require__(67);
+exports.UpdateMicroservice = __webpack_require__(68);
+exports.TcpMicroservice = __webpack_require__(69);
+
+
+/***/ }),
+/* 51 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.USER_GRPC_SERVICE_NAME = exports.USER_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.UserGrpcServiceControllerMethods = UserGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "user";
+exports.USER_PACKAGE_NAME = "user";
+function UserGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "readUserList",
+            "readUser",
+            "readUserForLogin",
+            "createUser",
+            "updateUser",
+            "deleteUser",
+            "readUserToken",
+            "createUserToken",
+            "updateUserToken",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("UserGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("UserGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.USER_GRPC_SERVICE_NAME = "UserGrpcService";
+
+
+/***/ }),
+/* 52 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AUTH_GRPC_SERVICE_NAME = exports.AUTH_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.AuthGrpcServiceControllerMethods = AuthGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "auth";
+exports.AUTH_PACKAGE_NAME = "auth";
+function AuthGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["join", "login", "refreshToken"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("AuthGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("AuthGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.AUTH_GRPC_SERVICE_NAME = "AuthGrpcService";
+
+
+/***/ }),
+/* 53 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AMR_GRPC_SERVICE_NAME = exports.AMR_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.AmrGrpcServiceControllerMethods = AmrGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "amr";
+exports.AMR_PACKAGE_NAME = "amr";
+function AmrGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["readAmrList", "readAmr", "existsAmr", "createAmr", "updateAmr", "deleteAmr"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("AmrGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.AMR_GRPC_SERVICE_NAME = "AmrGrpcService";
+
+
+/***/ }),
+/* 54 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = exports.REDIS_PACKAGE_NAME = exports.SocketType = exports.RobotType = exports.protobufPackage = void 0;
+exports.RedisSocketCacheGrpcServiceControllerMethods = RedisSocketCacheGrpcServiceControllerMethods;
+exports.RedisRobotCacheGrpcServiceControllerMethods = RedisRobotCacheGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "redis";
+var RobotType;
+(function (RobotType) {
+    RobotType[RobotType["UNKNOWN"] = 0] = "UNKNOWN";
+    RobotType[RobotType["MOBILE"] = 1] = "MOBILE";
+    RobotType[RobotType["MANIPULATOR"] = 2] = "MANIPULATOR";
+    RobotType[RobotType["SENSOR"] = 3] = "SENSOR";
+    RobotType[RobotType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(RobotType || (exports.RobotType = RobotType = {}));
+var SocketType;
+(function (SocketType) {
+    SocketType[SocketType["CLIENT"] = 0] = "CLIENT";
+    SocketType[SocketType["AMR"] = 1] = "AMR";
+    SocketType[SocketType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+})(SocketType || (exports.SocketType = SocketType = {}));
+exports.REDIS_PACKAGE_NAME = "redis";
+function RedisSocketCacheGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "readSocketCache",
+            "readSocketCacheList",
+            "createSocketCache",
+            "updateSocketCache",
+            "deleteSocketCache",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("RedisSocketCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("RedisSocketCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.REDIS_SOCKET_CACHE_GRPC_SERVICE_NAME = "RedisSocketCacheGrpcService";
+function RedisRobotCacheGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "readRobotCache",
+            "existsRobotCache",
+            "readRobotCacheList",
+            "createRobotCache",
+            "updateRobotCache",
+            "deleteRobotCache",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("RedisRobotCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("RedisRobotCacheGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.REDIS_ROBOT_CACHE_GRPC_SERVICE_NAME = "RedisRobotCacheGrpcService";
+
+
+/***/ }),
+/* 55 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CONFIG_GRPC_SERVICE_NAME = exports.CONFIG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.ConfigGrpcServiceControllerMethods = ConfigGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "config";
+exports.CONFIG_PACKAGE_NAME = "config";
+function ConfigGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getConfig",
+            "setConfig",
+            "getConfigAll",
+            "setConfigs",
+            "deleteConfig",
+            "deleteConfigs",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("ConfigGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("ConfigGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.CONFIG_GRPC_SERVICE_NAME = "ConfigGrpcService";
+
+
+/***/ }),
+/* 56 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "control";
+exports.CONTROL_PACKAGE_NAME = "control";
+function ControlGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "onOffControl",
+            "workControl",
+            "ledControl",
+            "setSafetyField",
+            "getSafetyField",
+            "exAccessoryControl",
+            "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
+
+
+/***/ }),
+/* 57 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CODE_GRPC_SERVICE_NAME = exports.CODE_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.CodeGrpcServiceControllerMethods = CodeGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "code";
+exports.CODE_PACKAGE_NAME = "code";
+function CodeGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["readCodeList", "readCode", "createCode", "updateCode", "deleteCode"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("CodeGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("CodeGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.CODE_GRPC_SERVICE_NAME = "CodeGrpcService";
+
+
+/***/ }),
+/* 58 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MOVE_GRPC_SERVICE_NAME = exports.MOVE_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.MoveGrpcServiceControllerMethods = MoveGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "move";
+exports.MOVE_PACKAGE_NAME = "move";
+function MoveGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "moveCommand",
+            "moveGoal",
+            "moveTarget",
+            "moveJog",
+            "movePause",
+            "moveResume",
+            "moveStop",
+            "moveLastGoal",
+            "moveLogLast",
+            "moveLog",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("MoveGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("MoveGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.MOVE_GRPC_SERVICE_NAME = "MoveGrpcService";
+
+
+/***/ }),
+/* 59 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LOCALIZATION_GRPC_SERVICE_NAME = exports.LOCALIZATION_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.LocalizationGrpcServiceControllerMethods = LocalizationGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "localization";
+exports.LOCALIZATION_PACKAGE_NAME = "localization";
+function LocalizationGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["init", "autoInit", "randomInit", "semiAutoInit", "start", "stop"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("LocalizationGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("LocalizationGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.LOCALIZATION_GRPC_SERVICE_NAME = "LocalizationGrpcService";
+
+
+/***/ }),
+/* 60 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NETWORK_GRPC_SERVICE_NAME = exports.NETWORK_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.NetworkGrpcServiceControllerMethods = NetworkGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "network";
+exports.NETWORK_PACKAGE_NAME = "network";
+function NetworkGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getNetwork",
+            "getDevice",
+            "getEthernet",
+            "getWifi",
+            "getBluetooth",
+            "setNetwork",
+            "connectWifi",
+            "getWifiList",
+            "scanWifi",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("NetworkGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("NetworkGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.NETWORK_GRPC_SERVICE_NAME = "NetworkGrpcService";
+
+
+/***/ }),
+/* 61 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MAP_GRPC_SERVICE_NAME = exports.MAP_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.MapGrpcServiceControllerMethods = MapGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "map";
+exports.MAP_PACKAGE_NAME = "map";
+function MapGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getMapList",
+            "getCurrentMap",
+            "getCloud",
+            "saveCloud",
+            "getTopology",
+            "saveTopology",
+            "load",
+            "mapping",
+            "uploadMap",
+            "downloadMap",
+            "publishMap",
+            "getMapTileExist",
+            "getMapTile",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("MapGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("MapGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.MAP_GRPC_SERVICE_NAME = "MapGrpcService";
+
+
+/***/ }),
+/* 62 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ONVIF_SERVICE_NAME = exports.ONVIF_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.OnvifServiceControllerMethods = OnvifServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = 'onvif';
+exports.ONVIF_PACKAGE_NAME = 'onvif';
+function OnvifServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ['deviceService', 'mediaService', 'snapshot', 'ptzService', 'deviceIoService', 'eventService'];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)('OnvifService', method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)('OnvifService', method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.ONVIF_SERVICE_NAME = 'OnvifService';
+
+
+/***/ }),
+/* 63 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TASK_GRPC_SERVICE_NAME = exports.TASK_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.TaskGrpcServiceControllerMethods = TaskGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "task";
+exports.TASK_PACKAGE_NAME = "task";
+function TaskGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getTaskState",
+            "getTaskVariables",
+            "task",
+            "getList",
+            "getTask",
+            "saveTask",
+            "deleteTask",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("TaskGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("TaskGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.TASK_GRPC_SERVICE_NAME = "TaskGrpcService";
+
+
+/***/ }),
+/* 64 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SETTING_GRPC_SERVICE_NAME = exports.SETTING_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SettingGrpcServiceControllerMethods = SettingGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "setting";
+exports.SETTING_PACKAGE_NAME = "setting";
+function SettingGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getType",
+            "getSetting",
+            "saveSetting",
+            "saveSettingAll",
+            "getPresetList",
+            "getPreset",
+            "createPreset",
+            "deletePreset",
+            "savePreset",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("SettingGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("SettingGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SETTING_GRPC_SERVICE_NAME = "SettingGrpcService";
+
+
+/***/ }),
+/* 65 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SOUND_GRPC_SERVICE_NAME = exports.SOUND_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SoundGrpcServiceControllerMethods = SoundGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "sound";
+exports.SOUND_PACKAGE_NAME = "sound";
+function SoundGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SOUND_GRPC_SERVICE_NAME = "SoundGrpcService";
+
+
+/***/ }),
+/* 66 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.COBOT_GRPC_SERVICE_NAME = exports.COBOT_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.CobotGrpcServiceControllerMethods = CobotGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "cobot";
+exports.COBOT_PACKAGE_NAME = "cobot";
+function CobotGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "cobotConnect",
+            "cobotDisconnect",
+            "cobotConnectCommand",
+            "cobotConnectData",
+            "cobotDisConnectCommand",
+            "cobotDisConnectData",
+            "getConnectState",
+            "cobotCommand",
+            "cobotProgram",
+            "getCobotData",
+            "cobotModeChange",
+            "cobotInit",
+            "cobotMove",
+            "cobotSpeed",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("CobotGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.COBOT_GRPC_SERVICE_NAME = "CobotGrpcService";
+
+
+/***/ }),
+/* 67 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SEM_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SEMLogGrpcServiceControllerMethods = SEMLogGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "log";
+exports.LOG_PACKAGE_NAME = "log";
+function SEMLogGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getSemAlarmDefine",
+            "postSemAlarmDefine",
+            "deleteSemAlarmDefine",
+            "deleteSemAlarmDefineAll",
+            "getSemAlarmActive",
+            "semAlarm",
+            "deleteSemAlarm",
+            "deleteSemAlarmAll",
+            "getSemAlarmLog",
+            "postSemAlarmLog",
+            "deleteSemAlarmLog",
+            "getSemGeneralLog",
+            "deleteSemGeneralLog",
+            "postSemGeneralLog",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("SEMLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("SEMLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SEM_LOG_GRPC_SERVICE_NAME = "SEMLogGrpcService";
+
+
+/***/ }),
+/* 68 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UPDATE_GRPC_SERVICE_NAME = exports.UPDATE_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.UpdateGrpcServiceControllerMethods = UpdateGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "update";
+exports.UPDATE_PACKAGE_NAME = "update";
+function UpdateGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "testPing",
+            "getNewVersion",
+            "getCurrentVersion",
+            "getReleaseBranch",
+            "getReleaseVersion",
+            "addWebUi",
+            "deleteWebUi",
+            "updateProgram",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("UpdateGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("UpdateGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.UPDATE_GRPC_SERVICE_NAME = "UpdateGrpcService";
+
+
+/***/ }),
+/* 69 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TCP_GRPC_SERVICE_NAME = exports.TCP_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.TcpGrpcServiceControllerMethods = TcpGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "tcp";
+exports.TCP_PACKAGE_NAME = "tcp";
+function TcpGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["getServerState", "openServer", "closeServer"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("TcpGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("TcpGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.TCP_GRPC_SERVICE_NAME = "TcpGrpcService";
+
+
+/***/ }),
+/* 70 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(71), exports);
+
+
+/***/ }),
+/* 71 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcInterceptor = void 0;
+const rxjs_1 = __webpack_require__(41);
+class GrpcInterceptor {
+    intercept(context, next) {
+        const data = context.switchToRpc().getData();
+        const ctx = context.switchToRpc().getContext();
+        const meta = ctx.getMap();
+        const targetClass = context.getClass().name;
+        const targetHandler = context.getHandler().name;
+        const traceId = meta['trace-id'];
+        const clientService = meta['client-service'];
+        const clientClass = meta['client-class'];
+        const clientMethod = meta['client-method'];
+        const from = `${clientService}/${clientClass}/${clientMethod}`;
+        const to = `${targetClass}/${targetHandler}`;
+        const requestTimestamp = new Date();
+        const receivedRequestLog = {
+            type: 'RECEIVED_REQUEST',
+            traceId,
+            from,
+            to,
+            data,
+            timestamp: requestTimestamp.toUTCString(),
+        };
+        return next.handle().pipe((0, rxjs_1.map)((data) => {
+            const responseTimestamp = new Date();
+            const responseTime = `${+responseTimestamp - +requestTimestamp}ms`;
+            const responseLog = {
+                type: 'RETURN_RESPONSE',
+                traceId,
+                from,
+                to,
+                data,
+                responseTime,
+                timestamp: responseTimestamp.toUTCString(),
+            };
+            return data;
+        }));
+    }
+}
+exports.GrpcInterceptor = GrpcInterceptor;
+
+
+/***/ }),
+/* 72 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(73), exports);
+
+
+/***/ }),
+/* 73 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
+
 
 /***/ }),
 /* 74 */
@@ -3149,21 +3174,157 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogModule = void 0;
+const common_1 = __webpack_require__(5);
+const saveLog_service_1 = __webpack_require__(42);
+const cleanLog_service_1 = __webpack_require__(75);
+let LogModule = class LogModule {
+};
+exports.LogModule = LogModule;
+exports.LogModule = LogModule = __decorate([
+    (0, common_1.Module)({
+        imports: [],
+        controllers: [],
+        providers: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+        exports: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+    })
+], LogModule);
+
+
+/***/ }),
+/* 75 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CleanLogService = void 0;
+const common_1 = __webpack_require__(5);
+const schedule_1 = __webpack_require__(76);
+const path = __webpack_require__(20);
+const fs_1 = __webpack_require__(19);
+let CleanLogService = class CleanLogService {
+    constructor() {
+        this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
+        this.RETAIN_DAYS = Number(process.env.LOG_RETAIN_DAYS ?? '10');
+        this.runClean = false;
+    }
+    setLogger(logger, path, retainDays) {
+        this.logger = logger;
+        this.LOG_ROOT = path;
+        this.RETAIN_DAYS = retainDays;
+        this.runClean = true;
+    }
+    async handleCron() {
+        if (!this.runClean)
+            return;
+        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
+        try {
+            await this.cleanDir(this.LOG_ROOT);
+            this.logger?.info('[Log] 🧹 로그 정리 완료');
+        }
+        catch (e) {
+            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
+        }
+    }
+    async cleanDir(dir) {
+        let entries;
+        try {
+            entries = await fs_1.promises.readdir(dir, { withFileTypes: true });
+        }
+        catch {
+            return;
+        }
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                await this.cleanDir(fullPath);
+                continue;
+            }
+            if (!entry.name.endsWith('.log') && !entry.name.endsWith('.log.gz')) {
+                continue;
+            }
+            let stat;
+            try {
+                stat = await fs_1.promises.stat(fullPath);
+            }
+            catch {
+                continue;
+            }
+            if (this.isOlderThan(stat.mtime, this.RETAIN_DAYS)) {
+                this.logger?.info(`[Log] 🗑 delete: ${fullPath}`);
+                try {
+                    await fs_1.promises.unlink(fullPath);
+                }
+                catch (e) {
+                    console.warn(`삭제 실패: ${fullPath} (${e.message})`);
+                }
+            }
+        }
+    }
+    isOlderThan(mtime, days) {
+        const now = Date.now();
+        const diffMs = now - mtime.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        return diffDays > days;
+    }
+};
+exports.CleanLogService = CleanLogService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CleanLogService.prototype, "handleCron", null);
+exports.CleanLogService = CleanLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], CleanLogService);
+
+
+/***/ }),
+/* 76 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 77 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
-const localization_api_controller_1 = __webpack_require__(75);
-const localization_api_service_1 = __webpack_require__(76);
-const constant_1 = __webpack_require__(65);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const localization_api_controller_1 = __webpack_require__(78);
+const localization_api_service_1 = __webpack_require__(79);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let LocalizationApiModule = class LocalizationApiModule {
 };
 exports.LocalizationApiModule = LocalizationApiModule;
 exports.LocalizationApiModule = LocalizationApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -3190,7 +3351,7 @@ exports.LocalizationApiModule = LocalizationApiModule = __decorate([
 
 
 /***/ }),
-/* 75 */
+/* 78 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3206,52 +3367,53 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationApiController = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const localization_api_service_1 = __webpack_require__(76);
-const common_2 = __webpack_require__(8);
-const localization_dto_1 = __webpack_require__(77);
-const localization_dto_2 = __webpack_require__(77);
-const error_response_dto_1 = __webpack_require__(63);
-const localization_type_1 = __webpack_require__(78);
+const swagger_1 = __webpack_require__(8);
+const localization_api_service_1 = __webpack_require__(79);
+const localization_dto_1 = __webpack_require__(80);
+const localization_dto_2 = __webpack_require__(80);
+const error_response_dto_1 = __webpack_require__(32);
+const localization_type_1 = __webpack_require__(81);
+const saveLog_service_1 = __webpack_require__(42);
 let LocalizationApiController = class LocalizationApiController {
-    constructor(localizationService) {
+    constructor(localizationService, saveLogService) {
         this.localizationService = localizationService;
-        this.loggerService = common_2.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('gateway-api');
     }
     async Init(initDto) {
-        this.loggerService.debug(`[Localization] Init : ${JSON.stringify(initDto)}`);
+        this.logger.debug(`[Localization] Init : ${JSON.stringify(initDto)}`);
         return this.localizationService.sendInit(initDto);
     }
     async RandomInit() {
-        this.loggerService.debug(`[Localization] RandomInit`);
+        this.logger.debug(`[Localization] RandomInit`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.randomInit,
         });
     }
     async AutoInit() {
-        this.loggerService.debug(`[Localization] AutoInit`);
+        this.logger.debug(`[Localization] AutoInit`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.autoInit,
         });
     }
     async SemiAutoInit() {
-        this.loggerService.debug(`[Localization] SemiAutoInit`);
+        this.logger.debug(`[Localization] SemiAutoInit`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.semiAutoInit,
         });
     }
     async LocStart() {
-        this.loggerService.debug(`[Localization] LocStart`);
+        this.logger.debug(`[Localization] LocStart`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.start,
         });
     }
     async LocStop() {
-        this.loggerService.debug(`[Localization] LocStop`);
+        this.logger.debug(`[Localization] LocStop`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.stop,
         });
@@ -3282,8 +3444,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof localization_dto_1.LocalizationRequestDto !== "undefined" && localization_dto_1.LocalizationRequestDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof localization_dto_1.LocalizationRequestDto !== "undefined" && localization_dto_1.LocalizationRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], LocalizationApiController.prototype, "Init", null);
 __decorate([
     (0, common_1.Post)('randominit'),
@@ -3302,7 +3464,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], LocalizationApiController.prototype, "RandomInit", null);
 __decorate([
     (0, common_1.Post)('autoinit'),
@@ -3321,7 +3483,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], LocalizationApiController.prototype, "AutoInit", null);
 __decorate([
     (0, common_1.Post)('semiautoinit'),
@@ -3340,7 +3502,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], LocalizationApiController.prototype, "SemiAutoInit", null);
 __decorate([
     (0, common_1.Post)('start'),
@@ -3359,7 +3521,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], LocalizationApiController.prototype, "LocStart", null);
 __decorate([
     (0, common_1.Post)('stop'),
@@ -3378,17 +3540,17 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], LocalizationApiController.prototype, "LocStop", null);
 exports.LocalizationApiController = LocalizationApiController = __decorate([
     (0, swagger_1.ApiTags)('위치초기화 API'),
     (0, common_1.Controller)('localization'),
-    __metadata("design:paramtypes", [typeof (_a = typeof localization_api_service_1.LocalizationApiService !== "undefined" && localization_api_service_1.LocalizationApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof localization_api_service_1.LocalizationApiService !== "undefined" && localization_api_service_1.LocalizationApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], LocalizationApiController);
 
 
 /***/ }),
-/* 76 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3404,18 +3566,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationApiService = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const constant_1 = __webpack_require__(65);
+const rxjs_1 = __webpack_require__(41);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let LocalizationApiService = class LocalizationApiService {
-    constructor(localizationMicroservice) {
+    constructor(localizationMicroservice, saveLogService) {
         this.localizationMicroservice = localizationMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.localizationService =
@@ -3427,14 +3590,14 @@ let LocalizationApiService = class LocalizationApiService {
 };
 exports.LocalizationApiService = LocalizationApiService;
 exports.LocalizationApiService = LocalizationApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.LOCALIZATION_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.LOCALIZATION_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], LocalizationApiService);
 
 
 /***/ }),
-/* 77 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3449,12 +3612,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationResponseFrs = exports.LocalizationResponseSlamnav = exports.LocalizationResponseDto = exports.LocalizationRequestSlamnav = exports.LocalizationRequestDto = void 0;
-const class_validator_1 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
-const swagger_1 = __webpack_require__(58);
-const localization_type_1 = __webpack_require__(78);
-const util_1 = __webpack_require__(37);
-const description_1 = __webpack_require__(79);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+const swagger_1 = __webpack_require__(8);
+const localization_type_1 = __webpack_require__(81);
+const util_1 = __webpack_require__(13);
+const description_1 = __webpack_require__(82);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uC704\uCE58\uCD08\uAE30\uD654 \uBA85\uB839";
@@ -3623,7 +3786,7 @@ __decorate([
 
 
 /***/ }),
-/* 78 */
+/* 81 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3641,7 +3804,7 @@ var LocalizationCommand;
 
 
 /***/ }),
-/* 79 */
+/* 82 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3656,7 +3819,7 @@ var FrsDescription;
 
 
 /***/ }),
-/* 80 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3669,19 +3832,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const network_api_service_1 = __webpack_require__(81);
-const network_api_controller_1 = __webpack_require__(82);
+const network_api_service_1 = __webpack_require__(84);
+const network_api_controller_1 = __webpack_require__(85);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const config_1 = __webpack_require__(73);
-const path_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(65);
+const common_2 = __webpack_require__(48);
+const config_1 = __webpack_require__(47);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let NetworkApiModule = class NetworkApiModule {
 };
 exports.NetworkApiModule = NetworkApiModule;
 exports.NetworkApiModule = NetworkApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -3708,7 +3873,7 @@ exports.NetworkApiModule = NetworkApiModule = __decorate([
 
 
 /***/ }),
-/* 81 */
+/* 84 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3724,18 +3889,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkApiService = void 0;
-const constant_1 = __webpack_require__(65);
-const logger_1 = __webpack_require__(33);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
+const rxjs_1 = __webpack_require__(41);
 let NetworkApiService = class NetworkApiService {
-    constructor(networkMicroservice) {
+    constructor(networkMicroservice, saveLogService) {
         this.networkMicroservice = networkMicroservice;
-        this.loggerService = logger_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.networkService = this.networkMicroservice.getService('NetworkGrpcService');
@@ -3775,12 +3941,12 @@ exports.NetworkApiService = NetworkApiService;
 exports.NetworkApiService = NetworkApiService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], NetworkApiService);
 
 
 /***/ }),
-/* 82 */
+/* 85 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3796,61 +3962,62 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkApiController = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const network_api_service_1 = __webpack_require__(81);
-const network_dto_1 = __webpack_require__(83);
-const error_response_dto_1 = __webpack_require__(63);
+const common_1 = __webpack_require__(5);
+const swagger_1 = __webpack_require__(8);
+const network_api_service_1 = __webpack_require__(84);
+const network_dto_1 = __webpack_require__(86);
+const error_response_dto_1 = __webpack_require__(32);
+const saveLog_service_1 = __webpack_require__(42);
 let NetworkApiController = class NetworkApiController {
-    constructor(networkService) {
+    constructor(networkService, saveLogService) {
         this.networkService = networkService;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
         console.log(':-->', process.env.NETWORK_SERVICE_URL);
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async getNetwork() {
-        this.loggerService.debug(`[Network] getNetwork`);
+        this.logger.debug(`[Network] getNetwork`);
         return this.networkService.getNetwork();
     }
     async getEthernetNetwork() {
-        this.loggerService.debug(`[Network] getEthernetNetwork`);
+        this.logger.debug(`[Network] getEthernetNetwork`);
         return await this.networkService.getEthernet();
     }
     async getWifiNetwork() {
-        this.loggerService.debug(`[Network] getWifiNetwork`);
+        this.logger.debug(`[Network] getWifiNetwork`);
         return await this.networkService.getWifi();
     }
     async getBluetoothNetwork() {
-        this.loggerService.debug(`[Network] getBluetoothNetwork`);
+        this.logger.debug(`[Network] getBluetoothNetwork`);
         return await this.networkService.getBluetooth();
     }
     async getDeviceNetwork(device) {
-        this.loggerService.debug(`[Network] getDeviceNetwork : ${device}`);
+        this.logger.debug(`[Network] getDeviceNetwork : ${device}`);
         return await this.networkService.getDevice({ device: device });
     }
     async getWifiList() {
-        this.loggerService.debug(`[Network] getWifiList`);
+        this.logger.debug(`[Network] getWifiList`);
         return await this.networkService.getWifiList();
     }
     async getWifiScanList() {
-        this.loggerService.debug(`[Network] getWifiList`);
+        this.logger.debug(`[Network] getWifiList`);
         return await this.networkService.scanWifi();
     }
     async updateNetwork(networkDto) {
-        this.loggerService.debug(`[Network] updateNetwork : ${networkDto.device} -> ${networkDto.dhcp}`);
+        this.logger.debug(`[Network] updateNetwork : ${networkDto.device} -> ${networkDto.dhcp}`);
         return await this.networkService.setNetwork(networkDto);
     }
     async connectWifi(dto) {
-        this.loggerService.debug(`[Network] connectWifi : ${dto.ssid} -> ${dto.password}`);
+        this.logger.debug(`[Network] connectWifi : ${dto.ssid} -> ${dto.password}`);
         return await this.networkService.connectWifi(dto);
     }
 };
 exports.NetworkApiController = NetworkApiController;
 __decorate([
-    (0, common_2.Get)(),
+    (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
         summary: '현재 연결된 네트워크 정보 요청',
         description: '연결된 네트워크 (Ethernet, Wifi) 정보를 요청합니다.',
@@ -3869,7 +4036,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "getNetwork", null);
 __decorate([
-    (0, common_2.Get)('ethernet'),
+    (0, common_1.Get)('ethernet'),
     (0, swagger_1.ApiOperation)({
         summary: '현재 연결된 이더넷 네트워크 정보 요청',
         description: '연결된 이더넷 네트워크 정보를 요청합니다.',
@@ -3888,7 +4055,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "getEthernetNetwork", null);
 __decorate([
-    (0, common_2.Get)('wifi'),
+    (0, common_1.Get)('wifi'),
     (0, swagger_1.ApiOperation)({
         summary: '현재 연결된 와이파이 네트워크 정보 요청',
         description: '연결된 와이파이 네트워크 정보를 요청합니다.',
@@ -3907,7 +4074,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "getWifiNetwork", null);
 __decorate([
-    (0, common_2.Get)('bluetooth'),
+    (0, common_1.Get)('bluetooth'),
     (0, swagger_1.ApiOperation)({
         summary: '현재 연결된 블루투스 네트워크 정보 요청',
         description: '연결된 블루투스 네트워크 정보를 요청합니다.',
@@ -3917,18 +4084,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "getBluetoothNetwork", null);
 __decorate([
-    (0, common_2.Get)(':device'),
+    (0, common_1.Get)(':device'),
     (0, swagger_1.ApiOperation)({
         summary: '특정 네트워크 디바이스 정보 요청',
         description: '특정 네트워크 디바이스 정보를 요청합니다.',
     }),
-    __param(0, (0, common_2.Param)('device')),
+    __param(0, (0, common_1.Param)('device')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "getDeviceNetwork", null);
 __decorate([
-    (0, common_2.Get)('wifi/list'),
+    (0, common_1.Get)('wifi/list'),
     (0, swagger_1.ApiOperation)({
         summary: '주변 와이파이 목록 요청',
         description: '주변의 와이파이 리스트를 요청합니다.',
@@ -3938,7 +4105,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "getWifiList", null);
 __decorate([
-    (0, common_2.Get)('wifi/scan'),
+    (0, common_1.Get)('wifi/scan'),
     (0, swagger_1.ApiOperation)({
         summary: '주변 와이파이 목록 요청(재스캔)',
         description: '주변의 와이파이 리스트를 요청합니다. 스캔을 다시하므로 시간이 조금더 소요됩니다.',
@@ -3948,36 +4115,36 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "getWifiScanList", null);
 __decorate([
-    (0, common_2.Put)(),
+    (0, common_1.Put)(),
     (0, swagger_1.ApiOperation)({
         summary: '연결된 네트워크 정보 수정',
         description: '연결된 네트워크 정보를 업데이트합니다.',
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof network_dto_1.SetNetworkRequestDto !== "undefined" && network_dto_1.SetNetworkRequestDto) === "function" ? _b : Object]),
+    __metadata("design:paramtypes", [typeof (_c = typeof network_dto_1.SetNetworkRequestDto !== "undefined" && network_dto_1.SetNetworkRequestDto) === "function" ? _c : Object]),
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "updateNetwork", null);
 __decorate([
-    (0, common_2.Post)('wifi/connect'),
+    (0, common_1.Post)('wifi/connect'),
     (0, swagger_1.ApiOperation)({
         summary: '와이파이 연결 요청',
         description: '와이파이 연결을 요청합니다.',
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof network_dto_1.ConnectWifiDto !== "undefined" && network_dto_1.ConnectWifiDto) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof network_dto_1.ConnectWifiDto !== "undefined" && network_dto_1.ConnectWifiDto) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], NetworkApiController.prototype, "connectWifi", null);
 exports.NetworkApiController = NetworkApiController = __decorate([
     (0, swagger_1.ApiTags)('네트워크 API'),
-    (0, common_2.Controller)('network'),
-    __metadata("design:paramtypes", [typeof (_a = typeof network_api_service_1.NetworkApiService !== "undefined" && network_api_service_1.NetworkApiService) === "function" ? _a : Object])
+    (0, common_1.Controller)('network'),
+    __metadata("design:paramtypes", [typeof (_a = typeof network_api_service_1.NetworkApiService !== "undefined" && network_api_service_1.NetworkApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], NetworkApiController);
 
 
 /***/ }),
-/* 83 */
+/* 86 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3992,9 +4159,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConnectWifiDto = exports.NetworkResponseDto = exports.SetNetworkResponseDto = exports.SetNetworkRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
     Description["DEVICE"] = "\uBCC0\uACBD\uD560 \uB124\uD2B8\uC6CC\uD06C \uB514\uBC14\uC774\uC2A4\uB97C \uC785\uB825\uD558\uC138\uC694.";
@@ -4120,7 +4287,7 @@ __decorate([
 
 
 /***/ }),
-/* 84 */
+/* 87 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4133,19 +4300,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_api_controller_1 = __webpack_require__(85);
+const config_api_controller_1 = __webpack_require__(88);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const config_1 = __webpack_require__(73);
-const path_1 = __webpack_require__(44);
-const config_api_service_1 = __webpack_require__(86);
-const constant_1 = __webpack_require__(65);
+const common_2 = __webpack_require__(48);
+const config_1 = __webpack_require__(47);
+const path_1 = __webpack_require__(20);
+const config_api_service_1 = __webpack_require__(89);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let ConfigApiModule = class ConfigApiModule {
 };
 exports.ConfigApiModule = ConfigApiModule;
 exports.ConfigApiModule = ConfigApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -4184,7 +4353,7 @@ exports.ConfigApiModule = ConfigApiModule = __decorate([
 
 
 /***/ }),
-/* 85 */
+/* 88 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4200,21 +4369,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigApiController = void 0;
 const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(8);
-const swagger_1 = __webpack_require__(58);
-const config_api_service_1 = __webpack_require__(86);
-const set_dto_1 = __webpack_require__(87);
-const error_response_dto_1 = __webpack_require__(63);
-const get_dto_1 = __webpack_require__(88);
-const delete_dto_1 = __webpack_require__(89);
+const swagger_1 = __webpack_require__(8);
+const config_api_service_1 = __webpack_require__(89);
+const set_dto_1 = __webpack_require__(90);
+const error_response_dto_1 = __webpack_require__(32);
+const get_dto_1 = __webpack_require__(91);
+const delete_dto_1 = __webpack_require__(92);
+const saveLog_service_1 = __webpack_require__(42);
 let ConfigApiController = class ConfigApiController {
-    constructor(configService) {
+    constructor(configService, saveLogService) {
         this.configService = configService;
-        this.loggerService = common_2.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async getConfigAll() {
         return this.configService.getConfigAll();
@@ -4227,7 +4397,7 @@ let ConfigApiController = class ConfigApiController {
         return this.configService.setConfigs(dto);
     }
     async setConfig(dto) {
-        this.loggerService.info(`[API] setConfig : ${dto.key} -> ${dto.value}`);
+        this.logger.info(`[API] setConfig : ${dto.key} -> ${dto.value}`);
         return this.configService.setConfig(dto);
     }
     async deleteConfig(dto) {
@@ -4255,7 +4425,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], ConfigApiController.prototype, "getConfigAll", null);
 __decorate([
     (0, common_1.Get)(),
@@ -4274,7 +4444,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof get_dto_1.GetConfigRequestDto !== "undefined" && get_dto_1.GetConfigRequestDto) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof get_dto_1.GetConfigRequestDto !== "undefined" && get_dto_1.GetConfigRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], ConfigApiController.prototype, "getConfig", null);
 __decorate([
@@ -4294,8 +4464,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof set_dto_1.SetConfigsRequestDto !== "undefined" && set_dto_1.SetConfigsRequestDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof set_dto_1.SetConfigsRequestDto !== "undefined" && set_dto_1.SetConfigsRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], ConfigApiController.prototype, "setConfigs", null);
 __decorate([
     (0, common_1.Post)(''),
@@ -4314,8 +4484,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof set_dto_1.SetConfigRequestDto !== "undefined" && set_dto_1.SetConfigRequestDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_g = typeof set_dto_1.SetConfigRequestDto !== "undefined" && set_dto_1.SetConfigRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], ConfigApiController.prototype, "setConfig", null);
 __decorate([
     (0, common_1.Delete)(),
@@ -4334,7 +4504,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof delete_dto_1.DeleteConfigRequestDto !== "undefined" && delete_dto_1.DeleteConfigRequestDto) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_j = typeof delete_dto_1.DeleteConfigRequestDto !== "undefined" && delete_dto_1.DeleteConfigRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], ConfigApiController.prototype, "deleteConfig", null);
 __decorate([
@@ -4354,18 +4524,18 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof delete_dto_1.DeleteConfigsRequestDto !== "undefined" && delete_dto_1.DeleteConfigsRequestDto) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:paramtypes", [typeof (_k = typeof delete_dto_1.DeleteConfigsRequestDto !== "undefined" && delete_dto_1.DeleteConfigsRequestDto) === "function" ? _k : Object]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], ConfigApiController.prototype, "deleteConfigs", null);
 exports.ConfigApiController = ConfigApiController = __decorate([
     (0, swagger_1.ApiTags)('변수 설정 API'),
     (0, common_1.Controller)('config'),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_api_service_1.ConfigApiService !== "undefined" && config_api_service_1.ConfigApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof config_api_service_1.ConfigApiService !== "undefined" && config_api_service_1.ConfigApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], ConfigApiController);
 
 
 /***/ }),
-/* 86 */
+/* 89 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4381,17 +4551,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigApiService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const constant_1 = __webpack_require__(65);
+const rxjs_1 = __webpack_require__(41);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let ConfigApiService = class ConfigApiService {
-    constructor(configMicroservice, codeMicroservice) {
+    constructor(configMicroservice, codeMicroservice, saveLogService) {
         this.configMicroservice = configMicroservice;
         this.codeMicroservice = codeMicroservice;
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('gateway-api');
     }
     async onModuleInit() {
         this.configService = this.configMicroservice.getService('ConfigGrpcService');
@@ -4436,12 +4609,12 @@ exports.ConfigApiService = ConfigApiService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
     __param(1, (0, common_1.Inject)(constant_1.CODE_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], ConfigApiService);
 
 
 /***/ }),
-/* 87 */
+/* 90 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4456,8 +4629,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetConfigsResponseDto = exports.SetConfigResponseDto = exports.SetConfigsRequestDto = exports.SetConfigRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 class SetConfigRequestDto {
 }
 exports.SetConfigRequestDto = SetConfigRequestDto;
@@ -4489,7 +4662,7 @@ exports.SetConfigsResponseDto = SetConfigsResponseDto;
 
 
 /***/ }),
-/* 88 */
+/* 91 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4504,8 +4677,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GetConfigsResponseDto = exports.GetConfigResponseDto = exports.GetConfigRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 class GetConfigRequestDto {
 }
 exports.GetConfigRequestDto = GetConfigRequestDto;
@@ -4541,7 +4714,7 @@ __decorate([
 
 
 /***/ }),
-/* 89 */
+/* 92 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4556,8 +4729,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DeleteConfigsResponseDto = exports.DeleteConfigResponseDto = exports.DeleteConfigsRequestDto = exports.DeleteConfigRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 class DeleteConfigRequestDto {
 }
 exports.DeleteConfigRequestDto = DeleteConfigRequestDto;
@@ -4584,7 +4757,7 @@ exports.DeleteConfigsResponseDto = DeleteConfigsResponseDto;
 
 
 /***/ }),
-/* 90 */
+/* 93 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4597,19 +4770,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const setting_api_controller_1 = __webpack_require__(91);
-const setting_api_service_1 = __webpack_require__(92);
-const path_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(65);
+const common_2 = __webpack_require__(48);
+const setting_api_controller_1 = __webpack_require__(94);
+const setting_api_service_1 = __webpack_require__(95);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let SettingApiModule = class SettingApiModule {
 };
 exports.SettingApiModule = SettingApiModule;
 exports.SettingApiModule = SettingApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -4636,7 +4811,7 @@ exports.SettingApiModule = SettingApiModule = __decorate([
 
 
 /***/ }),
-/* 91 */
+/* 94 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4656,10 +4831,10 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiController = void 0;
 const common_1 = __webpack_require__(5);
-const setting_api_service_1 = __webpack_require__(92);
-const swagger_1 = __webpack_require__(58);
-const error_response_dto_1 = __webpack_require__(63);
-const setting_dto_1 = __webpack_require__(93);
+const setting_api_service_1 = __webpack_require__(95);
+const swagger_1 = __webpack_require__(8);
+const error_response_dto_1 = __webpack_require__(32);
+const setting_dto_1 = __webpack_require__(96);
 let SettingApiController = class SettingApiController {
     constructor() { }
     async getType() {
@@ -4882,7 +5057,7 @@ exports.SettingApiController = SettingApiController = __decorate([
 
 
 /***/ }),
-/* 92 */
+/* 95 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4898,18 +5073,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const constant_1 = __webpack_require__(65);
-const logger_1 = __webpack_require__(33);
+const rxjs_1 = __webpack_require__(41);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let SettingApiService = class SettingApiService {
-    constructor(settingMicroservice) {
+    constructor(settingMicroservice, saveLogService) {
         this.settingMicroservice = settingMicroservice;
-        this.loggerService = logger_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async onModuleInit() {
         this.settingService = this.settingMicroservice.getService('SettingGrpcService');
@@ -4955,12 +5131,12 @@ exports.SettingApiService = SettingApiService;
 exports.SettingApiService = SettingApiService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.SETTING_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SettingApiService);
 
 
 /***/ }),
-/* 93 */
+/* 96 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4976,8 +5152,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingSavePresetResponseDto = exports.SettingSavePresetRequestDto = exports.SettingDeletePresetResponseDto = exports.SettingDeletePresetRequestDto = exports.SettingCreatePresetResponseDto = exports.SettingCreatePresetRequestDto = exports.SettingGetPresetResponseDto = exports.SettingGetPresetRequestDto = exports.SettingGetPresetListResponseDto = exports.SettingGetPresetListRequestDto = exports.SettingSaveSettingAllResponseDto = exports.SettingSaveSettingAllRequestDto = exports.SettingSaveSettingResponseDto = exports.SettingSaveSettingRequestDto = exports.SettingGetSettingResponseDto = exports.SettingGetSettingRequestDto = exports.SettingGetTypeResponseDto = exports.SettingResponseSlamnav = exports.SettingRequestSlamnav = exports.SettingResponseDto = exports.SettingRequestDto = exports.SettingCommand = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD \uACE0\uC720 \uC544\uC774\uB514. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uADF8\uB300\uB85C \uBC18\uD658.";
@@ -5271,7 +5447,7 @@ exports.SettingSavePresetResponseDto = SettingSavePresetResponseDto;
 
 
 /***/ }),
-/* 94 */
+/* 97 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5284,19 +5460,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(44);
-const move_api_service_1 = __webpack_require__(95);
-const move_api_controller_1 = __webpack_require__(96);
-const common_2 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
+const path_1 = __webpack_require__(20);
+const move_api_service_1 = __webpack_require__(98);
+const move_api_controller_1 = __webpack_require__(99);
+const common_2 = __webpack_require__(48);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let MoveApiModule = class MoveApiModule {
 };
 exports.MoveApiModule = MoveApiModule;
 exports.MoveApiModule = MoveApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -5326,7 +5504,7 @@ exports.MoveApiModule = MoveApiModule = __decorate([
 
 
 /***/ }),
-/* 95 */
+/* 98 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5342,19 +5520,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiService = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const util_1 = __webpack_require__(37);
-const constant_1 = __webpack_require__(65);
+const rxjs_1 = __webpack_require__(41);
+const util_1 = __webpack_require__(13);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let MoveApiService = class MoveApiService {
-    constructor(moveMicroservice) {
+    constructor(moveMicroservice, saveLogService) {
         this.moveMicroservice = moveMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.moveService = this.moveMicroservice.getService('MoveGrpcService');
@@ -5365,7 +5544,7 @@ let MoveApiService = class MoveApiService {
     }
     sendMoveJogCommand(moveDto) {
         this.moveService.moveJog(moveDto).subscribe({
-            error: (err) => this.loggerService.error(`[MOVE] sendMoveGoalCommand : ${util_1.ParseUtil.errorToJson(err)}`),
+            error: (err) => this.logger.error(`[MOVE] sendMoveGoalCommand : ${util_1.ParseUtil.errorToJson(err)}`),
         });
     }
     async getMoveLogLast(dto) {
@@ -5377,14 +5556,14 @@ let MoveApiService = class MoveApiService {
 };
 exports.MoveApiService = MoveApiService;
 exports.MoveApiService = MoveApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.MOVE_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.MOVE_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], MoveApiService);
 
 
 /***/ }),
-/* 96 */
+/* 99 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5404,48 +5583,46 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiController = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const common_2 = __webpack_require__(8);
-const move_dto_1 = __webpack_require__(97);
-const move_dto_2 = __webpack_require__(97);
-const move_dto_3 = __webpack_require__(97);
-const error_response_dto_1 = __webpack_require__(63);
-const move_api_service_1 = __webpack_require__(95);
+const swagger_1 = __webpack_require__(8);
+const move_dto_1 = __webpack_require__(100);
+const move_dto_2 = __webpack_require__(100);
+const move_dto_3 = __webpack_require__(100);
+const error_response_dto_1 = __webpack_require__(32);
+const move_api_service_1 = __webpack_require__(98);
 let MoveApiController = class MoveApiController {
     constructor(moveService) {
         this.moveService = moveService;
-        this.loggerService = common_2.LoggerService.get('gateway');
     }
     async sendMove(moveDto) {
-        this.loggerService.debug(`[Move] Move : ${JSON.stringify(moveDto)}`);
+        this.logger.debug(`[Move] Move : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveCommand(moveDto);
     }
     async sendMoveTarget(moveDto) {
-        this.loggerService.debug(`[Move] MoveTarget : ${JSON.stringify(moveDto)}`);
+        this.logger.debug(`[Move] MoveTarget : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveCommand(moveDto);
     }
     async sendMoveGoal(moveDto) {
-        this.loggerService.debug(`[Move] MoveGoal : ${JSON.stringify(moveDto)}`);
+        this.logger.debug(`[Move] MoveGoal : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveCommand({ ...moveDto, command: 'goal' });
     }
     async sendMoveJog(moveDto) {
-        this.loggerService.debug(`[Move] MoveJog : ${JSON.stringify(moveDto)}`);
+        this.logger.debug(`[Move] MoveJog : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveJogCommand(moveDto);
     }
     async sendMoveStop() {
-        this.loggerService.debug(`[Move] MoveStop`);
+        this.logger.debug(`[Move] MoveStop`);
         return this.moveService.sendMoveCommand({ command: 'stop' });
     }
     async sendMovePause() {
-        this.loggerService.debug(`[Move] MovePause`);
+        this.logger.debug(`[Move] MovePause`);
         return this.moveService.sendMoveCommand({ command: 'pause' });
     }
     async sendMoveResume() {
-        this.loggerService.debug(`[Move] MoveResume`);
+        this.logger.debug(`[Move] MoveResume`);
         return this.moveService.sendMoveCommand({ command: 'resume' });
     }
     async moveProfile(dto) {
-        this.loggerService.info(`[MOVE] moveProfile: ${JSON.stringify(dto)}`);
+        this.logger.info(`[MOVE] moveProfile: ${JSON.stringify(dto)}`);
         return this.moveService.sendMoveCommand(dto);
     }
     async getMoveLogLast(dto) {
@@ -5653,7 +5830,7 @@ exports.MoveApiController = MoveApiController = __decorate([
 
 
 /***/ }),
-/* 97 */
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5668,13 +5845,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveLinearRequestDto = exports.MoveLogLastResponseDto = exports.MoveLogLastRequestDto = exports.MoveLogResponseDto = exports.MoveLogRequestDto = exports.MoveResponseFrs = exports.MoveResponseSlamnav = exports.MoveRequestSlamnav = exports.MoveResponseDto = exports.MoveTargetCommandDto = exports.MoveGoalCommandDto = exports.MoveRequestDto = void 0;
-const class_validator_1 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
-const swagger_1 = __webpack_require__(58);
-const move_type_1 = __webpack_require__(98);
-const util_1 = __webpack_require__(37);
-const search_request_1 = __webpack_require__(99);
-const pagination_1 = __webpack_require__(101);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+const swagger_1 = __webpack_require__(8);
+const move_type_1 = __webpack_require__(101);
+const util_1 = __webpack_require__(13);
+const search_request_1 = __webpack_require__(102);
+const pagination_1 = __webpack_require__(104);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uC774\uB3D9 \uBA85\uB839";
@@ -6099,7 +6276,7 @@ __decorate([
 
 
 /***/ }),
-/* 98 */
+/* 101 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -6120,7 +6297,7 @@ var MoveCommand;
 
 
 /***/ }),
-/* 99 */
+/* 102 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6135,10 +6312,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SearchRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const pagination_request_1 = __webpack_require__(100);
-const class_validator_1 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
+const swagger_1 = __webpack_require__(8);
+const pagination_request_1 = __webpack_require__(103);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
 class SearchRequestDto extends pagination_request_1.PaginationRequest {
 }
 exports.SearchRequestDto = SearchRequestDto;
@@ -6212,7 +6389,7 @@ __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 103 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6229,8 +6406,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationRequest = void 0;
 exports.getPaginationOffset = getPaginationOffset;
 exports.getPaginationLimit = getPaginationLimit;
-const class_validator_1 = __webpack_require__(61);
-const swagger_1 = __webpack_require__(58);
+const class_validator_1 = __webpack_require__(11);
+const swagger_1 = __webpack_require__(8);
 class PaginationRequest {
     getOffset() {
         if (this.pageNo === null || this.pageNo === undefined || this.pageNo < 1) {
@@ -6285,7 +6462,7 @@ function getPaginationLimit(pageSize) {
 
 
 /***/ }),
-/* 101 */
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6304,12 +6481,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(100), exports);
-__exportStar(__webpack_require__(102), exports);
+__exportStar(__webpack_require__(103), exports);
+__exportStar(__webpack_require__(105), exports);
 
 
 /***/ }),
-/* 102 */
+/* 105 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6324,7 +6501,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationResponse = void 0;
-const swagger_1 = __webpack_require__(58);
+const swagger_1 = __webpack_require__(8);
 class PaginationResponse {
     constructor(list, pageSize, totalCount) {
         this.pageSize = pageSize;
@@ -6370,7 +6547,7 @@ __decorate([
 
 
 /***/ }),
-/* 103 */
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6383,13 +6560,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const task_api_controller_1 = __webpack_require__(104);
-const task_api_service_1 = __webpack_require__(105);
-const config_1 = __webpack_require__(73);
+const task_api_controller_1 = __webpack_require__(107);
+const task_api_service_1 = __webpack_require__(108);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(65);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let TaskApiModule = class TaskApiModule {
 };
 exports.TaskApiModule = TaskApiModule;
@@ -6400,6 +6578,7 @@ exports.TaskApiModule = TaskApiModule = __decorate([
                 isGlobal: true,
                 envFilePath: '.env',
             }),
+            log_module_1.LogModule,
             microservices_1.ClientsModule.registerAsync([
                 {
                     name: constant_1.TASK_SERVICE,
@@ -6422,7 +6601,7 @@ exports.TaskApiModule = TaskApiModule = __decorate([
 
 
 /***/ }),
-/* 104 */
+/* 107 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6441,19 +6620,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskApiController = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const task_api_service_1 = __webpack_require__(105);
-const task_dto_1 = __webpack_require__(106);
-const task_type_1 = __webpack_require__(107);
-const task_dto_2 = __webpack_require__(106);
-const error_response_dto_1 = __webpack_require__(63);
-const task_type_2 = __webpack_require__(107);
+const common_1 = __webpack_require__(5);
+const swagger_1 = __webpack_require__(8);
+const task_api_service_1 = __webpack_require__(108);
+const task_dto_1 = __webpack_require__(109);
+const task_type_1 = __webpack_require__(110);
+const task_dto_2 = __webpack_require__(109);
+const error_response_dto_1 = __webpack_require__(32);
+const task_type_2 = __webpack_require__(110);
 let TaskApiController = class TaskApiController {
     constructor(taskService) {
         this.taskService = taskService;
-        this.loggerService = common_1.LoggerService.get('gateway');
     }
     async getTaskState() {
         return this.taskService.getTaskState();
@@ -6488,7 +6665,7 @@ let TaskApiController = class TaskApiController {
 };
 exports.TaskApiController = TaskApiController;
 __decorate([
-    (0, common_2.Get)(),
+    (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 상태 요청',
         description: '태스크 상태를 요청합니다. DB에 마지막으로 저장된 Task 상태와 현재 Taskman 연결(connection)을 반환합니다.',
@@ -6507,7 +6684,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskApiController.prototype, "getTaskState", null);
 __decorate([
-    (0, common_2.Get)('variables'),
+    (0, common_1.Get)('variables'),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 변수 요청',
         description: '태스크 프로그램에서 선언된 상태변수 리스트를 요청합니다',
@@ -6526,7 +6703,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskApiController.prototype, "getVariables", null);
 __decorate([
-    (0, common_2.Post)(),
+    (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 요청',
         description: '태스크 로드, 실행, 중지를 요청합니다.',
@@ -6540,13 +6717,13 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _b : Object]),
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], TaskApiController.prototype, "taskRequest", null);
 __decorate([
-    (0, common_2.Post)('run'),
+    (0, common_1.Post)('run'),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 실행 요청',
         description: '태스크 실행을 요청합니다.',
@@ -6560,13 +6737,13 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], TaskApiController.prototype, "runTask", null);
 __decorate([
-    (0, common_2.Post)('stop'),
+    (0, common_1.Post)('stop'),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 중지 요청',
         description: '태스크 중지를 요청합니다. 태스크가 로드된 상태가 아니면 아무 기능도 하지 않습니다.',
@@ -6585,7 +6762,7 @@ __decorate([
     __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], TaskApiController.prototype, "loadTaskPost", null);
 __decorate([
-    (0, common_2.Get)('list/:mapName'),
+    (0, common_1.Get)('list/:mapName'),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 리스트 요청',
         description: '저장된 태스크 리스트를 요청합니다.',
@@ -6599,13 +6776,13 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('mapName')),
+    __param(0, (0, common_1.Param)('mapName')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TaskApiController.prototype, "getTaskList", null);
 __decorate([
-    (0, common_2.Get)(':mapName/:taskName'),
+    (0, common_1.Get)(':mapName/:taskName'),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 트리 요청',
         description: '저장된 태스크 트리를 요청합니다.',
@@ -6619,14 +6796,14 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('mapName')),
-    __param(1, (0, common_2.Param)('taskName')),
+    __param(0, (0, common_1.Param)('mapName')),
+    __param(1, (0, common_1.Param)('taskName')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], TaskApiController.prototype, "getTask", null);
 __decorate([
-    (0, common_2.Post)(':mapName/:taskName'),
+    (0, common_1.Post)(':mapName/:taskName'),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 파일 저장',
         description: '태스크 파일을 저장합니다.',
@@ -6640,15 +6817,15 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('mapName')),
-    __param(1, (0, common_2.Param)('taskName')),
-    __param(2, (0, common_2.Body)()),
+    __param(0, (0, common_1.Param)('mapName')),
+    __param(1, (0, common_1.Param)('taskName')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, typeof (_g = typeof task_type_1.TaskTreeNode !== "undefined" && task_type_1.TaskTreeNode) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], TaskApiController.prototype, "saveTask", null);
 __decorate([
-    (0, common_2.Delete)(':mapName/:taskName'),
+    (0, common_1.Delete)(':mapName/:taskName'),
     (0, swagger_1.ApiOperation)({
         summary: '태스크 파일 삭제',
         description: '태스크 파일을 삭제합니다. 복구가 불가능합니다.',
@@ -6662,21 +6839,21 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('mapName')),
-    __param(1, (0, common_2.Param)('taskName')),
+    __param(0, (0, common_1.Param)('mapName')),
+    __param(1, (0, common_1.Param)('taskName')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], TaskApiController.prototype, "deleteTask", null);
 exports.TaskApiController = TaskApiController = __decorate([
     (0, swagger_1.ApiTags)('태스크 API'),
-    (0, common_2.Controller)('task'),
+    (0, common_1.Controller)('task'),
     __metadata("design:paramtypes", [typeof (_a = typeof task_api_service_1.TaskApiService !== "undefined" && task_api_service_1.TaskApiService) === "function" ? _a : Object])
 ], TaskApiController);
 
 
 /***/ }),
-/* 105 */
+/* 108 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6692,18 +6869,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskApiService = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const constant_1 = __webpack_require__(65);
+const rxjs_1 = __webpack_require__(41);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let TaskApiService = class TaskApiService {
-    constructor(taskMicroservice) {
+    constructor(taskMicroservice, saveLogService) {
         this.taskMicroservice = taskMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.taskService = this.taskMicroservice.getService('TaskGrpcService');
@@ -6734,14 +6912,14 @@ let TaskApiService = class TaskApiService {
 };
 exports.TaskApiService = TaskApiService;
 exports.TaskApiService = TaskApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.TASK_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.TASK_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], TaskApiService);
 
 
 /***/ }),
-/* 106 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6756,11 +6934,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskResponseTaskman = exports.TaskRequestTaskman = exports.TaskResponseDto = exports.TaskRequestDto = void 0;
-const url_util_1 = __webpack_require__(38);
-const swagger_1 = __webpack_require__(58);
-const class_transformer_1 = __webpack_require__(60);
-const class_validator_1 = __webpack_require__(61);
-const task_type_1 = __webpack_require__(107);
+const url_util_1 = __webpack_require__(14);
+const swagger_1 = __webpack_require__(8);
+const class_transformer_1 = __webpack_require__(10);
+const class_validator_1 = __webpack_require__(11);
+const task_type_1 = __webpack_require__(110);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uD0DC\uC2A4\uD06C \uBA85\uB839. \uC218\uD589\uD560 \uD0DC\uC2A4\uD06C \uBA85\uB839\uC744 \uC785\uB825\uD558\uC138\uC694.";
@@ -6863,7 +7041,7 @@ __decorate([
 
 
 /***/ }),
-/* 107 */
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6878,8 +7056,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskFileDto = exports.TaskVariableDto = exports.TaskCommand = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 var Description;
 (function (Description) {
     Description["MAPNAME"] = "\uB9F5 \uC774\uB984";
@@ -6942,7 +7120,7 @@ __decorate([
 
 
 /***/ }),
-/* 108 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6955,19 +7133,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const map_api_controller_1 = __webpack_require__(109);
-const map_api_service_1 = __webpack_require__(110);
-const config_1 = __webpack_require__(73);
+const map_api_controller_1 = __webpack_require__(112);
+const map_api_service_1 = __webpack_require__(113);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(65);
-const grpc_1 = __webpack_require__(9);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(34);
+const grpc_1 = __webpack_require__(49);
+const log_module_1 = __webpack_require__(74);
 let MapApiModule = class MapApiModule {
 };
 exports.MapApiModule = MapApiModule;
 exports.MapApiModule = MapApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -6996,7 +7176,7 @@ exports.MapApiModule = MapApiModule = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7015,30 +7195,29 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiController = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(48);
 const common_2 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const map_api_service_1 = __webpack_require__(110);
-const path_1 = __webpack_require__(44);
-const zlib_1 = __webpack_require__(49);
-const stream_1 = __webpack_require__(112);
-const express_1 = __webpack_require__(113);
-const mapping_dto_1 = __webpack_require__(114);
-const util_1 = __webpack_require__(37);
-const platform_express_1 = __webpack_require__(116);
-const multer_1 = __webpack_require__(117);
-const fs_1 = __webpack_require__(43);
-const error_response_dto_1 = __webpack_require__(63);
-const map_dto_1 = __webpack_require__(118);
-const load_dto_1 = __webpack_require__(115);
-const map_dto_2 = __webpack_require__(118);
-const map_dto_3 = __webpack_require__(118);
-const zlib = __webpack_require__(49);
-const fs = __webpack_require__(43);
+const swagger_1 = __webpack_require__(8);
+const map_api_service_1 = __webpack_require__(113);
+const path_1 = __webpack_require__(20);
+const zlib_1 = __webpack_require__(25);
+const stream_1 = __webpack_require__(115);
+const express_1 = __webpack_require__(116);
+const mapping_dto_1 = __webpack_require__(117);
+const util_1 = __webpack_require__(13);
+const platform_express_1 = __webpack_require__(119);
+const multer_1 = __webpack_require__(120);
+const fs_1 = __webpack_require__(19);
+const error_response_dto_1 = __webpack_require__(32);
+const map_dto_1 = __webpack_require__(121);
+const load_dto_1 = __webpack_require__(118);
+const map_dto_2 = __webpack_require__(121);
+const map_dto_3 = __webpack_require__(121);
+const zlib = __webpack_require__(25);
+const fs = __webpack_require__(19);
 let MapApiController = class MapApiController {
     constructor(mapService) {
         this.mapService = mapService;
-        this.loggerService = common_1.LoggerService.get('gateway');
     }
     async MapList() {
         return this.mapService.getMapList();
@@ -7059,18 +7238,18 @@ let MapApiController = class MapApiController {
         res.setHeader('Content-Encoding', 'gzip');
         stream_1.Readable.from([JSON.stringify(data)])
             .pipe(gzip)
-            .on('end', () => this.loggerService.info(`[Map] getCloud : gzip end`))
+            .on('end', () => this.logger.info(`[Map] getCloud : gzip end`))
             .pipe(res)
-            .on('finish', () => this.loggerService.info(`[Map] getCloud : send finish`));
+            .on('finish', () => this.logger.info(`[Map] getCloud : send finish`));
     }
     async getCloudPipe(dto, res) {
         try {
-            this.loggerService.debug(`[Map] getCloudPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
+            this.logger.debug(`[Map] getCloudPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
             await util_1.FileUtil.readCSVPipe((0, path_1.join)('/data/maps', dto.mapName, dto.fileName), res);
         }
         catch (error) {
             console.error(error);
-            this.loggerService.error(`[Map] getCloudPipe: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] getCloudPipe: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new common_2.HttpException(error, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7100,7 +7279,7 @@ let MapApiController = class MapApiController {
             };
         }
         catch (error) {
-            this.loggerService.error(`[Map] uploadCloudGzip: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] uploadCloudGzip: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new common_2.HttpException('gzip 파일 처리 중 오류가 발생했습니다.', common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7125,12 +7304,12 @@ let MapApiController = class MapApiController {
     }
     async getTopologyPipe(dto, res) {
         try {
-            this.loggerService.debug(`[Map] getTopologyPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
+            this.logger.debug(`[Map] getTopologyPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
             await util_1.FileUtil.readJSONPipe((0, path_1.join)('/data/maps', dto.mapName, dto.fileName), res);
         }
         catch (error) {
             console.error(error);
-            this.loggerService.error(`[Map] getTopologyPipe: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] getTopologyPipe: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new common_2.HttpException(error, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7167,7 +7346,7 @@ let MapApiController = class MapApiController {
                 (0, fs_1.unlinkSync)(file.path);
                 throw new common_2.HttpException('동일한 이름의 맵이 이미 존재합니다', common_2.HttpStatus.BAD_REQUEST);
             }
-            this.loggerService.info(`[Map] pulishMap : ${newMapname}, ${file.filename}`);
+            this.logger.info(`[Map] pulishMap : ${newMapname}, ${file.filename}`);
             (0, fs_1.renameSync)(file.path, newPath);
             return {
                 originalName: file.originalname,
@@ -7188,7 +7367,7 @@ let MapApiController = class MapApiController {
             else if (error instanceof common_2.HttpException) {
                 throw error;
             }
-            this.loggerService.error(`[Map] pulishMap : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Map] pulishMap : ${(0, common_1.errorToJson)(error)}`);
             throw new common_2.HttpException('맵을 저장하던 중 에러가 발생했습니다.', common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7634,7 +7813,7 @@ exports.MapApiController = MapApiController = __decorate([
 
 
 /***/ }),
-/* 110 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7650,20 +7829,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiService = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const pagination_1 = __webpack_require__(101);
-const constant_1 = __webpack_require__(65);
-const map_command_domain_1 = __webpack_require__(111);
+const rxjs_1 = __webpack_require__(41);
+const pagination_1 = __webpack_require__(104);
+const constant_1 = __webpack_require__(34);
+const map_command_domain_1 = __webpack_require__(114);
+const saveLog_service_1 = __webpack_require__(42);
 let MapApiService = class MapApiService {
-    constructor(mapMicroservice) {
+    constructor(mapMicroservice, saveLogService) {
         this.mapMicroservice = mapMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.mapService = this.mapMicroservice.getService('MapGrpcService');
@@ -7774,23 +7954,23 @@ let MapApiService = class MapApiService {
 };
 exports.MapApiService = MapApiService;
 exports.MapApiService = MapApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.MAP_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.MAP_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], MapApiService);
 
 
 /***/ }),
-/* 111 */
+/* 114 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapCommandModel = exports.MapCommand = exports.CommandStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
-const path_1 = __webpack_require__(44);
-const fs_1 = __webpack_require__(43);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const path_1 = __webpack_require__(20);
+const fs_1 = __webpack_require__(19);
 var CommandStatus;
 (function (CommandStatus) {
     CommandStatus["pending"] = "pending";
@@ -7994,19 +8174,19 @@ exports.MapCommandModel = MapCommandModel;
 
 
 /***/ }),
-/* 112 */
+/* 115 */
 /***/ ((module) => {
 
 module.exports = require("stream");
 
 /***/ }),
-/* 113 */
+/* 116 */
 /***/ ((module) => {
 
 module.exports = require("express");
 
 /***/ }),
-/* 114 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8021,11 +8201,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingRequestSlamnav = exports.MappingResponseDto = exports.MappingRequestDto = exports.Description = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
-const util_1 = __webpack_require__(37);
-const load_dto_1 = __webpack_require__(115);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+const util_1 = __webpack_require__(13);
+const load_dto_1 = __webpack_require__(118);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
@@ -8154,7 +8334,7 @@ __decorate([
 
 
 /***/ }),
-/* 115 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8169,11 +8349,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadRequestSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = exports.MapCommand = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const util_1 = __webpack_require__(37);
-const description_1 = __webpack_require__(79);
-const class_transformer_1 = __webpack_require__(60);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const util_1 = __webpack_require__(13);
+const description_1 = __webpack_require__(82);
+const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
@@ -8320,19 +8500,19 @@ __decorate([
 
 
 /***/ }),
-/* 116 */
+/* 119 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/platform-express");
 
 /***/ }),
-/* 117 */
+/* 120 */
 /***/ ((module) => {
 
 module.exports = require("multer");
 
 /***/ }),
-/* 118 */
+/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8349,12 +8529,12 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UploadMapRequestDto = exports.DownloadMapRequestDto = exports.SaveTopologyResponseDto = exports.SaveTopologyRequestDto = exports.GetTopologyResponseDto = exports.GetTopologyRequestDto = exports.GetTopologyPipeRequestDto = exports.SaveCloudPipeResponseDto = exports.SaveCloudPipeRequestDto = exports.SaveCloudResponseDto = exports.SaveCloudRequestDto = exports.GetCloudResponseDto = exports.GetCloudRequestDto = exports.FileDto = exports.GetMapListResponseDto = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const class_transformer_1 = __webpack_require__(60);
-const class_validator_1 = __webpack_require__(61);
-const map_type_1 = __webpack_require__(119);
-const pagination_1 = __webpack_require__(101);
-const topo_type_1 = __webpack_require__(120);
+const swagger_1 = __webpack_require__(8);
+const class_transformer_1 = __webpack_require__(10);
+const class_validator_1 = __webpack_require__(11);
+const map_type_1 = __webpack_require__(122);
+const pagination_1 = __webpack_require__(104);
+const topo_type_1 = __webpack_require__(123);
 var Description;
 (function (Description) {
     Description["MAPNAME"] = "\uB9F5 \uC774\uB984";
@@ -8575,7 +8755,7 @@ __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8590,9 +8770,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_transformer_1 = __webpack_require__(60);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_transformer_1 = __webpack_require__(10);
+const class_validator_1 = __webpack_require__(11);
 class MapDto {
 }
 exports.MapDto = MapDto;
@@ -8627,7 +8807,7 @@ __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8642,9 +8822,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NodeDto = exports.PoseDto = exports.LinkDto = exports.NodeType = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const util_1 = __webpack_require__(37);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const util_1 = __webpack_require__(13);
 var Description;
 (function (Description) {
     Description["ID"] = "\uB178\uB4DC\uC758 \uACE0\uC720 ID\uAC12\uC785\uB2C8\uB2E4. \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uBCC0\uACBD\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.";
@@ -8818,7 +8998,7 @@ __decorate([
 
 
 /***/ }),
-/* 121 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8830,20 +9010,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundApiModule = void 0;
-const common_1 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
+const common_1 = __webpack_require__(48);
+const constant_1 = __webpack_require__(34);
 const common_2 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(44);
-const sound_api_controller_1 = __webpack_require__(122);
-const sound_api_service_1 = __webpack_require__(123);
+const path_1 = __webpack_require__(20);
+const sound_api_controller_1 = __webpack_require__(125);
+const sound_api_service_1 = __webpack_require__(126);
+const log_module_1 = __webpack_require__(74);
 let SoundApiModule = class SoundApiModule {
 };
 exports.SoundApiModule = SoundApiModule;
 exports.SoundApiModule = SoundApiModule = __decorate([
     (0, common_2.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -8870,7 +9052,7 @@ exports.SoundApiModule = SoundApiModule = __decorate([
 
 
 /***/ }),
-/* 122 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8886,45 +9068,47 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundApiController = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const sound_api_service_1 = __webpack_require__(123);
-const common_2 = __webpack_require__(8);
-const platform_express_1 = __webpack_require__(116);
-const express_1 = __webpack_require__(113);
-const multer_1 = __webpack_require__(117);
-const path_1 = __webpack_require__(44);
-const fs_1 = __webpack_require__(43);
-const config_1 = __webpack_require__(73);
-const error_response_dto_1 = __webpack_require__(63);
-const sound_dto_1 = __webpack_require__(124);
-const sound_dto_2 = __webpack_require__(124);
+const swagger_1 = __webpack_require__(8);
+const sound_api_service_1 = __webpack_require__(126);
+const common_2 = __webpack_require__(48);
+const platform_express_1 = __webpack_require__(119);
+const express_1 = __webpack_require__(116);
+const multer_1 = __webpack_require__(120);
+const path_1 = __webpack_require__(20);
+const fs_1 = __webpack_require__(19);
+const config_1 = __webpack_require__(47);
+const error_response_dto_1 = __webpack_require__(32);
+const sound_dto_1 = __webpack_require__(127);
+const sound_dto_2 = __webpack_require__(127);
+const saveLog_service_1 = __webpack_require__(42);
 let SoundApiController = class SoundApiController {
-    constructor(configService) {
+    constructor(configService, saveLogService) {
         this.configService = configService;
-        this.loggerService = common_2.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('sound');
     }
     async getPlayingStatus(req) {
-        this.loggerService.debug(`[SOUND] getPlayingStatus (${req.socket.remoteAddress})`);
+        this.logger.debug(`[SOUND] getPlayingStatus (${req.socket.remoteAddress})`);
         return this.soundService.getPlayingStatus();
     }
     async playSound(req, dto) {
-        this.loggerService.debug(`[SOUND] playSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
+        this.logger.debug(`[SOUND] playSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
         return this.soundService.playSound(dto);
     }
     async stopSound(req) {
-        this.loggerService.debug(`[SOUND] stopSound (${req.socket.remoteAddress})`);
+        this.logger.debug(`[SOUND] stopSound (${req.socket.remoteAddress})`);
         return this.soundService.stopSound();
     }
     async getList(req) {
-        this.loggerService.debug(`[SOUND] getList (${req.socket.remoteAddress})`);
+        this.logger.debug(`[SOUND] getList (${req.socket.remoteAddress})`);
         return this.soundService.getSoundList();
     }
     async deleteSound(req, dto) {
-        this.loggerService.debug(`[SOUND] deleteSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
+        this.logger.debug(`[SOUND] deleteSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
         return this.soundService.deleteSound(dto);
     }
     async addSoundFile(file, req, name) {
@@ -8938,7 +9122,7 @@ let SoundApiController = class SoundApiController {
                 (0, fs_1.unlinkSync)(file.path);
                 throw new common_1.HttpException('동일한 이름의 파일이 이미 존재합니다', common_1.HttpStatus.BAD_REQUEST);
             }
-            this.loggerService.info(`[SOUND] addSoundFile : ${newFilename}`);
+            this.logger.info(`[SOUND] addSoundFile : ${newFilename}`);
             (0, fs_1.renameSync)(file.path, newPath);
             return {
                 originalName: file.originalname,
@@ -8958,7 +9142,7 @@ let SoundApiController = class SoundApiController {
             else if (error instanceof common_1.HttpException) {
                 throw error;
             }
-            this.loggerService.error(`[SOUND] addSoundFile : ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[SOUND] addSoundFile : ${(0, common_2.errorToJson)(error)}`);
             (0, fs_1.unlinkSync)(file.path);
             throw new common_1.HttpException('파일을 저장하던 중 에러가 발생했습니다.', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -8967,7 +9151,7 @@ let SoundApiController = class SoundApiController {
 exports.SoundApiController = SoundApiController;
 __decorate([
     (0, common_1.Inject)(),
-    __metadata("design:type", typeof (_b = typeof sound_api_service_1.SoundApiService !== "undefined" && sound_api_service_1.SoundApiService) === "function" ? _b : Object)
+    __metadata("design:type", typeof (_c = typeof sound_api_service_1.SoundApiService !== "undefined" && sound_api_service_1.SoundApiService) === "function" ? _c : Object)
 ], SoundApiController.prototype, "soundService", void 0);
 __decorate([
     (0, common_1.Get)('Play'),
@@ -8986,8 +9170,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:paramtypes", [typeof (_d = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], SoundApiController.prototype, "getPlayingStatus", null);
 __decorate([
     (0, common_1.Post)('play'),
@@ -9007,8 +9191,8 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _e : Object, typeof (_f = typeof sound_dto_1.PlaySoundRequestDto !== "undefined" && sound_dto_1.PlaySoundRequestDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_f = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _f : Object, typeof (_g = typeof sound_dto_1.PlaySoundRequestDto !== "undefined" && sound_dto_1.PlaySoundRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], SoundApiController.prototype, "playSound", null);
 __decorate([
     (0, common_1.Post)('stop'),
@@ -9026,8 +9210,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [typeof (_j = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], SoundApiController.prototype, "stopSound", null);
 __decorate([
     (0, common_1.Get)(),
@@ -9046,8 +9230,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [typeof (_l = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], SoundApiController.prototype, "getList", null);
 __decorate([
     (0, common_1.Delete)(),
@@ -9067,8 +9251,8 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _m : Object, typeof (_o = typeof sound_dto_2.DeleteSoundRequestDto !== "undefined" && sound_dto_2.DeleteSoundRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _o : Object, typeof (_p = typeof sound_dto_2.DeleteSoundRequestDto !== "undefined" && sound_dto_2.DeleteSoundRequestDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
 ], SoundApiController.prototype, "deleteSound", null);
 __decorate([
     (0, common_1.Post)(),
@@ -9106,18 +9290,18 @@ __decorate([
     __param(1, (0, common_1.Req)()),
     __param(2, (0, common_1.Body)('name')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof Express !== "undefined" && (_q = Express.Multer) !== void 0 && _q.File) === "function" ? _r : Object, typeof (_s = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _s : Object, String]),
+    __metadata("design:paramtypes", [typeof (_s = typeof Express !== "undefined" && (_r = Express.Multer) !== void 0 && _r.File) === "function" ? _s : Object, typeof (_t = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _t : Object, String]),
     __metadata("design:returntype", Promise)
 ], SoundApiController.prototype, "addSoundFile", null);
 exports.SoundApiController = SoundApiController = __decorate([
     (0, swagger_1.ApiTags)('사운드 재생 관련 API (sound)'),
     (0, common_1.Controller)('sound'),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SoundApiController);
 
 
 /***/ }),
-/* 123 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9133,18 +9317,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundApiService = void 0;
-const common_1 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
-const common_2 = __webpack_require__(5);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
+const rxjs_1 = __webpack_require__(41);
 let SoundApiService = class SoundApiService {
-    constructor(settingMicroservice) {
+    constructor(settingMicroservice, saveLogService) {
         this.settingMicroservice = settingMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.soundService = this.settingMicroservice.getService('SoundGrpcService');
@@ -9167,14 +9352,14 @@ let SoundApiService = class SoundApiService {
 };
 exports.SoundApiService = SoundApiService;
 exports.SoundApiService = SoundApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.SOUND_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.SOUND_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SoundApiService);
 
 
 /***/ }),
-/* 124 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9189,8 +9374,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundListResponseDto = exports.DeleteSoundResponseDto = exports.DeleteSoundRequestDto = exports.StopSoundResponseDto = exports.PlaySoundResponseDto = exports.PlaySoundRequestDto = exports.SoundDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 var Description;
 (function (Description) {
     Description["FILENAME"] = "\uC2E4\uD589/\uC0AD\uC81C\uD560 \uD30C\uC77C\uBA85\uC744 \uC785\uB825\uD558\uC138\uC694. \uD30C\uC77C\uC740 \uC11C\uBC84 \uC2E4\uD589\uACBD\uB85C\uC758 sound \uD3F4\uB354 \uB0B4\uBD80\uC5D0 \uC874\uC7AC\uD574\uC57C\uD569\uB2C8\uB2E4.";
@@ -9263,7 +9448,7 @@ __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9276,18 +9461,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const log_api_service_1 = __webpack_require__(126);
-const log_api_controller_1 = __webpack_require__(127);
+const log_api_service_1 = __webpack_require__(129);
+const log_api_controller_1 = __webpack_require__(130);
 const microservices_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(44);
-const config_1 = __webpack_require__(73);
-const constant_1 = __webpack_require__(65);
+const path_1 = __webpack_require__(20);
+const config_1 = __webpack_require__(47);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let LogApiModule = class LogApiModule {
 };
 exports.LogApiModule = LogApiModule;
 exports.LogApiModule = LogApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             microservices_1.ClientsModule.registerAsync([
                 {
                     name: constant_1.SEMLOG_SERVICE,
@@ -9311,7 +9498,7 @@ exports.LogApiModule = LogApiModule = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9327,18 +9514,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiService = void 0;
-const common_1 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
-const common_2 = __webpack_require__(5);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
+const rxjs_1 = __webpack_require__(41);
 let LogApiService = class LogApiService {
-    constructor(logMicroservice) {
+    constructor(logMicroservice, saveLogService) {
         this.logMicroservice = logMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.logService = this.logMicroservice.getService('SEMLogGrpcService');
@@ -9382,14 +9570,14 @@ let LogApiService = class LogApiService {
 };
 exports.LogApiService = LogApiService;
 exports.LogApiService = LogApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.SEMLOG_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.SEMLOG_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], LogApiService);
 
 
 /***/ }),
-/* 127 */
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9405,19 +9593,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiController = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const log_api_service_1 = __webpack_require__(126);
-const logger_1 = __webpack_require__(33);
-const semlog_dto_1 = __webpack_require__(128);
-const search_request_1 = __webpack_require__(99);
+const swagger_1 = __webpack_require__(8);
+const log_api_service_1 = __webpack_require__(129);
+const semlog_dto_1 = __webpack_require__(131);
+const search_request_1 = __webpack_require__(102);
+const saveLog_service_1 = __webpack_require__(42);
 let LogApiController = class LogApiController {
-    constructor(logService) {
+    constructor(logService, saveLogService) {
         this.logService = logService;
-        this.loggerService = logger_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('log');
     }
     async getAlarmList(dto) {
         return this.logService.getAlarmDefinedList(dto);
@@ -9480,8 +9669,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], LogApiController.prototype, "getAlarmList", null);
 __decorate([
     (0, common_1.Post)('sem/alarm-define'),
@@ -9495,8 +9684,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof semlog_dto_1.SEMAlarm !== "undefined" && semlog_dto_1.SEMAlarm) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof semlog_dto_1.SEMAlarm !== "undefined" && semlog_dto_1.SEMAlarm) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], LogApiController.prototype, "postAlarmDefine", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-define'),
@@ -9510,8 +9699,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof semlog_dto_1.DeleteAlarmDefineRequestDto !== "undefined" && semlog_dto_1.DeleteAlarmDefineRequestDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_g = typeof semlog_dto_1.DeleteAlarmDefineRequestDto !== "undefined" && semlog_dto_1.DeleteAlarmDefineRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], LogApiController.prototype, "deleteAlarmDefine", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-define/all'),
@@ -9524,7 +9713,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], LogApiController.prototype, "deleteAlarmDefineAll", null);
 __decorate([
     (0, common_1.Get)('sem/alarm-active'),
@@ -9548,7 +9737,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], LogApiController.prototype, "getActiveAlarmList", null);
 __decorate([
     (0, common_1.Post)('sem/alarm-active'),
@@ -9562,8 +9751,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof semlog_dto_1.PostSEMAlarmRequestDto !== "undefined" && semlog_dto_1.PostSEMAlarmRequestDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [typeof (_l = typeof semlog_dto_1.PostSEMAlarmRequestDto !== "undefined" && semlog_dto_1.PostSEMAlarmRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], LogApiController.prototype, "postActiveAlarm", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-active'),
@@ -9577,8 +9766,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], LogApiController.prototype, "deleteActiveAlarm", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-active/all'),
@@ -9592,7 +9781,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
 ], LogApiController.prototype, "deleteActiveAlarmAll", null);
 __decorate([
     (0, common_1.Get)('sem/alarm'),
@@ -9629,8 +9818,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_r = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _r : Object]),
+    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
 ], LogApiController.prototype, "getAlarmLogList", null);
 __decorate([
     (0, common_1.Post)('sem/alarm'),
@@ -9644,8 +9833,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof semlog_dto_1.SaveSEMAlarmLogRequestDto !== "undefined" && semlog_dto_1.SaveSEMAlarmLogRequestDto) === "function" ? _s : Object]),
-    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
+    __metadata("design:paramtypes", [typeof (_t = typeof semlog_dto_1.SaveSEMAlarmLogRequestDto !== "undefined" && semlog_dto_1.SaveSEMAlarmLogRequestDto) === "function" ? _t : Object]),
+    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
 ], LogApiController.prototype, "postAlarmLog", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm'),
@@ -9659,18 +9848,18 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _u : Object]),
-    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
+    __metadata("design:paramtypes", [typeof (_v = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _v : Object]),
+    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
 ], LogApiController.prototype, "deleteAlarmLog", null);
 exports.LogApiController = LogApiController = __decorate([
     (0, swagger_1.ApiTags)('로그 API'),
     (0, common_1.Controller)('log'),
-    __metadata("design:paramtypes", [typeof (_a = typeof log_api_service_1.LogApiService !== "undefined" && log_api_service_1.LogApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof log_api_service_1.LogApiService !== "undefined" && log_api_service_1.LogApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], LogApiController);
 
 
 /***/ }),
-/* 128 */
+/* 131 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9685,11 +9874,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SEMGeneralLogRequestDto = exports.SaveSEMAlarmLogResponseDto = exports.SaveSEMAlarmLogRequestDto = exports.DeleteSEMAlarmRequestDto = exports.SEMAlarmActiveResponseDto = exports.SEMAlarmLogResponseDto = exports.SEMAlarmLogListRequestDto = exports.PostSEMAlarmRequestDto = exports.DeleteAlarmDefineRequestDto = exports.SEMAlarmListResponseDto = exports.SEMAlamrListRequestDto = exports.SEMAlarmLog = exports.SEMAlarm = exports.SEMAlarmActive = void 0;
-const pagination_1 = __webpack_require__(101);
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const class_validator_2 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
+const pagination_1 = __webpack_require__(104);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_validator_2 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
     Description["ALARM_CODE"] = "\uC54C\uB78C \uCF54\uB4DC";
@@ -9964,7 +10153,7 @@ __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9977,13 +10166,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(130);
-const update_api_controller_1 = __webpack_require__(133);
-const config_1 = __webpack_require__(73);
+const update_api_service_1 = __webpack_require__(133);
+const update_api_controller_1 = __webpack_require__(136);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(65);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(34);
+const log_module_1 = __webpack_require__(74);
 let UpdateApiModule = class UpdateApiModule {
 };
 exports.UpdateApiModule = UpdateApiModule;
@@ -10008,6 +10198,7 @@ exports.UpdateApiModule = UpdateApiModule = __decorate([
                     }),
                 },
             ]),
+            log_module_1.LogModule,
         ],
         controllers: [update_api_controller_1.UpdateApiController],
         providers: [update_api_service_1.UpdateApiService],
@@ -10016,7 +10207,7 @@ exports.UpdateApiModule = UpdateApiModule = __decorate([
 
 
 /***/ }),
-/* 130 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10032,24 +10223,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiService = void 0;
 const common_1 = __webpack_require__(5);
-const path = __webpack_require__(44);
-const os_1 = __webpack_require__(131);
-const fs = __webpack_require__(43);
-const child_process_1 = __webpack_require__(132);
-const config_1 = __webpack_require__(73);
-const common_2 = __webpack_require__(8);
+const path = __webpack_require__(20);
+const os_1 = __webpack_require__(134);
+const fs = __webpack_require__(19);
+const child_process_1 = __webpack_require__(135);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(65);
-const rxjs_1 = __webpack_require__(32);
+const constant_1 = __webpack_require__(34);
+const rxjs_1 = __webpack_require__(41);
+const saveLog_service_1 = __webpack_require__(42);
 let UpdateApiService = class UpdateApiService {
-    constructor(configService, updateMicroservice) {
+    constructor(configService, saveLogService, updateMicroservice) {
         this.configService = configService;
+        this.saveLogService = saveLogService;
         this.updateMicroservice = updateMicroservice;
-        this.loggerService = common_2.LoggerService.get('file');
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         console.log(this.configService.get('RELEASE_REPO_URL'));
@@ -10079,7 +10271,7 @@ let UpdateApiService = class UpdateApiService {
         const updateScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/rrs-server`, 'rrs-update.sh');
         const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
         if (!fs.existsSync(updateScript)) {
-            this.loggerService.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
+            this.logger.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
             throw new common_1.NotFoundException({
                 message: `~/rainbow-deploy-kit/rrs-server/rrs-update.sh 파일을 찾을 수 없습니다.`,
             });
@@ -10144,25 +10336,25 @@ let UpdateApiService = class UpdateApiService {
 exports.UpdateApiService = UpdateApiService;
 exports.UpdateApiService = UpdateApiService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object])
+    __param(2, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object])
 ], UpdateApiService);
 
 
 /***/ }),
-/* 131 */
+/* 134 */
 /***/ ((module) => {
 
 module.exports = require("os");
 
 /***/ }),
-/* 132 */
+/* 135 */
 /***/ ((module) => {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 133 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10182,13 +10374,13 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiController = void 0;
 const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(130);
-const swagger_1 = __webpack_require__(58);
-const update_dto_1 = __webpack_require__(134);
-const etc_dto_1 = __webpack_require__(135);
-const version_dto_1 = __webpack_require__(136);
-const pagination_response_1 = __webpack_require__(102);
-const version_dto_2 = __webpack_require__(136);
+const update_api_service_1 = __webpack_require__(133);
+const swagger_1 = __webpack_require__(8);
+const update_dto_1 = __webpack_require__(137);
+const etc_dto_1 = __webpack_require__(138);
+const version_dto_1 = __webpack_require__(139);
+const pagination_response_1 = __webpack_require__(105);
+const version_dto_2 = __webpack_require__(139);
 let UpdateApiController = class UpdateApiController {
     constructor(updateService) {
         this.updateService = updateService;
@@ -10371,7 +10563,7 @@ exports.UpdateApiController = UpdateApiController = __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10386,10 +10578,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ResponseWebUIAppDeleteDto = exports.ResponseWebUIAppAddDto = exports.WebUIAppDeleteDto = exports.WebUIAppAddDto = exports.UpdateResponseSocketDto = exports.UpdateRequestSocketDto = exports.UpdateRequestDto = exports.ResponseReleaseVersionInfoDto = exports.GetReleaseAppsVersionListRequestDto = exports.GetReleaseAppBranchesResponseDto = exports.ResponseReleaseAppsBranches = exports.GetReleaseAppsBranchesRequestDto = exports.CommitDto = exports.GetSoftwareParamDto = void 0;
-const pagination_1 = __webpack_require__(101);
-const util_1 = __webpack_require__(37);
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const pagination_1 = __webpack_require__(104);
+const util_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 var Description;
 (function (Description) {
     Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
@@ -10727,7 +10919,7 @@ __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10742,8 +10934,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CurVersionDto = exports.NewVersionGitDto = exports.PingSendToTargetResponseDto = exports.PingSendToTargetDto = void 0;
-const class_validator_1 = __webpack_require__(61);
-const swagger_1 = __webpack_require__(58);
+const class_validator_1 = __webpack_require__(11);
+const swagger_1 = __webpack_require__(8);
 var Description;
 (function (Description) {
     Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
@@ -10825,7 +11017,7 @@ __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10840,9 +11032,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GetCurrentVersionResponseSocketDto = exports.GetCurrentVersionRequestSocketDto = exports.GetCurrentVersionResponseDto = exports.GetCurrentVersionRequestDto = exports.GetNewVersionResponseDto = exports.GetNewVersionRequestDto = void 0;
-const class_validator_1 = __webpack_require__(61);
-const swagger_1 = __webpack_require__(58);
-const url_util_1 = __webpack_require__(38);
+const class_validator_1 = __webpack_require__(11);
+const swagger_1 = __webpack_require__(8);
+const url_util_1 = __webpack_require__(14);
 var Description;
 (function (Description) {
     Description["BRANCH"] = "\uBE0C\uB79C\uCE58 \uC774\uB984";
@@ -10961,7 +11153,7 @@ __decorate([
 
 
 /***/ }),
-/* 137 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10974,19 +11166,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const cobot_api_service_1 = __webpack_require__(138);
-const cobot_api_controller_1 = __webpack_require__(139);
-const constant_1 = __webpack_require__(65);
+const cobot_api_service_1 = __webpack_require__(141);
+const cobot_api_controller_1 = __webpack_require__(142);
+const constant_1 = __webpack_require__(34);
 const microservices_1 = __webpack_require__(3);
-const config_1 = __webpack_require__(73);
-const path_1 = __webpack_require__(44);
-const grpc_1 = __webpack_require__(9);
+const config_1 = __webpack_require__(47);
+const path_1 = __webpack_require__(20);
+const grpc_1 = __webpack_require__(49);
+const log_module_1 = __webpack_require__(74);
 let CobotApiModule = class CobotApiModule {
 };
 exports.CobotApiModule = CobotApiModule;
 exports.CobotApiModule = CobotApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             microservices_1.ClientsModule.registerAsync([
                 {
                     name: constant_1.COBOT_SERVICE,
@@ -11009,7 +11203,7 @@ exports.CobotApiModule = CobotApiModule = __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11025,18 +11219,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiService = void 0;
-const constant_1 = __webpack_require__(65);
-const common_1 = __webpack_require__(8);
+const constant_1 = __webpack_require__(34);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(5);
-const rxjs_1 = __webpack_require__(32);
+const common_1 = __webpack_require__(5);
+const rxjs_1 = __webpack_require__(41);
+const saveLog_service_1 = __webpack_require__(42);
 let CobotApiService = class CobotApiService {
-    constructor(cobotMicroservice) {
+    constructor(cobotMicroservice, saveLogService) {
         this.cobotMicroservice = cobotMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.cobotService = this.cobotMicroservice.getService('CobotGrpcService');
@@ -11091,13 +11286,13 @@ let CobotApiService = class CobotApiService {
 };
 exports.CobotApiService = CobotApiService;
 exports.CobotApiService = CobotApiService = __decorate([
-    __param(0, (0, common_2.Inject)(constant_1.COBOT_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    __param(0, (0, common_1.Inject)(constant_1.COBOT_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], CobotApiService);
 
 
 /***/ }),
-/* 139 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11117,13 +11312,13 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiController = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const swagger_2 = __webpack_require__(58);
-const cobot_api_service_1 = __webpack_require__(138);
-const cobot_dto_1 = __webpack_require__(140);
-const cobot_dto_2 = __webpack_require__(140);
-const cobot_dto_3 = __webpack_require__(140);
-const cobot_dto_4 = __webpack_require__(140);
+const swagger_1 = __webpack_require__(8);
+const swagger_2 = __webpack_require__(8);
+const cobot_api_service_1 = __webpack_require__(141);
+const cobot_dto_1 = __webpack_require__(143);
+const cobot_dto_2 = __webpack_require__(143);
+const cobot_dto_3 = __webpack_require__(143);
+const cobot_dto_4 = __webpack_require__(143);
 let CobotApiController = class CobotApiController {
     constructor(cobotApiService) {
         this.cobotApiService = cobotApiService;
@@ -11461,7 +11656,7 @@ exports.CobotApiController = CobotApiController = __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11476,9 +11671,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CloseTcpServerResponseDto = exports.CloseTcpServerRequestDto = exports.CreateTcpServerResponseDto = exports.CreateTcpServerRequestDto = exports.GetCobotTcpServerResponseDto = exports.TcpServerInfoDto = exports.GetCobotTcpServerRequestDto = exports.GetConnectStateResponseDto = exports.GetConnectStateRequestDto = exports.CobotConnectServerResponseDto = exports.CobotConnectServerRequestDto = exports.CobotConnectResponseDto = exports.CobotConnectRequestDto = exports.CobotSpeedResponseDto = exports.CobotSpeedRequestDto = exports.CobotMoveResponseDto = exports.CobotMoveRequestDto = exports.CobotCoordinate = exports.CobotMoveMethod = exports.CobotResponseDto = exports.CobotRequestDto = exports.CobotModeResponseDto = exports.CobotModeRequestDto = exports.CobotProgramResponseDto = exports.CobotProgramRequestDto = exports.CobotCommandResponseDto = exports.CobotCommandRequestDto = exports.CobotCommandType = exports.CobotCommand = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const class_transformer_1 = __webpack_require__(60);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
 var CobotCommand;
 (function (CobotCommand) {
     CobotCommand["halt"] = "halt";
@@ -11909,7 +12104,7 @@ __decorate([
 
 
 /***/ }),
-/* 141 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11922,19 +12117,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const tcp_api_service_1 = __webpack_require__(142);
-const tcp_api_controller_1 = __webpack_require__(143);
-const constant_1 = __webpack_require__(65);
+const tcp_api_service_1 = __webpack_require__(145);
+const tcp_api_controller_1 = __webpack_require__(146);
+const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(34);
 const microservices_1 = __webpack_require__(3);
-const config_1 = __webpack_require__(73);
-const path_1 = __webpack_require__(44);
-const grpc_1 = __webpack_require__(9);
+const config_1 = __webpack_require__(47);
+const path_1 = __webpack_require__(20);
+const grpc_1 = __webpack_require__(49);
 let TcpApiModule = class TcpApiModule {
 };
 exports.TcpApiModule = TcpApiModule;
 exports.TcpApiModule = TcpApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             microservices_1.ClientsModule.registerAsync([
                 {
                     name: constant_1.TCP_SERVICE,
@@ -11957,7 +12154,7 @@ exports.TcpApiModule = TcpApiModule = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11973,18 +12170,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiService = void 0;
 const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
+const constant_1 = __webpack_require__(34);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
+const rxjs_1 = __webpack_require__(41);
+const saveLog_service_1 = __webpack_require__(42);
 let TcpApiService = class TcpApiService {
-    constructor(tcpMicroservice) {
+    constructor(tcpMicroservice, saveLogService) {
         this.tcpMicroservice = tcpMicroservice;
-        this.loggerService = common_2.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.tcpService = this.tcpMicroservice.getService('TcpGrpcService');
@@ -12002,12 +12200,12 @@ let TcpApiService = class TcpApiService {
 exports.TcpApiService = TcpApiService;
 exports.TcpApiService = TcpApiService = __decorate([
     __param(0, (0, common_1.Inject)(constant_1.TCP_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], TcpApiService);
 
 
 /***/ }),
-/* 143 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12027,9 +12225,9 @@ var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiController = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const tcp_api_service_1 = __webpack_require__(142);
-const cobot_dto_1 = __webpack_require__(140);
+const swagger_1 = __webpack_require__(8);
+const tcp_api_service_1 = __webpack_require__(145);
+const cobot_dto_1 = __webpack_require__(143);
 let TcpApiController = class TcpApiController {
     constructor(tcpApiService) {
         this.tcpApiService = tcpApiService;
@@ -12095,7 +12293,7 @@ exports.TcpApiController = TcpApiController = __decorate([
 
 
 /***/ }),
-/* 144 */
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12108,18 +12306,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
-const socket_api_controller_1 = __webpack_require__(145);
-const socket_api_service_1 = __webpack_require__(146);
+const config_1 = __webpack_require__(47);
+const socket_api_controller_1 = __webpack_require__(148);
+const socket_api_service_1 = __webpack_require__(149);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(65);
-const socket_mqtt_controller_1 = __webpack_require__(147);
+const constant_1 = __webpack_require__(34);
+const socket_mqtt_controller_1 = __webpack_require__(150);
+const log_module_1 = __webpack_require__(74);
 let SocketApiModule = class SocketApiModule {
 };
 exports.SocketApiModule = SocketApiModule;
 exports.SocketApiModule = SocketApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -12146,7 +12346,7 @@ exports.SocketApiModule = SocketApiModule = __decorate([
 
 
 /***/ }),
-/* 145 */
+/* 148 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12163,13 +12363,10 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiController = void 0;
 const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(58);
-const common_2 = __webpack_require__(8);
-const socket_api_service_1 = __webpack_require__(146);
+const swagger_1 = __webpack_require__(8);
+const socket_api_service_1 = __webpack_require__(149);
 let SocketApiController = class SocketApiController {
-    constructor() {
-        this.loggerService = common_2.LoggerService.get('gateway');
-    }
+    constructor() { }
     async getStatus() {
         return this.socketService.getStatus();
     }
@@ -12210,7 +12407,7 @@ exports.SocketApiController = SocketApiController = __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 149 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12223,13 +12420,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiService = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const saveLog_service_1 = __webpack_require__(42);
+const common_1 = __webpack_require__(5);
 let SocketApiService = class SocketApiService {
-    constructor() {
-        this.loggerService = common_1.LoggerService.get('gateway');
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() { }
     async getStatus() {
@@ -12247,13 +12446,13 @@ let SocketApiService = class SocketApiService {
 };
 exports.SocketApiService = SocketApiService;
 exports.SocketApiService = SocketApiService = __decorate([
-    (0, common_2.Injectable)(),
-    __metadata("design:paramtypes", [])
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
 ], SocketApiService);
 
 
 /***/ }),
-/* 147 */
+/* 150 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12269,21 +12468,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(8);
-const config_1 = __webpack_require__(73);
-const status_type_1 = __webpack_require__(148);
-const socket_api_service_1 = __webpack_require__(146);
-const websockets_1 = __webpack_require__(150);
-const movestatus_type_1 = __webpack_require__(151);
+const config_1 = __webpack_require__(47);
+const status_type_1 = __webpack_require__(151);
+const socket_api_service_1 = __webpack_require__(149);
+const websockets_1 = __webpack_require__(153);
+const movestatus_type_1 = __webpack_require__(154);
 const microservices_1 = __webpack_require__(3);
+const saveLog_service_1 = __webpack_require__(42);
 let SocketMqttController = class SocketMqttController {
-    constructor(configService) {
+    constructor(configService, saveLogService) {
         this.configService = configService;
-        this.loggerService = common_2.LoggerService.get('gateway');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async handleStatus(data) {
         return this.socketService.status(data);
@@ -12295,30 +12495,30 @@ let SocketMqttController = class SocketMqttController {
 exports.SocketMqttController = SocketMqttController;
 __decorate([
     (0, common_1.Inject)(),
-    __metadata("design:type", typeof (_b = typeof socket_api_service_1.SocketApiService !== "undefined" && socket_api_service_1.SocketApiService) === "function" ? _b : Object)
+    __metadata("design:type", typeof (_c = typeof socket_api_service_1.SocketApiService !== "undefined" && socket_api_service_1.SocketApiService) === "function" ? _c : Object)
 ], SocketMqttController.prototype, "socketService", void 0);
 __decorate([
     (0, microservices_1.MessagePattern)('status'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], SocketMqttController.prototype, "handleStatus", null);
 __decorate([
     (0, microservices_1.MessagePattern)('moveStatus'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _e : Object]),
     __metadata("design:returntype", Promise)
 ], SocketMqttController.prototype, "handleMoveStatus", null);
 exports.SocketMqttController = SocketMqttController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SocketMqttController);
 
 
 /***/ }),
-/* 148 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12333,11 +12533,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = exports.StatusPowerDto = exports.StatusStateDto = exports.StatusConditionDto = exports.StatuMotorDto = exports.StatusLidarDto = exports.StatusIMUDto = void 0;
-const date_util_1 = __webpack_require__(40);
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const state_type_1 = __webpack_require__(149);
-const class_transformer_1 = __webpack_require__(60);
+const date_util_1 = __webpack_require__(16);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const state_type_1 = __webpack_require__(152);
+const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
     Description["IMU"] = "IMU, Gyro \uC13C\uC11C \uB370\uC774\uD130";
@@ -13001,7 +13201,7 @@ __decorate([
 
 
 /***/ }),
-/* 149 */
+/* 152 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -13062,13 +13262,13 @@ var ChargeState;
 
 
 /***/ }),
-/* 150 */
+/* 153 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/websockets");
 
 /***/ }),
-/* 151 */
+/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13083,11 +13283,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.VelocityStatusDto = exports.PoseStatusDto = exports.MoveStateDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const util_1 = __webpack_require__(37);
-const state_type_1 = __webpack_require__(149);
-const state_type_2 = __webpack_require__(149);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const util_1 = __webpack_require__(13);
+const state_type_1 = __webpack_require__(152);
+const state_type_2 = __webpack_require__(152);
 var Description;
 (function (Description) {
     Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
@@ -13399,7 +13599,7 @@ __decorate([
 
 
 /***/ }),
-/* 152 */
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13412,12 +13612,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrpcToHttpFilter = void 0;
 const common_1 = __webpack_require__(5);
-const logger_1 = __webpack_require__(33);
-const constant_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(27);
 let GrpcToHttpFilter = class GrpcToHttpFilter {
-    constructor() {
-        this.loggerService = logger_1.LoggerService.get('filter');
-    }
     catch(exception, host) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
@@ -13425,7 +13621,6 @@ let GrpcToHttpFilter = class GrpcToHttpFilter {
             if (exception instanceof Error) {
                 if ('code' in exception && 'details' in exception) {
                     const statusCode = mapGrpcToHttpStatus(exception.code);
-                    this.loggerService.info(`[Grpc] RpcException : ${exception.details} ${statusCode}(${exception.code})`);
                     return response.status(statusCode).json({
                         statusCode,
                         message: exception.details,
@@ -13434,11 +13629,9 @@ let GrpcToHttpFilter = class GrpcToHttpFilter {
                 else if (exception instanceof common_1.HttpException) {
                     const statusCode = exception.getStatus();
                     const message = exception.message;
-                    this.loggerService.info(`[Grpc] caught HttpException : ${statusCode}, ${message}`);
                     return response.status(statusCode).json({ statusCode, message });
                 }
                 else {
-                    this.loggerService.info(`[Grpc] caught Error : ${exception.message}`);
                     return response.status(500).json({
                         statusCode: 500,
                         message: exception.message,
@@ -13446,7 +13639,6 @@ let GrpcToHttpFilter = class GrpcToHttpFilter {
                 }
             }
             else {
-                this.loggerService.info(`[Grpc] caught unknown Error : ${(0, logger_1.errorToJson)(exception)}`);
                 return response.status(500).json({
                     statusCode: 500,
                     message: 'Internal server error',
@@ -13454,7 +13646,6 @@ let GrpcToHttpFilter = class GrpcToHttpFilter {
             }
         }
         catch (error) {
-            this.loggerService.info(`[Grpc] caught unknown Error : ${(0, logger_1.errorToJson)(exception)}`);
             return response.status(500).json({
                 statusCode: 500,
                 message: 'Internal server error',
@@ -13509,7 +13700,7 @@ function mapGrpcToHttpStatus(code) {
 
 
 /***/ }),
-/* 153 */
+/* 156 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13522,21 +13713,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const client_socket_service_1 = __webpack_require__(154);
-const client_socket_gateway_1 = __webpack_require__(155);
+const client_socket_service_1 = __webpack_require__(157);
+const client_socket_gateway_1 = __webpack_require__(158);
 const microservices_1 = __webpack_require__(3);
-const client_socket_mqtt_controller_1 = __webpack_require__(160);
-const constant_1 = __webpack_require__(65);
-const config_1 = __webpack_require__(73);
+const client_socket_mqtt_controller_1 = __webpack_require__(163);
+const constant_1 = __webpack_require__(34);
+const config_1 = __webpack_require__(47);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const log_module_1 = __webpack_require__(74);
 let ClientSocketModule = class ClientSocketModule {
 };
 exports.ClientSocketModule = ClientSocketModule;
 exports.ClientSocketModule = ClientSocketModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -13708,7 +13901,7 @@ exports.ClientSocketModule = ClientSocketModule = __decorate([
 
 
 /***/ }),
-/* 154 */
+/* 157 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13724,20 +13917,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const websockets_1 = __webpack_require__(150);
-const constant_1 = __webpack_require__(65);
-const move_type_1 = __webpack_require__(98);
-const control_type_1 = __webpack_require__(62);
-const parse_util_1 = __webpack_require__(53);
-const rpc_code_exception_1 = __webpack_require__(50);
+const common_2 = __webpack_require__(48);
+const websockets_1 = __webpack_require__(153);
+const constant_1 = __webpack_require__(34);
+const move_type_1 = __webpack_require__(101);
+const control_type_1 = __webpack_require__(12);
+const parse_util_1 = __webpack_require__(29);
+const rpc_code_exception_1 = __webpack_require__(26);
+const saveLog_service_1 = __webpack_require__(42);
 let ClientSocketService = class ClientSocketService {
-    constructor(mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice, settingMicroservice, soundMicroservice, networkMicroservice, updateMicroservice, taskMicroservice, tcpMicroservice, mapMicroservice) {
+    constructor(saveLogService, mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice, settingMicroservice, soundMicroservice, networkMicroservice, updateMicroservice, taskMicroservice, tcpMicroservice, mapMicroservice) {
+        this.saveLogService = saveLogService;
         this.mqttMicroservice = mqttMicroservice;
         this.moveMicroservice = moveMicroservice;
         this.controlMicroservice = controlMicroservice;
@@ -13749,7 +13944,7 @@ let ClientSocketService = class ClientSocketService {
         this.taskMicroservice = taskMicroservice;
         this.tcpMicroservice = tcpMicroservice;
         this.mapMicroservice = mapMicroservice;
-        this.loggerService = common_2.LoggerService.get('gateway-client');
+        this.logger = this.saveLogService.get('gateway-client');
     }
     onModuleInit() {
         this.moveService = this.moveMicroservice.getService('MoveGrpcService');
@@ -13773,11 +13968,11 @@ let ClientSocketService = class ClientSocketService {
                 throw new websockets_1.WsException('topic값이 없습니다.');
             }
             client.join(dto.topic);
-            this.loggerService.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
+            this.logger.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
             return;
         }
         catch (error) {
-            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
@@ -13792,18 +13987,18 @@ let ClientSocketService = class ClientSocketService {
                 for (const room of client.rooms) {
                     if (room !== client.id) {
                         client.leave(room);
-                        this.loggerService.info(`[Client] ${client.id} : ${room} (room count = ${client.rooms.size - 1})`);
+                        this.logger.info(`[Client] ${client.id} : ${room} (room count = ${client.rooms.size - 1})`);
                     }
                 }
             }
             else {
                 client.leave(dto.topic);
-                this.loggerService.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
+                this.logger.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
             }
             return;
         }
         catch (error) {
-            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
@@ -13811,7 +14006,7 @@ let ClientSocketService = class ClientSocketService {
     }
     moveRequest(dto) {
         this.moveService.moveCommand(dto).subscribe({
-            error: (err) => this.loggerService.error(`[Client] moveRequest : ${parse_util_1.ParseUtil.errorToJson(err)}`),
+            error: (err) => this.logger.error(`[Client] moveRequest : ${parse_util_1.ParseUtil.errorToJson(err)}`),
         });
     }
     moveJog(dto) {
@@ -13831,7 +14026,7 @@ let ClientSocketService = class ClientSocketService {
             this.mqttMicroservice.emit('moveJog', dto);
         }
         catch (error) {
-            this.loggerService.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             throw new websockets_1.WsException('Move명령을 처리하던 중 에러가 발생했습니다.');
@@ -13843,7 +14038,7 @@ let ClientSocketService = class ClientSocketService {
             this.localizationService.init(dto).subscribe();
         }
         catch (error) {
-            this.loggerService.error(`[Client] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Client] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             if (error instanceof rpc_code_exception_1.RpcCodeException)
@@ -13907,7 +14102,7 @@ let ClientSocketService = class ClientSocketService {
             this.mqttMicroservice.emit('pathResponse', { ...dto, time: Date.now().toString() });
         }
         catch (error) {
-            this.loggerService.error(`[Client] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Client] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new websockets_1.WsException('pathResponse 전송 중 에러가 발생했습니다.');
         }
     }
@@ -13957,23 +14152,23 @@ let ClientSocketService = class ClientSocketService {
 exports.ClientSocketService = ClientSocketService;
 exports.ClientSocketService = ClientSocketService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __param(1, (0, common_1.Inject)(constant_1.MOVE_SERVICE)),
-    __param(2, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
-    __param(3, (0, common_1.Inject)(constant_1.LOCALIZATION_SERVICE)),
-    __param(4, (0, common_1.Inject)(constant_1.SETTING_SERVICE)),
-    __param(5, (0, common_1.Inject)(constant_1.SOUND_SERVICE)),
-    __param(6, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
-    __param(7, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
-    __param(8, (0, common_1.Inject)(constant_1.TASK_SERVICE)),
-    __param(9, (0, common_1.Inject)(constant_1.TCP_SERVICE)),
-    __param(10, (0, common_1.Inject)(constant_1.MAP_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object, typeof (_g = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _g : Object, typeof (_h = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _h : Object, typeof (_j = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _j : Object, typeof (_k = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _k : Object, typeof (_l = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _l : Object])
+    __param(1, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __param(2, (0, common_1.Inject)(constant_1.MOVE_SERVICE)),
+    __param(3, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
+    __param(4, (0, common_1.Inject)(constant_1.LOCALIZATION_SERVICE)),
+    __param(5, (0, common_1.Inject)(constant_1.SETTING_SERVICE)),
+    __param(6, (0, common_1.Inject)(constant_1.SOUND_SERVICE)),
+    __param(7, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
+    __param(8, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
+    __param(9, (0, common_1.Inject)(constant_1.TASK_SERVICE)),
+    __param(10, (0, common_1.Inject)(constant_1.TCP_SERVICE)),
+    __param(11, (0, common_1.Inject)(constant_1.MAP_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object, typeof (_g = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _g : Object, typeof (_h = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _h : Object, typeof (_j = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _j : Object, typeof (_k = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _k : Object, typeof (_l = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _l : Object, typeof (_m = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _m : Object])
 ], ClientSocketService);
 
 
 /***/ }),
-/* 155 */
+/* 158 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13992,32 +14187,30 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketGateway = void 0;
-const websockets_1 = __webpack_require__(150);
-const client_socket_service_1 = __webpack_require__(154);
-const socket_io_1 = __webpack_require__(156);
-const common_1 = __webpack_require__(8);
+const websockets_1 = __webpack_require__(153);
+const client_socket_service_1 = __webpack_require__(157);
+const socket_io_1 = __webpack_require__(159);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const subscribe_dto_1 = __webpack_require__(157);
-const move_dto_1 = __webpack_require__(97);
-const localization_dto_1 = __webpack_require__(77);
-const load_dto_1 = __webpack_require__(115);
-const mapping_dto_1 = __webpack_require__(114);
-const control_dto_1 = __webpack_require__(59);
-const safety_io_dto_1 = __webpack_require__(72);
-const path_dto_1 = __webpack_require__(159);
+const subscribe_dto_1 = __webpack_require__(160);
+const move_dto_1 = __webpack_require__(100);
+const localization_dto_1 = __webpack_require__(80);
+const load_dto_1 = __webpack_require__(118);
+const mapping_dto_1 = __webpack_require__(117);
+const control_dto_1 = __webpack_require__(9);
+const safety_io_dto_1 = __webpack_require__(46);
+const path_dto_1 = __webpack_require__(162);
 let ClientSocketGateway = class ClientSocketGateway {
     constructor(clientService) {
         this.clientService = clientService;
-        this.loggerService = common_1.LoggerService.get('gateway');
     }
     afterInit(server) {
         this.clientService.setServer(server);
     }
     handleConnection(client) {
-        this.loggerService.info(`[ClientGateway] Connect Client : ${client.id}`);
+        this.logger.info(`[ClientGateway] Connect Client : ${client.id}`);
     }
     handleDisconnect(client) {
-        this.loggerService.info(`[ClientGateway] Disconnect Client : ${client.id}`);
+        this.logger.info(`[ClientGateway] Disconnect Client : ${client.id}`);
     }
     async handelSubscribe(dto, client) {
         return this.clientService.subscribe(dto, client);
@@ -14378,13 +14571,13 @@ exports.ClientSocketGateway = ClientSocketGateway = __decorate([
 
 
 /***/ }),
-/* 156 */
+/* 159 */
 /***/ ((module) => {
 
 module.exports = require("socket.io");
 
 /***/ }),
-/* 157 */
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14399,9 +14592,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubscribeDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const description_1 = __webpack_require__(158);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const description_1 = __webpack_require__(161);
 class SubscribeDto {
 }
 exports.SubscribeDto = SubscribeDto;
@@ -14418,7 +14611,7 @@ __decorate([
 
 
 /***/ }),
-/* 158 */
+/* 161 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -14431,7 +14624,7 @@ var client_description;
 
 
 /***/ }),
-/* 159 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14447,8 +14640,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PathResponseSlamnav = exports.PathResponseDto = exports.PathSlamnav = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
 class PathSlamnav {
 }
 exports.PathSlamnav = PathSlamnav;
@@ -14504,7 +14697,7 @@ __decorate([
 
 
 /***/ }),
-/* 160 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14526,24 +14719,23 @@ exports.ClientSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const websockets_1 = __webpack_require__(150);
-const common_2 = __webpack_require__(8);
-const client_socket_service_1 = __webpack_require__(154);
-const move_dto_1 = __webpack_require__(97);
-const localization_dto_1 = __webpack_require__(77);
-const load_dto_1 = __webpack_require__(115);
-const mapping_dto_1 = __webpack_require__(114);
-const control_dto_1 = __webpack_require__(59);
-const status_type_1 = __webpack_require__(148);
-const movestatus_type_1 = __webpack_require__(151);
-const cloud_type_1 = __webpack_require__(161);
-const cobot_dto_1 = __webpack_require__(140);
-const exAccessory_dto_1 = __webpack_require__(162);
-const path_dto_1 = __webpack_require__(159);
+const websockets_1 = __webpack_require__(153);
+const common_2 = __webpack_require__(48);
+const client_socket_service_1 = __webpack_require__(157);
+const move_dto_1 = __webpack_require__(100);
+const localization_dto_1 = __webpack_require__(80);
+const load_dto_1 = __webpack_require__(118);
+const mapping_dto_1 = __webpack_require__(117);
+const control_dto_1 = __webpack_require__(9);
+const status_type_1 = __webpack_require__(151);
+const movestatus_type_1 = __webpack_require__(154);
+const cloud_type_1 = __webpack_require__(164);
+const cobot_dto_1 = __webpack_require__(143);
+const exAccessory_dto_1 = __webpack_require__(165);
+const path_dto_1 = __webpack_require__(162);
 let ClientSocketMqttController = class ClientSocketMqttController {
     constructor(clientService) {
         this.clientService = clientService;
-        this.loggerService = common_2.LoggerService.get('gateway');
     }
     getMoveResponse(data) {
         this.clientService.moveResponse(data);
@@ -14792,7 +14984,7 @@ exports.ClientSocketMqttController = ClientSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 161 */
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14808,10 +15000,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MappingCloudDto = exports.LidarCloudDto = exports.CloudDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const movestatus_type_1 = __webpack_require__(151);
-const util_1 = __webpack_require__(37);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const movestatus_type_1 = __webpack_require__(154);
+const util_1 = __webpack_require__(13);
 var Description;
 (function (Description) {
     Description["CLOUD_XYZ"] = "\uB77C\uC774\uB2E4 \uD074\uB77C\uC6B0\uB4DC\uC758 \uB85C\uBD07\uAE30\uC900 \uC88C\uD45C";
@@ -14926,7 +15118,7 @@ __decorate([
 
 
 /***/ }),
-/* 162 */
+/* 165 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14941,9 +15133,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessoryStatusDto = exports.TemperatureSensorStatusDto = exports.FootStatusDto = exports.ExAccessoryResponseExAccessory = exports.ExAccessoryRequestExAccessory = exports.ExAccessoryResponseDto = exports.ExAccessoryRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const control_type_1 = __webpack_require__(62);
-const class_transformer_1 = __webpack_require__(60);
+const swagger_1 = __webpack_require__(8);
+const control_type_1 = __webpack_require__(12);
+const class_transformer_1 = __webpack_require__(10);
 var FootStatus;
 (function (FootStatus) {
     FootStatus[FootStatus["idle"] = 0] = "idle";
@@ -15064,7 +15256,7 @@ __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 166 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15077,24 +15269,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(164);
+const slamnav_socket_service_1 = __webpack_require__(167);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
-const taskman_socket_service_1 = __webpack_require__(166);
-const constant_1 = __webpack_require__(65);
-const config_1 = __webpack_require__(73);
-const robot_socket_mqtt_controller_1 = __webpack_require__(167);
-const slamnav_socket_gateway_1 = __webpack_require__(172);
-const taskman_socket_gateway_1 = __webpack_require__(173);
-const ex_accessory_socket_gateway_1 = __webpack_require__(176);
-const ex_accessory_socket_service_1 = __webpack_require__(171);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const taskman_socket_service_1 = __webpack_require__(169);
+const constant_1 = __webpack_require__(34);
+const config_1 = __webpack_require__(47);
+const robot_socket_mqtt_controller_1 = __webpack_require__(170);
+const slamnav_socket_gateway_1 = __webpack_require__(175);
+const taskman_socket_gateway_1 = __webpack_require__(176);
+const ex_accessory_socket_gateway_1 = __webpack_require__(179);
+const ex_accessory_socket_service_1 = __webpack_require__(174);
+const log_module_1 = __webpack_require__(74);
 let RobotSocketModule = class RobotSocketModule {
 };
 exports.RobotSocketModule = RobotSocketModule;
 exports.RobotSocketModule = RobotSocketModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -15152,7 +15346,7 @@ exports.RobotSocketModule = RobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 167 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15168,19 +15362,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlamnavService = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(48);
 const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const lodash_1 = __webpack_require__(165);
-const constant_1 = __webpack_require__(65);
+const lodash_1 = __webpack_require__(168);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let SlamnavService = class SlamnavService {
-    constructor(mqttMicroservice) {
+    constructor(mqttMicroservice, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway-robot');
+        this.saveLogService = saveLogService;
         this.warningTime = 1000;
+        this.logger = this.saveLogService.get('gateway-robot');
     }
     setServer(server) {
         this.server = server;
@@ -15197,95 +15393,95 @@ let SlamnavService = class SlamnavService {
         }
     }
     moveRequest(data) {
-        this.loggerService.debug(`[SLAMNAV] moveRequest : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] moveRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('moveRequest', data);
     }
     moveJog(data) {
         this.slamnav?.emit('moveRequest', data);
     }
     localizationRequest(data) {
-        this.loggerService.debug(`[SLAMNAV] localizationRequest : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] localizationRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('localizationRequest', data);
     }
     mappingRequest(data) {
-        this.loggerService.debug(`[SLAMNAV] mappingRequest : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] mappingRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('mappingRequest', data);
     }
     controlRequest(data) {
-        this.loggerService.debug(`[SLAMNAV] controlRequest : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] controlRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('controlRequest', data);
     }
     loadRequest(data) {
-        this.loggerService.debug(`[SLAMNAV] loadRequest : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] loadRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('loadRequest', data);
     }
     settingRequest(data) {
-        this.loggerService.debug(`[SLAMNAV] settingRequest : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] settingRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('settingRequest', data);
     }
     pathResponse(data) {
-        this.loggerService.debug(`[SLAMNAV] pathResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] pathResponse : ${JSON.stringify(data)}`);
         this.slamnav?.emit('pathResponse', data);
     }
     swVersionInfo(data) {
-        this.loggerService.debug(`[SLAMNAV] swVersionInfo : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] swVersionInfo : ${JSON.stringify(data)}`);
         this.slamnav?.emit('swVersionInfo', data);
     }
     moveResponse(data) {
         const json = JSON.parse(JSON.stringify(data));
         if (data.id == undefined) {
-            this.loggerService.warn(`[SLAMNAV] moveResponse : id undefined`);
+            this.logger.warn(`[SLAMNAV] moveResponse : id undefined`);
         }
-        this.loggerService.debug(`[SLAMNAV] moveResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] moveResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('moveResponse', data);
     }
     loadResponse(data) {
         if (data.id == undefined) {
-            this.loggerService.warn(`[SLAMNAV] loadResponse : id undefined`);
+            this.logger.warn(`[SLAMNAV] loadResponse : id undefined`);
         }
-        this.loggerService.debug(`[SLAMNAV] loadResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] loadResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('loadResponse', data);
     }
     localizationResponse(data) {
         if (data.id == undefined) {
-            this.loggerService.warn(`[SLAMNAV] localizationResponse : id undefined`);
+            this.logger.warn(`[SLAMNAV] localizationResponse : id undefined`);
         }
-        this.loggerService.debug(`[SLAMNAV] localizationResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] localizationResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('localizationResponse', data);
     }
     mappingResponse(data) {
         if (data.id == undefined) {
-            this.loggerService.warn(`[SLAMNAV] mappingResponse : id undefined`);
+            this.logger.warn(`[SLAMNAV] mappingResponse : id undefined`);
         }
-        this.loggerService.debug(`[SLAMNAV] mappingResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] mappingResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('mappingResponse', data);
     }
     controlResponse(data) {
         if (data.id == undefined) {
-            this.loggerService.warn(`[SLAMNAV] controlResponse : id undefined`);
+            this.logger.warn(`[SLAMNAV] controlResponse : id undefined`);
         }
-        this.loggerService.debug(`[SLAMNAV] controlResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] controlResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('controlResponse', data);
     }
     settingResponse(data) {
         if (data.id == undefined) {
-            this.loggerService.warn(`[SLAMNAV] settingResponse : id undefined`);
+            this.logger.warn(`[SLAMNAV] settingResponse : id undefined`);
         }
-        this.loggerService.debug(`[SLAMNAV] settingResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] settingResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('settingResponse', data);
     }
     swVersionInfoResponse(data) {
         if (data.id == undefined) {
-            this.loggerService.warn(`[SLAMNAV] swVersionInfoResponse : id undefined`);
+            this.logger.warn(`[SLAMNAV] swVersionInfoResponse : id undefined`);
         }
         console.log('swVersionInfoResponse emit', data);
-        this.loggerService.debug(`[SLAMNAV] swVersionInfoResponse : ${JSON.stringify(data)}`);
+        this.logger.debug(`[SLAMNAV] swVersionInfoResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('swVersionInfoResponse', data);
     }
     status(data) {
         try {
             if (data == null || data == undefined) {
-                this.loggerService.warn(`[SLAMNAV] status: NULL`);
+                this.logger.warn(`[SLAMNAV] status: NULL`);
                 return;
             }
             const time = data.time;
@@ -15301,14 +15497,14 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('status', { ...data, time });
         }
         catch (error) {
-            this.loggerService.error(`[SLAMNAV] status: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SLAMNAV] status: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     moveStatus(data) {
         try {
             if (data == null || data == undefined) {
-                this.loggerService.warn(`[SLAMNAV] moveStatus: NULL`);
+                this.logger.warn(`[SLAMNAV] moveStatus: NULL`);
                 return;
             }
             const time = data.time;
@@ -15324,25 +15520,25 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('moveStatus', { ...data, time });
         }
         catch (error) {
-            this.loggerService.error(`[SLAMNAV] moveStatus: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SLAMNAV] moveStatus: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     localPath(data) {
         try {
             if (data === undefined || data === null) {
-                this.loggerService.warn(`[SLAMNAV] localPath : data undefined`);
+                this.logger.warn(`[SLAMNAV] localPath : data undefined`);
                 return;
             }
             if (data.path === undefined || data.path === null || data.path.length === 0) {
-                this.loggerService.warn(`[SLAMNAV] localPath : data.path empty`);
+                this.logger.warn(`[SLAMNAV] localPath : data.path empty`);
                 return;
             }
             const time = data.time;
             if (data.time) {
                 const delayTime = Date.now() - parseInt(data.time);
                 if (delayTime > this.warningTime) {
-                    this.loggerService.warn(`[SLAMNAV] localPath: ${delayTime}ms`);
+                    this.logger.warn(`[SLAMNAV] localPath: ${delayTime}ms`);
                 }
             }
             if ((0, lodash_1.isEqual)(data, this.lastLocalPath)) {
@@ -15352,25 +15548,25 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('localPath', { ...data, time });
         }
         catch (error) {
-            this.loggerService.error(`[SLAMNAV] localPath: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SLAMNAV] localPath: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     globalPath(data) {
         try {
             if (data === undefined || data === null) {
-                this.loggerService.warn(`[SLAMNAV] globalPath : data undefined`);
+                this.logger.warn(`[SLAMNAV] globalPath : data undefined`);
                 return;
             }
             if (data.path === undefined || data.path === null || data.path.length === 0) {
-                this.loggerService.warn(`[SLAMNAV] globalPath : data.path empty`);
+                this.logger.warn(`[SLAMNAV] globalPath : data.path empty`);
                 return;
             }
             const time = data.time;
             if (data.time) {
                 const delayTime = Date.now() - parseInt(data.time);
                 if (delayTime > this.warningTime) {
-                    this.loggerService.warn(`[SLAMNAV] globalPath: ${delayTime}ms`);
+                    this.logger.warn(`[SLAMNAV] globalPath: ${delayTime}ms`);
                 }
             }
             if ((0, lodash_1.isEqual)(data, this.lastGlobalPath)) {
@@ -15380,14 +15576,14 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('globalPath', { ...data, time });
         }
         catch (error) {
-            this.loggerService.error(`[SLAMNAV] globalPath: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SLAMNAV] globalPath: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     lidarCloud(data) {
         try {
             if (data.data == null || data.data == undefined || data.data.length == 0) {
-                this.loggerService.warn(`[SLAMNAV] lidarCloud: NULL`);
+                this.logger.warn(`[SLAMNAV] lidarCloud: NULL`);
                 return;
             }
             if (data.time) {
@@ -15402,28 +15598,28 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('lidarCloud', data);
         }
         catch (error) {
-            this.loggerService.error(`[SLAMNAV] lidarCloud: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SLAMNAV] lidarCloud: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     mappingCloud(data) {
         try {
             if (data.data == null || data.data == undefined || data.data.length == 0) {
-                this.loggerService.warn(`[SLAMNAV] mappingCloud: NULL`);
+                this.logger.warn(`[SLAMNAV] mappingCloud: NULL`);
                 return;
             }
             const time = data.time;
             if (data.time) {
                 const delayTime = Date.now() - parseInt(data.time);
                 if (delayTime > this.warningTime) {
-                    this.loggerService.warn(`[SLAMNAV] mappingCloud: ${delayTime}ms`);
+                    this.logger.warn(`[SLAMNAV] mappingCloud: ${delayTime}ms`);
                 }
                 delete data.time;
             }
             this.mqttMicroservice.emit('mappingCloud', { ...data, time });
         }
         catch (error) {
-            this.loggerService.error(`[SLAMNAV] mappingCloud: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SLAMNAV] mappingCloud: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
@@ -15432,18 +15628,18 @@ exports.SlamnavService = SlamnavService;
 exports.SlamnavService = SlamnavService = __decorate([
     (0, common_2.Injectable)(),
     __param(0, (0, common_2.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SlamnavService);
 
 
 /***/ }),
-/* 165 */
+/* 168 */
 /***/ ((module) => {
 
 module.exports = require("lodash");
 
 /***/ }),
-/* 166 */
+/* 169 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15459,15 +15655,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskmanService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(65);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let TaskmanService = class TaskmanService {
-    constructor(mqttMicroservice) {
+    constructor(mqttMicroservice, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-robot');
     }
     setServer(server) {
         this.server = server;
@@ -15519,12 +15718,12 @@ exports.TaskmanService = TaskmanService;
 exports.TaskmanService = TaskmanService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], TaskmanService);
 
 
 /***/ }),
-/* 167 */
+/* 170 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15540,39 +15739,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketMqttController = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(164);
+const common_1 = __webpack_require__(5);
+const slamnav_socket_service_1 = __webpack_require__(167);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const taskman_socket_service_1 = __webpack_require__(166);
-const move_dto_1 = __webpack_require__(97);
-const move_domain_1 = __webpack_require__(168);
-const localization_domain_1 = __webpack_require__(169);
-const control_domain_1 = __webpack_require__(170);
-const move_dto_2 = __webpack_require__(97);
-const control_dto_1 = __webpack_require__(59);
-const status_type_1 = __webpack_require__(148);
-const movestatus_type_1 = __webpack_require__(151);
-const map_command_domain_1 = __webpack_require__(111);
-const task_dto_1 = __webpack_require__(106);
-const ex_accessory_socket_service_1 = __webpack_require__(171);
-const exAccessory_dto_1 = __webpack_require__(162);
-const version_dto_1 = __webpack_require__(136);
-const setting_dto_1 = __webpack_require__(93);
-const localization_dto_1 = __webpack_require__(77);
-const mapping_dto_1 = __webpack_require__(114);
-const load_dto_1 = __webpack_require__(115);
-const path_dto_1 = __webpack_require__(159);
+const taskman_socket_service_1 = __webpack_require__(169);
+const move_dto_1 = __webpack_require__(100);
+const move_domain_1 = __webpack_require__(171);
+const localization_domain_1 = __webpack_require__(172);
+const control_domain_1 = __webpack_require__(173);
+const move_dto_2 = __webpack_require__(100);
+const control_dto_1 = __webpack_require__(9);
+const status_type_1 = __webpack_require__(151);
+const movestatus_type_1 = __webpack_require__(154);
+const map_command_domain_1 = __webpack_require__(114);
+const task_dto_1 = __webpack_require__(109);
+const ex_accessory_socket_service_1 = __webpack_require__(174);
+const exAccessory_dto_1 = __webpack_require__(165);
+const version_dto_1 = __webpack_require__(139);
+const setting_dto_1 = __webpack_require__(96);
+const localization_dto_1 = __webpack_require__(80);
+const mapping_dto_1 = __webpack_require__(117);
+const load_dto_1 = __webpack_require__(118);
+const path_dto_1 = __webpack_require__(162);
+const saveLog_service_1 = __webpack_require__(42);
 let RobotSocketMqttController = class RobotSocketMqttController {
-    constructor(slamnavService, exAccessoryService, taskmanService) {
+    constructor(slamnavService, exAccessoryService, taskmanService, saveLogService) {
         this.slamnavService = slamnavService;
         this.exAccessoryService = exAccessoryService;
         this.taskmanService = taskmanService;
-        this.loggerService = common_1.LoggerService.get('gateway-robot');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-robot');
     }
     getConnection() {
         this.slamnavService.getConnection();
@@ -15648,7 +15848,7 @@ __decorate([
     (0, microservices_1.MessagePattern)('moveJog'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof move_dto_1.MoveRequestSlamnav !== "undefined" && move_dto_1.MoveRequestSlamnav) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof move_dto_1.MoveRequestSlamnav !== "undefined" && move_dto_1.MoveRequestSlamnav) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "moveJog", null);
 __decorate([
@@ -15662,7 +15862,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof move_domain_1.MoveModel !== "undefined" && move_domain_1.MoveModel) === "function" ? _e : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof move_domain_1.MoveModel !== "undefined" && move_domain_1.MoveModel) === "function" ? _f : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "MoveRequest", null);
 __decorate([
@@ -15676,14 +15876,14 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof localization_domain_1.LocalizationModel !== "undefined" && localization_domain_1.LocalizationModel) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_g = typeof localization_domain_1.LocalizationModel !== "undefined" && localization_domain_1.LocalizationModel) === "function" ? _g : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "LocalizationRequest", null);
 __decorate([
     (0, microservices_1.MessagePattern)('swVersionInfo'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof version_dto_1.GetCurrentVersionRequestSocketDto !== "undefined" && version_dto_1.GetCurrentVersionRequestSocketDto) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof version_dto_1.GetCurrentVersionRequestSocketDto !== "undefined" && version_dto_1.GetCurrentVersionRequestSocketDto) === "function" ? _h : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "swVersionInfo", null);
 __decorate([
@@ -15697,7 +15897,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_j = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _j : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "MappingRequest", null);
 __decorate([
@@ -15711,7 +15911,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof control_domain_1.ControlModel !== "undefined" && control_domain_1.ControlModel) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof control_domain_1.ControlModel !== "undefined" && control_domain_1.ControlModel) === "function" ? _k : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "ControlRequest", null);
 __decorate([
@@ -15725,7 +15925,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_l = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _l : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "LoadRequest", null);
 __decorate([
@@ -15739,7 +15939,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof setting_dto_1.SettingRequestSlamnav !== "undefined" && setting_dto_1.SettingRequestSlamnav) === "function" ? _l : Object]),
+    __metadata("design:paramtypes", [typeof (_m = typeof setting_dto_1.SettingRequestSlamnav !== "undefined" && setting_dto_1.SettingRequestSlamnav) === "function" ? _m : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "SettingRequest", null);
 __decorate([
@@ -15752,49 +15952,49 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof path_dto_1.PathResponseSlamnav !== "undefined" && path_dto_1.PathResponseSlamnav) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof path_dto_1.PathResponseSlamnav !== "undefined" && path_dto_1.PathResponseSlamnav) === "function" ? _o : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "PathResponse", null);
 __decorate([
     (0, microservices_1.MessagePattern)('moveResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof move_dto_2.MoveResponseSlamnav !== "undefined" && move_dto_2.MoveResponseSlamnav) === "function" ? _o : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof move_dto_2.MoveResponseSlamnav !== "undefined" && move_dto_2.MoveResponseSlamnav) === "function" ? _p : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveResponse", null);
 __decorate([
     (0, microservices_1.MessagePattern)('dockResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _q : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getDockResponse", null);
 __decorate([
     (0, microservices_1.MessagePattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _q : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _r : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getStatus", null);
 __decorate([
     (0, microservices_1.MessagePattern)('moveStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _s : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveStatus", null);
 __decorate([
     (0, microservices_1.MessagePattern)('exAccessoryRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof exAccessory_dto_1.ExAccessoryRequestExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryRequestExAccessory) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_t = typeof exAccessory_dto_1.ExAccessoryRequestExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryRequestExAccessory) === "function" ? _t : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "exAccessoryRequest", null);
 __decorate([
     (0, microservices_1.MessagePattern)('taskman:taskRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_u = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _u : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "taskRequest", null);
 __decorate([
@@ -15812,22 +16012,22 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "variableRequest", null);
 exports.RobotSocketMqttController = RobotSocketMqttController = __decorate([
-    (0, common_2.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof slamnav_socket_service_1.SlamnavService !== "undefined" && slamnav_socket_service_1.SlamnavService) === "function" ? _a : Object, typeof (_b = typeof ex_accessory_socket_service_1.ExAccessorySocketService !== "undefined" && ex_accessory_socket_service_1.ExAccessorySocketService) === "function" ? _b : Object, typeof (_c = typeof taskman_socket_service_1.TaskmanService !== "undefined" && taskman_socket_service_1.TaskmanService) === "function" ? _c : Object])
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof slamnav_socket_service_1.SlamnavService !== "undefined" && slamnav_socket_service_1.SlamnavService) === "function" ? _a : Object, typeof (_b = typeof ex_accessory_socket_service_1.ExAccessorySocketService !== "undefined" && ex_accessory_socket_service_1.ExAccessorySocketService) === "function" ? _b : Object, typeof (_c = typeof taskman_socket_service_1.TaskmanService !== "undefined" && taskman_socket_service_1.TaskmanService) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
 ], RobotSocketMqttController);
 
 
 /***/ }),
-/* 168 */
+/* 171 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveModel = exports.MoveMethod = exports.MoveStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
-const move_type_1 = __webpack_require__(98);
-const util_1 = __webpack_require__(37);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const move_type_1 = __webpack_require__(101);
+const util_1 = __webpack_require__(13);
 var MoveStatus;
 (function (MoveStatus) {
     MoveStatus["pending"] = "pending";
@@ -15950,17 +16150,17 @@ exports.MoveModel = MoveModel;
 
 
 /***/ }),
-/* 169 */
+/* 172 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationModel = exports.LocalizationStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
-const localization_type_1 = __webpack_require__(78);
-const util_1 = __webpack_require__(37);
-const uuid_1 = __webpack_require__(39);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const localization_type_1 = __webpack_require__(81);
+const util_1 = __webpack_require__(13);
+const uuid_1 = __webpack_require__(15);
 var LocalizationStatus;
 (function (LocalizationStatus) {
     LocalizationStatus["pending"] = "pending";
@@ -16012,15 +16212,15 @@ exports.LocalizationModel = LocalizationModel;
 
 
 /***/ }),
-/* 170 */
+/* 173 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlModel = exports.ControlStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
-const control_type_1 = __webpack_require__(62);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const control_type_1 = __webpack_require__(12);
 var ControlStatus;
 (function (ControlStatus) {
     ControlStatus["pending"] = "pending";
@@ -16169,7 +16369,7 @@ exports.ControlModel = ControlModel;
 
 
 /***/ }),
-/* 171 */
+/* 174 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16185,15 +16385,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessorySocketService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(65);
+const constant_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(42);
 let ExAccessorySocketService = class ExAccessorySocketService {
-    constructor(mqttMicroservice) {
+    constructor(mqttMicroservice, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-robot');
     }
     setExAccessory(exAccessory) {
         this.exAccessory = exAccessory;
@@ -16229,12 +16432,12 @@ exports.ExAccessorySocketService = ExAccessorySocketService;
 exports.ExAccessorySocketService = ExAccessorySocketService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], ExAccessorySocketService);
 
 
 /***/ }),
-/* 172 */
+/* 175 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16250,34 +16453,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlamnavSocketGateway = void 0;
-const websockets_1 = __webpack_require__(150);
-const socket_io_1 = __webpack_require__(156);
-const slamnav_socket_service_1 = __webpack_require__(164);
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const websockets_1 = __webpack_require__(153);
+const socket_io_1 = __webpack_require__(159);
+const slamnav_socket_service_1 = __webpack_require__(167);
+const saveLog_service_1 = __webpack_require__(42);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(65);
-const move_dto_1 = __webpack_require__(97);
-const localization_dto_1 = __webpack_require__(77);
-const control_dto_1 = __webpack_require__(59);
-const status_type_1 = __webpack_require__(148);
-const movestatus_type_1 = __webpack_require__(151);
-const cloud_type_1 = __webpack_require__(161);
-const load_dto_1 = __webpack_require__(115);
-const mapping_dto_1 = __webpack_require__(114);
-const version_dto_1 = __webpack_require__(136);
-const setting_dto_1 = __webpack_require__(93);
-const path_dto_1 = __webpack_require__(159);
+const constant_1 = __webpack_require__(34);
+const move_dto_1 = __webpack_require__(100);
+const localization_dto_1 = __webpack_require__(80);
+const control_dto_1 = __webpack_require__(9);
+const status_type_1 = __webpack_require__(151);
+const movestatus_type_1 = __webpack_require__(154);
+const cloud_type_1 = __webpack_require__(164);
+const load_dto_1 = __webpack_require__(118);
+const mapping_dto_1 = __webpack_require__(117);
+const version_dto_1 = __webpack_require__(139);
+const setting_dto_1 = __webpack_require__(96);
+const path_dto_1 = __webpack_require__(162);
 let SlamnavSocketGateway = class SlamnavSocketGateway {
-    constructor(slamnavService, mqttMicroservice) {
+    constructor(slamnavService, mqttMicroservice, saveLogService) {
         this.slamnavService = slamnavService;
         this.mqttMicroservice = mqttMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway-robot');
+        this.saveLogService = saveLogService;
         this.slamnav = null;
+        this.logger = this.saveLogService.get('gateway-robot');
     }
     afterInit(server) {
         this.slamnavService.setServer(server);
@@ -16290,9 +16494,9 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
         this.mqttMicroservice.emit('discon:slamnav', {});
     }
     handleConnection(client) {
-        this.loggerService.info(`[SLAMNAV] Connect Slamnav : ${client.id}`);
+        this.logger.info(`[SLAMNAV] Connect Slamnav : ${client.id}`);
         if (this.slamnav) {
-            this.loggerService.warn(`[SLAMNAV] Slamnav already connected : slamnav(${this.slamnav.id}), new(${client.id})`);
+            this.logger.warn(`[SLAMNAV] Slamnav already connected : slamnav(${this.slamnav.id}), new(${client.id})`);
         }
         else {
             this.slamnav = client;
@@ -16302,13 +16506,13 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
     }
     handleDisconnect(client) {
         if (this.slamnav?.id == client.id) {
-            this.loggerService.info(`[SLAMNAV] Disconnect Slamnav : ${client.id}`);
+            this.logger.info(`[SLAMNAV] Disconnect Slamnav : ${client.id}`);
             this.slamnav.disconnect();
             this.slamnav = null;
             this.mqttMicroservice.emit('discon:slamnav', {});
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] Disconnect unknown client : slamnav(${this.slamnav?.id}), client(${client.id})`);
+            this.logger.warn(`[SLAMNAV] Disconnect unknown client : slamnav(${this.slamnav?.id}), client(${client.id})`);
         }
     }
     async handleMoveResponse(data, client) {
@@ -16316,7 +16520,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.moveResponse(data);
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] handleMoveResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger.warn(`[SLAMNAV] handleMoveResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleLocalizationResponse(data, client) {
@@ -16324,7 +16528,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.localizationResponse(data);
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] handleLocalizationResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger.warn(`[SLAMNAV] handleLocalizationResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleLoadResponse(data, client) {
@@ -16332,7 +16536,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.loadResponse(data);
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] handleLoadResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger.warn(`[SLAMNAV] handleLoadResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleMappingResponse(data, client) {
@@ -16340,7 +16544,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.mappingResponse(data);
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] handleMappingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger.warn(`[SLAMNAV] handleMappingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleControlResponse(data, client) {
@@ -16348,7 +16552,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.controlResponse(data);
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] handleControlResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger.warn(`[SLAMNAV] handleControlResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleSettingResponse(data, client) {
@@ -16356,7 +16560,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.settingResponse(data);
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] handleSettingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger.warn(`[SLAMNAV] handleSettingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleVersionResponse(data, client) {
@@ -16364,7 +16568,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.swVersionInfoResponse(data);
         }
         else {
-            this.loggerService.warn(`[SLAMNAV] handleVersionResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger.warn(`[SLAMNAV] handleVersionResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleStatus(data, client) {
@@ -16401,18 +16605,18 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
 exports.SlamnavSocketGateway = SlamnavSocketGateway;
 __decorate([
     (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", typeof (_c = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _c : Object)
+    __metadata("design:type", typeof (_d = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _d : Object)
 ], SlamnavSocketGateway.prototype, "server", void 0);
 __decorate([
     __param(0, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], SlamnavSocketGateway.prototype, "handleConnection", null);
 __decorate([
     __param(0, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _e : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _f : Object]),
     __metadata("design:returntype", void 0)
 ], SlamnavSocketGateway.prototype, "handleDisconnect", null);
 __decorate([
@@ -16427,7 +16631,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, typeof (_f = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [Object, typeof (_g = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMoveResponse", null);
 __decorate([
@@ -16442,7 +16646,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof localization_dto_1.LocalizationResponseSlamnav !== "undefined" && localization_dto_1.LocalizationResponseSlamnav) === "function" ? _g : Object, typeof (_h = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof localization_dto_1.LocalizationResponseSlamnav !== "undefined" && localization_dto_1.LocalizationResponseSlamnav) === "function" ? _h : Object, typeof (_j = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLocalizationResponse", null);
 __decorate([
@@ -16457,7 +16661,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _j : Object, typeof (_k = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _k : Object, typeof (_l = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _l : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLoadResponse", null);
 __decorate([
@@ -16472,7 +16676,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof mapping_dto_1.MappingResponseSlamnav !== "undefined" && mapping_dto_1.MappingResponseSlamnav) === "function" ? _l : Object, typeof (_m = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_m = typeof mapping_dto_1.MappingResponseSlamnav !== "undefined" && mapping_dto_1.MappingResponseSlamnav) === "function" ? _m : Object, typeof (_o = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _o : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMappingResponse", null);
 __decorate([
@@ -16487,7 +16691,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _o : Object, typeof (_p = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _p : Object, typeof (_q = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _q : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleControlResponse", null);
 __decorate([
@@ -16502,7 +16706,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof setting_dto_1.SettingResponseSlamnav !== "undefined" && setting_dto_1.SettingResponseSlamnav) === "function" ? _q : Object, typeof (_r = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof setting_dto_1.SettingResponseSlamnav !== "undefined" && setting_dto_1.SettingResponseSlamnav) === "function" ? _r : Object, typeof (_s = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _s : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleSettingResponse", null);
 __decorate([
@@ -16517,7 +16721,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof version_dto_1.GetCurrentVersionResponseSocketDto !== "undefined" && version_dto_1.GetCurrentVersionResponseSocketDto) === "function" ? _s : Object, typeof (_t = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_t = typeof version_dto_1.GetCurrentVersionResponseSocketDto !== "undefined" && version_dto_1.GetCurrentVersionResponseSocketDto) === "function" ? _t : Object, typeof (_u = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _u : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleVersionResponse", null);
 __decorate([
@@ -16532,7 +16736,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _u : Object, typeof (_v = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _v : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _v : Object, typeof (_w = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleStatus", null);
 __decorate([
@@ -16547,7 +16751,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_w = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _w : Object, typeof (_x = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _x : Object]),
+    __metadata("design:paramtypes", [typeof (_x = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _x : Object, typeof (_y = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _y : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMoveStatus", null);
 __decorate([
@@ -16562,7 +16766,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_y = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _y : Object, typeof (_z = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _z : Object]),
+    __metadata("design:paramtypes", [typeof (_z = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _z : Object, typeof (_0 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _0 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLocalPath", null);
 __decorate([
@@ -16577,7 +16781,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_0 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _0 : Object, typeof (_1 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _1 : Object]),
+    __metadata("design:paramtypes", [typeof (_1 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _1 : Object, typeof (_2 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _2 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleGlobalPath", null);
 __decorate([
@@ -16592,7 +16796,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_2 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _2 : Object, typeof (_3 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _3 : Object]),
+    __metadata("design:paramtypes", [typeof (_3 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _3 : Object, typeof (_4 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _4 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLidarCloud", null);
 __decorate([
@@ -16607,7 +16811,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_4 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _4 : Object, typeof (_5 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _5 : Object]),
+    __metadata("design:paramtypes", [typeof (_5 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _5 : Object, typeof (_6 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _6 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMappingCloud", null);
 exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
@@ -16616,13 +16820,13 @@ exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
         cors: { origin: '*' },
         transports: ['websocket', 'polling'],
     }),
-    __param(1, (0, common_2.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof slamnav_socket_service_1.SlamnavService !== "undefined" && slamnav_socket_service_1.SlamnavService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _b : Object])
+    __param(1, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof slamnav_socket_service_1.SlamnavService !== "undefined" && slamnav_socket_service_1.SlamnavService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], SlamnavSocketGateway);
 
 
 /***/ }),
-/* 173 */
+/* 176 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16638,29 +16842,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskmanSocketGateway = void 0;
-const websockets_1 = __webpack_require__(150);
-const socket_io_1 = __webpack_require__(156);
-const taskman_socket_service_1 = __webpack_require__(166);
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const websockets_1 = __webpack_require__(153);
+const socket_io_1 = __webpack_require__(159);
+const taskman_socket_service_1 = __webpack_require__(169);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(65);
-const move_dto_1 = __webpack_require__(97);
-const control_dto_1 = __webpack_require__(59);
-const task_dto_1 = __webpack_require__(106);
-const variables_dto_1 = __webpack_require__(174);
-const state_dto_1 = __webpack_require__(175);
+const constant_1 = __webpack_require__(34);
+const move_dto_1 = __webpack_require__(100);
+const control_dto_1 = __webpack_require__(9);
+const task_dto_1 = __webpack_require__(109);
+const variables_dto_1 = __webpack_require__(177);
+const state_dto_1 = __webpack_require__(178);
+const saveLog_service_1 = __webpack_require__(42);
 let TaskmanSocketGateway = class TaskmanSocketGateway {
-    constructor(taskmanService, mqttMicroservice, moveMicroservice, controlMicroservice) {
+    constructor(taskmanService, mqttMicroservice, moveMicroservice, controlMicroservice, saveLogService) {
         this.taskmanService = taskmanService;
         this.mqttMicroservice = mqttMicroservice;
         this.moveMicroservice = moveMicroservice;
         this.controlMicroservice = controlMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway-robot');
+        this.saveLogService = saveLogService;
         this.taskman = null;
+        this.logger = this.saveLogService.get('gateway-robot');
     }
     afterInit(server) {
         this.taskmanService.setServer(server);
@@ -16676,9 +16881,9 @@ let TaskmanSocketGateway = class TaskmanSocketGateway {
         this.mqttMicroservice.emit('discon:taskman', {});
     }
     handleConnection(client) {
-        this.loggerService.info(`[Gateway] Connect taskman : ${client.id}`);
+        this.logger.info(`[Gateway] Connect taskman : ${client.id}`);
         if (this.taskman) {
-            this.loggerService.warn(`[Gateway] taskman already connected : taskman(${this.taskman.id}), new(${client.id})`);
+            this.logger.warn(`[Gateway] taskman already connected : taskman(${this.taskman.id}), new(${client.id})`);
         }
         else {
             this.taskman = client;
@@ -16688,13 +16893,13 @@ let TaskmanSocketGateway = class TaskmanSocketGateway {
     }
     handleDisconnect(client) {
         if (this.taskman?.id == client.id) {
-            this.loggerService.info(`[Gateway] Disconnect taskman : ${client.id}`);
+            this.logger.info(`[Gateway] Disconnect taskman : ${client.id}`);
             this.taskman.disconnect();
             this.taskman = null;
             this.mqttMicroservice.emit('discon:taskman', {});
         }
         else {
-            this.loggerService.warn(`[Gateway] Disconnect unknown client : taskman(${this.taskman?.id}), client(${client.id})`);
+            this.logger.warn(`[Gateway] Disconnect unknown client : taskman(${this.taskman?.id}), client(${client.id})`);
         }
     }
     async handleTaskResponse(data) {
@@ -16717,53 +16922,53 @@ let TaskmanSocketGateway = class TaskmanSocketGateway {
 exports.TaskmanSocketGateway = TaskmanSocketGateway;
 __decorate([
     (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", typeof (_e = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _e : Object)
+    __metadata("design:type", typeof (_f = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _f : Object)
 ], TaskmanSocketGateway.prototype, "server", void 0);
 __decorate([
     __param(0, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_g = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _g : Object]),
     __metadata("design:returntype", void 0)
 ], TaskmanSocketGateway.prototype, "handleConnection", null);
 __decorate([
     __param(0, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _h : Object]),
     __metadata("design:returntype", void 0)
 ], TaskmanSocketGateway.prototype, "handleDisconnect", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('taskResponse'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof task_dto_1.TaskResponseDto !== "undefined" && task_dto_1.TaskResponseDto) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_j = typeof task_dto_1.TaskResponseDto !== "undefined" && task_dto_1.TaskResponseDto) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], TaskmanSocketGateway.prototype, "handleTaskResponse", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('variablesResponse'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof variables_dto_1.TaskVariablesResponseTaskman !== "undefined" && variables_dto_1.TaskVariablesResponseTaskman) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof variables_dto_1.TaskVariablesResponseTaskman !== "undefined" && variables_dto_1.TaskVariablesResponseTaskman) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], TaskmanSocketGateway.prototype, "handleVariablesResponse", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('stateResponse'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof state_dto_1.TaskStateResponseTaskman !== "undefined" && state_dto_1.TaskStateResponseTaskman) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_l = typeof state_dto_1.TaskStateResponseTaskman !== "undefined" && state_dto_1.TaskStateResponseTaskman) === "function" ? _l : Object]),
     __metadata("design:returntype", Promise)
 ], TaskmanSocketGateway.prototype, "handelStateResponse", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('moveRequest'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _l : Object]),
+    __metadata("design:paramtypes", [typeof (_m = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _m : Object]),
     __metadata("design:returntype", Promise)
 ], TaskmanSocketGateway.prototype, "handleTaskMove", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('dock'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _o : Object]),
     __metadata("design:returntype", Promise)
 ], TaskmanSocketGateway.prototype, "handleTaskDock", null);
 exports.TaskmanSocketGateway = TaskmanSocketGateway = __decorate([
@@ -16772,15 +16977,15 @@ exports.TaskmanSocketGateway = TaskmanSocketGateway = __decorate([
         cors: { origin: '*' },
         transports: ['websocket', 'polling'],
     }),
-    __param(1, (0, common_2.Inject)(constant_1.MQTT_BROKER)),
-    __param(2, (0, common_2.Inject)(constant_1.MOVE_SERVICE)),
-    __param(3, (0, common_2.Inject)(constant_1.CONTROL_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof taskman_socket_service_1.TaskmanService !== "undefined" && taskman_socket_service_1.TaskmanService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object])
+    __param(1, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __param(2, (0, common_1.Inject)(constant_1.MOVE_SERVICE)),
+    __param(3, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof taskman_socket_service_1.TaskmanService !== "undefined" && taskman_socket_service_1.TaskmanService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _e : Object])
 ], TaskmanSocketGateway);
 
 
 /***/ }),
-/* 174 */
+/* 177 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16795,11 +17000,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskVariablesResponseTaskman = exports.TaskVariablesRequestTaskman = exports.TaskVariablesResponseDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const task_type_1 = __webpack_require__(107);
-const util_1 = __webpack_require__(37);
-const class_transformer_1 = __webpack_require__(60);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const task_type_1 = __webpack_require__(110);
+const util_1 = __webpack_require__(13);
+const class_transformer_1 = __webpack_require__(10);
 class TaskVariablesResponseDto {
 }
 exports.TaskVariablesResponseDto = TaskVariablesResponseDto;
@@ -16843,7 +17048,7 @@ __decorate([
 
 
 /***/ }),
-/* 175 */
+/* 178 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16858,8 +17063,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskStateResponseTaskman = exports.TaskStateRequestTaskman = exports.TaskStateResponseDto = void 0;
-const class_validator_1 = __webpack_require__(61);
-const swagger_1 = __webpack_require__(58);
+const class_validator_1 = __webpack_require__(11);
+const swagger_1 = __webpack_require__(8);
 const common_1 = __webpack_require__(5);
 var Description;
 (function (Description) {
@@ -16932,7 +17137,7 @@ __decorate([
 
 
 /***/ }),
-/* 176 */
+/* 179 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16948,35 +17153,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessorySocketGateway = void 0;
-const websockets_1 = __webpack_require__(150);
+const websockets_1 = __webpack_require__(153);
 const common_1 = __webpack_require__(5);
-const socket_io_1 = __webpack_require__(156);
-const ex_accessory_socket_service_1 = __webpack_require__(171);
-const common_2 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
+const socket_io_1 = __webpack_require__(159);
+const ex_accessory_socket_service_1 = __webpack_require__(174);
+const constant_1 = __webpack_require__(34);
 const microservices_1 = __webpack_require__(3);
-const exAccessory_dto_1 = __webpack_require__(162);
+const exAccessory_dto_1 = __webpack_require__(165);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const control_dto_1 = __webpack_require__(59);
+const control_dto_1 = __webpack_require__(9);
+const saveLog_service_1 = __webpack_require__(42);
 let ExAccessorySocketGateway = class ExAccessorySocketGateway {
-    constructor(exAccessoryService, mqttMicroservice, controlMicroservice) {
+    constructor(exAccessoryService, mqttMicroservice, controlMicroservice, saveLogService) {
         this.exAccessoryService = exAccessoryService;
         this.mqttMicroservice = mqttMicroservice;
         this.controlMicroservice = controlMicroservice;
-        this.loggerService = common_2.LoggerService.get('gateway-robot');
+        this.saveLogService = saveLogService;
         this.exAccessory = null;
+        this.logger = this.saveLogService.get('gateway-robot');
     }
     afterInit(server) {
         this.exAccessoryService.setExAccessory(this.exAccessory);
         this.controlService = this.controlMicroservice.getService('ControlGrpcService');
     }
     handleConnection(client) {
-        this.loggerService.info(`[Gateway] Connect exAccessory : ${client.id}`);
+        this.logger.info(`[Gateway] Connect exAccessory : ${client.id}`);
         if (this.exAccessory) {
-            this.loggerService.warn(`[Gateway] exAccessory already connected : exAccessory(${this.exAccessory.id}), new(${client.id})`);
+            this.logger.warn(`[Gateway] exAccessory already connected : exAccessory(${this.exAccessory.id}), new(${client.id})`);
         }
         else {
             this.exAccessory = client;
@@ -16985,34 +17191,34 @@ let ExAccessorySocketGateway = class ExAccessorySocketGateway {
         }
     }
     handleDisconnect(client) {
-        this.loggerService.info(`[Gateway] Disconnected exAccessory : ${client.id}`);
+        this.logger.info(`[Gateway] Disconnected exAccessory : ${client.id}`);
         if (this.exAccessory?.id == client.id) {
             this.exAccessory.disconnect();
             this.exAccessory = null;
             this.mqttMicroservice.emit('discon:exAccessory', {});
         }
         else {
-            this.loggerService.warn(`[Gateway] Disconnect unknown client : exAccessory(${this.exAccessory?.id}), client(${client.id})`);
+            this.logger.warn(`[Gateway] Disconnect unknown client : exAccessory(${this.exAccessory?.id}), client(${client.id})`);
         }
     }
     onModuleDestroy() {
-        this.loggerService.info(`[Gateway] Destroyed exAccessory`);
+        this.logger.info(`[Gateway] Destroyed exAccessory`);
     }
     async footStatus(data, client) {
         if (client.id == this.exAccessory?.id) {
-            this.loggerService.debug(`[Gateway] exAccessoryStatus : ${JSON.stringify(data)}`);
+            this.logger.debug(`[Gateway] exAccessoryStatus : ${JSON.stringify(data)}`);
             this.exAccessoryService.exAccessoryStatus(data);
         }
     }
     async controlRequest(data, client) {
         if (client.id == this.exAccessory?.id) {
-            this.loggerService.debug(`[ExAccessory] controlRequest : ${JSON.stringify(data)}`);
+            this.logger.debug(`[ExAccessory] controlRequest : ${JSON.stringify(data)}`);
             this.exAccessoryService.controlRequest(data);
         }
     }
     async footResponse(data, client) {
         if (client.id == this.exAccessory?.id) {
-            this.loggerService.debug(`[Gateway] exAccessoryResponse : ${JSON.stringify(data)}`);
+            this.logger.debug(`[Gateway] exAccessoryResponse : ${JSON.stringify(data)}`);
             this.exAccessoryService.exAccessoryResponse(data);
         }
     }
@@ -17023,7 +17229,7 @@ let ExAccessorySocketGateway = class ExAccessorySocketGateway {
 exports.ExAccessorySocketGateway = ExAccessorySocketGateway;
 __decorate([
     (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", typeof (_d = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _d : Object)
+    __metadata("design:type", typeof (_e = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _e : Object)
 ], ExAccessorySocketGateway.prototype, "server", void 0);
 __decorate([
     (0, websockets_1.SubscribeMessage)('exAccessoryStatus'),
@@ -17037,7 +17243,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _e : Object, typeof (_f = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _f : Object, typeof (_g = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], ExAccessorySocketGateway.prototype, "footStatus", null);
 __decorate([
@@ -17052,7 +17258,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof control_dto_1.ControlRequestSlamnav !== "undefined" && control_dto_1.ControlRequestSlamnav) === "function" ? _g : Object, typeof (_h = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof control_dto_1.ControlRequestSlamnav !== "undefined" && control_dto_1.ControlRequestSlamnav) === "function" ? _h : Object, typeof (_j = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], ExAccessorySocketGateway.prototype, "controlRequest", null);
 __decorate([
@@ -17067,7 +17273,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof exAccessory_dto_1.ExAccessoryResponseExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryResponseExAccessory) === "function" ? _j : Object, typeof (_k = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof exAccessory_dto_1.ExAccessoryResponseExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryResponseExAccessory) === "function" ? _k : Object, typeof (_l = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _l : Object]),
     __metadata("design:returntype", Promise)
 ], ExAccessorySocketGateway.prototype, "footResponse", null);
 __decorate([
@@ -17075,7 +17281,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, typeof (_l = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _l : Object]),
+    __metadata("design:paramtypes", [Object, typeof (_m = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _m : Object]),
     __metadata("design:returntype", Promise)
 ], ExAccessorySocketGateway.prototype, "test", null);
 exports.ExAccessorySocketGateway = ExAccessorySocketGateway = __decorate([
@@ -17086,12 +17292,12 @@ exports.ExAccessorySocketGateway = ExAccessorySocketGateway = __decorate([
     }),
     __param(1, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
     __param(2, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof ex_accessory_socket_service_1.ExAccessorySocketService !== "undefined" && ex_accessory_socket_service_1.ExAccessorySocketService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof ex_accessory_socket_service_1.ExAccessorySocketService !== "undefined" && ex_accessory_socket_service_1.ExAccessorySocketService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientMqtt !== "undefined" && microservices_1.ClientMqtt) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
 ], ExAccessorySocketGateway);
 
 
 /***/ }),
-/* 177 */
+/* 180 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17104,22 +17310,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FrsSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_1 = __webpack_require__(178);
-const frs_socket_client_1 = __webpack_require__(179);
+const typeorm_1 = __webpack_require__(181);
+const frs_socket_client_1 = __webpack_require__(182);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
-const config_entity_1 = __webpack_require__(182);
-const constant_1 = __webpack_require__(65);
-const config_1 = __webpack_require__(73);
-const frs_sub_docs_1 = __webpack_require__(184);
-const frs_socket_service_1 = __webpack_require__(181);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const config_entity_1 = __webpack_require__(185);
+const constant_1 = __webpack_require__(34);
+const config_1 = __webpack_require__(47);
+const frs_sub_docs_1 = __webpack_require__(187);
+const frs_socket_service_1 = __webpack_require__(184);
+const log_module_1 = __webpack_require__(74);
 let FrsSocketModule = class FrsSocketModule {
 };
 exports.FrsSocketModule = FrsSocketModule;
 exports.FrsSocketModule = FrsSocketModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -17247,13 +17455,13 @@ exports.FrsSocketModule = FrsSocketModule = __decorate([
 
 
 /***/ }),
-/* 178 */
+/* 181 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 179 */
+/* 182 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17269,38 +17477,39 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSSocketClient = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
-const socket_io_client_1 = __webpack_require__(180);
-const frs_socket_service_1 = __webpack_require__(181);
-const lodash_1 = __webpack_require__(165);
+const common_1 = __webpack_require__(5);
+const socket_io_client_1 = __webpack_require__(183);
+const frs_socket_service_1 = __webpack_require__(184);
+const lodash_1 = __webpack_require__(168);
 const microservices_1 = __webpack_require__(3);
-const class_validator_1 = __webpack_require__(61);
-const parse_util_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(65);
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_2 = __webpack_require__(51);
+const class_validator_1 = __webpack_require__(11);
+const parse_util_1 = __webpack_require__(29);
+const constant_1 = __webpack_require__(34);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_2 = __webpack_require__(27);
+const saveLog_service_1 = __webpack_require__(42);
 let FRSSocketClient = class FRSSocketClient {
-    constructor(frsService, mqttMicroservice) {
+    constructor(frsService, mqttMicroservice, saveLogService) {
         this.frsService = frsService;
         this.mqttMicroservice = mqttMicroservice;
-        this.loggerService = common_1.LoggerService.get('gateway-frs');
+        this.saveLogService = saveLogService;
         this.socket = null;
         this.robotSerial = '';
         this.frsSocketUrl = '';
+        this.logger = this.saveLogService.get('gateway-frs');
     }
     onModuleInit() {
-        this.loggerService.info(`[FRS] onModuleInit`);
+        this.logger.info(`[FRS] onModuleInit`);
         this.connectFRSWithRetry();
     }
     async connectFRSWithRetry(retryCount = 0) {
         try {
             await this.setRobotSerial();
             if (this.robotSerial) {
-                this.loggerService.info(`[FRS] Initialization successful with robotSerial: ${this.robotSerial}`);
+                this.logger.info(`[FRS] Initialization successful with robotSerial: ${this.robotSerial}`);
                 await this.connectFRS();
             }
             else {
@@ -17311,13 +17520,13 @@ let FRSSocketClient = class FRSSocketClient {
             const maxRetries = 3;
             const retryDelay = 10000;
             if (retryCount < maxRetries) {
-                this.loggerService.warn(`[FRS] Initialization failed (attempt ${retryCount + 1}/${maxRetries}): ${parse_util_1.ParseUtil.errorToJson(error)}. Retrying in ${retryDelay / 1000}s...`);
+                this.logger.warn(`[FRS] Initialization failed (attempt ${retryCount + 1}/${maxRetries}): ${parse_util_1.ParseUtil.errorToJson(error)}. Retrying in ${retryDelay / 1000}s...`);
                 setTimeout(() => {
                     this.connectFRSWithRetry(retryCount + 1);
                 }, retryDelay);
             }
             else {
-                this.loggerService.error(`[FRS] Initialization failed after ${maxRetries} attempts. Giving up.`);
+                this.logger.error(`[FRS] Initialization failed after ${maxRetries} attempts. Giving up.`);
             }
         }
     }
@@ -17329,7 +17538,7 @@ let FRSSocketClient = class FRSSocketClient {
             }
         }
         catch (error) {
-            this.loggerService.error(`[FRS] setRobotSerial : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[FRS] setRobotSerial : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     sendFRSData(key, data = '') {
@@ -17338,7 +17547,7 @@ let FRSSocketClient = class FRSSocketClient {
                 robotSerial: this.robotSerial,
                 data: data,
             };
-            this.loggerService.debug(`[FRS] sendFRSData : ${key}, ${JSON.stringify(sendData)}`);
+            this.logger.debug(`[FRS] sendFRSData : ${key}, ${JSON.stringify(sendData)}`);
             this.socket?.emit(key, JSON.stringify(sendData));
         }
         else {
@@ -17346,11 +17555,11 @@ let FRSSocketClient = class FRSSocketClient {
         }
     }
     connectSlamanv() {
-        this.loggerService.info('[FRS] Connect Slamnav');
+        this.logger.info('[FRS] Connect Slamnav');
         this.sendFRSData('slamRegist');
     }
     disconnectSlamanv() {
-        this.loggerService.info('[FRS] Disconnect Slamnav');
+        this.logger.info('[FRS] Disconnect Slamnav');
         this.sendFRSData('slamUnregist');
     }
     sendStatus(data) {
@@ -17382,7 +17591,7 @@ let FRSSocketClient = class FRSSocketClient {
         this.frsSocketUrl = await this.frsService.getConfig('frsSocketUrl');
         this.robotSerial = await this.frsService.getConfig('robotSerial');
         const useFMSMove = await this.frsService.getConfig('useFMSMove');
-        this.loggerService.debug(`[Frs] connectFRS : ${this.frsSocketUrl}, ${this.robotSerial}, ${useFMSMove}`);
+        this.logger.debug(`[Frs] connectFRS : ${this.frsSocketUrl}, ${this.robotSerial}, ${useFMSMove}`);
         if (this.frsSocketUrl === undefined || this.frsSocketUrl === '' || this.robotSerial === undefined || this.robotSerial === '') {
             throw new rpc_code_exception_1.RpcCodeException(`url(${this.frsSocketUrl}) or robotSerial(${this.robotSerial}) is undefined`, constant_2.GrpcCode.FailedPrecondition);
         }
@@ -17391,7 +17600,7 @@ let FRSSocketClient = class FRSSocketClient {
     }
     cleanup() {
         if (this.socket) {
-            this.loggerService.info(`[FRS] cleanup`);
+            this.logger.info(`[FRS] cleanup`);
             this.socket.off();
             this.socket.close();
             this.socket = null;
@@ -17406,26 +17615,26 @@ let FRSSocketClient = class FRSSocketClient {
     }
     registerEventHandlers() {
         if (!this.socket) {
-            this.loggerService.error(`[Frs] registerEventHandlers : socket is null`);
+            this.logger.error(`[Frs] registerEventHandlers : socket is null`);
             return;
         }
         this.socket.on('connect', async () => {
             try {
                 const sendData = { robotSerial: this.robotSerial };
                 this.mqttMicroservice.emit('con:frs', sendData);
-                this.loggerService.info(`[Frs] FRS Connect and init : ${JSON.stringify(sendData)}`);
+                this.logger.info(`[Frs] FRS Connect and init : ${JSON.stringify(sendData)}`);
                 this.socket.emit('initRequest', sendData);
             }
             catch (error) {
-                this.loggerService.error(`[Frs] FRS connect : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Frs] FRS connect : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('disconnect', (reason) => {
-            this.loggerService.error(`[Frs] FRS Disconnected : ${parse_util_1.ParseUtil.errorToJson(reason)}`);
+            this.logger.error(`[Frs] FRS Disconnected : ${parse_util_1.ParseUtil.errorToJson(reason)}`);
             this.mqttMicroservice.emit('discon:frs', reason);
         });
         this.socket.on('error', (error) => {
-            this.loggerService.error(`[Frs] FRS Socket Error ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Frs] FRS Socket Error ${parse_util_1.ParseUtil.errorToJson(error)}`);
         });
         this.socket.on('initResponse', (data) => {
             this.frsService.parseInit(data);
@@ -17448,79 +17657,79 @@ let FRSSocketClient = class FRSSocketClient {
         this.socket.on('pathResponse', (data) => {
             try {
                 if (data == null || data == undefined || data == '') {
-                    this.loggerService.warn(`[Frs] pathResponse : data null`);
+                    this.logger.warn(`[Frs] pathResponse : data null`);
                     return;
                 }
                 const json = JSON.parse(data);
                 if (!(0, class_validator_1.IsArray)(json)) {
-                    this.loggerService.warn(`[Frs] pathResponse : data not array`);
+                    this.logger.warn(`[Frs] pathResponse : data not array`);
                     return;
                 }
                 if (json.length == 0) {
-                    this.loggerService.warn(`[Frs] pathResponse : data array size 0`);
+                    this.logger.warn(`[Frs] pathResponse : data array size 0`);
                     return;
                 }
                 if ((0, lodash_1.isEqual)(json, this.lastPath)) {
-                    this.loggerService.warn(`[Frs] pathResponse : data equal last in`);
+                    this.logger.warn(`[Frs] pathResponse : data equal last in`);
                     return;
                 }
                 this.lastPath = json;
                 this.mqttMicroservice.emit('pathResponse', json);
             }
             catch (error) {
-                this.loggerService.error(`[Frs] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Frs] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('vobsRobots', (data) => {
             try {
                 if (data == null || data == undefined || data == '') {
-                    this.loggerService.warn(`[Frs] vobsRobots : data null`);
+                    this.logger.warn(`[Frs] vobsRobots : data null`);
                     return;
                 }
                 const json = JSON.parse(data);
                 if (!(0, class_validator_1.IsArray)(json)) {
-                    this.loggerService.warn(`[Frs] vobsRobots : data not array`);
+                    this.logger.warn(`[Frs] vobsRobots : data not array`);
                     return;
                 }
                 if (json.length == 0) {
-                    this.loggerService.warn(`[Frs] vobsRobots : data array size 0`);
+                    this.logger.warn(`[Frs] vobsRobots : data array size 0`);
                     return;
                 }
                 if ((0, lodash_1.isEqual)(json, this.lastVobsRobots)) {
-                    this.loggerService.warn(`[Frs] vobsRobots : data equal last in`);
+                    this.logger.warn(`[Frs] vobsRobots : data equal last in`);
                     return;
                 }
                 this.lastVobsRobots = json;
                 this.mqttMicroservice.emit('vobsRobots', json);
             }
             catch (error) {
-                this.loggerService.error(`[Frs] vobsRobots : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Frs] vobsRobots : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('vobsClosures', (data) => {
             try {
                 if (data == null || data == undefined || data == '') {
-                    this.loggerService.warn(`[Frs] vobsClosures : data null`);
+                    this.logger.warn(`[Frs] vobsClosures : data null`);
                     return;
                 }
                 const json = JSON.parse(data);
                 if (!(0, class_validator_1.IsArray)(json)) {
-                    this.loggerService.warn(`[Frs] vobsClosures : data not array`);
+                    this.logger.warn(`[Frs] vobsClosures : data not array`);
                     return;
                 }
                 if (json.length == 0) {
-                    this.loggerService.warn(`[Frs] vobsClosures : data array size 0`);
+                    this.logger.warn(`[Frs] vobsClosures : data array size 0`);
                     return;
                 }
                 if ((0, lodash_1.isEqual)(json, this.lastVobsClosures)) {
-                    this.loggerService.warn(`[Frs] vobsClosures : data equal last in`);
+                    this.logger.warn(`[Frs] vobsClosures : data equal last in`);
                     return;
                 }
                 this.lastVobsClosures = json;
                 this.mqttMicroservice.emit('vobsClosures', json);
             }
             catch (error) {
-                this.loggerService.error(`[Frs] vobsClosures : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Frs] vobsClosures : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('workRequest', (data) => {
@@ -17531,20 +17740,20 @@ let FRSSocketClient = class FRSSocketClient {
 };
 exports.FRSSocketClient = FRSSocketClient;
 exports.FRSSocketClient = FRSSocketClient = __decorate([
-    (0, common_2.Injectable)(),
-    __param(1, (0, common_2.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof frs_socket_service_1.FRSSocketService !== "undefined" && frs_socket_service_1.FRSSocketService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object])
+    (0, common_1.Injectable)(),
+    __param(1, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof frs_socket_service_1.FRSSocketService !== "undefined" && frs_socket_service_1.FRSSocketService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], FRSSocketClient);
 
 
 /***/ }),
-/* 180 */
+/* 183 */
 /***/ ((module) => {
 
 module.exports = require("socket.io-client");
 
 /***/ }),
-/* 181 */
+/* 184 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17560,26 +17769,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSSocketService = void 0;
-const common_1 = __webpack_require__(8);
-const common_2 = __webpack_require__(5);
+const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(32);
-const parse_util_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(65);
-const constant_2 = __webpack_require__(51);
-const rpc_code_exception_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(41);
+const parse_util_1 = __webpack_require__(29);
+const constant_1 = __webpack_require__(34);
+const constant_2 = __webpack_require__(27);
+const rpc_code_exception_1 = __webpack_require__(26);
+const saveLog_service_1 = __webpack_require__(42);
 let FRSSocketService = class FRSSocketService {
-    constructor(networkMicroservice, configMicroservice, moveMicroservice, controlMicroservice, mapMicroservice, localizationMicroservice) {
+    constructor(networkMicroservice, configMicroservice, moveMicroservice, controlMicroservice, mapMicroservice, localizationMicroservice, saveLogService) {
         this.networkMicroservice = networkMicroservice;
         this.configMicroservice = configMicroservice;
         this.moveMicroservice = moveMicroservice;
         this.controlMicroservice = controlMicroservice;
         this.mapMicroservice = mapMicroservice;
         this.localizationMicroservice = localizationMicroservice;
-        this.loggerService = common_1.LoggerService.get('frs');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-frs');
     }
     onModuleInit() {
         this.moveService = this.moveMicroservice.getService('MoveGrpcService');
@@ -17593,17 +17803,17 @@ let FRSSocketService = class FRSSocketService {
     async moveRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.loggerService.warn(`[GATEWAY] moveRequest : data null`);
+                this.logger.warn(`[GATEWAY] moveRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.loggerService.warn(`[GATEWAY] moveRequest : command null`);
+                this.logger.warn(`[GATEWAY] moveRequest : command null`);
                 return;
             }
             this.moveService.moveCommand(data);
         }
         catch (error) {
-            this.loggerService.error(`[GATEWAY] moveRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[GATEWAY] moveRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async movePauseRequest() {
@@ -17611,7 +17821,7 @@ let FRSSocketService = class FRSSocketService {
             this.moveService.movePause({});
         }
         catch (error) {
-            this.loggerService.error(`[Frs] movePauseRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Frs] movePauseRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async moveResumeRequest() {
@@ -17619,70 +17829,70 @@ let FRSSocketService = class FRSSocketService {
             this.moveService.moveLastGoal({});
         }
         catch (error) {
-            this.loggerService.error(`[Frs] moveResumeRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Frs] moveResumeRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async loadRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.loggerService.warn(`[GATEWAY] loadRequest : data null`);
+                this.logger.warn(`[GATEWAY] loadRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.loggerService.warn(`[GATEWAY] loadRequest : command null`);
+                this.logger.warn(`[GATEWAY] loadRequest : command null`);
                 return;
             }
             this.mapService.load(data);
         }
         catch (error) {
-            this.loggerService.error(`[GATEWAY] loadRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[GATEWAY] loadRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async localizationRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.loggerService.warn(`[GATEWAY] localizationRequest : data null`);
+                this.logger.warn(`[GATEWAY] localizationRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.loggerService.warn(`[GATEWAY] localizationRequest : command null`);
+                this.logger.warn(`[GATEWAY] localizationRequest : command null`);
                 return;
             }
             this.localizationService.init(data);
         }
         catch (error) {
-            this.loggerService.error(`[GATEWAY] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[GATEWAY] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async mappingRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.loggerService.warn(`[GATEWAY] mappingRequest : data null`);
+                this.logger.warn(`[GATEWAY] mappingRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.loggerService.warn(`[GATEWAY] mappingRequest : command null`);
+                this.logger.warn(`[GATEWAY] mappingRequest : command null`);
                 return;
             }
             this.mapService.mapping(data);
         }
         catch (error) {
-            this.loggerService.error(`[GATEWAY] mappingRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[GATEWAY] mappingRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async parseInit(data) {
         try {
             if (data == null || data == undefined) {
-                this.loggerService.warn(`[GATEWAY] FRS Init : data null`);
+                this.logger.warn(`[GATEWAY] FRS Init : data null`);
                 return;
             }
             const robotSerial = await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_serial' }));
             if (!robotSerial.value || robotSerial.value == '') {
-                this.loggerService.warn(`[GATEWAY] FRS Init : Config robotSerial null`);
+                this.logger.warn(`[GATEWAY] FRS Init : Config robotSerial null`);
                 return;
             }
             if (robotSerial.value === data.robotSerial) {
-                this.loggerService.info(`[GATEWAY] FRS Init : ${data}`);
+                this.logger.info(`[GATEWAY] FRS Init : ${data}`);
                 (0, rxjs_1.lastValueFrom)(this.configService.setConfig({
                     key: 'robot_name',
                     value: data.robotName,
@@ -17690,7 +17900,7 @@ let FRSSocketService = class FRSSocketService {
             }
         }
         catch (error) {
-            this.loggerService.error(`[GATEWAY] FRS Init : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[GATEWAY] FRS Init : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getConfig(key) {
@@ -17703,7 +17913,7 @@ let FRSSocketService = class FRSSocketService {
     }
     async InitFRS() {
         try {
-            this.loggerService.info(`[SERVICE] InitFRS`);
+            this.logger.info(`[SERVICE] InitFRS`);
             const robotSerial = this.getConfig('robot_serial');
             if (robotSerial == null || robotSerial == undefined) {
                 const sendData = {
@@ -17712,31 +17922,31 @@ let FRSSocketService = class FRSSocketService {
                 return sendData;
             }
             else {
-                this.loggerService.warn(`[SERVICE] InitFRS : robot_serial null`);
+                this.logger.warn(`[SERVICE] InitFRS : robot_serial null`);
                 throw new rpc_code_exception_1.RpcCodeException('robot_serial null', constant_2.GrpcCode.FailedPrecondition);
             }
         }
         catch (error) {
-            this.loggerService.error(`[SERVICE] InitFRS : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SERVICE] InitFRS : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(error.message, constant_2.GrpcCode.FailedPrecondition);
         }
     }
 };
 exports.FRSSocketService = FRSSocketService;
 exports.FRSSocketService = FRSSocketService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)(constant_1.NETWORK_SERVICE)),
-    __param(1, (0, common_2.Inject)(constant_1.CONFIG_SERVICE)),
-    __param(2, (0, common_2.Inject)(constant_1.MOVE_SERVICE)),
-    __param(3, (0, common_2.Inject)(constant_1.CONTROL_SERVICE)),
-    __param(4, (0, common_2.Inject)(constant_1.MAP_SERVICE)),
-    __param(5, (0, common_2.Inject)(constant_1.LOCALIZATION_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
+    __param(1, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
+    __param(2, (0, common_1.Inject)(constant_1.MOVE_SERVICE)),
+    __param(3, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
+    __param(4, (0, common_1.Inject)(constant_1.MAP_SERVICE)),
+    __param(5, (0, common_1.Inject)(constant_1.LOCALIZATION_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object, typeof (_g = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _g : Object])
 ], FRSSocketService);
 
 
 /***/ }),
-/* 182 */
+/* 185 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17752,7 +17962,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Config = void 0;
-const typeorm_1 = __webpack_require__(183);
+const typeorm_1 = __webpack_require__(186);
 let Config = class Config {
 };
 exports.Config = Config;
@@ -17784,13 +17994,13 @@ exports.Config = Config = __decorate([
 
 
 /***/ }),
-/* 183 */
+/* 186 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 184 */
+/* 187 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17807,17 +18017,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSAsyncSub = exports.DummyDto = void 0;
 const common_1 = __webpack_require__(5);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const move_dto_1 = __webpack_require__(97);
-const load_dto_1 = __webpack_require__(115);
-const localization_dto_1 = __webpack_require__(77);
-const control_dto_1 = __webpack_require__(59);
-const init_dto_1 = __webpack_require__(185);
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const move_dto_2 = __webpack_require__(97);
-const localization_dto_2 = __webpack_require__(77);
-const control_dto_2 = __webpack_require__(59);
-const mapping_dto_1 = __webpack_require__(114);
+const move_dto_1 = __webpack_require__(100);
+const load_dto_1 = __webpack_require__(118);
+const localization_dto_1 = __webpack_require__(80);
+const control_dto_1 = __webpack_require__(9);
+const init_dto_1 = __webpack_require__(188);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const move_dto_2 = __webpack_require__(100);
+const localization_dto_2 = __webpack_require__(80);
+const control_dto_2 = __webpack_require__(9);
+const mapping_dto_1 = __webpack_require__(117);
 class DummyDto {
 }
 exports.DummyDto = DummyDto;
@@ -18090,7 +18300,7 @@ exports.FRSAsyncSub = FRSAsyncSub = __decorate([
 
 
 /***/ }),
-/* 185 */
+/* 188 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18105,9 +18315,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.InitResponseDto = exports.InitRequestDto = void 0;
-const swagger_1 = __webpack_require__(58);
-const class_validator_1 = __webpack_require__(61);
-const util_1 = __webpack_require__(37);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const util_1 = __webpack_require__(13);
 var Description;
 (function (Description) {
     Description["ROBOT_SERIAL"] = "\uB85C\uBD07 \uC2DC\uB9AC\uC5BC \uBC88\uD638";
@@ -18142,7 +18352,7 @@ __decorate([
 
 
 /***/ }),
-/* 186 */
+/* 189 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18155,12 +18365,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.APILogInterceptor = void 0;
 const common_1 = __webpack_require__(5);
-const rxjs_1 = __webpack_require__(32);
-const logger_1 = __webpack_require__(33);
+const rxjs_1 = __webpack_require__(41);
 let APILogInterceptor = class APILogInterceptor {
-    constructor() {
-        this.loggerService = logger_1.LoggerService.get('gateway');
-    }
     intercept(context, next) {
         const request = context.switchToHttp().getRequest();
         const { method, url, body, socket } = request;
@@ -18187,7 +18393,7 @@ exports.APILogInterceptor = APILogInterceptor = __decorate([
 
 
 /***/ }),
-/* 187 */
+/* 190 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18201,18 +18407,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TCPModule = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(65);
-const config_1 = __webpack_require__(73);
+const constant_1 = __webpack_require__(34);
+const config_1 = __webpack_require__(47);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const tcp_service_1 = __webpack_require__(188);
-const tcp_gateway_1 = __webpack_require__(191);
-const tcp_mqtt_controller_1 = __webpack_require__(193);
-const cobot_tcp_client_adapter_1 = __webpack_require__(194);
-const tcp_grpc_controller_1 = __webpack_require__(195);
-const tcp_custom_server_gateway_1 = __webpack_require__(189);
-const tcp_control_service_1 = __webpack_require__(192);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
+const tcp_service_1 = __webpack_require__(191);
+const tcp_gateway_1 = __webpack_require__(194);
+const tcp_mqtt_controller_1 = __webpack_require__(196);
+const cobot_tcp_client_adapter_1 = __webpack_require__(197);
+const tcp_grpc_controller_1 = __webpack_require__(198);
+const tcp_custom_server_gateway_1 = __webpack_require__(192);
+const tcp_control_service_1 = __webpack_require__(195);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
+const log_module_1 = __webpack_require__(74);
 let TCPModule = class TCPModule {
 };
 exports.TCPModule = TCPModule;
@@ -18223,6 +18430,7 @@ exports.TCPModule = TCPModule = __decorate([
                 isGlobal: true,
                 envFilePath: '.env',
             }),
+            log_module_1.LogModule,
             nestjs_asyncapi_1.AsyncApiModule,
             microservices_1.ClientsModule.registerAsync({
                 clients: [
@@ -18291,7 +18499,7 @@ exports.TCPModule = TCPModule = __decorate([
 
 
 /***/ }),
-/* 188 */
+/* 191 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18307,24 +18515,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpService = void 0;
-const common_1 = __webpack_require__(8);
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
-const util_1 = __webpack_require__(37);
-const common_2 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const util_1 = __webpack_require__(13);
+const common_1 = __webpack_require__(5);
+const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
-const tcp_custom_server_gateway_1 = __webpack_require__(189);
-const tcp_gateway_1 = __webpack_require__(191);
+const tcp_custom_server_gateway_1 = __webpack_require__(192);
+const tcp_gateway_1 = __webpack_require__(194);
+const saveLog_service_1 = __webpack_require__(42);
 let TcpService = class TcpService {
-    constructor(configService, tcpMainServer, tcpCustomServerGateway) {
+    constructor(configService, tcpMainServer, tcpCustomServerGateway, saveLogService) {
         this.configService = configService;
         this.tcpMainServer = tcpMainServer;
         this.tcpCustomServerGateway = tcpCustomServerGateway;
-        this.loggerService = common_1.LoggerService.get('tcp');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('gateway-tcp');
     }
     onModuleInit() {
         this.tcpMainServer.startMainServer();
@@ -18351,7 +18560,7 @@ let TcpService = class TcpService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[TCP] getServerState error: ${error.message}`);
+            this.logger.error(`[TCP] getServerState error: ${error.message}`);
             throw new rpc_code_exception_1.RpcCodeException('서버 상태를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -18378,15 +18587,15 @@ let TcpService = class TcpService {
 };
 exports.TcpService = TcpService;
 exports.TcpService = TcpService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(1, (0, common_2.Inject)()),
-    __param(2, (0, common_2.Inject)()),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof tcp_gateway_1.TcpGateway !== "undefined" && tcp_gateway_1.TcpGateway) === "function" ? _b : Object, typeof (_c = typeof tcp_custom_server_gateway_1.TcpCustomServerGateway !== "undefined" && tcp_custom_server_gateway_1.TcpCustomServerGateway) === "function" ? _c : Object])
+    (0, common_1.Injectable)(),
+    __param(1, (0, common_1.Inject)()),
+    __param(2, (0, common_1.Inject)()),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof tcp_gateway_1.TcpGateway !== "undefined" && tcp_gateway_1.TcpGateway) === "function" ? _b : Object, typeof (_c = typeof tcp_custom_server_gateway_1.TcpCustomServerGateway !== "undefined" && tcp_custom_server_gateway_1.TcpCustomServerGateway) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
 ], TcpService);
 
 
 /***/ }),
-/* 189 */
+/* 192 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18396,23 +18605,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpCustomServerGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(190);
-const common_2 = __webpack_require__(8);
-const util_1 = __webpack_require__(37);
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
+const net_1 = __webpack_require__(193);
+const common_2 = __webpack_require__(48);
+const util_1 = __webpack_require__(13);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const saveLog_service_1 = __webpack_require__(42);
 let TcpCustomServerGateway = class TcpCustomServerGateway {
-    constructor() {
-        this.loggerService = common_2.LoggerService.get('tcp');
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
         this.servers = [];
+        this.logger = saveLogService.get('gateway-tcp');
     }
     async startServer(port, host) {
         return new Promise((resolve, reject) => {
             try {
-                this.loggerService.info(`[TCP] startServer ${port} ===========================`);
+                this.logger.info(`[TCP] startServer ${port} ===========================`);
                 const server = {
                     port: port,
                     host: host,
@@ -18421,9 +18636,9 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                     clients: new Map(),
                     buffers: new Map(),
                 };
-                this.loggerService.info(`[TCP] startServer ${server.host}, ${server.port}`);
+                this.logger.info(`[TCP] startServer ${server.host}, ${server.port}`);
                 server.server.listen(server.port, server.host, () => {
-                    this.loggerService.info(`[TCP] startServer : listening on ${server.host}, ${server.port}`);
+                    this.logger.info(`[TCP] startServer : listening on ${server.host}, ${server.port}`);
                     this.servers.push(server);
                     resolve({
                         port: server.port,
@@ -18431,7 +18646,7 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                     });
                 });
                 server.server.on('error', (err) => {
-                    this.loggerService.error(`[TCP] CustomServer(${server.port}) Error : ${(0, common_2.errorToJson)(err)}`);
+                    this.logger.error(`[TCP] CustomServer(${server.port}) Error : ${(0, common_2.errorToJson)(err)}`);
                     if (err.message.includes('EADDRINUSE')) {
                         reject(new rpc_code_exception_1.RpcCodeException('중복된 포트 번호입니다.', constant_1.GrpcCode.AlreadyExists));
                     }
@@ -18441,16 +18656,16 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                 });
             }
             catch (error) {
-                this.loggerService.error(`[TCP] startServer Error : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[TCP] startServer Error : ${(0, common_2.errorToJson)(error)}`);
             }
         });
     }
     async stopServer(port) {
         try {
-            this.loggerService.info(`[TCP] stopServer ${port} ===========================`);
+            this.logger.info(`[TCP] stopServer ${port} ===========================`);
             const server = this.servers.find((server) => server.port === port);
             if (server) {
-                this.loggerService.info(`[TCP] stopServer : ${server.host}, ${server.port}`);
+                this.logger.info(`[TCP] stopServer : ${server.host}, ${server.port}`);
                 server.server?.close();
                 this.servers = this.servers.filter((server) => server.port !== port);
                 return {
@@ -18459,12 +18674,12 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                 };
             }
             else {
-                this.loggerService.error(`[TCP] stopServer : ${port} 포트를 사용하는 서버를 찾을 수 없습니다.`);
+                this.logger.error(`[TCP] stopServer : ${port} 포트를 사용하는 서버를 찾을 수 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${port} 포트를 사용하는 서버를 찾을 수 없습니다.`, constant_1.GrpcCode.NotFound);
             }
         }
         catch (error) {
-            this.loggerService.error(`[TCP] stopServer Error : ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] stopServer Error : ${(0, common_2.errorToJson)(error)}`);
         }
     }
     getServers() {
@@ -18472,7 +18687,7 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
     }
     onModuleDestroy() {
         try {
-            this.loggerService.info('[TCP] Shutting down TCP Gateway ===========================');
+            this.logger.info('[TCP] Shutting down TCP Gateway ===========================');
             for (const server of this.servers) {
                 server.server?.close();
                 for (const [id, sock] of server.clients) {
@@ -18485,28 +18700,28 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
             }
         }
         catch (error) {
-            this.loggerService.error(`[TCP] Shutting down TCP Gateway Error : ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] Shutting down TCP Gateway Error : ${(0, common_2.errorToJson)(error)}`);
         }
     }
     handleConnection(server, socket) {
         try {
             const id = `${socket.remoteAddress}:${socket.remotePort}`;
-            this.loggerService.info(`[TCP] CustomServer(${server.port}) : Client connected (${id})`);
+            this.logger.info(`[TCP] CustomServer(${server.port}) : Client connected (${id})`);
             server.clients.set(id, socket);
             server.buffers.set(id, '');
             socket.setKeepAlive(true, 20_000);
             socket.on('data', (chunk) => this.handleData(server, id, chunk));
             socket.on('error', (err) => {
-                this.loggerService.warn(`[TCP] CustomServer(${server.port}) : Client ${id} error (${err.message})`);
+                this.logger.warn(`[TCP] CustomServer(${server.port}) : Client ${id} error (${err.message})`);
             });
             socket.on('close', () => {
-                this.loggerService.info(`[TCP] CustomServer(${server.port}) : Client disconnected (${id})`);
+                this.logger.info(`[TCP] CustomServer(${server.port}) : Client disconnected (${id})`);
                 server.clients.delete(id);
                 server.buffers.delete(id);
             });
         }
         catch (error) {
-            this.loggerService.error(`[TCP] CustomServer(${server.port}) : Client connection error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] CustomServer(${server.port}) : Client connection error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     handleData(server, id, chunk) {
@@ -18514,11 +18729,11 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
             if (server.clients.get(id) === undefined) {
                 return;
             }
-            this.loggerService.debug(`[TCP] Message In (${server.port},${id}) : ${chunk.toString('utf8')}`);
+            this.logger.debug(`[TCP] Message In (${server.port},${id}) : ${chunk.toString('utf8')}`);
             this.broadcastMsg(server, chunk, id);
         }
         catch (error) {
-            this.loggerService.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     broadcastMsg(server, message, excludeId) {
@@ -18532,18 +18747,19 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
 };
 exports.TcpCustomServerGateway = TcpCustomServerGateway;
 exports.TcpCustomServerGateway = TcpCustomServerGateway = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
 ], TcpCustomServerGateway);
 
 
 /***/ }),
-/* 190 */
+/* 193 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 191 */
+/* 194 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18556,29 +18772,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(190);
-const rxjs_1 = __webpack_require__(32);
-const common_2 = __webpack_require__(8);
-const config_1 = __webpack_require__(73);
-const move_type_1 = __webpack_require__(98);
-const control_type_1 = __webpack_require__(62);
-const localization_type_1 = __webpack_require__(78);
-const load_dto_1 = __webpack_require__(115);
-const util_1 = __webpack_require__(37);
-const tcp_control_service_1 = __webpack_require__(192);
+const net_1 = __webpack_require__(193);
+const rxjs_1 = __webpack_require__(41);
+const common_2 = __webpack_require__(48);
+const config_1 = __webpack_require__(47);
+const move_type_1 = __webpack_require__(101);
+const control_type_1 = __webpack_require__(12);
+const localization_type_1 = __webpack_require__(81);
+const load_dto_1 = __webpack_require__(118);
+const util_1 = __webpack_require__(13);
+const tcp_control_service_1 = __webpack_require__(195);
 const nestjs_asyncapi_1 = __webpack_require__(2);
+const saveLog_service_1 = __webpack_require__(42);
 let TcpGateway = class TcpGateway {
-    constructor(configService, tcpControlService) {
+    constructor(configService, tcpControlService, saveLogService) {
         this.configService = configService;
         this.tcpControlService = tcpControlService;
-        this.loggerService = common_2.LoggerService.get('tcp');
+        this.saveLogService = saveLogService;
         this.clients = new Map();
         this.buffers = new Map();
         this.messages$ = new rxjs_1.Subject();
+        this.logger = saveLogService.get('gateway-tcp');
     }
     getCreateAt() {
         return util_1.DateUtil.formatDateKST(this.createAt);
@@ -18594,24 +18812,24 @@ let TcpGateway = class TcpGateway {
     }
     startMainServer() {
         try {
-            this.loggerService.info('[TCP] startMainServer ===========================');
+            this.logger.info('[TCP] startMainServer ===========================');
             this.createAt = new Date();
             this.port = this.configService.getOrThrow('TCP_PORT');
             this.host = this.configService.getOrThrow('TCP_HOST');
-            this.loggerService.info(`[TCP] startMainServer : ${this.host}, ${this.port}`);
+            this.logger.info(`[TCP] startMainServer : ${this.host}, ${this.port}`);
             this.server = (0, net_1.createServer)((socket) => this.handleConnection(socket));
             this.server.listen(this.port, this.host, () => {
-                this.loggerService.info(`[TCP] MainServer listening on ${this.host}, ${this.port}`);
+                this.logger.info(`[TCP] MainServer listening on ${this.host}, ${this.port}`);
             });
             this.server.on('error', (socket, err) => this.handleError(socket, err));
         }
         catch (error) {
-            this.loggerService.error(`[TCP] startMainServer Error : ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] startMainServer Error : ${(0, common_2.errorToJson)(error)}`);
             this.server?.close();
         }
     }
     onModuleDestroy() {
-        this.loggerService.info('[TCP] MainServer Shutting down ===========================');
+        this.logger.info('[TCP] MainServer Shutting down ===========================');
         for (const [id, sock] of this.clients) {
             try {
                 sock.socket.destroy();
@@ -18626,26 +18844,26 @@ let TcpGateway = class TcpGateway {
     handleConnection(socket) {
         try {
             const id = `${socket.remoteAddress}:${socket.remotePort}`;
-            this.loggerService.info(`[TCP] MainServer : Client connected (${id})`);
+            this.logger.info(`[TCP] MainServer : Client connected (${id})`);
             this.clients.set(id, { id, socket, createAt: new Date() });
             this.buffers.set(id, '');
             socket.setKeepAlive(true, 20_000);
             socket.on('data', (chunk) => this.handleData(id, chunk));
             socket.on('error', (err) => {
-                this.loggerService.warn(`[TCP] MainServer : Client ${id} error: ${err.message}`);
+                this.logger.warn(`[TCP] MainServer : Client ${id} error: ${err.message}`);
             });
             socket.on('close', () => {
-                this.loggerService.info(`[TCP] MainServer : Client disconnected (${id})`);
+                this.logger.info(`[TCP] MainServer : Client disconnected (${id})`);
                 this.clients.delete(id);
                 this.buffers.delete(id);
             });
         }
         catch (error) {
-            this.loggerService.error(`[TCP] MainServer : Client connection error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] MainServer : Client connection error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     handleError(socket, error) {
-        this.loggerService.error(`[TCP] MainServer : Client ${socket.remoteAddress}:${socket.remotePort} error: ${error.message}`);
+        this.logger.error(`[TCP] MainServer : Client ${socket.remoteAddress}:${socket.remotePort} error: ${error.message}`);
     }
     handleData(id, chunk) {
         try {
@@ -18713,7 +18931,7 @@ let TcpGateway = class TcpGateway {
             }
         }
         catch (error) {
-            this.loggerService.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     sendStatusTo(id) {
@@ -18749,12 +18967,12 @@ let TcpGateway = class TcpGateway {
                 });
             }
             else {
-                this.loggerService.error(`[TCP] Invalid Move Parameter: ${param}`);
+                this.logger.error(`[TCP] Invalid Move Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Move Parameter');
             }
         }
         catch (error) {
-            this.loggerService.error(`[TCP] Move Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] Move Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Move Parameter');
         }
     }
@@ -18768,12 +18986,12 @@ let TcpGateway = class TcpGateway {
                 this.tcpControlService.controlRequest({ command: control_type_1.ControlCommand.undockStart });
             }
             else {
-                this.loggerService.error(`[TCP] Invalid Control Parameter: ${param}`);
+                this.logger.error(`[TCP] Invalid Control Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Control Parameter');
             }
         }
         catch (error) {
-            this.loggerService.error(`[TCP] Control Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] Control Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Control Parameter');
         }
     }
@@ -18803,12 +19021,12 @@ let TcpGateway = class TcpGateway {
                 });
             }
             else {
-                this.loggerService.error(`[TCP] Invalid Localization Parameter: ${param}`);
+                this.logger.error(`[TCP] Invalid Localization Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Localization Parameter');
             }
         }
         catch (error) {
-            this.loggerService.error(`[TCP] Localization Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] Localization Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Localization Parameter');
         }
     }
@@ -18820,12 +19038,12 @@ let TcpGateway = class TcpGateway {
                 this.tcpControlService.loadRequest({ command: load_dto_1.MapCommand.loadMap, mapName: mapName });
             }
             else {
-                this.loggerService.error(`[TCP] Invalid Load Parameter: ${param}`);
+                this.logger.error(`[TCP] Invalid Load Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Load Parameter');
             }
         }
         catch (error) {
-            this.loggerService.error(`[TCP] Load Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[TCP] Load Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Load Parameter');
         }
     }
@@ -18867,12 +19085,12 @@ __decorate([
 ], TcpGateway.prototype, "ee", null);
 exports.TcpGateway = TcpGateway = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof tcp_control_service_1.TcpControlService !== "undefined" && tcp_control_service_1.TcpControlService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof tcp_control_service_1.TcpControlService !== "undefined" && tcp_control_service_1.TcpControlService) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], TcpGateway);
 
 
 /***/ }),
-/* 192 */
+/* 195 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18893,16 +19111,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpControlService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const util_1 = __webpack_require__(37);
-const common_2 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
+const util_1 = __webpack_require__(13);
+const constant_1 = __webpack_require__(34);
 let TcpControlService = class TcpControlService {
     constructor(mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice) {
         this.mqttMicroservice = mqttMicroservice;
         this.moveMicroservice = moveMicroservice;
         this.controlMicroservice = controlMicroservice;
         this.localizationMicroservice = localizationMicroservice;
-        this.loggerService = common_2.LoggerService.get('tcp');
     }
     async moveRequest(dto) {
         this.mqttMicroservice.send('moveRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
@@ -18929,7 +19145,7 @@ exports.TcpControlService = TcpControlService = __decorate([
 
 
 /***/ }),
-/* 193 */
+/* 196 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18949,19 +19165,17 @@ var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(8);
-const tcp_service_1 = __webpack_require__(188);
+const tcp_service_1 = __webpack_require__(191);
 const microservices_1 = __webpack_require__(3);
-const move_dto_1 = __webpack_require__(97);
-const control_dto_1 = __webpack_require__(59);
-const localization_dto_1 = __webpack_require__(77);
-const load_dto_1 = __webpack_require__(115);
-const status_type_1 = __webpack_require__(148);
-const movestatus_type_1 = __webpack_require__(151);
+const move_dto_1 = __webpack_require__(100);
+const control_dto_1 = __webpack_require__(9);
+const localization_dto_1 = __webpack_require__(80);
+const load_dto_1 = __webpack_require__(118);
+const status_type_1 = __webpack_require__(151);
+const movestatus_type_1 = __webpack_require__(154);
 let TcpMqttController = class TcpMqttController {
     constructor(tcpService) {
         this.tcpService = tcpService;
-        this.loggerService = common_2.LoggerService.get('tcp');
     }
     getMoveResponse(data) {
         this.tcpService.moveResponse(data);
@@ -19032,37 +19246,49 @@ exports.TcpMqttController = TcpMqttController = __decorate([
 
 
 /***/ }),
-/* 194 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 197 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotTcpClientAdapter = void 0;
-const net_1 = __webpack_require__(190);
-const common_1 = __webpack_require__(8);
-const cobot_dto_1 = __webpack_require__(140);
-class CobotTcpClientAdapter {
-    constructor() {
-        this.loggerService = common_1.LoggerService.get('cobot');
+const net_1 = __webpack_require__(193);
+const cobot_dto_1 = __webpack_require__(143);
+const saveLog_service_1 = __webpack_require__(42);
+const common_1 = __webpack_require__(5);
+let CobotTcpClientAdapter = class CobotTcpClientAdapter {
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
         this.commandSocket = new Map();
         this.dataSocket = new Map();
+        this.logger = this.saveLogService.get('tcp-cobot');
     }
     sendCommand(model, command) {
-        this.loggerService.debug(`[Client] sendCommand : ${model.cobotId} -> ${command.sendCommand}`);
+        this.logger.debug(`[Client] sendCommand : ${model.cobotId} -> ${command.sendCommand}`);
         this.commandSocket.get(model.cobotId).write(command.sendCommand);
     }
     requestData(model) {
-        this.loggerService.debug(`[Client] requestData : ${model.cobotId}`);
+        this.logger.debug(`[Client] requestData : ${model.cobotId}`);
         this.dataSocket.get(model.cobotId).write(cobot_dto_1.CobotCommand.requestData);
     }
     disconnect(model) {
-        this.loggerService.debug(`[Client] disconnect : ${model.cobotId}`);
+        this.logger.debug(`[Client] disconnect : ${model.cobotId}`);
         this.disconnectCommand(model);
         this.disconnectData(model);
     }
     async disconnectCommand(model) {
         if (this.commandSocket.get(model.cobotId)) {
-            this.loggerService.debug(`[Client] disconnectCommand : ${model.cobotId}`);
+            this.logger.debug(`[Client] disconnectCommand : ${model.cobotId}`);
             this.commandSocket.get(model.cobotId).end();
             this.commandSocket.get(model.cobotId).destroy();
             this.commandSocket.delete(model.cobotId);
@@ -19070,7 +19296,7 @@ class CobotTcpClientAdapter {
     }
     async disconnectData(model) {
         if (this.dataSocket.get(model.cobotId)) {
-            this.loggerService.debug(`[Client] disconnectData : ${model.cobotId}`);
+            this.logger.debug(`[Client] disconnectData : ${model.cobotId}`);
             this.dataSocket.get(model.cobotId).end();
             this.dataSocket.get(model.cobotId).destroy();
             this.dataSocket.delete(model.cobotId);
@@ -19078,7 +19304,7 @@ class CobotTcpClientAdapter {
     }
     async connectCommand(model) {
         return new Promise(async (resolve) => {
-            this.loggerService.debug(`[Client] connectCommand : ${model.cobotId}`);
+            this.logger.debug(`[Client] connectCommand : ${model.cobotId}`);
             await this.disconnectCommand(model);
             const socket = new net_1.Socket();
             socket.setNoDelay(true);
@@ -19116,7 +19342,7 @@ class CobotTcpClientAdapter {
     }
     async connectData(model) {
         return new Promise(async (resolve) => {
-            this.loggerService.debug(`[Client] connectData : ${model.cobotId}`);
+            this.logger.debug(`[Client] connectData : ${model.cobotId}`);
             await this.disconnectData(model);
             const socket = new net_1.Socket();
             socket.setNoDelay(true);
@@ -19153,12 +19379,16 @@ class CobotTcpClientAdapter {
             }, 10000);
         });
     }
-}
+};
 exports.CobotTcpClientAdapter = CobotTcpClientAdapter;
+exports.CobotTcpClientAdapter = CobotTcpClientAdapter = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
+], CobotTcpClientAdapter);
 
 
 /***/ }),
-/* 195 */
+/* 198 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19174,9 +19404,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGrpcController = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(48);
 const common_2 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(188);
+const tcp_service_1 = __webpack_require__(191);
 let TcpGrpcController = class TcpGrpcController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -19202,7 +19432,7 @@ exports.TcpGrpcController = TcpGrpcController = __decorate([
 
 
 /***/ }),
-/* 196 */
+/* 199 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19216,15 +19446,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotSocketModule = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(65);
-const config_1 = __webpack_require__(73);
-const cobot_service_1 = __webpack_require__(197);
-const cobot_tcp_client_adapter_1 = __webpack_require__(194);
-const cobot_grpc_controller_1 = __webpack_require__(206);
-const cobot_mongo_adapter_1 = __webpack_require__(207);
-const mongoose_1 = __webpack_require__(208);
-const cobot_command_entity_1 = __webpack_require__(210);
-const cobot_connection_entity_1 = __webpack_require__(211);
+const constant_1 = __webpack_require__(34);
+const config_1 = __webpack_require__(47);
+const cobot_service_1 = __webpack_require__(200);
+const cobot_tcp_client_adapter_1 = __webpack_require__(197);
+const cobot_grpc_controller_1 = __webpack_require__(209);
+const cobot_mongo_adapter_1 = __webpack_require__(210);
+const mongoose_1 = __webpack_require__(211);
+const cobot_command_entity_1 = __webpack_require__(213);
+const cobot_connection_entity_1 = __webpack_require__(214);
+const log_module_1 = __webpack_require__(74);
 let CobotSocketModule = class CobotSocketModule {
 };
 exports.CobotSocketModule = CobotSocketModule;
@@ -19235,6 +19466,7 @@ exports.CobotSocketModule = CobotSocketModule = __decorate([
                 isGlobal: true,
                 envFilePath: '.env',
             }),
+            log_module_1.LogModule,
             mongoose_1.MongooseModule.forFeature([
                 {
                     name: cobot_command_entity_1.CobotCommandEntity.name,
@@ -19283,7 +19515,7 @@ exports.CobotSocketModule = CobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 197 */
+/* 200 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19299,30 +19531,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotService = void 0;
 const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(8);
-const constant_1 = __webpack_require__(65);
+const common_2 = __webpack_require__(48);
+const constant_1 = __webpack_require__(34);
 const microservices_1 = __webpack_require__(3);
-const cobot_socket_domain_1 = __webpack_require__(198);
-const cobot_client_output_port_1 = __webpack_require__(199);
-const cobot_command_handler_1 = __webpack_require__(200);
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_2 = __webpack_require__(51);
-const cobot_dto_1 = __webpack_require__(140);
-const cobot_data_handler_1 = __webpack_require__(201);
-const cobot_database_output_port_1 = __webpack_require__(203);
-const cobot_domain_1 = __webpack_require__(204);
-const map_command_domain_1 = __webpack_require__(111);
+const cobot_socket_domain_1 = __webpack_require__(201);
+const cobot_client_output_port_1 = __webpack_require__(202);
+const cobot_command_handler_1 = __webpack_require__(203);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_2 = __webpack_require__(27);
+const cobot_dto_1 = __webpack_require__(143);
+const cobot_data_handler_1 = __webpack_require__(204);
+const cobot_database_output_port_1 = __webpack_require__(206);
+const cobot_domain_1 = __webpack_require__(207);
+const map_command_domain_1 = __webpack_require__(114);
+const saveLog_service_1 = __webpack_require__(42);
 let CobotService = class CobotService {
-    constructor(tcpClientPort, cobotDatabaseOutputPort, mqttMicroservice) {
+    constructor(tcpClientPort, cobotDatabaseOutputPort, mqttMicroservice, saveLogService) {
         this.tcpClientPort = tcpClientPort;
         this.cobotDatabaseOutputPort = cobotDatabaseOutputPort;
         this.mqttMicroservice = mqttMicroservice;
+        this.saveLogService = saveLogService;
         this.cobotModels = new Map();
-        this.loggerService = common_2.LoggerService.get('cobot');
+        this.logger = this.saveLogService.get('cobot');
     }
     handleCobotSystemStat(cobotId, stat) {
         this.cobotModels.get(cobotId).systemStat = stat;
@@ -19348,7 +19582,7 @@ let CobotService = class CobotService {
             cobotId: cobotId,
             error: (0, common_2.errorToJson)(error),
         });
-        this.loggerService.error(`[Cobot] handleCobotCommandError : ${(0, common_2.errorToJson)(error)}`);
+        this.logger.error(`[Cobot] handleCobotCommandError : ${(0, common_2.errorToJson)(error)}`);
     }
     handleCobotCommandClose(cobotId) {
         this.mqttMicroservice.emit('close:cobotCommand', {
@@ -19361,7 +19595,7 @@ let CobotService = class CobotService {
             cobotId: cobotId,
             data: data,
         });
-        this.loggerService.info(`[Cobot] handleCobotCommandDataReceived : ${data}`);
+        this.logger.info(`[Cobot] handleCobotCommandDataReceived : ${data}`);
     }
     handleCobotDataConnect(cobotId) {
         this.mqttMicroservice.emit('con:cobotData', {
@@ -19380,7 +19614,7 @@ let CobotService = class CobotService {
             cobotId: cobotId,
             error: (0, common_2.errorToJson)(error),
         });
-        this.loggerService.error(`[Cobot] handleCobotDataError : ${(0, common_2.errorToJson)(error)}`);
+        this.logger.error(`[Cobot] handleCobotDataError : ${(0, common_2.errorToJson)(error)}`);
     }
     handleCobotDataClose(cobotId) {
         this.mqttMicroservice.emit('close:cobotData', {
@@ -19398,7 +19632,7 @@ let CobotService = class CobotService {
                 model.checkCobotMode();
                 const cobotModel = this.cobotModels.get(request.cobotId);
                 if (!cobotModel) {
-                    this.loggerService.error(`[Cobot] connectCobotCommand : ${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`);
+                    this.logger.error(`[Cobot] connectCobotCommand : ${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`);
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
                 }
                 if (request.mode === 'real') {
@@ -19408,7 +19642,7 @@ let CobotService = class CobotService {
                     model.sendCommand = cobot_dto_1.CobotCommand.programModeSimulation;
                 }
                 else {
-                    this.loggerService.error(`[Cobot] cobotModeChange : mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`);
+                    this.logger.error(`[Cobot] cobotModeChange : mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`);
                     throw new rpc_code_exception_1.RpcCodeException(`mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`, constant_2.GrpcCode.InvalidArgument);
                 }
                 this.tcpClientPort.sendCommand(cobotModel, model);
@@ -19424,7 +19658,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] cobotModeChange : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] cobotModeChange : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 모드 변경에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19515,7 +19749,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] cobotMove : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] cobotMove : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 이동에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19546,7 +19780,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] cobotSpeed : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] cobotSpeed : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 속도 변경에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19576,7 +19810,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] cobotInit : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] cobotInit : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 초기화에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19595,7 +19829,7 @@ let CobotService = class CobotService {
                 const cobotModel = new cobot_socket_domain_1.CobotModel(request.cobotId, request.ipAddress);
                 console.log('cobotModel : ', cobotModel.cobotId);
                 this.cobotModels.set(cobotModel.cobotId, cobotModel);
-                cobotModel.commandHandler = new cobot_command_handler_1.CobotCommandHandler(cobotModel.cobotId);
+                cobotModel.commandHandler = new cobot_command_handler_1.CobotCommandHandler(cobotModel.cobotId, this.logger);
                 cobotModel.commandHandler.onCobotSystemStat = this.handleCobotSystemStat.bind(this);
                 cobotModel.commandHandler.onCobotCommandConnect = this.handleCobotCommandConnect.bind(this);
                 cobotModel.commandHandler.onCobotCommandDisconnect = this.handleCobotCommandDisconnect.bind(this);
@@ -19604,7 +19838,7 @@ let CobotService = class CobotService {
                 cobotModel.commandHandler.onCobotCommandDataReceived = this.handleCobotCommandDataReceived.bind(this);
                 const commandResult = await this.tcpClientPort.connectCommand(cobotModel);
                 cobotModel.commandConnected = commandResult;
-                cobotModel.dataHandler = new cobot_data_handler_1.CobotDataHandler(cobotModel.cobotId);
+                cobotModel.dataHandler = new cobot_data_handler_1.CobotDataHandler(cobotModel.cobotId, this.logger);
                 cobotModel.dataHandler.onCobotSystemStat = this.handleCobotSystemStat.bind(this);
                 cobotModel.dataHandler.onCobotDataConnect = this.handleCobotDataConnect.bind(this);
                 cobotModel.dataHandler.onCobotDataDisconnect = this.handleCobotDataDisconnect.bind(this);
@@ -19624,7 +19858,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] cobotConnect : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] cobotConnect : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19645,7 +19879,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] getConnectState : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] getConnectState : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 상태 조회에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19675,7 +19909,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     throw error;
                 }
-                this.loggerService.error(`[Cobot] connectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] connectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId} Command 서버에 접속할 수 없습니다.`, constant_2.GrpcCode.InternalError);
             }
         });
@@ -19705,7 +19939,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] connectCobotData : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] connectCobotData : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19735,7 +19969,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] cobotDisconnect : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] cobotDisconnect : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19764,7 +19998,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] disconnectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] disconnectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19793,7 +20027,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] disconnectCobotData : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] disconnectCobotData : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19823,7 +20057,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] sendCobotCommand : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] sendCobotCommand : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 명령 전송에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19862,7 +20096,7 @@ let CobotService = class CobotService {
                     model.sendCommand = request.command;
                 }
                 else {
-                    this.loggerService.error(`[Cobot] sendCobotProgram : ${request.command} 명령은 지원하지 않습니다.`);
+                    this.logger.error(`[Cobot] sendCobotProgram : ${request.command} 명령은 지원하지 않습니다.`);
                     throw new rpc_code_exception_1.RpcCodeException(`${request.command} 명령은 지원하지 않습니다.`, constant_2.GrpcCode.InvalidArgument);
                 }
                 this.tcpClientPort.sendCommand(cobotModel, model);
@@ -19878,7 +20112,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.loggerService.error(`[Cobot] sendCobotProgram : ${(0, common_2.errorToJson)(error)}`);
+                this.logger.error(`[Cobot] sendCobotProgram : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 프로그램 전송에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -19896,7 +20130,7 @@ let CobotService = class CobotService {
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
-            this.loggerService.error(`[Cobot] requestCobotData : ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[Cobot] requestCobotData : ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`Cobot 데이터 요청에 실패했습니다.`, constant_2.GrpcCode.InternalError);
         }
     }
@@ -19907,12 +20141,12 @@ exports.CobotService = CobotService = __decorate([
     __param(0, (0, common_1.Inject)('TcpClientPort')),
     __param(1, (0, common_1.Inject)('CobotDatabaseOutputPort')),
     __param(2, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof cobot_client_output_port_1.TcpClientPort !== "undefined" && cobot_client_output_port_1.TcpClientPort) === "function" ? _a : Object, typeof (_b = typeof cobot_database_output_port_1.CobotDatabaseOutputPort !== "undefined" && cobot_database_output_port_1.CobotDatabaseOutputPort) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _c : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof cobot_client_output_port_1.TcpClientPort !== "undefined" && cobot_client_output_port_1.TcpClientPort) === "function" ? _a : Object, typeof (_b = typeof cobot_database_output_port_1.CobotDatabaseOutputPort !== "undefined" && cobot_database_output_port_1.CobotDatabaseOutputPort) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
 ], CobotService);
 
 
 /***/ }),
-/* 198 */
+/* 201 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -19932,7 +20166,7 @@ exports.CobotModel = CobotModel;
 
 
 /***/ }),
-/* 199 */
+/* 202 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -19940,46 +20174,46 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 200 */
+/* 203 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandHandler = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(48);
 class CobotCommandHandler {
-    constructor(id) {
-        this.loggerService = common_1.LoggerService.get('cobot');
+    constructor(id, logger) {
         this.isConnected = false;
         this.id = id;
+        this.logger = logger;
     }
     isConnect() {
         return this.isConnected;
     }
     onClientConnect() {
-        this.loggerService.info(`[Command] ${this.id} connected`);
+        this.logger.info(`[Command] ${this.id} connected`);
         this.isConnected = true;
         this.onCobotCommandConnect?.(this.id);
     }
     onClientDisconnect() {
-        this.loggerService.info(`[Command] ${this.id} disconnected`);
+        this.logger.info(`[Command] ${this.id} disconnected`);
         this.isConnected = false;
         this.onCobotCommandDisconnect?.(this.id);
     }
     onDataEnd() {
-        this.loggerService.info(`[Command] ${this.id} data end`);
+        this.logger.info(`[Command] ${this.id} data end`);
     }
     onError(error) {
-        this.loggerService.error(`[Command] ${this.id} Error : ${(0, common_1.errorToJson)(error)}`);
+        this.logger.error(`[Command] ${this.id} Error : ${(0, common_1.errorToJson)(error)}`);
         this.onCobotCommandError?.(this.id, error);
     }
     onClose() {
-        this.loggerService.info(`[Command] ${this.id} closed`);
+        this.logger.info(`[Command] ${this.id} closed`);
         this.isConnected = false;
         this.onCobotCommandClose?.(this.id);
     }
     onDataReceived(data) {
-        this.loggerService.info(`[Command] ${this.id} data received: ${data}`);
+        this.logger.info(`[Command] ${this.id} data received: ${data}`);
         this.onCobotCommandDataReceived?.(this.id, data);
     }
 }
@@ -19987,48 +20221,47 @@ exports.CobotCommandHandler = CobotCommandHandler;
 
 
 /***/ }),
-/* 201 */
+/* 204 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotDataHandler = void 0;
-const common_1 = __webpack_require__(8);
-const cobot_system_stat_parser_1 = __webpack_require__(202);
+const cobot_system_stat_parser_1 = __webpack_require__(205);
 class CobotDataHandler {
-    constructor(id) {
-        this.loggerService = common_1.LoggerService.get('cobot');
+    constructor(id, logger) {
         this.isConnected = false;
         this.buffer = Buffer.alloc(0);
         this.id = id;
+        this.logger = logger;
     }
     isConnect() {
         return this.isConnected;
     }
     onClientConnect() {
-        this.loggerService.info(`[Data] ${this.id} onClientConnect`);
+        this.logger.info(`[Data] ${this.id} onClientConnect`);
         this.isConnected = true;
         this.onCobotDataConnect?.(this.id);
     }
     onClientDisconnect() {
-        this.loggerService.info(`[Data] ${this.id} onClientDisconnect`);
+        this.logger.info(`[Data] ${this.id} onClientDisconnect`);
         this.isConnected = false;
         this.onCobotDataDisconnect?.(this.id);
     }
     onDataEnd() {
-        this.loggerService.info(`[Data] ${this.id} onDataEnd`);
+        this.logger.info(`[Data] ${this.id} onDataEnd`);
     }
     onError(error) {
-        this.loggerService.error(`[Data] ${this.id} onError ${error}`);
+        this.logger.error(`[Data] ${this.id} onError ${error}`);
         this.onCobotDataError?.(this.id, error);
     }
     onClose() {
-        this.loggerService.info(`[Data] ${this.id} onClose`);
+        this.logger.info(`[Data] ${this.id} onClose`);
         this.isConnected = false;
         this.onCobotDataClose?.(this.id);
     }
     onDataReceived(data) {
-        this.loggerService.info(`[Data] ${this.id} onDataReceived ${data}`);
+        this.logger.info(`[Data] ${this.id} onDataReceived ${data}`);
         this.buffer = Buffer.concat([this.buffer, data]);
         console.log('buffer length : ', this.buffer.length);
         while (this.buffer.length >= 580) {
@@ -20049,7 +20282,7 @@ exports.CobotDataHandler = CobotDataHandler;
 
 
 /***/ }),
-/* 202 */
+/* 205 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -20255,7 +20488,7 @@ CobotSystemStatParser.INT_SIZE = 4;
 
 
 /***/ }),
-/* 203 */
+/* 206 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -20263,16 +20496,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 204 */
+/* 207 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandModel = void 0;
-const map_command_domain_1 = __webpack_require__(111);
-const rpc_code_exception_1 = __webpack_require__(50);
-const grpc_code_constant_1 = __webpack_require__(52);
-const node_net_1 = __webpack_require__(205);
+const map_command_domain_1 = __webpack_require__(114);
+const rpc_code_exception_1 = __webpack_require__(26);
+const grpc_code_constant_1 = __webpack_require__(28);
+const node_net_1 = __webpack_require__(208);
 class CobotCommandModel {
     constructor(cobotId, command) {
         this.cobotId = cobotId;
@@ -20365,13 +20598,13 @@ exports.CobotCommandModel = CobotCommandModel;
 
 
 /***/ }),
-/* 205 */
+/* 208 */
 /***/ ((module) => {
 
 module.exports = require("node:net");
 
 /***/ }),
-/* 206 */
+/* 209 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20387,9 +20620,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotGrpcController = void 0;
-const common_1 = __webpack_require__(8);
+const common_1 = __webpack_require__(48);
 const common_2 = __webpack_require__(5);
-const cobot_service_1 = __webpack_require__(197);
+const cobot_service_1 = __webpack_require__(200);
 let CobotGrpcController = class CobotGrpcController {
     constructor(cobotService) {
         this.cobotService = cobotService;
@@ -20451,7 +20684,7 @@ exports.CobotGrpcController = CobotGrpcController = __decorate([
 
 
 /***/ }),
-/* 207 */
+/* 210 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20467,29 +20700,59 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotMongoAdapter = void 0;
-const mongoose_1 = __webpack_require__(208);
-const mongoose_2 = __webpack_require__(209);
-const common_1 = __webpack_require__(8);
-const rpc_code_exception_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(51);
-const cobot_command_entity_1 = __webpack_require__(210);
-const cobot_connection_entity_1 = __webpack_require__(211);
-const util_1 = __webpack_require__(37);
+const mongoose_1 = __webpack_require__(211);
+const mongoose_2 = __webpack_require__(212);
+const common_1 = __webpack_require__(48);
+const rpc_code_exception_1 = __webpack_require__(26);
+const constant_1 = __webpack_require__(27);
+const cobot_command_entity_1 = __webpack_require__(213);
+const cobot_connection_entity_1 = __webpack_require__(214);
+const util_1 = __webpack_require__(13);
+const saveLog_service_1 = __webpack_require__(42);
+const config_1 = __webpack_require__(47);
 let CobotMongoAdapter = class CobotMongoAdapter {
-    constructor(CommandRepository, ConnectionRepository) {
+    constructor(CommandRepository, ConnectionRepository, saveLogService, configService) {
         this.CommandRepository = CommandRepository;
         this.ConnectionRepository = ConnectionRepository;
-        this.loggerService = common_1.LoggerService.get('cobot');
+        this.saveLogService = saveLogService;
+        this.configService = configService;
+        this.logger = this.saveLogService.get('tcp-cobot');
+        this.setIndex(this.configService);
+    }
+    async setIndex(configService) {
+        try {
+            await this.CommandRepository.collection.dropIndex('createdAt_1');
+        }
+        catch (error) {
+            this.logger.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+        }
+        try {
+            await this.ConnectionRepository.collection.dropIndex('createdAt_1');
+        }
+        catch (error) {
+            this.logger.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+        }
+        try {
+            if (configService.get('DB_TTL_ENABLE') === 'true') {
+                const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
+                this.CommandRepository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
+                this.ConnectionRepository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
+                this.logger.info(`[Cobot] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+            }
+        }
+        catch (error) {
+            this.logger.error(`[Network] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+        }
     }
     async getConnectionbyId(id) {
         try {
             return await this.ConnectionRepository.findById(id);
         }
         catch (error) {
-            this.loggerService.error(`[Cobot] DB getConnectionbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Cobot] DB getConnectionbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -20498,7 +20761,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.CommandRepository.findById(id);
         }
         catch (error) {
-            this.loggerService.error(`[Cobot] DB getCommandbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Cobot] DB getCommandbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -20507,7 +20770,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.ConnectionRepository.create(move);
         }
         catch (error) {
-            this.loggerService.error(`[Cobot] DB saveConnection : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Cobot] DB saveConnection : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -20517,7 +20780,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.CommandRepository.create({ ...model, _id });
         }
         catch (error) {
-            this.loggerService.error(`[Cobot] DB saveCommand : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Cobot] DB saveCommand : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -20526,7 +20789,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.CommandRepository.findByIdAndUpdate(move.id, move);
         }
         catch (error) {
-            this.loggerService.error(`[Cobot] DB updateCommand : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Cobot] DB updateCommand : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 업데이트할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -20535,24 +20798,24 @@ exports.CobotMongoAdapter = CobotMongoAdapter;
 exports.CobotMongoAdapter = CobotMongoAdapter = __decorate([
     __param(0, (0, mongoose_1.InjectModel)(cobot_command_entity_1.CobotCommandEntity.name)),
     __param(1, (0, mongoose_1.InjectModel)(cobot_connection_entity_1.CobotConnectionEntity.name)),
-    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object, typeof (_d = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _d : Object])
 ], CobotMongoAdapter);
 
 
 /***/ }),
-/* 208 */
+/* 211 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/mongoose");
 
 /***/ }),
-/* 209 */
+/* 212 */
 /***/ ((module) => {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 210 */
+/* 213 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20567,7 +20830,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandSchema = exports.CobotCommandEntity = void 0;
-const mongoose_1 = __webpack_require__(208);
+const mongoose_1 = __webpack_require__(211);
 let CobotCommandEntity = class CobotCommandEntity {
 };
 exports.CobotCommandEntity = CobotCommandEntity;
@@ -20605,7 +20868,7 @@ exports.CobotCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 211 */
+/* 214 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20620,7 +20883,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotConnectionSchema = exports.CobotConnectionEntity = void 0;
-const mongoose_1 = __webpack_require__(208);
+const mongoose_1 = __webpack_require__(211);
 let CobotConnectionEntity = class CobotConnectionEntity {
 };
 exports.CobotConnectionEntity = CobotConnectionEntity;
@@ -20694,16 +20957,16 @@ const nestjs_asyncapi_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
 const api_module_1 = __webpack_require__(4);
 const common_1 = __webpack_require__(5);
-const grpc_to_http_filter_1 = __webpack_require__(152);
-const swagger_1 = __webpack_require__(58);
-const client_socket_module_1 = __webpack_require__(153);
-const robot_socket_module_1 = __webpack_require__(163);
-const frs_socket_module_1 = __webpack_require__(177);
-const api_interceptor_1 = __webpack_require__(186);
-const tcp_socket_module_1 = __webpack_require__(187);
-const cobot_socket_module_1 = __webpack_require__(196);
-const common_2 = __webpack_require__(8);
-const path_1 = __webpack_require__(44);
+const grpc_to_http_filter_1 = __webpack_require__(155);
+const swagger_1 = __webpack_require__(8);
+const client_socket_module_1 = __webpack_require__(156);
+const robot_socket_module_1 = __webpack_require__(166);
+const frs_socket_module_1 = __webpack_require__(180);
+const api_interceptor_1 = __webpack_require__(189);
+const tcp_socket_module_1 = __webpack_require__(190);
+const cobot_socket_module_1 = __webpack_require__(199);
+const common_2 = __webpack_require__(48);
+const path_1 = __webpack_require__(20);
 async function bootstrap() {
     const apiModule = await core_1.NestFactory.create(api_module_1.RRSApiModule);
     apiModule.enableCors({

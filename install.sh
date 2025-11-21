@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "1) nodejs 설치"
+echo "=========== 1) NodeJS 설치"
 sudo apt update && sudo apt-get install -y curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
@@ -10,10 +10,10 @@ sudo apt-get install -y nodejs npm
 nvm install --lts
 npm install -g npm@latest
 
-echo "2) pm2, pnpm 설치"
+echo "=========== 2) PM2, PNPM, Nodemon, Mplayer 설치"
 sudo npm i -g pm2 pnpm nodemon mplayer
 
-echo "3) docker 설치"
+echo "=========== 3) Docker 설치"
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl
@@ -29,17 +29,17 @@ echo \
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-echo "4) docker 권한 설정"
+echo "=========== 4) Docker 권한 설정"
 sudo usermod -aG docker $USER
 #newgrp docker
 sudo chown root:docker /var/run/docker.sock
 sudo chmod 660 /var/run/docker.sock
 
-echo "5) pnpm install"
+echo "=========== 5) 노드 모듈 설치"
 pnpm install
 
-echo "reboot"
-reboot
+echo "=========== 6) 재부팅 (실패해도 수동으로 재부팅)"
+sudo reboot
 
 
 

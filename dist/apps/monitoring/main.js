@@ -18,19 +18,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TsdbModule = void 0;
 const common_1 = __webpack_require__(3);
 const influxdb_client_1 = __webpack_require__(4);
 const tsdb_service_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(58);
-const tsdb_mqtt_controller_1 = __webpack_require__(59);
+const config_1 = __webpack_require__(35);
+const tsdb_mqtt_controller_1 = __webpack_require__(36);
+const log_module_1 = __webpack_require__(68);
 let TsdbModule = class TsdbModule {
+    constructor(configService) {
+        console.log('configService.getOrThrow("INFLUX_URL")', configService.getOrThrow('INFLUX_URL'));
+        console.log('configService.getOrThrow("INFLUX_TOKEN")', configService.getOrThrow('INFLUX_TOKEN'));
+    }
 };
 exports.TsdbModule = TsdbModule;
 exports.TsdbModule = TsdbModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -50,7 +60,8 @@ exports.TsdbModule = TsdbModule = __decorate([
             },
             tsdb_service_1.TsdbService,
         ],
-    })
+    }),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
 ], TsdbModule);
 
 
@@ -68,27 +79,36 @@ module.exports = require("@influxdata/influxdb-client");
 
 /***/ }),
 /* 5 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TsdbService = void 0;
 const common_1 = __webpack_require__(6);
 const influxdb_client_1 = __webpack_require__(4);
-const influxdb_client_apis_1 = __webpack_require__(57);
-class TsdbService {
-    constructor() {
-        this.loggerService = common_1.LoggerService.get('influxdb');
-        this.token = 'rNmqH_gyV0mrjCZoAra8M17tDYMU5AHoWhvk_cilEoJ2_NDKA4jSew1roVr-e6qfMwGv94BhBtU9jC58VpzHrQ==';
-        this.url = 'http://localhost:7002';
+const common_2 = __webpack_require__(3);
+const influxdb_client_apis_1 = __webpack_require__(34);
+let TsdbService = class TsdbService {
+    constructor(db) {
+        this.db = db;
         this.orgName = 'rainbow';
         this.bucketName = 'slamnav';
+        this.dbClient = db;
     }
     async onModuleInit() {
-        this.dbClient = new influxdb_client_1.InfluxDB({
-            url: this.url,
-            token: this.token,
-        });
         await this.initBuckets('slamnav');
         await this.initBuckets('externalAccessory');
     }
@@ -110,7 +130,7 @@ class TsdbService {
                 retentionRules: [{ type: 'expire', everySeconds: 60 * 60 * 24 * 30 }],
             },
         });
-        this.loggerService.info(`✅ Created bucket '${name}'`);
+        this.logger.info(`✅ Created bucket '${name}'`);
     }
     writeStatus(status) {
         try {
@@ -265,7 +285,7 @@ class TsdbService {
                 .writePoints([batteryPoint, timePoint, imuPoint, mapPoint, motor1Point, motor2Point, robotStatePoint, conditionPoint]);
         }
         catch (error) {
-            this.loggerService.error(`[Tsdb] writeStatus : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Tsdb] writeStatus : ${(0, common_1.errorToJson)(error)}`);
         }
     }
     writeMoveStatus(status) {
@@ -346,7 +366,7 @@ class TsdbService {
                 .writePoints([curNodePoint, goalNodePoint, moveStatePoint, posePoint, velPoint]);
         }
         catch (error) {
-            this.loggerService.error(`[Tsdb] writeMoveStatus : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Tsdb] writeMoveStatus : ${(0, common_1.errorToJson)(error)}`);
         }
     }
     writeExternalStatus(status) {
@@ -374,11 +394,15 @@ class TsdbService {
             this.dbClient.getWriteApi(this.orgName, 'externalAccessory', 'ns').writePoints([footPoint, temperatureSensorPoint]);
         }
         catch (error) {
-            this.loggerService.error(`[Tsdb] writeExternalStatus : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Tsdb] writeExternalStatus : ${(0, common_1.errorToJson)(error)}`);
         }
     }
-}
+};
 exports.TsdbService = TsdbService;
+exports.TsdbService = TsdbService = __decorate([
+    __param(0, (0, common_2.Inject)('INFLUXDB')),
+    __metadata("design:paramtypes", [typeof (_a = typeof influxdb_client_1.InfluxDB !== "undefined" && influxdb_client_1.InfluxDB) === "function" ? _a : Object])
+], TsdbService);
 
 
 /***/ }),
@@ -1256,882 +1280,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(33), exports);
-__exportStar(__webpack_require__(56), exports);
 
 
 /***/ }),
 /* 33 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoggerService = void 0;
-const winston_1 = __webpack_require__(34);
-const DailyRotateFile = __webpack_require__(35);
-const util_1 = __webpack_require__(36);
-const chalk_1 = __webpack_require__(55);
-const fs_1 = __webpack_require__(42);
-const levelColorMap = {
-    error: chalk_1.default.red,
-    warn: chalk_1.default.magenta,
-    info: chalk_1.default.blue,
-    debug: chalk_1.default.white,
-};
-const levelTextMap = {
-    error: 'Error',
-    warn: 'Warn',
-    info: 'Info',
-    debug: 'Debug',
-};
-function formatLogMessage(message) {
-    try {
-        if (message.includes('items:')) {
-            return message;
-        }
-        const jsonRegex = /:\s*(\[.*?\]|\{.*?\})/g;
-        return message.replace(jsonRegex, (match, jsonStr) => {
-            try {
-                const data = JSON.parse(jsonStr);
-                const formatted = formatDataRecursive(data);
-                return `: ${formatted}`;
-            }
-            catch {
-                return match;
-            }
-        });
-    }
-    catch {
-        return message;
-    }
-}
-function formatDataRecursive(data) {
-    if (Array.isArray(data)) {
-        if (data.length <= 4) {
-            const items = data.map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
-            return `[${items.join(', ')}]`;
-        }
-        else {
-            const items = data.slice(0, 4).map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
-            return `[${data.length} items: [${items.join(', ')}]...]`;
-        }
-    }
-    if (typeof data === 'object' && data !== null) {
-        const formatted = { ...data };
-        for (const [key, value] of Object.entries(formatted)) {
-            if (Array.isArray(value)) {
-                formatted[key] = formatDataRecursive(value);
-            }
-            else if (typeof value === 'object' && value !== null) {
-                formatted[key] = formatDataRecursive(value);
-            }
-        }
-        return cleanJsonString(JSON.stringify(formatted));
-    }
-    return cleanJsonString(JSON.stringify(data));
-}
-function cleanJsonString(jsonStr) {
-    return jsonStr.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-}
-const customFormat = winston_1.format.printf(({ timestamp, level, message }) => {
-    const pid = process.pid;
-    const levelColor = levelColorMap[level] || chalk_1.default.white;
-    const levelText = levelTextMap[level] || level;
-    if (typeof message === 'string') {
-        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        let logtext = message.replace(/\[(?!['"])[A-Za-z0-9 _-]+\]/g, '').trim();
-        logtext = formatLogMessage(logtext);
-        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
-    }
-    return '';
-});
-const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
-    const pid = process.pid;
-    const levelText = levelTextMap[level] || level;
-    if (typeof message === 'string') {
-        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[([^\]]+)\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        const logtext = message.replace(/\[[^\]]+\]/g, '').trim();
-        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
-    }
-});
-const loggers = new Map();
-class LoggerService {
-    constructor(service) {
-        const logPath = '/data/log/' + service;
-        if (!(0, fs_1.existsSync)(logPath)) {
-            (0, fs_1.mkdirSync)(logPath, { recursive: true });
-        }
-        chalk_1.default.level = 3;
-        this.logger = (0, winston_1.createLogger)({
-            level: 'debug',
-            transports: [
-                new DailyRotateFile({
-                    filename: logPath + '/%DATE%.log',
-                    datePattern: 'YYYY-MM-DD',
-                    level: 'debug',
-                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
-                }),
-                new winston_1.transports.Console({
-                    level: 'debug',
-                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), customFormat),
-                }),
-            ],
-        });
-    }
-    static get(service) {
-        if (!loggers.has(service)) {
-            loggers.set(service, new LoggerService(service));
-        }
-        return loggers.get(service);
-    }
-    error(str) {
-        this.logger.error(str);
-    }
-    warn(str) {
-        this.logger.warn(str);
-    }
-    info(str) {
-        this.logger.info(str);
-    }
-    debug(str) {
-        this.logger.debug(str);
-    }
-}
-exports.LoggerService = LoggerService;
-
-
-/***/ }),
-/* 34 */
-/***/ ((module) => {
-
-module.exports = require("winston");
-
-/***/ }),
-/* 35 */
-/***/ ((module) => {
-
-module.exports = require("winston-daily-rotate-file");
-
-/***/ }),
-/* 36 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(37);
-Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(39);
-Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(41);
-Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(52);
-Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(53);
-Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(54);
-Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
-
-
-/***/ }),
-/* 37 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(38);
-class UrlUtil {
-    static generateUUID() {
-        return (0, uuid_1.v4)();
-    }
-}
-exports.UrlUtil = UrlUtil;
-
-
-/***/ }),
-/* 38 */
-/***/ ((module) => {
-
-module.exports = require("uuid");
-
-/***/ }),
-/* 39 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(40);
-class DateUtil {
-    static toDatetimeString(date) {
-        return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
-    }
-    static getTimeString() {
-        return new Date().getTime().toString();
-    }
-    static convertTargetsToDatetimeString(param, targets) {
-        const sParam = { ...param };
-        targets.forEach((target) => {
-            if (sParam[target]) {
-                sParam[target] = DateUtil.toDatetimeString(new Date(sParam[target]));
-            }
-        });
-        return sParam;
-    }
-    static formatDate(date) {
-        const pad = (n) => n.toString().padStart(2, '0');
-        return (`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
-    }
-    static formatDateKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.year}-${obj.month}-${obj.day} ${obj.hour}:${obj.minute}:${obj.second}`;
-    }
-    static formatTimeKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.hour}:${obj.minute}:${obj.second}`;
-    }
-    static formatTimeYearKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.year}`;
-    }
-    static formatTimeMonthKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.month}`;
-    }
-    static formatTimeDayKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.day}`;
-    }
-    static formatTimeHourKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.hour}`;
-    }
-    static formatTimeMinuteKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.minute}`;
-    }
-    static formatTimeSecondKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.second}`;
-    }
-}
-exports.DateUtil = DateUtil;
-
-
-/***/ }),
-/* 40 */
-/***/ ((module) => {
-
-module.exports = require("date-fns");
-
-/***/ }),
-/* 41 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FileUtil = void 0;
-const fs = __webpack_require__(42);
-const path = __webpack_require__(43);
-const unzipper = __webpack_require__(44);
-const il = __webpack_require__(45);
-const uuid_1 = __webpack_require__(38);
-const archiver_1 = __webpack_require__(46);
-const csv = __webpack_require__(47);
-const zlib_1 = __webpack_require__(48);
-const rpc_code_exception_1 = __webpack_require__(49);
-const constant_1 = __webpack_require__(50);
-const microservices_1 = __webpack_require__(10);
-class FileUtil {
-    static checkBasePath() {
-        this.basePath = '';
-    }
-    static async getFile(filename, filePath) {
-        try {
-            this.checkBasePath();
-            const fileFullPath = path.join(this.basePath, filePath, filename);
-            if (!fs.existsSync(fileFullPath)) {
-                throw new Error(`File not found: ${fileFullPath}`);
-            }
-            return await fs.promises.readFile(fileFullPath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async getFileAt(filename, filePath) {
-        try {
-            this.checkBasePath();
-            const fileFullPath = path.join(filePath, filename);
-            return fs.existsSync(fileFullPath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async uploadFile(fileBuffer, filename) {
-        try {
-            this.checkBasePath();
-            const uniqueName = `${(0, uuid_1.v4)()}${path.extname(filename)}`;
-            const filePath = path.join(this.basePath, uniqueName);
-            fs.writeFileSync(filePath, fileBuffer);
-            return { filePath: filePath, fileName: uniqueName };
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async downloadFile(filename, compress) {
-        try {
-            this.checkBasePath();
-            const filePath = path.join(this.basePath, filename);
-            const fileExtension = path.extname(filename);
-            if (!fs.existsSync(filePath)) {
-                throw new Error(`File not found: ${filePath}`);
-            }
-            if (compress && fileExtension.toUpperCase() !== '.ZIP') {
-                const outputPath = path.join(this.basePath, filename.substring(0, filename.lastIndexOf(fileExtension)));
-                await this.compressFile(filePath, outputPath);
-                const fileContent = await fs.promises.readFile(outputPath);
-                await fs.promises.unlink(outputPath);
-                return fileContent;
-            }
-            return await fs.promises.readFile(filePath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async deleteFile(filename) {
-        try {
-            this.checkBasePath();
-            const filePath = path.join(this.basePath, filename);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async compressFile(filePath, outputPath, outputName) {
-        try {
-            this.checkBasePath();
-            const compressPath = outputName ? path.join(this.basePath, `${outputName}.zip`) : outputPath;
-            const output = fs.createWriteStream(compressPath);
-            const archive = (0, archiver_1.default)('zip', {
-                zlib: { level: 9 },
-            });
-            archive.pipe(output);
-            archive.directory(filePath, false);
-            await archive.finalize();
-            return compressPath;
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async decompressFile(filePath, outputPath) {
-        try {
-            this.checkBasePath();
-            if (!outputPath) {
-                outputPath = filePath.substring(0, filePath.indexOf(path.extname(filePath)));
-            }
-            if (!fs.existsSync(outputPath)) {
-                await fs.promises.mkdir(outputPath, { recursive: true });
-            }
-            const directory = await unzipper.Open.file(filePath);
-            for (const entry of directory.files) {
-                const entryPath = entry.isUnicode ? entry.path : il.decode(entry.pathBuffer, 'euc-kr');
-                const fullPath = path.join(outputPath, entryPath);
-                if (entry.type === 'File') {
-                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-                    const readStream = entry.stream();
-                    const writeStream = fs.createWriteStream(fullPath);
-                    readStream.pipe(writeStream);
-                    await new Promise((resolve, reject) => {
-                        writeStream.on('finish', () => resolve);
-                        writeStream.on('error', reject);
-                    });
-                }
-                else {
-                    await fs.promises.mkdir(fullPath, { recursive: true });
-                }
-            }
-            return outputPath;
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async readCSV(path) {
-        return new Promise((resolve, reject) => {
-            try {
-                if (!fs.existsSync(path)) {
-                    reject(new rpc_code_exception_1.RpcCodeException('파일이 존재하지 않습니다', constant_1.GrpcCode.NotFound));
-                }
-                fs.accessSync(path, fs.constants.R_OK);
-                const results = [];
-                fs.createReadStream(path)
-                    .pipe(csv.parse({
-                    skip_empty_lines: true,
-                    skip_records_with_error: true,
-                }))
-                    .on('data', (row) => {
-                    results.push(row);
-                })
-                    .on('error', (error) => {
-                    reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-                })
-                    .on('end', () => {
-                    resolve(results);
-                });
-            }
-            catch (error) {
-                if (error instanceof microservices_1.RpcException)
-                    throw error;
-                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-            }
-        });
-    }
-    static async readCSVPipe(path, res) {
-        return new Promise((resolve, reject) => {
-            try {
-                fs.open(path, 'r', (err) => {
-                    if (err) {
-                        reject(new rpc_code_exception_1.RpcCodeException('파일을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound));
-                    }
-                    else {
-                        res.setHeader('Content-Type', 'text/csv');
-                        res.setHeader('Content-Encoding', 'gzip');
-                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
-                        const fileStream = fs.createReadStream(path);
-                        const gzip = (0, zlib_1.createGzip)();
-                        fileStream
-                            .pipe(gzip)
-                            .pipe(res)
-                            .on('finish', () => {
-                            resolve();
-                        })
-                            .on('error', (error) => {
-                            reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-                        });
-                    }
-                });
-            }
-            catch (error) {
-                if (error instanceof microservices_1.RpcException)
-                    throw error;
-                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-            }
-        });
-    }
-    static async saveCSV(path, data) {
-        try {
-            const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
-            if (data === undefined || data.length === 0) {
-                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            fs.writeFileSync(path, csvData);
-            return;
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async readJson(dir) {
-        try {
-            if (dir === undefined || dir === '') {
-                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (!fs.openSync(dir, 'r')) {
-                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${dir})`, constant_1.GrpcCode.NotFound);
-            }
-            const filecontent = fs.readFileSync(dir, 'utf-8');
-            return JSON.parse(filecontent);
-        }
-        catch (error) {
-            console.error(error);
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async readJSONPipe(path, res) {
-        try {
-            if (path === undefined || path === '') {
-                throw new rpc_code_exception_1.RpcCodeException('path 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (!fs.openSync(path, 'r')) {
-                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${path})`, constant_1.GrpcCode.NotFound);
-            }
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
-            const fileStream = fs.createReadStream(path);
-            const gzip = (0, zlib_1.createGzip)();
-            fileStream.pipe(gzip).pipe(res);
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async saveJson(dir, data) {
-        try {
-            if (dir === undefined || dir === '') {
-                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (data === undefined || data === '' || JSON.stringify(data) === '') {
-                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            console.log('--------------------------------------');
-            console.log(dir);
-            if (!fs.existsSync(path.dirname(dir))) {
-                fs.mkdirSync(path.dirname(dir), { recursive: true });
-            }
-            if (fs.existsSync(dir)) {
-                fs.renameSync(dir, `${dir}.bak`);
-            }
-            if (typeof data === 'string') {
-                data = JSON.parse(data);
-            }
-            fs.writeFileSync(dir, JSON.stringify(data, null, 2));
-            return;
-        }
-        catch (error) {
-            console.error(error);
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-}
-exports.FileUtil = FileUtil;
-
-
-/***/ }),
-/* 42 */
-/***/ ((module) => {
-
-module.exports = require("fs");
-
-/***/ }),
-/* 43 */
-/***/ ((module) => {
-
-module.exports = require("path");
-
-/***/ }),
-/* 44 */
-/***/ ((module) => {
-
-module.exports = require("unzipper");
-
-/***/ }),
-/* 45 */
-/***/ ((module) => {
-
-module.exports = require("iconv-lite");
-
-/***/ }),
-/* 46 */
-/***/ ((module) => {
-
-module.exports = require("archiver");
-
-/***/ }),
-/* 47 */
-/***/ ((module) => {
-
-module.exports = require("csv");
-
-/***/ }),
-/* 48 */
-/***/ ((module) => {
-
-module.exports = require("zlib");
-
-/***/ }),
-/* 49 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RpcCodeException = void 0;
-const microservices_1 = __webpack_require__(10);
-class RpcCodeException extends microservices_1.RpcException {
-    constructor(details, statusCode) {
-        super({ details: details, code: statusCode });
-        this.statusCode = statusCode;
-    }
-}
-exports.RpcCodeException = RpcCodeException;
-
-
-/***/ }),
-/* 50 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(51), exports);
-
-
-/***/ }),
-/* 51 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcCode = void 0;
-var GrpcCode;
-(function (GrpcCode) {
-    GrpcCode[GrpcCode["OK"] = 0] = "OK";
-    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
-    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
-    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
-    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
-    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
-    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
-    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
-    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
-    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
-    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
-    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
-    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
-    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
-    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
-    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
-    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
-    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
-})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
-
-
-/***/ }),
-/* 52 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ParseUtil = void 0;
-class ParseUtil {
-    static errorToJson(error) {
-        try {
-            if (error instanceof Error) {
-                const errorJson = {
-                    name: error.name,
-                    message: JSON.stringify(error.message),
-                };
-                if (error['error'] && error['error'].details) {
-                    errorJson['details'] = error['error'].details;
-                    errorJson['code'] = error['error'].code;
-                }
-                return JSON.stringify(errorJson);
-            }
-            else {
-                const json = JSON.parse(error);
-                return JSON.stringify(json);
-            }
-        }
-        catch (err) {
-            return JSON.stringify(err);
-        }
-    }
-    static stringToCamelCase(str) {
-        return str.toLowerCase().replace(/([-_][a-z])/gi, (group) => {
-            return group.toUpperCase().replace('-', '').replace('_', '');
-        });
-    }
-    static stringifyAllValues(obj) {
-        for (const key in obj) {
-            if (typeof obj[key] === 'object') {
-                this.stringifyAllValues(obj[key]);
-            }
-            else {
-                obj[key] = String(obj[key]);
-            }
-        }
-        return obj;
-    }
-}
-exports.ParseUtil = ParseUtil;
-
-
-/***/ }),
-/* 53 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CryptoUtil = void 0;
-class CryptoUtil {
-}
-exports.CryptoUtil = CryptoUtil;
-
-
-/***/ }),
-/* 54 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationUtil = void 0;
-class ValidationUtil {
-    static isEmpty(param) {
-        if (param === undefined || param === null) {
-            return true;
-        }
-        switch (true) {
-            case Array.isArray(param):
-                return param.length === 0 || param.every((item) => this.isEmpty(item));
-            case typeof param === 'object':
-                return Object.keys(param).length === 0;
-            case typeof param === 'string':
-                return param.trim().length === 0;
-            case typeof param === 'number':
-                return isNaN(param);
-            case typeof param === 'boolean':
-                return false;
-            default:
-                return true;
-        }
-    }
-    static isNotEmpty(param) {
-        return !this.isEmpty(param);
-    }
-}
-exports.ValidationUtil = ValidationUtil;
-
-
-/***/ }),
-/* 55 */
-/***/ ((module) => {
-
-module.exports = require("chalk");
-
-/***/ }),
-/* 56 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2162,19 +1314,19 @@ function errorToJson(error) {
 
 
 /***/ }),
-/* 57 */
+/* 34 */
 /***/ ((module) => {
 
 module.exports = require("@influxdata/influxdb-client-apis");
 
 /***/ }),
-/* 58 */
+/* 35 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/config");
 
 /***/ }),
-/* 59 */
+/* 36 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2190,20 +1342,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TsdbMqttInputController = void 0;
 const common_1 = __webpack_require__(3);
 const tsdb_service_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(6);
 const microservices_1 = __webpack_require__(10);
-const status_type_1 = __webpack_require__(60);
-const movestatus_type_1 = __webpack_require__(65);
-const exAccessory_dto_1 = __webpack_require__(66);
+const status_type_1 = __webpack_require__(37);
+const movestatus_type_1 = __webpack_require__(44);
+const exAccessory_dto_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(64);
 let TsdbMqttInputController = class TsdbMqttInputController {
-    constructor(tsdbService) {
+    constructor(tsdbService, saveLogService) {
         this.tsdbService = tsdbService;
-        this.loggerService = common_2.LoggerService.get('tsdb');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('monitoring');
     }
     getCobotCommandResponse(data) {
         this.tsdbService.writeStatus(data);
@@ -2220,31 +1373,31 @@ __decorate([
     (0, microservices_1.MessagePattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _b : Object]),
+    __metadata("design:paramtypes", [typeof (_c = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _c : Object]),
     __metadata("design:returntype", void 0)
 ], TsdbMqttInputController.prototype, "getCobotCommandResponse", null);
 __decorate([
     (0, microservices_1.MessagePattern)('moveStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], TsdbMqttInputController.prototype, "getMoveStatus", null);
 __decorate([
     (0, microservices_1.MessagePattern)('exAccessoryStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], TsdbMqttInputController.prototype, "getExternalStatus", null);
 exports.TsdbMqttInputController = TsdbMqttInputController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof tsdb_service_1.TsdbService !== "undefined" && tsdb_service_1.TsdbService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof tsdb_service_1.TsdbService !== "undefined" && tsdb_service_1.TsdbService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], TsdbMqttInputController);
 
 
 /***/ }),
-/* 60 */
+/* 37 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2259,11 +1412,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = exports.StatusPowerDto = exports.StatusStateDto = exports.StatusConditionDto = exports.StatuMotorDto = exports.StatusLidarDto = exports.StatusIMUDto = void 0;
-const date_util_1 = __webpack_require__(39);
-const swagger_1 = __webpack_require__(61);
-const class_validator_1 = __webpack_require__(62);
-const state_type_1 = __webpack_require__(63);
-const class_transformer_1 = __webpack_require__(64);
+const date_util_1 = __webpack_require__(38);
+const swagger_1 = __webpack_require__(40);
+const class_validator_1 = __webpack_require__(41);
+const state_type_1 = __webpack_require__(42);
+const class_transformer_1 = __webpack_require__(43);
 var Description;
 (function (Description) {
     Description["IMU"] = "IMU, Gyro \uC13C\uC11C \uB370\uC774\uD130";
@@ -2927,19 +2080,178 @@ __decorate([
 
 
 /***/ }),
-/* 61 */
+/* 38 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DateUtil = void 0;
+const date_fns_1 = __webpack_require__(39);
+class DateUtil {
+    static toDatetimeString(date) {
+        return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
+    }
+    static getTimeString() {
+        return new Date().getTime().toString();
+    }
+    static convertTargetsToDatetimeString(param, targets) {
+        const sParam = { ...param };
+        targets.forEach((target) => {
+            if (sParam[target]) {
+                sParam[target] = DateUtil.toDatetimeString(new Date(sParam[target]));
+            }
+        });
+        return sParam;
+    }
+    static formatDate(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return (`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
+    }
+    static formatDateKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}-${obj.month}-${obj.day} ${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeYearKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}`;
+    }
+    static formatTimeMonthKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.month}`;
+    }
+    static formatTimeDayKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.day}`;
+    }
+    static formatTimeHourKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}`;
+    }
+    static formatTimeMinuteKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.minute}`;
+    }
+    static formatTimeSecondKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.second}`;
+    }
+}
+exports.DateUtil = DateUtil;
+
+
+/***/ }),
+/* 39 */
+/***/ ((module) => {
+
+module.exports = require("date-fns");
+
+/***/ }),
+/* 40 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 62 */
+/* 41 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 63 */
+/* 42 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3000,13 +2312,13 @@ var ChargeState;
 
 
 /***/ }),
-/* 64 */
+/* 43 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 65 */
+/* 44 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3021,11 +2333,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.VelocityStatusDto = exports.PoseStatusDto = exports.MoveStateDto = void 0;
-const swagger_1 = __webpack_require__(61);
-const class_validator_1 = __webpack_require__(62);
-const util_1 = __webpack_require__(36);
-const state_type_1 = __webpack_require__(63);
-const state_type_2 = __webpack_require__(63);
+const swagger_1 = __webpack_require__(40);
+const class_validator_1 = __webpack_require__(41);
+const util_1 = __webpack_require__(45);
+const state_type_1 = __webpack_require__(42);
+const state_type_2 = __webpack_require__(42);
 var Description;
 (function (Description) {
     Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
@@ -3337,7 +2649,547 @@ __decorate([
 
 
 /***/ }),
-/* 66 */
+/* 45 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
+var url_util_1 = __webpack_require__(46);
+Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
+var date_util_1 = __webpack_require__(38);
+Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
+var file_util_1 = __webpack_require__(48);
+Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
+var parse_util_1 = __webpack_require__(59);
+Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
+var crypto_util_1 = __webpack_require__(60);
+Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
+var validation_util_1 = __webpack_require__(61);
+Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
+
+
+/***/ }),
+/* 46 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UrlUtil = void 0;
+const uuid_1 = __webpack_require__(47);
+class UrlUtil {
+    static generateUUID() {
+        return (0, uuid_1.v4)();
+    }
+}
+exports.UrlUtil = UrlUtil;
+
+
+/***/ }),
+/* 47 */
+/***/ ((module) => {
+
+module.exports = require("uuid");
+
+/***/ }),
+/* 48 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FileUtil = void 0;
+const fs = __webpack_require__(49);
+const path = __webpack_require__(50);
+const unzipper = __webpack_require__(51);
+const il = __webpack_require__(52);
+const uuid_1 = __webpack_require__(47);
+const archiver_1 = __webpack_require__(53);
+const csv = __webpack_require__(54);
+const zlib_1 = __webpack_require__(55);
+const rpc_code_exception_1 = __webpack_require__(56);
+const constant_1 = __webpack_require__(57);
+const microservices_1 = __webpack_require__(10);
+class FileUtil {
+    static checkBasePath() {
+        this.basePath = '';
+    }
+    static async getFile(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(this.basePath, filePath, filename);
+            if (!fs.existsSync(fileFullPath)) {
+                throw new Error(`File not found: ${fileFullPath}`);
+            }
+            return await fs.promises.readFile(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async getFileAt(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(filePath, filename);
+            return fs.existsSync(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async uploadFile(fileBuffer, filename) {
+        try {
+            this.checkBasePath();
+            const uniqueName = `${(0, uuid_1.v4)()}${path.extname(filename)}`;
+            const filePath = path.join(this.basePath, uniqueName);
+            fs.writeFileSync(filePath, fileBuffer);
+            return { filePath: filePath, fileName: uniqueName };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async downloadFile(filename, compress) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            const fileExtension = path.extname(filename);
+            if (!fs.existsSync(filePath)) {
+                throw new Error(`File not found: ${filePath}`);
+            }
+            if (compress && fileExtension.toUpperCase() !== '.ZIP') {
+                const outputPath = path.join(this.basePath, filename.substring(0, filename.lastIndexOf(fileExtension)));
+                await this.compressFile(filePath, outputPath);
+                const fileContent = await fs.promises.readFile(outputPath);
+                await fs.promises.unlink(outputPath);
+                return fileContent;
+            }
+            return await fs.promises.readFile(filePath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async deleteFile(filename) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async compressFile(filePath, outputPath, outputName) {
+        try {
+            this.checkBasePath();
+            const compressPath = outputName ? path.join(this.basePath, `${outputName}.zip`) : outputPath;
+            const output = fs.createWriteStream(compressPath);
+            const archive = (0, archiver_1.default)('zip', {
+                zlib: { level: 9 },
+            });
+            archive.pipe(output);
+            archive.directory(filePath, false);
+            await archive.finalize();
+            return compressPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async decompressFile(filePath, outputPath) {
+        try {
+            this.checkBasePath();
+            if (!outputPath) {
+                outputPath = filePath.substring(0, filePath.indexOf(path.extname(filePath)));
+            }
+            if (!fs.existsSync(outputPath)) {
+                await fs.promises.mkdir(outputPath, { recursive: true });
+            }
+            const directory = await unzipper.Open.file(filePath);
+            for (const entry of directory.files) {
+                const entryPath = entry.isUnicode ? entry.path : il.decode(entry.pathBuffer, 'euc-kr');
+                const fullPath = path.join(outputPath, entryPath);
+                if (entry.type === 'File') {
+                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+                    const readStream = entry.stream();
+                    const writeStream = fs.createWriteStream(fullPath);
+                    readStream.pipe(writeStream);
+                    await new Promise((resolve, reject) => {
+                        writeStream.on('finish', () => resolve);
+                        writeStream.on('error', reject);
+                    });
+                }
+                else {
+                    await fs.promises.mkdir(fullPath, { recursive: true });
+                }
+            }
+            return outputPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async readCSV(path) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!fs.existsSync(path)) {
+                    reject(new rpc_code_exception_1.RpcCodeException('파일이 존재하지 않습니다', constant_1.GrpcCode.NotFound));
+                }
+                fs.accessSync(path, fs.constants.R_OK);
+                const results = [];
+                fs.createReadStream(path)
+                    .pipe(csv.parse({
+                    skip_empty_lines: true,
+                    skip_records_with_error: true,
+                }))
+                    .on('data', (row) => {
+                    results.push(row);
+                })
+                    .on('error', (error) => {
+                    reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                })
+                    .on('end', () => {
+                    resolve(results);
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async readCSVPipe(path, res) {
+        return new Promise((resolve, reject) => {
+            try {
+                fs.open(path, 'r', (err) => {
+                    if (err) {
+                        reject(new rpc_code_exception_1.RpcCodeException('파일을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound));
+                    }
+                    else {
+                        res.setHeader('Content-Type', 'text/csv');
+                        res.setHeader('Content-Encoding', 'gzip');
+                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
+                        const fileStream = fs.createReadStream(path);
+                        const gzip = (0, zlib_1.createGzip)();
+                        fileStream
+                            .pipe(gzip)
+                            .pipe(res)
+                            .on('finish', () => {
+                            resolve();
+                        })
+                            .on('error', (error) => {
+                            reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                        });
+                    }
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async saveCSV(path, data) {
+        try {
+            const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
+            if (data === undefined || data.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            fs.writeFileSync(path, csvData);
+            return;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJson(dir) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(dir, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${dir})`, constant_1.GrpcCode.NotFound);
+            }
+            const filecontent = fs.readFileSync(dir, 'utf-8');
+            return JSON.parse(filecontent);
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJSONPipe(path, res) {
+        try {
+            if (path === undefined || path === '') {
+                throw new rpc_code_exception_1.RpcCodeException('path 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(path, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${path})`, constant_1.GrpcCode.NotFound);
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Encoding', 'gzip');
+            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
+            const fileStream = fs.createReadStream(path);
+            const gzip = (0, zlib_1.createGzip)();
+            fileStream.pipe(gzip).pipe(res);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async saveJson(dir, data) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (data === undefined || data === '' || JSON.stringify(data) === '') {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            console.log('--------------------------------------');
+            console.log(dir);
+            if (!fs.existsSync(path.dirname(dir))) {
+                fs.mkdirSync(path.dirname(dir), { recursive: true });
+            }
+            if (fs.existsSync(dir)) {
+                fs.renameSync(dir, `${dir}.bak`);
+            }
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+            fs.writeFileSync(dir, JSON.stringify(data, null, 2));
+            return;
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+}
+exports.FileUtil = FileUtil;
+
+
+/***/ }),
+/* 49 */
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 50 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 51 */
+/***/ ((module) => {
+
+module.exports = require("unzipper");
+
+/***/ }),
+/* 52 */
+/***/ ((module) => {
+
+module.exports = require("iconv-lite");
+
+/***/ }),
+/* 53 */
+/***/ ((module) => {
+
+module.exports = require("archiver");
+
+/***/ }),
+/* 54 */
+/***/ ((module) => {
+
+module.exports = require("csv");
+
+/***/ }),
+/* 55 */
+/***/ ((module) => {
+
+module.exports = require("zlib");
+
+/***/ }),
+/* 56 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcCodeException = void 0;
+const microservices_1 = __webpack_require__(10);
+class RpcCodeException extends microservices_1.RpcException {
+    constructor(details, statusCode) {
+        super({ details: details, code: statusCode });
+        this.statusCode = statusCode;
+    }
+}
+exports.RpcCodeException = RpcCodeException;
+
+
+/***/ }),
+/* 57 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(58), exports);
+
+
+/***/ }),
+/* 58 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcCode = void 0;
+var GrpcCode;
+(function (GrpcCode) {
+    GrpcCode[GrpcCode["OK"] = 0] = "OK";
+    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
+    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
+    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
+    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
+    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
+    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
+    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
+    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
+    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
+    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
+    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
+    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
+    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
+    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
+    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
+    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
+    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
+})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
+
+
+/***/ }),
+/* 59 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ParseUtil = void 0;
+class ParseUtil {
+    static errorToJson(error) {
+        try {
+            if (error instanceof Error) {
+                const errorJson = {
+                    name: error.name,
+                    message: JSON.stringify(error.message),
+                };
+                if (error['error'] && error['error'].details) {
+                    errorJson['details'] = error['error'].details;
+                    errorJson['code'] = error['error'].code;
+                }
+                return JSON.stringify(errorJson);
+            }
+            else {
+                const json = JSON.parse(error);
+                return JSON.stringify(json);
+            }
+        }
+        catch (err) {
+            return JSON.stringify(err);
+        }
+    }
+    static stringToCamelCase(str) {
+        return str.toLowerCase().replace(/([-_][a-z])/gi, (group) => {
+            return group.toUpperCase().replace('-', '').replace('_', '');
+        });
+    }
+    static stringifyAllValues(obj) {
+        for (const key in obj) {
+            if (typeof obj[key] === 'object') {
+                this.stringifyAllValues(obj[key]);
+            }
+            else {
+                obj[key] = String(obj[key]);
+            }
+        }
+        return obj;
+    }
+}
+exports.ParseUtil = ParseUtil;
+
+
+/***/ }),
+/* 60 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CryptoUtil = void 0;
+class CryptoUtil {
+}
+exports.CryptoUtil = CryptoUtil;
+
+
+/***/ }),
+/* 61 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = void 0;
+class ValidationUtil {
+    static isEmpty(param) {
+        if (param === undefined || param === null) {
+            return true;
+        }
+        switch (true) {
+            case Array.isArray(param):
+                return param.length === 0 || param.every((item) => this.isEmpty(item));
+            case typeof param === 'object':
+                return Object.keys(param).length === 0;
+            case typeof param === 'string':
+                return param.trim().length === 0;
+            case typeof param === 'number':
+                return isNaN(param);
+            case typeof param === 'boolean':
+                return false;
+            default:
+                return true;
+        }
+    }
+    static isNotEmpty(param) {
+        return !this.isEmpty(param);
+    }
+}
+exports.ValidationUtil = ValidationUtil;
+
+
+/***/ }),
+/* 62 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3352,9 +3204,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessoryStatusDto = exports.TemperatureSensorStatusDto = exports.FootStatusDto = exports.ExAccessoryResponseExAccessory = exports.ExAccessoryRequestExAccessory = exports.ExAccessoryResponseDto = exports.ExAccessoryRequestDto = void 0;
-const swagger_1 = __webpack_require__(61);
-const control_type_1 = __webpack_require__(67);
-const class_transformer_1 = __webpack_require__(64);
+const swagger_1 = __webpack_require__(40);
+const control_type_1 = __webpack_require__(63);
+const class_transformer_1 = __webpack_require__(43);
 var FootStatus;
 (function (FootStatus) {
     FootStatus[FootStatus["idle"] = 0] = "idle";
@@ -3475,7 +3327,7 @@ __decorate([
 
 
 /***/ }),
-/* 67 */
+/* 63 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3521,6 +3373,187 @@ var LEDColor;
 
 
 /***/ }),
+/* 64 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SaveLogService = void 0;
+const common_1 = __webpack_require__(3);
+const winston_1 = __webpack_require__(65);
+const DailyRotateFile = __webpack_require__(66);
+const util_1 = __webpack_require__(45);
+const chalk_1 = __webpack_require__(67);
+const fs_1 = __webpack_require__(49);
+const levelColorMap = {
+    error: chalk_1.default.red,
+    warn: chalk_1.default.magenta,
+    info: chalk_1.default.blue,
+    debug: chalk_1.default.white,
+};
+const levelTextMap = {
+    error: 'Error',
+    warn: 'Warn',
+    info: 'Info',
+    debug: 'Debug',
+};
+function formatLogMessage(message) {
+    try {
+        if (message.includes('items:')) {
+            return message;
+        }
+        const jsonRegex = /:\s*(\[[\s\S]*?\]|\{[\s\S]*?\})/g;
+        return message.replace(jsonRegex, (match, jsonStr) => {
+            try {
+                const data = JSON.parse(jsonStr);
+                const formatted = formatDataRecursive(data);
+                return `: ${formatted}`;
+            }
+            catch {
+                return match;
+            }
+        });
+    }
+    catch {
+        return message;
+    }
+}
+function formatDataRecursive(data) {
+    if (Array.isArray(data)) {
+        if (data.length <= 4) {
+            const items = data.map((item) => typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item)));
+            return `[${items.join(', ')}]`;
+        }
+        else {
+            const items = data
+                .slice(0, 4)
+                .map((item) => (typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item))));
+            return `[${data.length} items: [${items.join(', ')}]...]`;
+        }
+    }
+    if (typeof data === 'object' && data !== null) {
+        const formatted = { ...data };
+        for (const [key, value] of Object.entries(formatted)) {
+            if (Array.isArray(value)) {
+                formatted[key] = formatDataRecursive(value);
+            }
+            else if (typeof value === 'object' && value !== null) {
+                formatted[key] = formatDataRecursive(value);
+            }
+        }
+        return cleanJsonString(JSON.stringify(formatted));
+    }
+    return cleanJsonString(JSON.stringify(data));
+}
+function cleanJsonString(jsonStr) {
+    return jsonStr.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
+const customFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelColor = levelColorMap[level] || chalk_1.default.white;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
+        logtext = formatLogMessage(logtext);
+        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
+    }
+    return '';
+});
+const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
+        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
+    }
+});
+let SaveLogService = class SaveLogService {
+    constructor() {
+        this.loggers = new Map();
+        this.rootPath = '/data/log';
+        this.logPath = this.rootPath;
+        chalk_1.default.level = 3;
+    }
+    get(service) {
+        let logger = this.loggers.get(service);
+        if (!logger) {
+            logger = this.createLogger(service);
+            this.loggers.set(service, logger);
+        }
+        return logger;
+    }
+    createLogger(service) {
+        this.logPath = `${this.rootPath}/${service}`;
+        if (!(0, fs_1.existsSync)(this.logPath)) {
+            (0, fs_1.mkdirSync)(this.logPath, { recursive: true });
+        }
+        try {
+            (0, fs_1.chownSync)(this.logPath, 1000, 1000);
+        }
+        catch (error) {
+            console.error('LoggerService chownSync Error : ', error);
+        }
+        return (0, winston_1.createLogger)({
+            level: 'debug',
+            transports: [
+                new DailyRotateFile({
+                    filename: `${this.logPath}/%DATE%.log`,
+                    datePattern: 'YYYY-MM-DD',
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
+                    zippedArchive: true,
+                    maxSize: '10m',
+                    maxFiles: '14d',
+                }),
+                new winston_1.transports.Console({
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), customFormat),
+                }),
+            ],
+        });
+    }
+};
+exports.SaveLogService = SaveLogService;
+exports.SaveLogService = SaveLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], SaveLogService);
+
+
+/***/ }),
+/* 65 */
+/***/ ((module) => {
+
+module.exports = require("winston");
+
+/***/ }),
+/* 66 */
+/***/ ((module) => {
+
+module.exports = require("winston-daily-rotate-file");
+
+/***/ }),
+/* 67 */
+/***/ ((module) => {
+
+module.exports = require("chalk");
+
+/***/ }),
 /* 68 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -3532,23 +3565,159 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SemlogModule = void 0;
-const config_1 = __webpack_require__(58);
-const sem_log_service_1 = __webpack_require__(69);
+exports.LogModule = void 0;
 const common_1 = __webpack_require__(3);
-const sem_log_alarm_log_dto_1 = __webpack_require__(71);
-const typeorm_1 = __webpack_require__(73);
-const sem_log_alarm_dto_1 = __webpack_require__(74);
-const pg_1 = __webpack_require__(75);
-const sem_log_mqtt_controller_1 = __webpack_require__(76);
-const sem_log_grpc_controller_1 = __webpack_require__(77);
-const sem_log_postgres_adapter_1 = __webpack_require__(78);
+const saveLog_service_1 = __webpack_require__(64);
+const cleanLog_service_1 = __webpack_require__(69);
+let LogModule = class LogModule {
+};
+exports.LogModule = LogModule;
+exports.LogModule = LogModule = __decorate([
+    (0, common_1.Module)({
+        imports: [],
+        controllers: [],
+        providers: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+        exports: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+    })
+], LogModule);
+
+
+/***/ }),
+/* 69 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CleanLogService = void 0;
+const common_1 = __webpack_require__(3);
+const schedule_1 = __webpack_require__(70);
+const path = __webpack_require__(50);
+const fs_1 = __webpack_require__(49);
+let CleanLogService = class CleanLogService {
+    constructor() {
+        this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
+        this.RETAIN_DAYS = Number(process.env.LOG_RETAIN_DAYS ?? '10');
+        this.runClean = false;
+    }
+    setLogger(logger, path, retainDays) {
+        this.logger = logger;
+        this.LOG_ROOT = path;
+        this.RETAIN_DAYS = retainDays;
+        this.runClean = true;
+    }
+    async handleCron() {
+        if (!this.runClean)
+            return;
+        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
+        try {
+            await this.cleanDir(this.LOG_ROOT);
+            this.logger?.info('[Log] 🧹 로그 정리 완료');
+        }
+        catch (e) {
+            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
+        }
+    }
+    async cleanDir(dir) {
+        let entries;
+        try {
+            entries = await fs_1.promises.readdir(dir, { withFileTypes: true });
+        }
+        catch {
+            return;
+        }
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                await this.cleanDir(fullPath);
+                continue;
+            }
+            if (!entry.name.endsWith('.log') && !entry.name.endsWith('.log.gz')) {
+                continue;
+            }
+            let stat;
+            try {
+                stat = await fs_1.promises.stat(fullPath);
+            }
+            catch {
+                continue;
+            }
+            if (this.isOlderThan(stat.mtime, this.RETAIN_DAYS)) {
+                this.logger?.info(`[Log] 🗑 delete: ${fullPath}`);
+                try {
+                    await fs_1.promises.unlink(fullPath);
+                }
+                catch (e) {
+                    console.warn(`삭제 실패: ${fullPath} (${e.message})`);
+                }
+            }
+        }
+    }
+    isOlderThan(mtime, days) {
+        const now = Date.now();
+        const diffMs = now - mtime.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        return diffDays > days;
+    }
+};
+exports.CleanLogService = CleanLogService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CleanLogService.prototype, "handleCron", null);
+exports.CleanLogService = CleanLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], CleanLogService);
+
+
+/***/ }),
+/* 70 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 71 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SemlogModule = void 0;
+const config_1 = __webpack_require__(35);
+const sem_log_service_1 = __webpack_require__(72);
+const common_1 = __webpack_require__(3);
+const sem_log_alarm_log_dto_1 = __webpack_require__(74);
+const typeorm_1 = __webpack_require__(76);
+const sem_log_alarm_dto_1 = __webpack_require__(77);
+const pg_1 = __webpack_require__(78);
+const sem_log_mqtt_controller_1 = __webpack_require__(79);
+const sem_log_grpc_controller_1 = __webpack_require__(80);
+const sem_log_postgres_adapter_1 = __webpack_require__(81);
+const log_module_1 = __webpack_require__(68);
 let SemlogModule = class SemlogModule {
 };
 exports.SemlogModule = SemlogModule;
 exports.SemlogModule = SemlogModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -3607,7 +3776,7 @@ async function ensureSemlogDatabase() {
 
 
 /***/ }),
-/* 69 */
+/* 72 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3623,24 +3792,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogService = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_database_output_port_1 = __webpack_require__(70);
-const rpc_code_exception_1 = __webpack_require__(49);
-const constant_1 = __webpack_require__(50);
-const date_util_1 = __webpack_require__(39);
+const sem_log_database_output_port_1 = __webpack_require__(73);
+const rpc_code_exception_1 = __webpack_require__(56);
+const constant_1 = __webpack_require__(57);
+const date_util_1 = __webpack_require__(38);
+const saveLog_service_1 = __webpack_require__(64);
 let SemLogService = class SemLogService {
-    constructor(databaseOutput) {
+    constructor(databaseOutput, saveLogService) {
         this.databaseOutput = databaseOutput;
-        this.loggerService = common_1.LoggerService.get('monitoring');
+        this.saveLogService = saveLogService;
         this.AlarmActive = new Map();
+        this.logger = saveLogService.get('monitoring');
     }
     async getSemAlarmDefine(request) {
         try {
-            this.loggerService.info(`[SEM] getSemAlarmDefine : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] getSemAlarmDefine : ${JSON.stringify(request)}`);
             return this.databaseOutput.getAlarmBySearch(request);
         }
         catch (error) {
@@ -3648,7 +3819,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] getSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] getSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -3678,7 +3849,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] postSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] postSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -3700,7 +3871,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] deleteSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] deleteSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -3715,14 +3886,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] deleteSemAlarmDefineAll : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] deleteSemAlarmDefineAll : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async getSemAlarmActive(request) {
         try {
-            this.loggerService.info(`[SEM] getSemAlarmActive : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] getSemAlarmActive : ${JSON.stringify(request)}`);
             const data = [];
             this.AlarmActive.forEach(async (value, key) => {
                 data.push({
@@ -3739,14 +3910,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] getSemAlarmActive : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] getSemAlarmActive : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async semAlarm(request) {
         try {
-            this.loggerService.info(`[SEM] semAlarm : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] semAlarm : ${JSON.stringify(request)}`);
             if (request.code === undefined || request.code === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('code값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -3776,14 +3947,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] semAlarm : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] semAlarm : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async deleteSemAlarm(request) {
         try {
-            this.loggerService.info(`[SEM] deleteSemAlarm : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] deleteSemAlarm : ${JSON.stringify(request)}`);
             if (request.code === undefined || request.code === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('code값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -3798,14 +3969,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] deleteSemAlarm : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] deleteSemAlarm : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async deleteSemAlarmAll(request) {
         try {
-            this.loggerService.info(`[SEM] deleteSemAlarmAll : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] deleteSemAlarmAll : ${JSON.stringify(request)}`);
             await this.databaseOutput.deleteAlarmAll();
             return {};
         }
@@ -3814,14 +3985,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] deleteSemAlarmAll : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] deleteSemAlarmAll : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async getSemAlarmLog(request) {
         try {
-            this.loggerService.info(`[SEM] getSemAlarmLog : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] getSemAlarmLog : ${JSON.stringify(request)}`);
             return this.databaseOutput.getAlarmLogBySearch(request);
         }
         catch (error) {
@@ -3829,14 +4000,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] getSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] getSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람 로그를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async postSemAlarm(request) {
         try {
-            this.loggerService.info(`[SEM] postSemAlarm : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] postSemAlarm : ${JSON.stringify(request)}`);
             if (request.code === undefined || request.code === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('code값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -3858,14 +4029,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] postSemAlarm : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] postSemAlarm : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async deleteSemAlarmLog(request) {
         try {
-            this.loggerService.info(`[SEM] deleteSemAlarmLog : ${JSON.stringify(request)}`);
+            this.logger.info(`[SEM] deleteSemAlarmLog : ${JSON.stringify(request)}`);
             await this.databaseOutput.deleteAlarmLog(request);
             return {};
         }
@@ -3874,7 +4045,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEM] deleteSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[SEM] deleteSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -3884,12 +4055,12 @@ exports.SemLogService = SemLogService;
 exports.SemLogService = SemLogService = __decorate([
     (0, common_2.Injectable)(),
     __param(0, (0, common_2.Inject)('DatabaseOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof sem_log_database_output_port_1.SemLogDatabaseOutputPort !== "undefined" && sem_log_database_output_port_1.SemLogDatabaseOutputPort) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof sem_log_database_output_port_1.SemLogDatabaseOutputPort !== "undefined" && sem_log_database_output_port_1.SemLogDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SemLogService);
 
 
 /***/ }),
-/* 70 */
+/* 73 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3897,7 +4068,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 71 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3913,7 +4084,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmLog = void 0;
-const typeorm_1 = __webpack_require__(72);
+const typeorm_1 = __webpack_require__(75);
 let SemLogAlarmLog = class SemLogAlarmLog {
 };
 exports.SemLogAlarmLog = SemLogAlarmLog;
@@ -3951,19 +4122,19 @@ exports.SemLogAlarmLog = SemLogAlarmLog = __decorate([
 
 
 /***/ }),
-/* 72 */
+/* 75 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 73 */
+/* 76 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 74 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3978,7 +4149,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmList = void 0;
-const typeorm_1 = __webpack_require__(72);
+const typeorm_1 = __webpack_require__(75);
 let SemLogAlarmList = class SemLogAlarmList {
 };
 exports.SemLogAlarmList = SemLogAlarmList;
@@ -4004,13 +4175,13 @@ exports.SemLogAlarmList = SemLogAlarmList = __decorate([
 
 
 /***/ }),
-/* 75 */
+/* 78 */
 /***/ ((module) => {
 
 module.exports = require("pg");
 
 /***/ }),
-/* 76 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4027,7 +4198,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogMqttInputController = void 0;
 const common_1 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(69);
+const sem_log_service_1 = __webpack_require__(72);
 const microservices_1 = __webpack_require__(10);
 let SemLogMqttInputController = class SemLogMqttInputController {
     constructor(semlogService) {
@@ -4056,7 +4227,7 @@ exports.SemLogMqttInputController = SemLogMqttInputController = __decorate([
 
 
 /***/ }),
-/* 77 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4074,9 +4245,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogGrpcController = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(69);
-const rpc_code_exception_1 = __webpack_require__(49);
-const constant_1 = __webpack_require__(50);
+const sem_log_service_1 = __webpack_require__(72);
+const rpc_code_exception_1 = __webpack_require__(56);
+const constant_1 = __webpack_require__(57);
 let SemLogGrpcController = class SemLogGrpcController {
     constructor(semlogService) {
         this.semlogService = semlogService;
@@ -4134,7 +4305,7 @@ exports.SemLogGrpcController = SemLogGrpcController = __decorate([
 
 
 /***/ }),
-/* 78 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4150,23 +4321,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogPostgresAdapter = void 0;
-const typeorm_1 = __webpack_require__(73);
-const sem_log_alarm_dto_1 = __webpack_require__(74);
-const sem_log_alarm_log_dto_1 = __webpack_require__(71);
-const typeorm_2 = __webpack_require__(72);
-const common_1 = __webpack_require__(6);
-const util_1 = __webpack_require__(36);
-const rpc_code_exception_1 = __webpack_require__(49);
-const constant_1 = __webpack_require__(50);
-const pagination_1 = __webpack_require__(79);
+const typeorm_1 = __webpack_require__(76);
+const sem_log_alarm_dto_1 = __webpack_require__(77);
+const sem_log_alarm_log_dto_1 = __webpack_require__(74);
+const typeorm_2 = __webpack_require__(75);
+const util_1 = __webpack_require__(45);
+const rpc_code_exception_1 = __webpack_require__(56);
+const constant_1 = __webpack_require__(57);
+const pagination_1 = __webpack_require__(82);
+const saveLog_service_1 = __webpack_require__(64);
+const common_1 = __webpack_require__(3);
 let SemLogPostgresAdapter = class SemLogPostgresAdapter {
-    constructor(alarmListRepository, alarmLogRepository) {
+    constructor(alarmListRepository, alarmLogRepository, saveLogService) {
         this.alarmListRepository = alarmListRepository;
         this.alarmLogRepository = alarmLogRepository;
-        this.loggerService = common_1.LoggerService.get('semlog');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('monitoring');
         this.generateAlarmDB();
     }
     async getAlarmAll() {
@@ -4174,7 +4347,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmListRepository.find();
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB getAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB getAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4183,11 +4356,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmListRepository.findOneBy({ code });
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB getAlarmbyId: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB getAlarmbyId: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.loggerService.debug(`[SEMLog] DB getAlarmbyId: ${JSON.stringify(code)}`);
+            this.logger.debug(`[SEMLog] DB getAlarmbyId: ${JSON.stringify(code)}`);
         }
     }
     async saveAlarm(alarm) {
@@ -4195,11 +4368,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmListRepository.save(alarm);
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB saveAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB saveAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.loggerService.debug(`[SEMLog] DB saveAlarm: ${JSON.stringify(alarm)}`);
+            this.logger.debug(`[SEMLog] DB saveAlarm: ${JSON.stringify(alarm)}`);
         }
     }
     async deleteAlarm(dto) {
@@ -4208,11 +4381,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return;
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB deleteAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB deleteAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.loggerService.debug(`[SEMLog] DB deleteAlarm: ${JSON.stringify(dto)}`);
+            this.logger.debug(`[SEMLog] DB deleteAlarm: ${JSON.stringify(dto)}`);
         }
     }
     async deleteAlarmAll() {
@@ -4220,7 +4393,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             await this.alarmListRepository.clear();
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB deleteAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB deleteAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4288,7 +4461,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return result;
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB getAlarmBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB getAlarmBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4381,7 +4554,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return result;
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB getAlarmLogBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB getAlarmLogBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4394,7 +4567,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
               `);
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB getAlarmLogbyId: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB getAlarmLogbyId: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4403,7 +4576,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmLogRepository.find();
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB getAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB getAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4412,11 +4585,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmLogRepository.save(alarmLog);
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB saveAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB saveAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.loggerService.debug(`[SEMLog] DB saveAlarmLog: ${JSON.stringify(alarmLog)}`);
+            this.logger.debug(`[SEMLog] DB saveAlarmLog: ${JSON.stringify(alarmLog)}`);
         }
     }
     async deleteAlarmLog(dto) {
@@ -4431,7 +4604,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
                 }
                 deleteResult = await this.alarmLogRepository.delete({ code: dto.code });
                 console.log('삭제 결과:', deleteResult);
-                this.loggerService.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
+                this.logger.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
                 return;
             }
             const queryBuilder = this.alarmLogRepository.createQueryBuilder().delete().from(sem_log_alarm_log_dto_1.SemLogAlarmLog);
@@ -4475,7 +4648,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             console.log('쿼리 파라미터:', queryBuilder.getParameters());
             deleteResult = await queryBuilder.execute();
             console.log('복잡한 조건 삭제 결과:', deleteResult);
-            this.loggerService.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
+            this.logger.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
             return;
         }
         catch (error) {
@@ -4483,7 +4656,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
                 throw error;
             }
             else {
-                this.loggerService.error(`[SEMLog] DB deleteAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[SEMLog] DB deleteAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -4493,7 +4666,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             await this.alarmLogRepository.clear();
         }
         catch (error) {
-            this.loggerService.error(`[SEMLog] DB deleteAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[SEMLog] DB deleteAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4769,14 +4942,15 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
 };
 exports.SemLogPostgresAdapter = SemLogPostgresAdapter;
 exports.SemLogPostgresAdapter = SemLogPostgresAdapter = __decorate([
+    (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(sem_log_alarm_dto_1.SemLogAlarmList)),
     __param(1, (0, typeorm_1.InjectRepository)(sem_log_alarm_log_dto_1.SemLogAlarmLog)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], SemLogPostgresAdapter);
 
 
 /***/ }),
-/* 79 */
+/* 82 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4795,12 +4969,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(80), exports);
-__exportStar(__webpack_require__(81), exports);
+__exportStar(__webpack_require__(83), exports);
+__exportStar(__webpack_require__(84), exports);
 
 
 /***/ }),
-/* 80 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4817,8 +4991,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationRequest = void 0;
 exports.getPaginationOffset = getPaginationOffset;
 exports.getPaginationLimit = getPaginationLimit;
-const class_validator_1 = __webpack_require__(62);
-const swagger_1 = __webpack_require__(61);
+const class_validator_1 = __webpack_require__(41);
+const swagger_1 = __webpack_require__(40);
 class PaginationRequest {
     getOffset() {
         if (this.pageNo === null || this.pageNo === undefined || this.pageNo < 1) {
@@ -4873,7 +5047,7 @@ function getPaginationLimit(pageSize) {
 
 
 /***/ }),
-/* 81 */
+/* 84 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4888,7 +5062,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationResponse = void 0;
-const swagger_1 = __webpack_require__(61);
+const swagger_1 = __webpack_require__(40);
 class PaginationResponse {
     constructor(list, pageSize, totalCount) {
         this.pageSize = pageSize;
@@ -4969,10 +5143,10 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const tsdb_module_1 = __webpack_require__(2);
-const config_1 = __webpack_require__(58);
+const config_1 = __webpack_require__(35);
 const microservices_1 = __webpack_require__(10);
-const semlog_module_1 = __webpack_require__(68);
-const path_1 = __webpack_require__(43);
+const semlog_module_1 = __webpack_require__(71);
+const path_1 = __webpack_require__(50);
 const proto_1 = __webpack_require__(8);
 async function bootstrap() {
     const tsdbModule = await core_1.NestFactory.create(tsdb_module_1.TsdbModule);

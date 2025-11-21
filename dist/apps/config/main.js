@@ -882,21 +882,1542 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(29), exports);
-__exportStar(__webpack_require__(52), exports);
 
 
 /***/ }),
 /* 29 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
+
+
+/***/ }),
+/* 30 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 31 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/config");
+
+/***/ }),
+/* 32 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppModule = void 0;
+const common_1 = __webpack_require__(33);
+const config_1 = __webpack_require__(31);
+const Joi = __webpack_require__(34);
+const typeorm_1 = __webpack_require__(35);
+const microservices_1 = __webpack_require__(2);
+const constant_1 = __webpack_require__(36);
+const path_1 = __webpack_require__(30);
+const code_module_1 = __webpack_require__(43);
+const common_2 = __webpack_require__(3);
+let AppModule = class AppModule {
+};
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                validationSchema: Joi.object({
+                    CODE_GRPC_URL: Joi.string().required(),
+                    POSTGRES_URL: Joi.string().required(),
+                }),
+            }),
+            typeorm_1.TypeOrmModule.forRootAsync({
+                useFactory: (configService) => ({
+                    type: 'postgres',
+                    url: configService.getOrThrow('POSTGRES_URL'),
+                    autoLoadEntities: true,
+                    synchronize: true,
+                }),
+                inject: [config_1.ConfigService],
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        name: constant_1.CODE_SERVICE,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                package: common_2.CodeMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto', 'code.proto'),
+                                url: configService.get('CODE_GRPC_URL'),
+                            },
+                        }),
+                        inject: [config_1.ConfigService],
+                    },
+                ],
+                isGlobal: true,
+            }),
+            code_module_1.CodeModule,
+        ],
+    })
+], AppModule);
+
+
+/***/ }),
+/* 33 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/common");
+
+/***/ }),
+/* 34 */
+/***/ ((module) => {
+
+module.exports = require("joi");
+
+/***/ }),
+/* 35 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/typeorm");
+
+/***/ }),
+/* 36 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.message = exports.environment = void 0;
+__exportStar(__webpack_require__(37), exports);
+__exportStar(__webpack_require__(38), exports);
+exports.environment = __webpack_require__(39);
+exports.message = __webpack_require__(41);
+
+
+/***/ }),
+/* 37 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.AUTH_SERVICE = 'AUTH_SERVICE';
+exports.USER_SERVICE = 'USER_SERVICE';
+exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
+exports.ROLE_SERVICE = 'ROLE_SERVICE';
+exports.GROUP_SERVICE = 'GROUP_SERVICE';
+exports.AMR_SERVICE = 'AMR_SERVICE';
+exports.REDIS_SERVICE = 'REDIS_SERVICE';
+exports.CODE_SERVICE = 'CODE_SERVICE';
+exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
+exports.SETTING_SERVICE = 'SETTING_SERVICE';
+exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
+exports.MOVE_SERVICE = 'MOVE_SERVICE';
+exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
+exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
+exports.MAP_SERVICE = 'MAP_SERVICE';
+exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
+exports.SOUND_SERVICE = 'SOUND_SERVICE';
+exports.TASK_SERVICE = 'TASK_SERVICE';
+exports.COBOT_SERVICE = 'COBOT_SERVICE';
+exports.TCP_SERVICE = 'TCP_SERVICE';
+exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
+exports.MQTT_BROKER = 'MQTT_BROKER';
+
+
+/***/ }),
+/* 38 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 39 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(40), exports);
+
+
+/***/ }),
+/* 40 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SYSTEM = void 0;
+exports.SYSTEM = {
+    INTERACTIVE: {
+        FMS: 'FMS',
+        FRS: 'FRS',
+        ACS: 'ACS',
+        IMS: 'IMS',
+    },
+    CONTROL: {
+        RRS: 'RRS',
+    },
+    CONNECTION: {
+        CLIENT: 'CLIENT',
+        AMR: 'AMR',
+    },
+};
+
+
+/***/ }),
+/* 41 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(42), exports);
+
+
+/***/ }),
+/* 42 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SUCCESS_MESSAGES = exports.ERROR_MESSAGE = void 0;
+exports.ERROR_MESSAGE = {
+    USER: {
+        ID_REQUIRED: '사용자 아이디는 필수입니다.',
+        NOT_FOUND: '사용자를 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
+        INVALID_PASSWORD: '비밀번호가 올바르지 않습니다.',
+    },
+    ROBOT: {
+        SERIAL_REQUIRED: '로봇 시리얼은 필수입니다.',
+        NOT_FOUND: '로봇을 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 로봇입니다.',
+    },
+    AUTH: {
+        TOKEN_REQUIRED: '인증 토큰이 필요합니다.',
+        TOKEN_INVALID: '유효하지 않은 토큰입니다.',
+        TOKEN_EXPIRED: '토큰이 만료되었습니다.',
+        UNAUTHORIZED: '인증이 필요합니다.',
+        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
+    },
+    CODE: {
+        NOT_FOUND: '코드를 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 코드입니다.',
+    },
+    SOCKET: {
+        NOT_FOUND: 'Socket정보를 찾을 수 없습니다.',
+    },
+    MAP: {
+        NOT_FOUND: '맵을 찾을 수 없습니다.',
+        INVALID_FORMAT: '올바르지 않은 맵 형식입니다.',
+        SAVE_FAILED: '맵 저장에 실패했습니다.',
+    },
+    COMMON: {
+        BAD_REQUEST: '잘못된 요청입니다.',
+        INTERNAL_SERVER_ERROR: '서버 내부 오류가 발생했습니다.',
+        VALIDATION_FAILED: '유효성 검사에 실패했습니다.',
+        FORBIDDEN: '권한이 없습니다.',
+    },
+};
+exports.SUCCESS_MESSAGES = {
+    USER: {
+        CREATED: '사용자가 성공적으로 생성되었습니다.',
+        UPDATED: '사용자 정보가 성공적으로 업데이트되었습니다.',
+        DELETED: '사용자가 성공적으로 삭제되었습니다.',
+    },
+    MAP: {
+        SAVED: '맵이 성공적으로 저장되었습니다.',
+        LOADED: '맵이 성공적으로 로드되었습니다.',
+        UPDATED: '맵이 성공적으로 업데이트되었습니다.',
+    },
+};
+
+
+/***/ }),
+/* 43 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CodeModule = void 0;
+const common_1 = __webpack_require__(33);
+const code_service_1 = __webpack_require__(44);
+const code_controller_1 = __webpack_require__(47);
+const typeorm_1 = __webpack_require__(35);
+const code_entity_1 = __webpack_require__(48);
+const typeorm_adapter_1 = __webpack_require__(50);
+let CodeModule = class CodeModule {
+};
+exports.CodeModule = CodeModule;
+exports.CodeModule = CodeModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([code_entity_1.CodeEntity])],
+        controllers: [code_controller_1.CodeController],
+        providers: [
+            code_service_1.CodeService,
+            {
+                provide: 'DatabaseOutputPort',
+                useClass: typeorm_adapter_1.TypeOrmAdapter,
+            },
+        ],
+        exports: [code_service_1.CodeService],
+    })
+], CodeModule);
+
+
+/***/ }),
+/* 44 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CodeService = void 0;
+const common_1 = __webpack_require__(33);
+const code_model_1 = __webpack_require__(45);
+const database_output_port_1 = __webpack_require__(46);
+let CodeService = class CodeService {
+    constructor(databaseOutputPort) {
+        this.databaseOutputPort = databaseOutputPort;
+    }
+    async getCodeList(param) {
+        const criteria = code_model_1.CodeSearchCriteria.create({
+            codeId: param.codeId,
+            code: param.code,
+            codeName: param.codeName,
+            codeDesc: param.codeDesc,
+            parentCode: param.parentCode,
+            sortOrder: param.sortOrder,
+            useYn: param.useYn,
+            createdAt: param.createdAt,
+            createdAtStart: param.createdAtStart,
+            createdAtEnd: param.createdAtEnd,
+            updatedAt: param.updatedAt,
+            updatedAtStart: param.updatedAtStart,
+            updatedAtEnd: param.updatedAtEnd,
+            createdBy: param.createdBy,
+            updatedBy: param.updatedBy,
+            searchType: param.searchType,
+            searchText: param.searchText,
+        });
+        const pageInfo = new code_model_1.PageInfo(param.pageNo, param.pageSize);
+        const result = await this.databaseOutputPort.findCodeByCriteria(criteria, pageInfo);
+        return {
+            pageNo: pageInfo.pageNo,
+            pageSize: pageInfo.pageSize,
+            totalCount: result.totalCount,
+            totalPage: result.totalPage,
+            data: result.code.map((code) => this.mapCodeToResponse(code)),
+        };
+    }
+    mapCodeToResponse(code) {
+        return {
+            codeId: code.codeId,
+            code: code.code,
+            codeName: code.codeName,
+            codeDesc: code.codeDesc,
+            parentCode: code.parentCode,
+            sortOrder: code.sortOrder,
+            useYn: code.useYn,
+            createdAt: code.createdAt?.toISOString(),
+            updatedAt: code.updatedAt?.toISOString(),
+            createdBy: code.createdBy,
+            updatedBy: code.updatedBy,
+        };
+    }
+    async getCode(param) {
+        if (!param.codeId) {
+            throw new Error('코드 ID는 필수입니다.');
+        }
+        const code = await this.databaseOutputPort.findCodeById(param.codeId);
+        if (!code) {
+            throw new Error('코드를 찾을 수 없습니다.');
+        }
+        return this.mapCodeToResponse(code);
+    }
+    async addCode(param) {
+        const exists = await this.databaseOutputPort.existsCode(param.codeId);
+        if (exists) {
+            throw new Error('이미 존재하는 코드 ID 입니다.');
+        }
+        const code = code_model_1.Code.create({
+            codeId: param.codeId,
+            code: param.code,
+            codeName: param.codeName,
+            codeDesc: param.codeDesc,
+            parentCode: param.parentCode,
+            sortOrder: param.sortOrder,
+            useYn: param.useYn,
+            createdBy: param.createdBy,
+        });
+        const savedCode = await this.databaseOutputPort.saveCode(code);
+        return this.mapCodeToResponse(savedCode);
+    }
+    async modifyCode(param) {
+        const code = await this.databaseOutputPort.findCodeById(param.codeId);
+        if (!code) {
+            throw new Error('코드를 찾을 수 없습니다.');
+        }
+        if (param.data) {
+            code.update({
+                code: param.data.code,
+                codeName: param.data.codeName,
+                codeDesc: param.data.codeDesc,
+                parentCode: param.data.parentCode,
+                sortOrder: param.data.sortOrder,
+                updatedBy: param.data.updatedBy,
+            });
+        }
+        if (param.data.useYn && param.data.useYn !== code.useYn) {
+            code.setUse({
+                useYn: param.data.useYn,
+                updatedBy: param.data.updatedBy,
+            });
+        }
+        const updatedCode = await this.databaseOutputPort.updateCode(param.codeId, code);
+        return this.mapCodeToResponse(updatedCode);
+    }
+    async removeCode(codeId) {
+        const code = await this.databaseOutputPort.findCodeById(codeId);
+        if (!code) {
+            throw new Error('코드를 찾을 수 없습니다.');
+        }
+        await this.databaseOutputPort.deleteCode(codeId);
+        return this.mapCodeToResponse(code);
+    }
+};
+exports.CodeService = CodeService;
+exports.CodeService = CodeService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)('DatabaseOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof database_output_port_1.DatabaseOutputPort !== "undefined" && database_output_port_1.DatabaseOutputPort) === "function" ? _a : Object])
+], CodeService);
+
+
+/***/ }),
+/* 45 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CodePageResult = exports.PageInfo = exports.CodeSearchCriteria = exports.Code = void 0;
+class Code {
+    constructor(_codeId, _code, _codeName, _codeDesc, _useYn, _parentCode, _sortOrder, _createdAt, _createdBy, _updatedAt, _updatedBy) {
+        this._codeId = _codeId;
+        this._code = _code;
+        this._codeName = _codeName;
+        this._codeDesc = _codeDesc;
+        this._useYn = _useYn;
+        this._parentCode = _parentCode;
+        this._sortOrder = _sortOrder;
+        this._createdAt = _createdAt;
+        this._createdBy = _createdBy;
+        this._updatedAt = _updatedAt;
+        this._updatedBy = _updatedBy;
+    }
+    static create(param) {
+        if (!param.codeId?.trim()) {
+            throw new Error('코드 ID는 필수입니다.');
+        }
+        return new Code(param.codeId, param.code, param.codeName, param.codeDesc, param.useYn, param.parentCode, param.sortOrder, new Date());
+    }
+    static reconstitute(param) {
+        return new Code(param.codeId, param.code, param.codeName, param.codeDesc, param.useYn, param.parentCode, param.sortOrder, param.createdAt, param.createdBy, param.updatedAt, param.updatedBy);
+    }
+    update(param) {
+        this._code = param.code;
+        this._codeName = param.codeName;
+        this._codeDesc = param.codeDesc;
+        this._parentCode = param.parentCode;
+        this._sortOrder = param.sortOrder;
+        this._updatedAt = new Date();
+        this._updatedBy = param.updatedBy;
+    }
+    setUse(param) {
+        this._useYn = param.useYn;
+        this._updatedAt = new Date();
+        this._updatedBy = param.updatedBy;
+    }
+    get codeId() {
+        return this._codeId;
+    }
+    get code() {
+        return this._code;
+    }
+    get codeName() {
+        return this._codeName;
+    }
+    get codeDesc() {
+        return this._codeDesc;
+    }
+    get parentCode() {
+        return this._parentCode;
+    }
+    get sortOrder() {
+        return this._sortOrder;
+    }
+    get useYn() {
+        return this._useYn;
+    }
+    get createdAt() {
+        return this._createdAt;
+    }
+    get createdBy() {
+        return this._createdBy;
+    }
+    get updatedAt() {
+        return this._updatedAt;
+    }
+    get updatedBy() {
+        return this._updatedBy;
+    }
+}
+exports.Code = Code;
+class CodeSearchCriteria {
+    constructor(codeId, code, codeName, codeDesc, parentCode, sortOrder, useYn, createdAt, createdAtStart, createdAtEnd, updatedAt, updatedAtStart, updatedAtEnd, createdBy, updatedBy, searchType, searchText) {
+        this.codeId = codeId;
+        this.code = code;
+        this.codeName = codeName;
+        this.codeDesc = codeDesc;
+        this.parentCode = parentCode;
+        this.sortOrder = sortOrder;
+        this.useYn = useYn;
+        this.createdAt = createdAt;
+        this.createdAtStart = createdAtStart;
+        this.createdAtEnd = createdAtEnd;
+        this.updatedAt = updatedAt;
+        this.updatedAtStart = updatedAtStart;
+        this.updatedAtEnd = updatedAtEnd;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.searchType = searchType;
+        this.searchText = searchText;
+    }
+    static create(param) {
+        return new CodeSearchCriteria(param.codeId, param.code, param.codeName, param.codeDesc, param.parentCode, param.sortOrder, param.useYn, param.createdAt ? new Date(param.createdAt) : undefined, param.createdAtStart ? new Date(param.createdAtStart) : undefined, param.createdAtEnd ? new Date(param.createdAtEnd) : undefined, param.updatedAt ? new Date(param.updatedAt) : undefined, param.updatedAtStart ? new Date(param.updatedAtStart) : undefined, param.updatedAtEnd ? new Date(param.updatedAtEnd) : undefined, param.createdBy, param.updatedBy, param.searchType, param.searchText);
+    }
+}
+exports.CodeSearchCriteria = CodeSearchCriteria;
+class PageInfo {
+    constructor(pageNo, pageSize) {
+        this.pageNo = pageNo;
+        this.pageSize = pageSize;
+        if (pageNo < 1)
+            throw new Error('페이지 번호는 1 이상이어야 합니다.');
+        if (pageSize < 1)
+            throw new Error('페이지 크기는 1 이상이어야 합니다.');
+        if (pageSize > 1000000)
+            throw new Error('페이지 크기가 너무 큽니다.');
+    }
+    get offset() {
+        const result = (this.pageNo - 1) * this.pageSize;
+        if (result > Number.MAX_SAFE_INTEGER) {
+            throw new Error('Offset 값이 너무 큽니다.');
+        }
+        return result;
+    }
+}
+exports.PageInfo = PageInfo;
+class CodePageResult {
+    constructor(code, totalCount, pageInfo) {
+        this.code = code;
+        this.totalCount = totalCount;
+        this.pageInfo = pageInfo;
+    }
+    get totalPage() {
+        return Math.ceil(this.totalCount / this.pageInfo.pageSize);
+    }
+    get hasNext() {
+        return this.pageInfo.pageNo < this.totalPage;
+    }
+    get hasPrevious() {
+        return this.pageInfo.pageNo > 1;
+    }
+}
+exports.CodePageResult = CodePageResult;
+
+
+/***/ }),
+/* 46 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 47 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CodeController = void 0;
+const common_1 = __webpack_require__(33);
+const code_service_1 = __webpack_require__(44);
+const common_2 = __webpack_require__(3);
+let CodeController = class CodeController {
+    constructor(codeService) {
+        this.codeService = codeService;
+    }
+    async readCodeList(param) {
+        const serviceRequest = {
+            pageNo: param.pageNo || 1,
+            pageSize: param.pageSize || 10,
+            searchType: param.searchType,
+            searchText: param.searchText,
+            codeId: param.codeId,
+            code: param.code,
+            codeName: param.codeName,
+            codeDesc: param.codeDesc,
+            parentCode: param.parentCode,
+            sortOrder: param.sortOrder,
+            useYn: param.useYn,
+            createdAt: param.createdAt,
+            updatedAt: param.updatedAt,
+            createdAtStart: param.createdAtStart,
+            createdAtEnd: param.createdAtEnd,
+            updatedAtStart: param.updatedAtStart,
+            updatedAtEnd: param.updatedAtEnd,
+            createdBy: param.createdBy,
+            updatedBy: param.updatedBy,
+        };
+        const serviceResponse = await this.codeService.getCodeList(serviceRequest);
+        return {
+            pageNo: serviceResponse.pageNo,
+            pageSize: serviceResponse.pageSize,
+            totalCount: serviceResponse.totalCount,
+            totalPage: serviceResponse.totalPage,
+            data: serviceResponse.data.map((code) => ({
+                codeId: code.codeId,
+                code: code.code,
+                codeName: code.codeName,
+                codeDesc: code.codeDesc,
+                parentCode: code.parentCode,
+                sortOrder: code.sortOrder,
+                useYn: code.useYn,
+                createdAt: code.createdAt,
+                updatedAt: code.updatedAt,
+                createdBy: code.createdBy,
+                updatedBy: code.updatedBy,
+            })),
+        };
+    }
+    async readCode(param) {
+        const serviceRequest = {
+            codeId: param.codeId,
+            code: param.code,
+            codeName: param.codeName,
+            codeDesc: param.codeDesc,
+            parentCode: param.parentCode,
+            sortOrder: param.sortOrder,
+            useYn: param.useYn,
+            createdAt: param.createdAt,
+            updatedAt: param.updatedAt,
+            createdBy: param.createdBy,
+            updatedBy: param.updatedBy,
+        };
+        const serviceResponse = await this.codeService.getCode(serviceRequest);
+        return {
+            codeId: serviceResponse.codeId,
+            code: serviceResponse.code,
+            codeName: serviceResponse.codeName,
+            codeDesc: serviceResponse.codeDesc,
+            parentCode: serviceResponse.parentCode,
+            sortOrder: serviceResponse.sortOrder,
+            useYn: serviceResponse.useYn,
+            createdAt: serviceResponse.createdAt,
+            updatedAt: serviceResponse.updatedAt,
+        };
+    }
+    async createCode(param) {
+        const serviceRequest = {
+            codeId: param.codeId,
+            code: param.code,
+            codeName: param.codeName,
+            codeDesc: param.codeDesc,
+            parentCode: param.parentCode,
+            sortOrder: param.sortOrder,
+            useYn: param.useYn,
+            createdBy: param.createdBy,
+        };
+        const serviceResponse = await this.codeService.addCode(serviceRequest);
+        return {
+            codeId: serviceResponse.codeId,
+            code: serviceResponse.code,
+            codeName: serviceResponse.codeName,
+            codeDesc: serviceResponse.codeDesc,
+            parentCode: serviceResponse.parentCode,
+            sortOrder: serviceResponse.sortOrder,
+            useYn: serviceResponse.useYn,
+            createdAt: serviceResponse.createdAt,
+            createdBy: serviceResponse.createdBy,
+        };
+    }
+    async updateCode(param) {
+        const serviceRequest = {
+            codeId: param.codeId,
+            data: param.data
+                ? {
+                    code: param.data.code,
+                    codeName: param.data.codeName,
+                    codeDesc: param.data.codeDesc,
+                    parentCode: param.data.parentCode,
+                    sortOrder: param.data.sortOrder,
+                    useYn: param.data.useYn,
+                    updatedBy: param.data.updatedBy,
+                }
+                : undefined,
+        };
+        const serviceResponse = await this.codeService.modifyCode(serviceRequest);
+        return {
+            codeId: serviceResponse.codeId,
+            code: serviceResponse.code,
+            codeName: serviceResponse.codeName,
+            codeDesc: serviceResponse.codeDesc,
+            parentCode: serviceResponse.parentCode,
+            sortOrder: serviceResponse.sortOrder,
+            useYn: serviceResponse.useYn,
+            updatedAt: serviceResponse.updatedAt,
+            updatedBy: serviceResponse.updatedBy,
+        };
+    }
+    async deleteCode(param) {
+        const serviceResponse = await this.codeService.removeCode(param.codeId);
+        return {
+            codeId: serviceResponse.codeId,
+            code: serviceResponse.code,
+            codeName: serviceResponse.codeName,
+            codeDesc: serviceResponse.codeDesc,
+            parentCode: serviceResponse.parentCode,
+            sortOrder: serviceResponse.sortOrder,
+            useYn: serviceResponse.useYn,
+            createdAt: serviceResponse.createdAt,
+            updatedAt: serviceResponse.updatedAt,
+            createdBy: serviceResponse.createdBy,
+            updatedBy: serviceResponse.updatedBy,
+        };
+    }
+};
+exports.CodeController = CodeController;
+exports.CodeController = CodeController = __decorate([
+    (0, common_1.Controller)(),
+    common_2.CodeMicroservice.CodeGrpcServiceControllerMethods(),
+    __metadata("design:paramtypes", [typeof (_a = typeof code_service_1.CodeService !== "undefined" && code_service_1.CodeService) === "function" ? _a : Object])
+], CodeController);
+
+
+/***/ }),
+/* 48 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CodeEntity = void 0;
+const typeorm_1 = __webpack_require__(49);
+let CodeEntity = class CodeEntity {
+    setUpdateDt() {
+        this.updatedAt = new Date();
+    }
+};
+exports.CodeEntity = CodeEntity;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid', {
+        name: 'code_id',
+    }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "codeId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'code', type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "code", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'code_name', type: 'varchar', length: 100, nullable: true }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "codeName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'code_desc', type: 'varchar', length: 255, nullable: true }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "codeDesc", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'parent_code', type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "parentCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'sort_order', type: 'int', nullable: true }),
+    __metadata("design:type", Number)
+], CodeEntity.prototype, "sortOrder", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'use_yn',
+        type: 'varchar',
+        length: 5,
+        default: 'Y',
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "useYn", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)({
+        name: 'created_at',
+        type: 'timestamp',
+        default: () => 'CURRENT_TIMESTAMP',
+        comment: '생성일자',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], CodeEntity.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'created_by',
+        type: 'varchar',
+        length: 50,
+        comment: '생성자 아이디',
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "createdBy", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'updated_at',
+        type: 'timestamp',
+        comment: '수정일자',
+        nullable: true,
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], CodeEntity.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'updated_by',
+        type: 'varchar',
+        length: 50,
+        comment: '수정자 아이디',
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CodeEntity.prototype, "updatedBy", void 0);
+__decorate([
+    (0, typeorm_1.BeforeUpdate)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], CodeEntity.prototype, "setUpdateDt", null);
+exports.CodeEntity = CodeEntity = __decorate([
+    (0, typeorm_1.Entity)('code', {
+        orderBy: {
+            createdAt: 'DESC',
+        },
+    })
+], CodeEntity);
+
+
+/***/ }),
+/* 49 */
+/***/ ((module) => {
+
+module.exports = require("typeorm");
+
+/***/ }),
+/* 50 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TypeOrmAdapter = void 0;
+const code_model_1 = __webpack_require__(45);
+const common_1 = __webpack_require__(33);
+const typeorm_1 = __webpack_require__(49);
+const code_entity_1 = __webpack_require__(48);
+const code_entity_mapper_1 = __webpack_require__(51);
+const typeorm_2 = __webpack_require__(35);
+let TypeOrmAdapter = class TypeOrmAdapter {
+    constructor(codeRepository) {
+        this.codeRepository = codeRepository;
+    }
+    async findCodeById(codeId) {
+        const entity = await this.codeRepository.findOne({
+            where: { codeId: codeId },
+        });
+        return entity ? code_entity_mapper_1.CodeEntityMapper.toDomain(entity) : null;
+    }
+    async findCodeByCriteria(criteria, pageInfo) {
+        const queryBuilder = this.codeRepository.createQueryBuilder('code');
+        this.applyCriteria(queryBuilder, criteria);
+        const totalCount = await queryBuilder.getCount();
+        queryBuilder.orderBy('code.createdAt', 'DESC').skip(pageInfo.offset).take(pageInfo.pageSize);
+        const entity = await queryBuilder.getMany();
+        const code = entity.map((code) => code_entity_mapper_1.CodeEntityMapper.toDomain(code));
+        return new code_model_1.CodePageResult(code, totalCount, pageInfo);
+    }
+    async saveCode(code) {
+        const entity = code_entity_mapper_1.CodeEntityMapper.fromDomain(code);
+        const savedEntity = await this.codeRepository.save(entity);
+        return code_entity_mapper_1.CodeEntityMapper.toDomain(savedEntity);
+    }
+    async updateCode(codeId, code) {
+        const entity = code_entity_mapper_1.CodeEntityMapper.fromDomain(code);
+        await this.codeRepository.update({ codeId: codeId }, entity);
+        const updatedEntity = await this.codeRepository.findOne({
+            where: { codeId: codeId },
+        });
+        if (!updatedEntity) {
+            throw new Error('업데이트된 코드를 찾을 수 없습니다.');
+        }
+        return code_entity_mapper_1.CodeEntityMapper.toDomain(updatedEntity);
+    }
+    async deleteCode(codeId) {
+        await this.codeRepository.delete({ codeId: codeId });
+    }
+    async existsCode(codeId) {
+        const count = await this.codeRepository.count({
+            where: { codeId: codeId },
+        });
+        return count > 0;
+    }
+    applyCriteria(queryBuilder, criteria) {
+        if (criteria.codeId) {
+            queryBuilder.andWhere('code.codeId = :codeId', {
+                codeId: criteria.codeId,
+            });
+        }
+        if (criteria.code) {
+            queryBuilder.andWhere('code.code = :code', { code: criteria.code });
+        }
+        if (criteria.codeName) {
+            queryBuilder.andWhere('code.codeName = :codeName', {
+                codeName: criteria.codeName,
+            });
+        }
+        if (criteria.codeDesc) {
+            queryBuilder.andWhere('code.codeDesc = :codeDesc', {
+                codeDesc: criteria.codeDesc,
+            });
+        }
+        if (criteria.parentCode) {
+            queryBuilder.andWhere('code.parentCode = :parentCode', {
+                parentCode: criteria.parentCode,
+            });
+        }
+        if (criteria.sortOrder) {
+            queryBuilder.andWhere('code.sortOrder = :sortOrder', {
+                sortOrder: criteria.sortOrder,
+            });
+        }
+        if (criteria.useYn) {
+            queryBuilder.andWhere('code.useYn = :useYn', { useYn: criteria.useYn });
+        }
+        if (criteria.createdAtStart) {
+            queryBuilder.andWhere('amr.createdAt >= :createdAtStart', {
+                createdAtStart: criteria.createdAtStart,
+            });
+        }
+        if (criteria.createdAtEnd) {
+            queryBuilder.andWhere('amr.createdAt <= :createdAtEnd', {
+                createdAtEnd: criteria.createdAtEnd,
+            });
+        }
+        if (criteria.createdAt) {
+            queryBuilder.andWhere('amr.createdAt = :createdAt', {
+                createdAt: criteria.createdAt,
+            });
+        }
+        if (criteria.updatedAtStart) {
+            queryBuilder.andWhere('amr.updatedAt >= :updatedAtStart', {
+                updatedAtStart: criteria.updatedAtStart,
+            });
+        }
+        if (criteria.updatedAtEnd) {
+            queryBuilder.andWhere('amr.updatedAt <= :updatedAtEnd', {
+                updatedAtEnd: criteria.updatedAtEnd,
+            });
+        }
+        if (criteria.updatedAt) {
+            queryBuilder.andWhere('amr.updatedAt = :updatedAt', {
+                updatedAt: criteria.updatedAt,
+            });
+        }
+        if (criteria.createdBy) {
+            queryBuilder.andWhere('amr.createdBy = :createdBy', {
+                createdBy: criteria.createdBy,
+            });
+        }
+        if (criteria.updatedBy) {
+            queryBuilder.andWhere('amr.updatedBy = :updatedBy', {
+                updatedBy: criteria.updatedBy,
+            });
+        }
+        if (criteria.searchType && criteria.searchText) {
+            switch (criteria.searchType) {
+                case 'code':
+                    queryBuilder.andWhere('code.code LIKE :searchText', {
+                        searchText: `%${criteria.searchText}%`,
+                    });
+                    break;
+            }
+        }
+    }
+};
+exports.TypeOrmAdapter = TypeOrmAdapter;
+exports.TypeOrmAdapter = TypeOrmAdapter = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_2.InjectRepository)(code_entity_1.CodeEntity)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object])
+], TypeOrmAdapter);
+
+
+/***/ }),
+/* 51 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoggerService = void 0;
-const winston_1 = __webpack_require__(30);
-const DailyRotateFile = __webpack_require__(31);
-const util_1 = __webpack_require__(32);
-const chalk_1 = __webpack_require__(51);
-const fs_1 = __webpack_require__(38);
+exports.CodeEntityMapper = void 0;
+const code_model_1 = __webpack_require__(45);
+class CodeEntityMapper {
+    static fromDomain(code) {
+        return {
+            codeId: code.codeId,
+            code: code.code,
+            codeName: code.codeName,
+            codeDesc: code.codeDesc,
+            parentCode: code.parentCode,
+            sortOrder: code.sortOrder,
+            useYn: code.useYn,
+            createdAt: code.createdAt,
+            updatedAt: code.updatedAt,
+            createdBy: code.createdBy,
+            updatedBy: code.updatedBy,
+        };
+    }
+    static toDomain(entity) {
+        return code_model_1.Code.reconstitute({
+            codeId: entity.codeId,
+            code: entity.code,
+            codeName: entity.codeName,
+            codeDesc: entity.codeDesc,
+            parentCode: entity.parentCode,
+            sortOrder: entity.sortOrder,
+            useYn: entity.useYn,
+            createdAt: entity.createdAt,
+            updatedAt: entity.updatedAt,
+            createdBy: entity.createdBy,
+            updatedBy: entity.updatedBy,
+        });
+    }
+}
+exports.CodeEntityMapper = CodeEntityMapper;
+
+
+/***/ }),
+/* 52 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigDBModule = void 0;
+const common_1 = __webpack_require__(33);
+const typeorm_1 = __webpack_require__(35);
+const config_service_1 = __webpack_require__(53);
+const db_grpc_controller_1 = __webpack_require__(77);
+const db_api_controller_1 = __webpack_require__(78);
+const config_entity_1 = __webpack_require__(54);
+const pg_1 = __webpack_require__(84);
+const config_1 = __webpack_require__(31);
+const microservices_1 = __webpack_require__(2);
+const constant_1 = __webpack_require__(36);
+const log_module_1 = __webpack_require__(85);
+let ConfigDBModule = class ConfigDBModule {
+};
+exports.ConfigDBModule = ConfigDBModule;
+exports.ConfigDBModule = ConfigDBModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            log_module_1.LogModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            typeorm_1.TypeOrmModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => {
+                    await ensureConfigDatabase();
+                    return {
+                        type: 'postgres',
+                        url: configService.get('POSTGRES_URL') + '/config',
+                        autoLoadEntities: true,
+                        synchronize: true,
+                    };
+                },
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.MQTT_BROKER,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.MQTT,
+                            options: {
+                                url: configService.get('MQTT_URL'),
+                            },
+                        }),
+                    },
+                ],
+            }),
+            typeorm_1.TypeOrmModule.forFeature([config_entity_1.Config]),
+        ],
+        controllers: [db_grpc_controller_1.DBGrpcController, db_api_controller_1.DBConfigAPIController],
+        providers: [config_service_1.ConfigDBService],
+        exports: [config_service_1.ConfigDBService],
+    })
+], ConfigDBModule);
+async function ensureConfigDatabase() {
+    const client = new pg_1.Client({
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '7000'),
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || 'postgres',
+        database: 'postgres',
+    });
+    try {
+        await client.connect();
+        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'config'");
+        if (result.rows.length === 0) {
+            await client.query('CREATE DATABASE config');
+            console.log('🎉 config 데이터베이스 생성 완료');
+        }
+        else {
+            console.log('✅ config 데이터베이스 이미 존재');
+        }
+    }
+    catch (error) {
+        console.warn('⚠️ semlog DB 생성 실패:', error.message);
+    }
+    finally {
+        await client.end();
+    }
+}
+
+
+/***/ }),
+/* 53 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigDBService = void 0;
+const common_1 = __webpack_require__(33);
+const typeorm_1 = __webpack_require__(49);
+const typeorm_2 = __webpack_require__(35);
+const common_2 = __webpack_require__(3);
+const config_entity_1 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(55);
+const constant_1 = __webpack_require__(56);
+const microservices_1 = __webpack_require__(2);
+const constant_2 = __webpack_require__(36);
+const saveLog_service_1 = __webpack_require__(58);
+let ConfigDBService = class ConfigDBService {
+    constructor(configRepository, mqttMicroservice, saveLogService) {
+        this.configRepository = configRepository;
+        this.mqttMicroservice = mqttMicroservice;
+        this.saveLogService = saveLogService;
+        this.fired = false;
+        this.logger = this.saveLogService.get('config');
+    }
+    async onApplicationBootstrap() {
+        this.mqttMicroservice.emit('ready:config', {});
+    }
+    async getConfig(request) {
+        try {
+            if (request.key === undefined || request.key === '') {
+                throw new rpc_code_exception_1.RpcCodeException('key값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            const resp = await this.configRepository.findOneBy({ key: request.key });
+            return { key: request.key, value: resp ? resp.value : null };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger.error(`[DB] getConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getConfigAll() {
+        try {
+            const resp = await this.configRepository.find();
+            return { configs: resp };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger.error(`[DB] getConfigAll : ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async setConfigs(dto) {
+        try {
+            if (dto.configs === undefined || dto.configs.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            for (const config of dto.configs) {
+                await this.setConfig(config);
+            }
+            return { ...dto, result: 'success' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger.error(`[DB] setConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async setConfig(request) {
+        try {
+            this.logger.debug(`[DB] setConfig : ${JSON.stringify(request)}`);
+            if (request.key === undefined || request.key === '') {
+                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.value === undefined || request.value === '') {
+                throw new rpc_code_exception_1.RpcCodeException(`value 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            const resp = await this.configRepository.save(request);
+            this.logger.info(`[DB] setConfig : ${JSON.stringify(resp)} done`);
+            return { ...request, result: resp ? 'success' : 'fail' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger.error(`[DB] setConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async deleteConfig(key) {
+        try {
+            this.logger.debug(`[DB] deleteConfig : ${key}`);
+            if (key === undefined || key === '') {
+                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            const resp = await this.configRepository.delete({ key: key });
+            if (!resp.affected || resp.affected == 0) {
+                throw new rpc_code_exception_1.RpcCodeException(`key 값에 해당하는 객체가 없습니다 (${key})`, constant_1.GrpcCode.NotFound);
+            }
+            return { key: key, result: 'success' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger.error(`[DB] deleteConfig : ${key} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async deleteConfigs(dto) {
+        try {
+            if (dto.configs === undefined || dto.configs.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            for (const config of dto.configs) {
+                await this.deleteConfig(config.key);
+            }
+            return { ...dto, result: 'success' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger.error(`[DB] deleteConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+};
+exports.ConfigDBService = ConfigDBService;
+exports.ConfigDBService = ConfigDBService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_2.InjectRepository)(config_entity_1.Config)),
+    __param(1, (0, common_1.Inject)(constant_2.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
+], ConfigDBService);
+
+
+/***/ }),
+/* 54 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Config = void 0;
+const typeorm_1 = __webpack_require__(49);
+let Config = class Config {
+};
+exports.Config = Config;
+__decorate([
+    (0, typeorm_1.PrimaryColumn)({
+        unique: true,
+    }),
+    __metadata("design:type", String)
+], Config.prototype, "key", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Config.prototype, "value", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Config.prototype, "createAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Config.prototype, "updateAt", void 0);
+__decorate([
+    (0, typeorm_1.VersionColumn)(),
+    __metadata("design:type", Number)
+], Config.prototype, "version", void 0);
+exports.Config = Config = __decorate([
+    (0, typeorm_1.Entity)()
+], Config);
+
+
+/***/ }),
+/* 55 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcCodeException = void 0;
+const microservices_1 = __webpack_require__(2);
+class RpcCodeException extends microservices_1.RpcException {
+    constructor(details, statusCode) {
+        super({ details: details, code: statusCode });
+        this.statusCode = statusCode;
+    }
+}
+exports.RpcCodeException = RpcCodeException;
+
+
+/***/ }),
+/* 56 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(57), exports);
+
+
+/***/ }),
+/* 57 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcCode = void 0;
+var GrpcCode;
+(function (GrpcCode) {
+    GrpcCode[GrpcCode["OK"] = 0] = "OK";
+    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
+    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
+    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
+    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
+    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
+    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
+    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
+    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
+    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
+    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
+    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
+    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
+    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
+    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
+    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
+    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
+    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
+})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
+
+
+/***/ }),
+/* 58 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SaveLogService = void 0;
+const common_1 = __webpack_require__(33);
+const winston_1 = __webpack_require__(59);
+const DailyRotateFile = __webpack_require__(60);
+const util_1 = __webpack_require__(61);
+const chalk_1 = __webpack_require__(76);
+const fs_1 = __webpack_require__(67);
 const levelColorMap = {
     error: chalk_1.default.red,
     warn: chalk_1.default.magenta,
@@ -914,7 +2435,7 @@ function formatLogMessage(message) {
         if (message.includes('items:')) {
             return message;
         }
-        const jsonRegex = /:\s*(\[.*?\]|\{.*?\})/g;
+        const jsonRegex = /:\s*(\[[\s\S]*?\]|\{[\s\S]*?\})/g;
         return message.replace(jsonRegex, (match, jsonStr) => {
             try {
                 const data = JSON.parse(jsonStr);
@@ -933,21 +2454,13 @@ function formatLogMessage(message) {
 function formatDataRecursive(data) {
     if (Array.isArray(data)) {
         if (data.length <= 4) {
-            const items = data.map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
+            const items = data.map((item) => typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item)));
             return `[${items.join(', ')}]`;
         }
         else {
-            const items = data.slice(0, 4).map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
+            const items = data
+                .slice(0, 4)
+                .map((item) => (typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item))));
             return `[${data.length} items: [${items.join(', ')}]...]`;
         }
     }
@@ -974,9 +2487,9 @@ const customFormat = winston_1.format.printf(({ timestamp, level, message }) => 
     const levelText = levelTextMap[level] || level;
     if (typeof message === 'string') {
         const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        let logtext = message.replace(/\[(?!['"])[A-Za-z0-9 _-]+\]/g, '').trim();
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
         logtext = formatLogMessage(logtext);
         return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
     }
@@ -987,28 +2500,49 @@ const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
     const levelText = levelTextMap[level] || level;
     if (typeof message === 'string') {
         const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[([^\]]+)\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        const logtext = message.replace(/\[[^\]]+\]/g, '').trim();
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
         return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
     }
 });
-const loggers = new Map();
-class LoggerService {
-    constructor(service) {
-        const logPath = '/data/log/' + service;
-        if (!(0, fs_1.existsSync)(logPath)) {
-            (0, fs_1.mkdirSync)(logPath, { recursive: true });
-        }
+let SaveLogService = class SaveLogService {
+    constructor() {
+        this.loggers = new Map();
+        this.rootPath = '/data/log';
+        this.logPath = this.rootPath;
         chalk_1.default.level = 3;
-        this.logger = (0, winston_1.createLogger)({
+    }
+    get(service) {
+        let logger = this.loggers.get(service);
+        if (!logger) {
+            logger = this.createLogger(service);
+            this.loggers.set(service, logger);
+        }
+        return logger;
+    }
+    createLogger(service) {
+        this.logPath = `${this.rootPath}/${service}`;
+        if (!(0, fs_1.existsSync)(this.logPath)) {
+            (0, fs_1.mkdirSync)(this.logPath, { recursive: true });
+        }
+        try {
+            (0, fs_1.chownSync)(this.logPath, 1000, 1000);
+        }
+        catch (error) {
+            console.error('LoggerService chownSync Error : ', error);
+        }
+        return (0, winston_1.createLogger)({
             level: 'debug',
             transports: [
                 new DailyRotateFile({
-                    filename: logPath + '/%DATE%.log',
+                    filename: `${this.logPath}/%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
                     level: 'debug',
                     format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
+                    zippedArchive: true,
+                    maxSize: '10m',
+                    maxFiles: '14d',
                 }),
                 new winston_1.transports.Console({
                     level: 'debug',
@@ -1017,69 +2551,55 @@ class LoggerService {
             ],
         });
     }
-    static get(service) {
-        if (!loggers.has(service)) {
-            loggers.set(service, new LoggerService(service));
-        }
-        return loggers.get(service);
-    }
-    error(str) {
-        this.logger.error(str);
-    }
-    warn(str) {
-        this.logger.warn(str);
-    }
-    info(str) {
-        this.logger.info(str);
-    }
-    debug(str) {
-        this.logger.debug(str);
-    }
-}
-exports.LoggerService = LoggerService;
+};
+exports.SaveLogService = SaveLogService;
+exports.SaveLogService = SaveLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], SaveLogService);
 
 
 /***/ }),
-/* 30 */
+/* 59 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 31 */
+/* 60 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
 
 /***/ }),
-/* 32 */
+/* 61 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(33);
+var url_util_1 = __webpack_require__(62);
 Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(35);
+var date_util_1 = __webpack_require__(64);
 Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(37);
+var file_util_1 = __webpack_require__(66);
 Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(48);
+var parse_util_1 = __webpack_require__(73);
 Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(49);
+var crypto_util_1 = __webpack_require__(74);
 Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(50);
+var validation_util_1 = __webpack_require__(75);
 Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
 
 
 /***/ }),
-/* 33 */
+/* 62 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(34);
+const uuid_1 = __webpack_require__(63);
 class UrlUtil {
     static generateUUID() {
         return (0, uuid_1.v4)();
@@ -1089,19 +2609,19 @@ exports.UrlUtil = UrlUtil;
 
 
 /***/ }),
-/* 34 */
+/* 63 */
 /***/ ((module) => {
 
 module.exports = require("uuid");
 
 /***/ }),
-/* 35 */
+/* 64 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(36);
+const date_fns_1 = __webpack_require__(65);
 class DateUtil {
     static toDatetimeString(date) {
         return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
@@ -1248,28 +2768,28 @@ exports.DateUtil = DateUtil;
 
 
 /***/ }),
-/* 36 */
+/* 65 */
 /***/ ((module) => {
 
 module.exports = require("date-fns");
 
 /***/ }),
-/* 37 */
+/* 66 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUtil = void 0;
-const fs = __webpack_require__(38);
-const path = __webpack_require__(39);
-const unzipper = __webpack_require__(40);
-const il = __webpack_require__(41);
-const uuid_1 = __webpack_require__(34);
-const archiver_1 = __webpack_require__(42);
-const csv = __webpack_require__(43);
-const zlib_1 = __webpack_require__(44);
-const rpc_code_exception_1 = __webpack_require__(45);
-const constant_1 = __webpack_require__(46);
+const fs = __webpack_require__(67);
+const path = __webpack_require__(30);
+const unzipper = __webpack_require__(68);
+const il = __webpack_require__(69);
+const uuid_1 = __webpack_require__(63);
+const archiver_1 = __webpack_require__(70);
+const csv = __webpack_require__(71);
+const zlib_1 = __webpack_require__(72);
+const rpc_code_exception_1 = __webpack_require__(55);
+const constant_1 = __webpack_require__(56);
 const microservices_1 = __webpack_require__(2);
 class FileUtil {
     static checkBasePath() {
@@ -1543,119 +3063,43 @@ exports.FileUtil = FileUtil;
 
 
 /***/ }),
-/* 38 */
+/* 67 */
 /***/ ((module) => {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 39 */
-/***/ ((module) => {
-
-module.exports = require("path");
-
-/***/ }),
-/* 40 */
+/* 68 */
 /***/ ((module) => {
 
 module.exports = require("unzipper");
 
 /***/ }),
-/* 41 */
+/* 69 */
 /***/ ((module) => {
 
 module.exports = require("iconv-lite");
 
 /***/ }),
-/* 42 */
+/* 70 */
 /***/ ((module) => {
 
 module.exports = require("archiver");
 
 /***/ }),
-/* 43 */
+/* 71 */
 /***/ ((module) => {
 
 module.exports = require("csv");
 
 /***/ }),
-/* 44 */
+/* 72 */
 /***/ ((module) => {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 45 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RpcCodeException = void 0;
-const microservices_1 = __webpack_require__(2);
-class RpcCodeException extends microservices_1.RpcException {
-    constructor(details, statusCode) {
-        super({ details: details, code: statusCode });
-        this.statusCode = statusCode;
-    }
-}
-exports.RpcCodeException = RpcCodeException;
-
-
-/***/ }),
-/* 46 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(47), exports);
-
-
-/***/ }),
-/* 47 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcCode = void 0;
-var GrpcCode;
-(function (GrpcCode) {
-    GrpcCode[GrpcCode["OK"] = 0] = "OK";
-    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
-    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
-    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
-    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
-    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
-    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
-    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
-    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
-    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
-    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
-    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
-    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
-    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
-    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
-    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
-    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
-    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
-})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
-
-
-/***/ }),
-/* 48 */
+/* 73 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1705,7 +3149,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 49 */
+/* 74 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1717,7 +3161,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 50 */
+/* 75 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1751,1442 +3195,10 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 51 */
+/* 76 */
 /***/ ((module) => {
 
 module.exports = require("chalk");
-
-/***/ }),
-/* 52 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.errorToJson = errorToJson;
-function errorToJson(error) {
-    try {
-        if (error instanceof Error) {
-            const errorJson = {
-                name: error.name,
-                message: JSON.stringify(error.message),
-            };
-            if (error['error'] && error['error'].details) {
-                errorJson['details'] = error['error'].details;
-                errorJson['code'] = error['error'].code;
-            }
-            return JSON.stringify(errorJson);
-        }
-        else {
-            const json = JSON.parse(error);
-            return JSON.stringify(json);
-        }
-    }
-    catch (err) {
-        return JSON.stringify(error);
-    }
-}
-
-
-/***/ }),
-/* 53 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/config");
-
-/***/ }),
-/* 54 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppModule = void 0;
-const common_1 = __webpack_require__(55);
-const config_1 = __webpack_require__(53);
-const Joi = __webpack_require__(56);
-const typeorm_1 = __webpack_require__(57);
-const microservices_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(58);
-const path_1 = __webpack_require__(39);
-const code_module_1 = __webpack_require__(65);
-const common_2 = __webpack_require__(3);
-let AppModule = class AppModule {
-};
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                validationSchema: Joi.object({
-                    CODE_GRPC_URL: Joi.string().required(),
-                    POSTGRES_URL: Joi.string().required(),
-                }),
-            }),
-            typeorm_1.TypeOrmModule.forRootAsync({
-                useFactory: (configService) => ({
-                    type: 'postgres',
-                    url: configService.getOrThrow('POSTGRES_URL'),
-                    autoLoadEntities: true,
-                    synchronize: true,
-                }),
-                inject: [config_1.ConfigService],
-            }),
-            microservices_1.ClientsModule.registerAsync({
-                clients: [
-                    {
-                        name: constant_1.CODE_SERVICE,
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.CodeMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto', 'code.proto'),
-                                url: configService.get('CODE_GRPC_URL'),
-                            },
-                        }),
-                        inject: [config_1.ConfigService],
-                    },
-                ],
-                isGlobal: true,
-            }),
-            code_module_1.CodeModule,
-        ],
-    })
-], AppModule);
-
-
-/***/ }),
-/* 55 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/common");
-
-/***/ }),
-/* 56 */
-/***/ ((module) => {
-
-module.exports = require("joi");
-
-/***/ }),
-/* 57 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/typeorm");
-
-/***/ }),
-/* 58 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.message = exports.environment = void 0;
-__exportStar(__webpack_require__(59), exports);
-__exportStar(__webpack_require__(60), exports);
-exports.environment = __webpack_require__(61);
-exports.message = __webpack_require__(63);
-
-
-/***/ }),
-/* 59 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
-exports.AUTH_SERVICE = 'AUTH_SERVICE';
-exports.USER_SERVICE = 'USER_SERVICE';
-exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
-exports.ROLE_SERVICE = 'ROLE_SERVICE';
-exports.GROUP_SERVICE = 'GROUP_SERVICE';
-exports.AMR_SERVICE = 'AMR_SERVICE';
-exports.REDIS_SERVICE = 'REDIS_SERVICE';
-exports.CODE_SERVICE = 'CODE_SERVICE';
-exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
-exports.SETTING_SERVICE = 'SETTING_SERVICE';
-exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
-exports.MOVE_SERVICE = 'MOVE_SERVICE';
-exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
-exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
-exports.MAP_SERVICE = 'MAP_SERVICE';
-exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
-exports.SOUND_SERVICE = 'SOUND_SERVICE';
-exports.TASK_SERVICE = 'TASK_SERVICE';
-exports.COBOT_SERVICE = 'COBOT_SERVICE';
-exports.TCP_SERVICE = 'TCP_SERVICE';
-exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
-exports.MQTT_BROKER = 'MQTT_BROKER';
-
-
-/***/ }),
-/* 60 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 61 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(62), exports);
-
-
-/***/ }),
-/* 62 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SYSTEM = void 0;
-exports.SYSTEM = {
-    INTERACTIVE: {
-        FMS: 'FMS',
-        FRS: 'FRS',
-        ACS: 'ACS',
-        IMS: 'IMS',
-    },
-    CONTROL: {
-        RRS: 'RRS',
-    },
-    CONNECTION: {
-        CLIENT: 'CLIENT',
-        AMR: 'AMR',
-    },
-};
-
-
-/***/ }),
-/* 63 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(64), exports);
-
-
-/***/ }),
-/* 64 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SUCCESS_MESSAGES = exports.ERROR_MESSAGE = void 0;
-exports.ERROR_MESSAGE = {
-    USER: {
-        ID_REQUIRED: '사용자 아이디는 필수입니다.',
-        NOT_FOUND: '사용자를 찾을 수 없습니다.',
-        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
-        INVALID_PASSWORD: '비밀번호가 올바르지 않습니다.',
-    },
-    ROBOT: {
-        SERIAL_REQUIRED: '로봇 시리얼은 필수입니다.',
-        NOT_FOUND: '로봇을 찾을 수 없습니다.',
-        ALREADY_EXISTS: '이미 존재하는 로봇입니다.',
-    },
-    AUTH: {
-        TOKEN_REQUIRED: '인증 토큰이 필요합니다.',
-        TOKEN_INVALID: '유효하지 않은 토큰입니다.',
-        TOKEN_EXPIRED: '토큰이 만료되었습니다.',
-        UNAUTHORIZED: '인증이 필요합니다.',
-        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
-    },
-    CODE: {
-        NOT_FOUND: '코드를 찾을 수 없습니다.',
-        ALREADY_EXISTS: '이미 존재하는 코드입니다.',
-    },
-    SOCKET: {
-        NOT_FOUND: 'Socket정보를 찾을 수 없습니다.',
-    },
-    MAP: {
-        NOT_FOUND: '맵을 찾을 수 없습니다.',
-        INVALID_FORMAT: '올바르지 않은 맵 형식입니다.',
-        SAVE_FAILED: '맵 저장에 실패했습니다.',
-    },
-    COMMON: {
-        BAD_REQUEST: '잘못된 요청입니다.',
-        INTERNAL_SERVER_ERROR: '서버 내부 오류가 발생했습니다.',
-        VALIDATION_FAILED: '유효성 검사에 실패했습니다.',
-        FORBIDDEN: '권한이 없습니다.',
-    },
-};
-exports.SUCCESS_MESSAGES = {
-    USER: {
-        CREATED: '사용자가 성공적으로 생성되었습니다.',
-        UPDATED: '사용자 정보가 성공적으로 업데이트되었습니다.',
-        DELETED: '사용자가 성공적으로 삭제되었습니다.',
-    },
-    MAP: {
-        SAVED: '맵이 성공적으로 저장되었습니다.',
-        LOADED: '맵이 성공적으로 로드되었습니다.',
-        UPDATED: '맵이 성공적으로 업데이트되었습니다.',
-    },
-};
-
-
-/***/ }),
-/* 65 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CodeModule = void 0;
-const common_1 = __webpack_require__(55);
-const code_service_1 = __webpack_require__(66);
-const code_controller_1 = __webpack_require__(69);
-const typeorm_1 = __webpack_require__(57);
-const code_entity_1 = __webpack_require__(70);
-const typeorm_adapter_1 = __webpack_require__(72);
-let CodeModule = class CodeModule {
-};
-exports.CodeModule = CodeModule;
-exports.CodeModule = CodeModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([code_entity_1.CodeEntity])],
-        controllers: [code_controller_1.CodeController],
-        providers: [
-            code_service_1.CodeService,
-            {
-                provide: 'DatabaseOutputPort',
-                useClass: typeorm_adapter_1.TypeOrmAdapter,
-            },
-        ],
-        exports: [code_service_1.CodeService],
-    })
-], CodeModule);
-
-
-/***/ }),
-/* 66 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CodeService = void 0;
-const common_1 = __webpack_require__(55);
-const code_model_1 = __webpack_require__(67);
-const database_output_port_1 = __webpack_require__(68);
-let CodeService = class CodeService {
-    constructor(databaseOutputPort) {
-        this.databaseOutputPort = databaseOutputPort;
-    }
-    async getCodeList(param) {
-        const criteria = code_model_1.CodeSearchCriteria.create({
-            codeId: param.codeId,
-            code: param.code,
-            codeName: param.codeName,
-            codeDesc: param.codeDesc,
-            parentCode: param.parentCode,
-            sortOrder: param.sortOrder,
-            useYn: param.useYn,
-            createdAt: param.createdAt,
-            createdAtStart: param.createdAtStart,
-            createdAtEnd: param.createdAtEnd,
-            updatedAt: param.updatedAt,
-            updatedAtStart: param.updatedAtStart,
-            updatedAtEnd: param.updatedAtEnd,
-            createdBy: param.createdBy,
-            updatedBy: param.updatedBy,
-            searchType: param.searchType,
-            searchText: param.searchText,
-        });
-        const pageInfo = new code_model_1.PageInfo(param.pageNo, param.pageSize);
-        const result = await this.databaseOutputPort.findCodeByCriteria(criteria, pageInfo);
-        return {
-            pageNo: pageInfo.pageNo,
-            pageSize: pageInfo.pageSize,
-            totalCount: result.totalCount,
-            totalPage: result.totalPage,
-            data: result.code.map((code) => this.mapCodeToResponse(code)),
-        };
-    }
-    mapCodeToResponse(code) {
-        return {
-            codeId: code.codeId,
-            code: code.code,
-            codeName: code.codeName,
-            codeDesc: code.codeDesc,
-            parentCode: code.parentCode,
-            sortOrder: code.sortOrder,
-            useYn: code.useYn,
-            createdAt: code.createdAt?.toISOString(),
-            updatedAt: code.updatedAt?.toISOString(),
-            createdBy: code.createdBy,
-            updatedBy: code.updatedBy,
-        };
-    }
-    async getCode(param) {
-        if (!param.codeId) {
-            throw new Error('코드 ID는 필수입니다.');
-        }
-        const code = await this.databaseOutputPort.findCodeById(param.codeId);
-        if (!code) {
-            throw new Error('코드를 찾을 수 없습니다.');
-        }
-        return this.mapCodeToResponse(code);
-    }
-    async addCode(param) {
-        const exists = await this.databaseOutputPort.existsCode(param.codeId);
-        if (exists) {
-            throw new Error('이미 존재하는 코드 ID 입니다.');
-        }
-        const code = code_model_1.Code.create({
-            codeId: param.codeId,
-            code: param.code,
-            codeName: param.codeName,
-            codeDesc: param.codeDesc,
-            parentCode: param.parentCode,
-            sortOrder: param.sortOrder,
-            useYn: param.useYn,
-            createdBy: param.createdBy,
-        });
-        const savedCode = await this.databaseOutputPort.saveCode(code);
-        return this.mapCodeToResponse(savedCode);
-    }
-    async modifyCode(param) {
-        const code = await this.databaseOutputPort.findCodeById(param.codeId);
-        if (!code) {
-            throw new Error('코드를 찾을 수 없습니다.');
-        }
-        if (param.data) {
-            code.update({
-                code: param.data.code,
-                codeName: param.data.codeName,
-                codeDesc: param.data.codeDesc,
-                parentCode: param.data.parentCode,
-                sortOrder: param.data.sortOrder,
-                updatedBy: param.data.updatedBy,
-            });
-        }
-        if (param.data.useYn && param.data.useYn !== code.useYn) {
-            code.setUse({
-                useYn: param.data.useYn,
-                updatedBy: param.data.updatedBy,
-            });
-        }
-        const updatedCode = await this.databaseOutputPort.updateCode(param.codeId, code);
-        return this.mapCodeToResponse(updatedCode);
-    }
-    async removeCode(codeId) {
-        const code = await this.databaseOutputPort.findCodeById(codeId);
-        if (!code) {
-            throw new Error('코드를 찾을 수 없습니다.');
-        }
-        await this.databaseOutputPort.deleteCode(codeId);
-        return this.mapCodeToResponse(code);
-    }
-};
-exports.CodeService = CodeService;
-exports.CodeService = CodeService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('DatabaseOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof database_output_port_1.DatabaseOutputPort !== "undefined" && database_output_port_1.DatabaseOutputPort) === "function" ? _a : Object])
-], CodeService);
-
-
-/***/ }),
-/* 67 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CodePageResult = exports.PageInfo = exports.CodeSearchCriteria = exports.Code = void 0;
-class Code {
-    constructor(_codeId, _code, _codeName, _codeDesc, _useYn, _parentCode, _sortOrder, _createdAt, _createdBy, _updatedAt, _updatedBy) {
-        this._codeId = _codeId;
-        this._code = _code;
-        this._codeName = _codeName;
-        this._codeDesc = _codeDesc;
-        this._useYn = _useYn;
-        this._parentCode = _parentCode;
-        this._sortOrder = _sortOrder;
-        this._createdAt = _createdAt;
-        this._createdBy = _createdBy;
-        this._updatedAt = _updatedAt;
-        this._updatedBy = _updatedBy;
-    }
-    static create(param) {
-        if (!param.codeId?.trim()) {
-            throw new Error('코드 ID는 필수입니다.');
-        }
-        return new Code(param.codeId, param.code, param.codeName, param.codeDesc, param.useYn, param.parentCode, param.sortOrder, new Date());
-    }
-    static reconstitute(param) {
-        return new Code(param.codeId, param.code, param.codeName, param.codeDesc, param.useYn, param.parentCode, param.sortOrder, param.createdAt, param.createdBy, param.updatedAt, param.updatedBy);
-    }
-    update(param) {
-        this._code = param.code;
-        this._codeName = param.codeName;
-        this._codeDesc = param.codeDesc;
-        this._parentCode = param.parentCode;
-        this._sortOrder = param.sortOrder;
-        this._updatedAt = new Date();
-        this._updatedBy = param.updatedBy;
-    }
-    setUse(param) {
-        this._useYn = param.useYn;
-        this._updatedAt = new Date();
-        this._updatedBy = param.updatedBy;
-    }
-    get codeId() {
-        return this._codeId;
-    }
-    get code() {
-        return this._code;
-    }
-    get codeName() {
-        return this._codeName;
-    }
-    get codeDesc() {
-        return this._codeDesc;
-    }
-    get parentCode() {
-        return this._parentCode;
-    }
-    get sortOrder() {
-        return this._sortOrder;
-    }
-    get useYn() {
-        return this._useYn;
-    }
-    get createdAt() {
-        return this._createdAt;
-    }
-    get createdBy() {
-        return this._createdBy;
-    }
-    get updatedAt() {
-        return this._updatedAt;
-    }
-    get updatedBy() {
-        return this._updatedBy;
-    }
-}
-exports.Code = Code;
-class CodeSearchCriteria {
-    constructor(codeId, code, codeName, codeDesc, parentCode, sortOrder, useYn, createdAt, createdAtStart, createdAtEnd, updatedAt, updatedAtStart, updatedAtEnd, createdBy, updatedBy, searchType, searchText) {
-        this.codeId = codeId;
-        this.code = code;
-        this.codeName = codeName;
-        this.codeDesc = codeDesc;
-        this.parentCode = parentCode;
-        this.sortOrder = sortOrder;
-        this.useYn = useYn;
-        this.createdAt = createdAt;
-        this.createdAtStart = createdAtStart;
-        this.createdAtEnd = createdAtEnd;
-        this.updatedAt = updatedAt;
-        this.updatedAtStart = updatedAtStart;
-        this.updatedAtEnd = updatedAtEnd;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
-        this.searchType = searchType;
-        this.searchText = searchText;
-    }
-    static create(param) {
-        return new CodeSearchCriteria(param.codeId, param.code, param.codeName, param.codeDesc, param.parentCode, param.sortOrder, param.useYn, param.createdAt ? new Date(param.createdAt) : undefined, param.createdAtStart ? new Date(param.createdAtStart) : undefined, param.createdAtEnd ? new Date(param.createdAtEnd) : undefined, param.updatedAt ? new Date(param.updatedAt) : undefined, param.updatedAtStart ? new Date(param.updatedAtStart) : undefined, param.updatedAtEnd ? new Date(param.updatedAtEnd) : undefined, param.createdBy, param.updatedBy, param.searchType, param.searchText);
-    }
-}
-exports.CodeSearchCriteria = CodeSearchCriteria;
-class PageInfo {
-    constructor(pageNo, pageSize) {
-        this.pageNo = pageNo;
-        this.pageSize = pageSize;
-        if (pageNo < 1)
-            throw new Error('페이지 번호는 1 이상이어야 합니다.');
-        if (pageSize < 1)
-            throw new Error('페이지 크기는 1 이상이어야 합니다.');
-        if (pageSize > 1000000)
-            throw new Error('페이지 크기가 너무 큽니다.');
-    }
-    get offset() {
-        const result = (this.pageNo - 1) * this.pageSize;
-        if (result > Number.MAX_SAFE_INTEGER) {
-            throw new Error('Offset 값이 너무 큽니다.');
-        }
-        return result;
-    }
-}
-exports.PageInfo = PageInfo;
-class CodePageResult {
-    constructor(code, totalCount, pageInfo) {
-        this.code = code;
-        this.totalCount = totalCount;
-        this.pageInfo = pageInfo;
-    }
-    get totalPage() {
-        return Math.ceil(this.totalCount / this.pageInfo.pageSize);
-    }
-    get hasNext() {
-        return this.pageInfo.pageNo < this.totalPage;
-    }
-    get hasPrevious() {
-        return this.pageInfo.pageNo > 1;
-    }
-}
-exports.CodePageResult = CodePageResult;
-
-
-/***/ }),
-/* 68 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 69 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CodeController = void 0;
-const common_1 = __webpack_require__(55);
-const code_service_1 = __webpack_require__(66);
-const common_2 = __webpack_require__(3);
-let CodeController = class CodeController {
-    constructor(codeService) {
-        this.codeService = codeService;
-    }
-    async readCodeList(param) {
-        const serviceRequest = {
-            pageNo: param.pageNo || 1,
-            pageSize: param.pageSize || 10,
-            searchType: param.searchType,
-            searchText: param.searchText,
-            codeId: param.codeId,
-            code: param.code,
-            codeName: param.codeName,
-            codeDesc: param.codeDesc,
-            parentCode: param.parentCode,
-            sortOrder: param.sortOrder,
-            useYn: param.useYn,
-            createdAt: param.createdAt,
-            updatedAt: param.updatedAt,
-            createdAtStart: param.createdAtStart,
-            createdAtEnd: param.createdAtEnd,
-            updatedAtStart: param.updatedAtStart,
-            updatedAtEnd: param.updatedAtEnd,
-            createdBy: param.createdBy,
-            updatedBy: param.updatedBy,
-        };
-        const serviceResponse = await this.codeService.getCodeList(serviceRequest);
-        return {
-            pageNo: serviceResponse.pageNo,
-            pageSize: serviceResponse.pageSize,
-            totalCount: serviceResponse.totalCount,
-            totalPage: serviceResponse.totalPage,
-            data: serviceResponse.data.map((code) => ({
-                codeId: code.codeId,
-                code: code.code,
-                codeName: code.codeName,
-                codeDesc: code.codeDesc,
-                parentCode: code.parentCode,
-                sortOrder: code.sortOrder,
-                useYn: code.useYn,
-                createdAt: code.createdAt,
-                updatedAt: code.updatedAt,
-                createdBy: code.createdBy,
-                updatedBy: code.updatedBy,
-            })),
-        };
-    }
-    async readCode(param) {
-        const serviceRequest = {
-            codeId: param.codeId,
-            code: param.code,
-            codeName: param.codeName,
-            codeDesc: param.codeDesc,
-            parentCode: param.parentCode,
-            sortOrder: param.sortOrder,
-            useYn: param.useYn,
-            createdAt: param.createdAt,
-            updatedAt: param.updatedAt,
-            createdBy: param.createdBy,
-            updatedBy: param.updatedBy,
-        };
-        const serviceResponse = await this.codeService.getCode(serviceRequest);
-        return {
-            codeId: serviceResponse.codeId,
-            code: serviceResponse.code,
-            codeName: serviceResponse.codeName,
-            codeDesc: serviceResponse.codeDesc,
-            parentCode: serviceResponse.parentCode,
-            sortOrder: serviceResponse.sortOrder,
-            useYn: serviceResponse.useYn,
-            createdAt: serviceResponse.createdAt,
-            updatedAt: serviceResponse.updatedAt,
-        };
-    }
-    async createCode(param) {
-        const serviceRequest = {
-            codeId: param.codeId,
-            code: param.code,
-            codeName: param.codeName,
-            codeDesc: param.codeDesc,
-            parentCode: param.parentCode,
-            sortOrder: param.sortOrder,
-            useYn: param.useYn,
-            createdBy: param.createdBy,
-        };
-        const serviceResponse = await this.codeService.addCode(serviceRequest);
-        return {
-            codeId: serviceResponse.codeId,
-            code: serviceResponse.code,
-            codeName: serviceResponse.codeName,
-            codeDesc: serviceResponse.codeDesc,
-            parentCode: serviceResponse.parentCode,
-            sortOrder: serviceResponse.sortOrder,
-            useYn: serviceResponse.useYn,
-            createdAt: serviceResponse.createdAt,
-            createdBy: serviceResponse.createdBy,
-        };
-    }
-    async updateCode(param) {
-        const serviceRequest = {
-            codeId: param.codeId,
-            data: param.data
-                ? {
-                    code: param.data.code,
-                    codeName: param.data.codeName,
-                    codeDesc: param.data.codeDesc,
-                    parentCode: param.data.parentCode,
-                    sortOrder: param.data.sortOrder,
-                    useYn: param.data.useYn,
-                    updatedBy: param.data.updatedBy,
-                }
-                : undefined,
-        };
-        const serviceResponse = await this.codeService.modifyCode(serviceRequest);
-        return {
-            codeId: serviceResponse.codeId,
-            code: serviceResponse.code,
-            codeName: serviceResponse.codeName,
-            codeDesc: serviceResponse.codeDesc,
-            parentCode: serviceResponse.parentCode,
-            sortOrder: serviceResponse.sortOrder,
-            useYn: serviceResponse.useYn,
-            updatedAt: serviceResponse.updatedAt,
-            updatedBy: serviceResponse.updatedBy,
-        };
-    }
-    async deleteCode(param) {
-        const serviceResponse = await this.codeService.removeCode(param.codeId);
-        return {
-            codeId: serviceResponse.codeId,
-            code: serviceResponse.code,
-            codeName: serviceResponse.codeName,
-            codeDesc: serviceResponse.codeDesc,
-            parentCode: serviceResponse.parentCode,
-            sortOrder: serviceResponse.sortOrder,
-            useYn: serviceResponse.useYn,
-            createdAt: serviceResponse.createdAt,
-            updatedAt: serviceResponse.updatedAt,
-            createdBy: serviceResponse.createdBy,
-            updatedBy: serviceResponse.updatedBy,
-        };
-    }
-};
-exports.CodeController = CodeController;
-exports.CodeController = CodeController = __decorate([
-    (0, common_1.Controller)(),
-    common_2.CodeMicroservice.CodeGrpcServiceControllerMethods(),
-    __metadata("design:paramtypes", [typeof (_a = typeof code_service_1.CodeService !== "undefined" && code_service_1.CodeService) === "function" ? _a : Object])
-], CodeController);
-
-
-/***/ }),
-/* 70 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CodeEntity = void 0;
-const typeorm_1 = __webpack_require__(71);
-let CodeEntity = class CodeEntity {
-    setUpdateDt() {
-        this.updatedAt = new Date();
-    }
-};
-exports.CodeEntity = CodeEntity;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid', {
-        name: 'code_id',
-    }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "codeId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ name: 'code', type: 'varchar', length: 50, nullable: true }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "code", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ name: 'code_name', type: 'varchar', length: 100, nullable: true }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "codeName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ name: 'code_desc', type: 'varchar', length: 255, nullable: true }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "codeDesc", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ name: 'parent_code', type: 'varchar', length: 50, nullable: true }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "parentCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ name: 'sort_order', type: 'int', nullable: true }),
-    __metadata("design:type", Number)
-], CodeEntity.prototype, "sortOrder", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        name: 'use_yn',
-        type: 'varchar',
-        length: 5,
-        default: 'Y',
-        nullable: true,
-    }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "useYn", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)({
-        name: 'created_at',
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-        comment: '생성일자',
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], CodeEntity.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        name: 'created_by',
-        type: 'varchar',
-        length: 50,
-        comment: '생성자 아이디',
-        nullable: true,
-    }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "createdBy", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        name: 'updated_at',
-        type: 'timestamp',
-        comment: '수정일자',
-        nullable: true,
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], CodeEntity.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        name: 'updated_by',
-        type: 'varchar',
-        length: 50,
-        comment: '수정자 아이디',
-        nullable: true,
-    }),
-    __metadata("design:type", String)
-], CodeEntity.prototype, "updatedBy", void 0);
-__decorate([
-    (0, typeorm_1.BeforeUpdate)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], CodeEntity.prototype, "setUpdateDt", null);
-exports.CodeEntity = CodeEntity = __decorate([
-    (0, typeorm_1.Entity)('code', {
-        orderBy: {
-            createdAt: 'DESC',
-        },
-    })
-], CodeEntity);
-
-
-/***/ }),
-/* 71 */
-/***/ ((module) => {
-
-module.exports = require("typeorm");
-
-/***/ }),
-/* 72 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TypeOrmAdapter = void 0;
-const code_model_1 = __webpack_require__(67);
-const common_1 = __webpack_require__(55);
-const typeorm_1 = __webpack_require__(71);
-const code_entity_1 = __webpack_require__(70);
-const code_entity_mapper_1 = __webpack_require__(73);
-const typeorm_2 = __webpack_require__(57);
-let TypeOrmAdapter = class TypeOrmAdapter {
-    constructor(codeRepository) {
-        this.codeRepository = codeRepository;
-    }
-    async findCodeById(codeId) {
-        const entity = await this.codeRepository.findOne({
-            where: { codeId: codeId },
-        });
-        return entity ? code_entity_mapper_1.CodeEntityMapper.toDomain(entity) : null;
-    }
-    async findCodeByCriteria(criteria, pageInfo) {
-        const queryBuilder = this.codeRepository.createQueryBuilder('code');
-        this.applyCriteria(queryBuilder, criteria);
-        const totalCount = await queryBuilder.getCount();
-        queryBuilder.orderBy('code.createdAt', 'DESC').skip(pageInfo.offset).take(pageInfo.pageSize);
-        const entity = await queryBuilder.getMany();
-        const code = entity.map((code) => code_entity_mapper_1.CodeEntityMapper.toDomain(code));
-        return new code_model_1.CodePageResult(code, totalCount, pageInfo);
-    }
-    async saveCode(code) {
-        const entity = code_entity_mapper_1.CodeEntityMapper.fromDomain(code);
-        const savedEntity = await this.codeRepository.save(entity);
-        return code_entity_mapper_1.CodeEntityMapper.toDomain(savedEntity);
-    }
-    async updateCode(codeId, code) {
-        const entity = code_entity_mapper_1.CodeEntityMapper.fromDomain(code);
-        await this.codeRepository.update({ codeId: codeId }, entity);
-        const updatedEntity = await this.codeRepository.findOne({
-            where: { codeId: codeId },
-        });
-        if (!updatedEntity) {
-            throw new Error('업데이트된 코드를 찾을 수 없습니다.');
-        }
-        return code_entity_mapper_1.CodeEntityMapper.toDomain(updatedEntity);
-    }
-    async deleteCode(codeId) {
-        await this.codeRepository.delete({ codeId: codeId });
-    }
-    async existsCode(codeId) {
-        const count = await this.codeRepository.count({
-            where: { codeId: codeId },
-        });
-        return count > 0;
-    }
-    applyCriteria(queryBuilder, criteria) {
-        if (criteria.codeId) {
-            queryBuilder.andWhere('code.codeId = :codeId', {
-                codeId: criteria.codeId,
-            });
-        }
-        if (criteria.code) {
-            queryBuilder.andWhere('code.code = :code', { code: criteria.code });
-        }
-        if (criteria.codeName) {
-            queryBuilder.andWhere('code.codeName = :codeName', {
-                codeName: criteria.codeName,
-            });
-        }
-        if (criteria.codeDesc) {
-            queryBuilder.andWhere('code.codeDesc = :codeDesc', {
-                codeDesc: criteria.codeDesc,
-            });
-        }
-        if (criteria.parentCode) {
-            queryBuilder.andWhere('code.parentCode = :parentCode', {
-                parentCode: criteria.parentCode,
-            });
-        }
-        if (criteria.sortOrder) {
-            queryBuilder.andWhere('code.sortOrder = :sortOrder', {
-                sortOrder: criteria.sortOrder,
-            });
-        }
-        if (criteria.useYn) {
-            queryBuilder.andWhere('code.useYn = :useYn', { useYn: criteria.useYn });
-        }
-        if (criteria.createdAtStart) {
-            queryBuilder.andWhere('amr.createdAt >= :createdAtStart', {
-                createdAtStart: criteria.createdAtStart,
-            });
-        }
-        if (criteria.createdAtEnd) {
-            queryBuilder.andWhere('amr.createdAt <= :createdAtEnd', {
-                createdAtEnd: criteria.createdAtEnd,
-            });
-        }
-        if (criteria.createdAt) {
-            queryBuilder.andWhere('amr.createdAt = :createdAt', {
-                createdAt: criteria.createdAt,
-            });
-        }
-        if (criteria.updatedAtStart) {
-            queryBuilder.andWhere('amr.updatedAt >= :updatedAtStart', {
-                updatedAtStart: criteria.updatedAtStart,
-            });
-        }
-        if (criteria.updatedAtEnd) {
-            queryBuilder.andWhere('amr.updatedAt <= :updatedAtEnd', {
-                updatedAtEnd: criteria.updatedAtEnd,
-            });
-        }
-        if (criteria.updatedAt) {
-            queryBuilder.andWhere('amr.updatedAt = :updatedAt', {
-                updatedAt: criteria.updatedAt,
-            });
-        }
-        if (criteria.createdBy) {
-            queryBuilder.andWhere('amr.createdBy = :createdBy', {
-                createdBy: criteria.createdBy,
-            });
-        }
-        if (criteria.updatedBy) {
-            queryBuilder.andWhere('amr.updatedBy = :updatedBy', {
-                updatedBy: criteria.updatedBy,
-            });
-        }
-        if (criteria.searchType && criteria.searchText) {
-            switch (criteria.searchType) {
-                case 'code':
-                    queryBuilder.andWhere('code.code LIKE :searchText', {
-                        searchText: `%${criteria.searchText}%`,
-                    });
-                    break;
-            }
-        }
-    }
-};
-exports.TypeOrmAdapter = TypeOrmAdapter;
-exports.TypeOrmAdapter = TypeOrmAdapter = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(code_entity_1.CodeEntity)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object])
-], TypeOrmAdapter);
-
-
-/***/ }),
-/* 73 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CodeEntityMapper = void 0;
-const code_model_1 = __webpack_require__(67);
-class CodeEntityMapper {
-    static fromDomain(code) {
-        return {
-            codeId: code.codeId,
-            code: code.code,
-            codeName: code.codeName,
-            codeDesc: code.codeDesc,
-            parentCode: code.parentCode,
-            sortOrder: code.sortOrder,
-            useYn: code.useYn,
-            createdAt: code.createdAt,
-            updatedAt: code.updatedAt,
-            createdBy: code.createdBy,
-            updatedBy: code.updatedBy,
-        };
-    }
-    static toDomain(entity) {
-        return code_model_1.Code.reconstitute({
-            codeId: entity.codeId,
-            code: entity.code,
-            codeName: entity.codeName,
-            codeDesc: entity.codeDesc,
-            parentCode: entity.parentCode,
-            sortOrder: entity.sortOrder,
-            useYn: entity.useYn,
-            createdAt: entity.createdAt,
-            updatedAt: entity.updatedAt,
-            createdBy: entity.createdBy,
-            updatedBy: entity.updatedBy,
-        });
-    }
-}
-exports.CodeEntityMapper = CodeEntityMapper;
-
-
-/***/ }),
-/* 74 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigDBModule = void 0;
-const common_1 = __webpack_require__(55);
-const typeorm_1 = __webpack_require__(57);
-const config_service_1 = __webpack_require__(75);
-const db_grpc_controller_1 = __webpack_require__(77);
-const db_api_controller_1 = __webpack_require__(78);
-const config_entity_1 = __webpack_require__(76);
-const pg_1 = __webpack_require__(84);
-const config_1 = __webpack_require__(53);
-const microservices_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(58);
-let ConfigDBModule = class ConfigDBModule {
-};
-exports.ConfigDBModule = ConfigDBModule;
-exports.ConfigDBModule = ConfigDBModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '.env',
-            }),
-            typeorm_1.TypeOrmModule.forRootAsync({
-                inject: [config_1.ConfigService],
-                useFactory: async (configService) => {
-                    await ensureConfigDatabase();
-                    return {
-                        type: 'postgres',
-                        url: configService.get('POSTGRES_URL') + '/config',
-                        autoLoadEntities: true,
-                        synchronize: true,
-                    };
-                },
-            }),
-            microservices_1.ClientsModule.registerAsync({
-                clients: [
-                    {
-                        inject: [config_1.ConfigService],
-                        name: constant_1.MQTT_BROKER,
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.MQTT,
-                            options: {
-                                url: configService.get('MQTT_URL'),
-                            },
-                        }),
-                    },
-                ],
-            }),
-            typeorm_1.TypeOrmModule.forFeature([config_entity_1.Config]),
-        ],
-        controllers: [db_grpc_controller_1.DBGrpcController, db_api_controller_1.DBConfigAPIController],
-        providers: [config_service_1.ConfigDBService],
-        exports: [config_service_1.ConfigDBService],
-    })
-], ConfigDBModule);
-async function ensureConfigDatabase() {
-    const client = new pg_1.Client({
-        host: process.env.POSTGRES_HOST || 'localhost',
-        port: parseInt(process.env.POSTGRES_PORT || '7000'),
-        user: process.env.POSTGRES_USER || 'postgres',
-        password: process.env.POSTGRES_PASSWORD || 'postgres',
-        database: 'postgres',
-    });
-    try {
-        await client.connect();
-        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'config'");
-        if (result.rows.length === 0) {
-            await client.query('CREATE DATABASE config');
-            console.log('🎉 config 데이터베이스 생성 완료');
-        }
-        else {
-            console.log('✅ config 데이터베이스 이미 존재');
-        }
-    }
-    catch (error) {
-        console.warn('⚠️ semlog DB 생성 실패:', error.message);
-    }
-    finally {
-        await client.end();
-    }
-}
-
-
-/***/ }),
-/* 75 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigDBService = void 0;
-const common_1 = __webpack_require__(55);
-const typeorm_1 = __webpack_require__(71);
-const typeorm_2 = __webpack_require__(57);
-const common_2 = __webpack_require__(3);
-const config_entity_1 = __webpack_require__(76);
-const rpc_code_exception_1 = __webpack_require__(45);
-const constant_1 = __webpack_require__(46);
-const microservices_1 = __webpack_require__(2);
-const constant_2 = __webpack_require__(58);
-let ConfigDBService = class ConfigDBService {
-    constructor(configRepository, mqttMicroservice) {
-        this.configRepository = configRepository;
-        this.mqttMicroservice = mqttMicroservice;
-        this.loggerService = common_2.LoggerService.get('config');
-        this.fired = false;
-    }
-    async onApplicationBootstrap() {
-        this.mqttMicroservice.emit('ready:config', {});
-    }
-    async getConfig(request) {
-        try {
-            if (request.key === undefined || request.key === '') {
-                throw new rpc_code_exception_1.RpcCodeException('key값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-            const resp = await this.configRepository.findOneBy({ key: request.key });
-            return { key: request.key, value: resp ? resp.value : null };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.loggerService.error(`[DB] getConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async getConfigAll() {
-        try {
-            const resp = await this.configRepository.find();
-            return { configs: resp };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.loggerService.error(`[DB] getConfigAll : ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async setConfigs(dto) {
-        try {
-            if (dto.configs === undefined || dto.configs.length === 0) {
-                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            for (const config of dto.configs) {
-                await this.setConfig(config);
-            }
-            return { ...dto, result: 'success' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.loggerService.error(`[DB] setConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async setConfig(request) {
-        try {
-            this.loggerService.debug(`[DB] setConfig : ${JSON.stringify(request)}`);
-            if (request.key === undefined || request.key === '') {
-                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            if (request.value === undefined || request.value === '') {
-                throw new rpc_code_exception_1.RpcCodeException(`value 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            const resp = await this.configRepository.save(request);
-            this.loggerService.info(`[DB] setConfig : ${JSON.stringify(resp)} done`);
-            return { ...request, result: resp ? 'success' : 'fail' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.loggerService.error(`[DB] setConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async deleteConfig(key) {
-        try {
-            this.loggerService.debug(`[DB] deleteConfig : ${key}`);
-            if (key === undefined || key === '') {
-                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            const resp = await this.configRepository.delete({ key: key });
-            if (!resp.affected || resp.affected == 0) {
-                throw new rpc_code_exception_1.RpcCodeException(`key 값에 해당하는 객체가 없습니다 (${key})`, constant_1.GrpcCode.NotFound);
-            }
-            return { key: key, result: 'success' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.loggerService.error(`[DB] deleteConfig : ${key} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async deleteConfigs(dto) {
-        try {
-            if (dto.configs === undefined || dto.configs.length === 0) {
-                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            for (const config of dto.configs) {
-                await this.deleteConfig(config.key);
-            }
-            return { ...dto, result: 'success' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.loggerService.error(`[DB] deleteConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-};
-exports.ConfigDBService = ConfigDBService;
-exports.ConfigDBService = ConfigDBService = __decorate([
-    (0, common_1.Controller)(),
-    __param(0, (0, typeorm_2.InjectRepository)(config_entity_1.Config)),
-    __param(1, (0, common_1.Inject)(constant_2.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object])
-], ConfigDBService);
-
-
-/***/ }),
-/* 76 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Config = void 0;
-const typeorm_1 = __webpack_require__(71);
-let Config = class Config {
-};
-exports.Config = Config;
-__decorate([
-    (0, typeorm_1.PrimaryColumn)({
-        unique: true,
-    }),
-    __metadata("design:type", String)
-], Config.prototype, "key", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Config.prototype, "value", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Config.prototype, "createAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Config.prototype, "updateAt", void 0);
-__decorate([
-    (0, typeorm_1.VersionColumn)(),
-    __metadata("design:type", Number)
-], Config.prototype, "version", void 0);
-exports.Config = Config = __decorate([
-    (0, typeorm_1.Entity)()
-], Config);
-
 
 /***/ }),
 /* 77 */
@@ -3205,10 +3217,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DBGrpcController = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const src_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(3);
-const config_service_1 = __webpack_require__(75);
+const config_service_1 = __webpack_require__(53);
 let DBGrpcController = class DBGrpcController {
     constructor(configService) {
         this.configService = configService;
@@ -3261,9 +3273,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DBConfigAPIController = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const swagger_1 = __webpack_require__(79);
-const config_service_1 = __webpack_require__(75);
+const config_service_1 = __webpack_require__(53);
 const set_dto_1 = __webpack_require__(80);
 const set_dto_2 = __webpack_require__(80);
 const delete_dto_1 = __webpack_require__(82);
@@ -3525,6 +3537,140 @@ __decorate([
 
 module.exports = require("pg");
 
+/***/ }),
+/* 85 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogModule = void 0;
+const common_1 = __webpack_require__(33);
+const saveLog_service_1 = __webpack_require__(58);
+const cleanLog_service_1 = __webpack_require__(86);
+let LogModule = class LogModule {
+};
+exports.LogModule = LogModule;
+exports.LogModule = LogModule = __decorate([
+    (0, common_1.Module)({
+        imports: [],
+        controllers: [],
+        providers: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+        exports: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+    })
+], LogModule);
+
+
+/***/ }),
+/* 86 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CleanLogService = void 0;
+const common_1 = __webpack_require__(33);
+const schedule_1 = __webpack_require__(87);
+const path = __webpack_require__(30);
+const fs_1 = __webpack_require__(67);
+let CleanLogService = class CleanLogService {
+    constructor() {
+        this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
+        this.RETAIN_DAYS = Number(process.env.LOG_RETAIN_DAYS ?? '10');
+        this.runClean = false;
+    }
+    setLogger(logger, path, retainDays) {
+        this.logger = logger;
+        this.LOG_ROOT = path;
+        this.RETAIN_DAYS = retainDays;
+        this.runClean = true;
+    }
+    async handleCron() {
+        if (!this.runClean)
+            return;
+        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
+        try {
+            await this.cleanDir(this.LOG_ROOT);
+            this.logger?.info('[Log] 🧹 로그 정리 완료');
+        }
+        catch (e) {
+            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
+        }
+    }
+    async cleanDir(dir) {
+        let entries;
+        try {
+            entries = await fs_1.promises.readdir(dir, { withFileTypes: true });
+        }
+        catch {
+            return;
+        }
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                await this.cleanDir(fullPath);
+                continue;
+            }
+            if (!entry.name.endsWith('.log') && !entry.name.endsWith('.log.gz')) {
+                continue;
+            }
+            let stat;
+            try {
+                stat = await fs_1.promises.stat(fullPath);
+            }
+            catch {
+                continue;
+            }
+            if (this.isOlderThan(stat.mtime, this.RETAIN_DAYS)) {
+                this.logger?.info(`[Log] 🗑 delete: ${fullPath}`);
+                try {
+                    await fs_1.promises.unlink(fullPath);
+                }
+                catch (e) {
+                    console.warn(`삭제 실패: ${fullPath} (${e.message})`);
+                }
+            }
+        }
+    }
+    isOlderThan(mtime, days) {
+        const now = Date.now();
+        const diffMs = now - mtime.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        return diffDays > days;
+    }
+};
+exports.CleanLogService = CleanLogService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CleanLogService.prototype, "handleCron", null);
+exports.CleanLogService = CleanLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], CleanLogService);
+
+
+/***/ }),
+/* 87 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -3562,11 +3708,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const microservices_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(39);
-const config_1 = __webpack_require__(53);
-const app_module_1 = __webpack_require__(54);
-const config_module_1 = __webpack_require__(74);
-const common_2 = __webpack_require__(55);
+const path_1 = __webpack_require__(30);
+const config_1 = __webpack_require__(31);
+const app_module_1 = __webpack_require__(32);
+const config_module_1 = __webpack_require__(52);
+const common_2 = __webpack_require__(33);
 const swagger_1 = __webpack_require__(79);
 async function bootstrap() {
     const configModule = await core_1.NestFactory.create(config_module_1.ConfigDBModule);
