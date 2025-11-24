@@ -3342,7 +3342,7 @@ __decorate([
         summary: 'Config DB 업데이트',
         description: 'Config DB에 key-value 쌍을 입력합니다.',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof set_dto_2.SetConfigRequestDto !== "undefined" && set_dto_2.SetConfigRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)

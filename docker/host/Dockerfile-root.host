@@ -3,6 +3,7 @@ FROM node:20-bullseye AS development
 WORKDIR /usr/src/app
 
 ENV TZ=Asia/Seoul
+
 # 필수 도구 설치
 RUN apt-get update && \
     apt-get install -y network-manager && \

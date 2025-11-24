@@ -246,7 +246,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _b : Object]),
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
@@ -343,7 +343,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_j = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
@@ -413,7 +413,7 @@ __decorate([
         summary: '장애물감지 영역 설정',
         description: 'AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _r : Object]),
     __metadata("design:returntype", Promise)
@@ -3442,7 +3442,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_c = typeof localization_dto_1.LocalizationRequestDto !== "undefined" && localization_dto_1.LocalizationRequestDto) === "function" ? _c : Object]),
     __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
@@ -4482,7 +4482,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_g = typeof set_dto_1.SetConfigRequestDto !== "undefined" && set_dto_1.SetConfigRequestDto) === "function" ? _g : Object]),
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
@@ -5024,7 +5024,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_h = typeof setting_dto_1.SettingDeletePresetRequestDto !== "undefined" && setting_dto_1.SettingDeletePresetRequestDto) === "function" ? _h : Object]),
     __metadata("design:returntype", Promise)
@@ -5044,7 +5044,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_j = typeof setting_dto_1.SettingCreatePresetRequestDto !== "undefined" && setting_dto_1.SettingCreatePresetRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
@@ -7682,7 +7682,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_u = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _u : Object]),
     __metadata("design:returntype", Promise)
@@ -7721,7 +7721,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_v = typeof map_dto_2.UploadMapRequestDto !== "undefined" && map_dto_2.UploadMapRequestDto) === "function" ? _v : Object]),
     __metadata("design:returntype", Promise)
@@ -7741,7 +7741,7 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_w = typeof map_dto_3.DownloadMapRequestDto !== "undefined" && map_dto_3.DownloadMapRequestDto) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
@@ -9189,7 +9189,7 @@ __decorate([
         type: error_response_dto_1.ErrorResponseDto,
     }),
     __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Query)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_f = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _f : Object, typeof (_g = typeof sound_dto_1.PlaySoundRequestDto !== "undefined" && sound_dto_1.PlaySoundRequestDto) === "function" ? _g : Object]),
     __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
@@ -11324,7 +11324,10 @@ let CobotApiController = class CobotApiController {
         this.cobotApiService = cobotApiService;
     }
     async CobotProgramLoad(dto) {
-        return this.cobotApiService.CobotProgram({ ...dto, command: cobot_dto_1.CobotCommand.taskLoad });
+        return this.cobotApiService.CobotProgram({
+            ...dto,
+            command: cobot_dto_1.CobotCommand.taskLoad,
+        });
     }
     async CobotProgramRun(dto) {
         return this.cobotApiService.CobotCommand({ ...dto, command: cobot_dto_1.CobotCommand.taskPlayOnce });
@@ -11385,13 +11388,44 @@ exports.CobotApiController = CobotApiController;
 __decorate([
     (0, common_1.Post)('task/load'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 프로그램 로드 요청',
-        description: 'Cobot 프로그램을 로드합니다.',
+        summary: '협동로봇(Cobot) 프로그램 로드',
+        description: `
+협동로봇 내부에 저장된 **프로그램을 로드**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 \`programName\` 에 해당하는 프로그램을 로드합니다.
+- 실제 실행(run)은 하지 않고, **실행 대기 상태로 로드만 수행**합니다.
+- 이미 다른 프로그램이 로드되어 있는 경우, 기존 로드는 해제되고 새 프로그램으로 교체됩니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+| programName | string | ✅   | 로드할 프로그램 이름           | 'program1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| programName | string  | 로드된 프로그램 이름          | 'program1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'task load program1' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 로드 요청 성공',
+        type: cobot_dto_1.CobotProgramResponseDto,
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _b : Object]),
     __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
@@ -11399,13 +11433,37 @@ __decorate([
 __decorate([
     (0, common_1.Post)('task/run'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 프로그램 실행 요청',
-        description: 'Cobot 프로그램을 실행합니다. 현재 로드되어 있는 프로그램을 실행합니다.',
+        summary: '협동로봇(Cobot) 프로그램 실행',
+        description: `
+협동로봇에 로드된 프로그램을 **실행**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 로드된 프로그램을 실행합니다.
+- 로드된 프로그램이 없는 경우, 아무것도 실행하지 않습니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'task play once' |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 실행 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
@@ -11413,13 +11471,38 @@ __decorate([
 __decorate([
     (0, common_1.Post)('task/play'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 프로그램 로드 & 실행 요청',
-        description: 'Cobot 프로그램을 로드하고 실행합니다.',
+        summary: '협동로봇(Cobot) 프로그램 로드&실행',
+        description: `
+협동로봇에 프로그램을 **로드**하고 **실행**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 \`programName\` 에 해당하는 프로그램을 로드하고 실행합니다.
+- 이미 다른 프로그램이 로드되어 있는 경우, 기존 로드는 해제되고 새 프로그램으로 교체됩니다.
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+| programName | string | ✅   | 로드할 프로그램 이름           | 'program1' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| programName | string  | 로드된 프로그램 이름          | 'program1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'program_load_and_run("program1")' |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 로드 & 실행 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_f = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _f : Object]),
     __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
@@ -11427,13 +11510,36 @@ __decorate([
 __decorate([
     (0, common_1.Post)('task/pause'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 프로그램 일시정지 요청',
-        description: 'Cobot 프로그램을 일시정지합니다.',
+        summary: '협동로봇(Cobot) 프로그램 일시정지 요청',
+        description: `
+협동로봇에 실행중인 프로그램을 **일시정지**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 실행중인 프로그램을 일시정지합니다.
+- 실행중인 프로그램이 없는 경우, 아무것도 일시정지하지 않습니다.
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'task pause' |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 일시정지 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_h = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _h : Object]),
     __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
@@ -11441,13 +11547,37 @@ __decorate([
 __decorate([
     (0, common_1.Post)('task/resume/a'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 프로그램 재실행 요청 (기본)',
-        description: 'Cobot 프로그램을 재실행합니다. 일반적인 일시정지 상태에서 재실행됩니다.',
+        summary: '협동로봇(Cobot) 프로그램 재실행 요청 (기본)',
+        description: `
+협동로봇에 일시정지된 프로그램을 **재실행**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 일시정지된 프로그램을 재실행합니다.
+- 일시정지된 프로그램이 없는 경우, 아무것도 재실행하지 않습니다.
+- 명령으로 일시정지 된 상태에서 프로그램을 재실행합니다.
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'task resume_a' |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 재실행 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_k = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
@@ -11455,13 +11585,37 @@ __decorate([
 __decorate([
     (0, common_1.Post)('task/resume/b'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 프로그램 재실행 요청 (충돌감지)',
-        description: 'Cobot 프로그램을 재실행합니다. 충돌 감지된 재실행됩니다.',
+        summary: '협동로봇(Cobot) 프로그램 재실행 요청 (충돌감지)',
+        description: `
+협동로봇에 충돌 감지된 프로그램을 **재실행**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 충돌 감지된 프로그램을 재실행합니다.
+- 충돌 감지된 프로그램이 없는 경우, 아무것도 재실행하지 않습니다.
+- 충돌 감지된 상태에서 프로그램을 재실행합니다.
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'task resume_b' |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 재실행 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_m = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _m : Object]),
     __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
@@ -11469,13 +11623,37 @@ __decorate([
 __decorate([
     (0, common_1.Post)('task/stop'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 프로그램 중지 요청',
-        description: 'Cobot 프로그램을 중지합니다.',
+        summary: '협동로봇(Cobot) 프로그램 중지 요청 (충돌감지)',
+        description: `
+협동로봇에 실행중인 프로그램을 **중지**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 실행중인 프로그램을 중지합니다.
+- 실행중인 프로그램이 없는 경우, 아무것도 중지하지 않습니다.
+- 명령으로 실행중인 상태에서 프로그램을 중지합니다.
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|  
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'task stop' |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 프로그램 중지 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_p = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _p : Object]),
     __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
@@ -11483,13 +11661,39 @@ __decorate([
 __decorate([
     (0, common_1.Post)('mode'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 모드 변경 요청',
-        description: 'Cobot 모드를 변경합니다.',
+        summary: '협동로봇(Cobot) 모드 변경 요청',
+        description: `
+협동로봇의 모드를 **변경**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 모드를 변경합니다.
+- 모드를 변경할 수 있는 모드는 \`real\` 과 \`simulation\` 이 있습니다.
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+| mode        | string | ✅   | 변경할 모드 (real, simulation) | 'real' |
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| mode        | string  | 변경된 모드 (real, simulation) | 'real' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'pgmode real' |
+  
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 모드가 real, simulation 중 하나가 아닐 때
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 모드 변경 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_r = typeof cobot_dto_1.CobotModeRequestDto !== "undefined" && cobot_dto_1.CobotModeRequestDto) === "function" ? _r : Object]),
     __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
@@ -11497,13 +11701,35 @@ __decorate([
 __decorate([
     (0, common_1.Post)('init'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 초기화 요청',
-        description: 'Cobot 초기화를 요청합니다.',
+        summary: '협동로봇(Cobot) 초기화 요청',
+        description: `
+협동로봇을 **초기화**합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 초기화합니다.
+- 로봇이 충돌된 상태에서는 초기화가 실패할 수 있습니다.(실패 상태는 소켓데이터로 확인 가능)
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------| - |
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+  
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 초기화 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_t = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _t : Object]),
     __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
@@ -11511,19 +11737,77 @@ __decorate([
 __decorate([
     (0, common_1.Post)('command'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 명령 요청',
-        description: 'Cobot 명령을 요청합니다. 명령은 코봇아이디와 명령어로 구성됩니다.',
+        summary: '협동로봇(Cobot) 명령 요청',
+        description: `
+협동로봇에 **명령**을 전달합니다.
+
+## 📌 기능 설명
+- 지정한 \`cobotId\` 의 컨트롤러에서 명령을 전달합니다.
+- 명령은 코봇아이디와 명령어로 구성됩니다.
+- 서버에서 명령어에 대한 검사는 따로 하지 않으며 성공/실패 여부에 대한 응답도 없습니다.
+- 명령어는 협동로봇이 파싱 가능한 형식이어야하며 [RB UI Script](https://rainbowrobotics.github.io/rb_cobot_docs/technical_docs/ui_script#_5-system-functions) 에서 확인 가능합니다.
+
+## 📌 요청 바디(JSON)
+| 필드명       | 타입   | 필수 | 설명                            | 예시 |
+|-------------|--------|------|---------------------------------|--------|
+| cobotId     | string | ✅   | 대상 협동로봇 ID               | 'cobot1' |
+| command     | string | ✅   | 명령어                         | 'halt' |
+
+## 📌 응답 바디(JSON)
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| cobotId     | string  | 요청에 사용된 협동로봇 ID     | 'cobot1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'halt' |
+
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 명령 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_v = typeof cobot_dto_1.CobotCommandRequestDto !== "undefined" && cobot_dto_1.CobotCommandRequestDto) === "function" ? _v : Object]),
     __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
 ], CobotApiController.prototype, "CobotCommand", null);
 __decorate([
     (0, common_1.Get)('data'),
+    (0, swagger_1.ApiOperation)({
+        summary: '협동로봇(Cobot) 데이터 조회 요청',
+        description: `
+협동로봇 **데이터**를 조회합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러에서 데이터를 조회합니다.
+- 협동로봇은 데이터 조회요청이 들어올 때 데이터를 반환합니다.
+- 이 요청은 데이터조회를 요청하며 가장 최근에 받은 데이터를 반환합니다.(방금 요청한 데이터 조회에 대한 응답을 기다렸다가 반환하는 것이 아님) 
+- 데이터 형식에 대한 상세 설명은 [Data Structure (reqdata)](https://rainbowrobotics.github.io/rb_cobot_docs/technical_docs/data_structure) 에서 확인 가능합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 설명 | 예시 |
+|-|-|-|-|-|
+| cobotId | string | ✅ | 대상 협동로봇 ID | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+
+## ⚠️ 에러 케이스
+
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
+    }),
     (0, swagger_1.ApiOperation)({
         summary: 'Cobot Data 조회',
         description: 'Cobot Data를 조회합니다.',
@@ -11539,13 +11823,72 @@ __decorate([
 __decorate([
     (0, common_1.Post)('move'),
     (0, swagger_1.ApiOperation)({
+        summary: '협동로봇(Cobot) 이동 요청',
+        description: `
+협동로봇 **이동**을 요청합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러로 이동을 요청합니다.
+- 위치 이동의 방식은 moveJ, moveL, moveJRelative, moveLRelative 중 하나를 선택할 수 있습니다.
+  - **moveJ 방식일때**
+    - pose의 값은 로봇의 6축 위치 값을 입력합니다. 단위는 deg입니다.
+    - speed의 값은 이동 속도를 입력합니다. 단위는 deg/s입니다.
+    - acceleration의 값은 이동 가속도를 입력합니다. 단위는 deg/s^2입니다.
+  - **moveL 방식일때**
+    - pose의 값은 로봇의 베이스 기준 툴의 x,y,z,rx,ry,rz 을 입력합니다. 단위는 mm, deg입니다.
+    - speed의 값은 이동 속도를 입력합니다. 단위는 mm/s, deg/s입니다.
+    - acceleration의 값은 이동 가속도를 입력합니다. 단위는 mm/s^2, deg/s^2입니다.
+  - **moveJRelative 방식일때**
+    - pose의 값은 로봇의 6축 위치 **상대 값**을 입력합니다. 단위는 deg입니다.
+    - speed의 값은 이동 속도를 입력합니다. 단위는 deg/s입니다.
+    - acceleration의 값은 이동 가속도를 입력합니다. 단위는 deg/s^2입니다.
+  - **moveLRelative 방식일때**
+    - pose의 값은 입력된 coordinate 기준 툴의 x,y,z,rx,ry,rz **상대 값**을 입력합니다. 단위는 mm, deg입니다.
+    - speed의 값은 이동 속도를 입력합니다. 단위는 mm/s, deg/s입니다.
+    - acceleration의 값은 이동 가속도를 입력합니다. 단위는 mm/s^2, deg/s^2입니다.
+    - coordinate의 값은 'Global', 'Local', 'UserCoordinate0', 'UserCoordinate1', 'UserCoordinate2' 중 하나를 선택할 수 있습니다.
+- 위치 이동의 방식에 대한 상세 설명은 [RB UI Script](https://rainbowrobotics.github.io/rb_cobot_docs/technical_docs/ui_script#_7-movement-functions) 에서 확인 가능합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+| method | string | ✅ | - | 이동 방식 | 'moveJ', 'moveL', 'moveJRelative', 'moveLRelative' |
+| pose | double[] | ✅ | deg, mm | 이동 위치 | [0, 0, 0, 0, 0, 0] |
+| speed | double | ✅ | deg/s, mm/s | 이동 속도 | 20 |
+| acceleration | double | ✅ | deg/s^2, mm/s^2 | 이동 가속도 | 5 |
+| coordinate | string | ✅(moveLRelative일때만) | - | 이동 좌표계 (moveLRelative 일때만 사용) | 'Global', 'Local', 'UserCoordinate0', 'UserCoordinate1', 'UserCoordinate2' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+| method | string | 이동 방식 | 'moveJ' |
+| pose | number[] | 이동 위치 | [0, 0, 0, 0, 0, 0] |
+| speed | number | 이동 속도 | 20 |
+| acceleration | number | 이동 가속도 | 5 |
+| coordinate | string | 이동 좌표계 (moveLRelative 일때만 사용) | 'Global', 'Local', 'UserCoordinate0', 'UserCoordinate1', 'UserCoordinate2' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+- 파라메터값이 비어있거나 잘못됨 혹은 pose 배열의 길이가 6이 아닐 때
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
+    }),
+    (0, swagger_1.ApiOperation)({
         summary: 'Cobot Move 요청',
         description: 'Cobot Move를 요청합니다.',
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot Move 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_z = typeof cobot_dto_1.CobotMoveRequestDto !== "undefined" && cobot_dto_1.CobotMoveRequestDto) === "function" ? _z : Object]),
     __metadata("design:returntype", typeof (_0 = typeof Promise !== "undefined" && Promise) === "function" ? _0 : Object)
@@ -11553,13 +11896,41 @@ __decorate([
 __decorate([
     (0, common_1.Post)('speed'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot Speed 요청',
-        description: 'Cobot Speed를 요청합니다.',
+        summary: '협동로봇(Cobot) 속도 변경',
+        description: `
+협동로봇 **이동 속도**를 변경 요청합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러로 속도 변경을 요청합니다.
+- 로봇의 전체 이동속도를 %단위로 조절가능합니다.
+- 현재 로봇의 속도는 data를 통해 받을 수 있습니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+| speed | double | ✅ | % | 이동 속도 | 100 |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+| speed | double | 이동 속도 | 100 |
+
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot Speed 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_1 = typeof cobot_dto_1.CobotSpeedRequestDto !== "undefined" && cobot_dto_1.CobotSpeedRequestDto) === "function" ? _1 : Object]),
     __metadata("design:returntype", typeof (_2 = typeof Promise !== "undefined" && Promise) === "function" ? _2 : Object)
@@ -11567,13 +11938,41 @@ __decorate([
 __decorate([
     (0, common_1.Post)('connect'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot TCP 연결 요청',
-        description: 'Cobot TCP 연결을 요청합니다.',
+        summary: '협동로봇(Cobot) 연결',
+        description: `
+협동로봇과 TCP통신을 연결합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 이름으로 \`ipAddress\`의 서버에 연결합니다.
+- 협동로봇과 서버가 같은 망에 연결되어 있어야하며 협동로봇의 IP 대역폭과 같아야합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+| ipAddress | string | ✅ | - | 협동로봇 IP | '192.168.0.100' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+| ipAddress | string | 협동로봇 IP | '192.168.0.100' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+- 파라메터 값이 없거나 ipAddress의 값이 올바르지 않을 때
+- 이미 동일한 cobotId 값의 모델이 존재할 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot TCP 연결 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_3 = typeof cobot_dto_2.CobotConnectRequestDto !== "undefined" && cobot_dto_2.CobotConnectRequestDto) === "function" ? _3 : Object]),
     __metadata("design:returntype", typeof (_4 = typeof Promise !== "undefined" && Promise) === "function" ? _4 : Object)
@@ -11581,13 +11980,43 @@ __decorate([
 __decorate([
     (0, common_1.Post)('connect/command'),
     (0, swagger_1.ApiOperation)({
+        summary: '협동로봇(Cobot) Command 포트 연결',
+        description: `
+협동로봇의 Command 소켓 서버에 연결합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러의 Command 포트를 연결합니다.
+- 기존 연결이 있다면 해제 후 다시 연결합니다.
+- Command 포트에 연결되어 있어야 협동로봇으로 명령을 송신할 수 있습니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
+    }),
+    (0, swagger_1.ApiOperation)({
         summary: 'Cobot Command 연결 요청',
         description: 'Cobot Command 연결을 요청합니다.',
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot Command 연결 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_5 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _5 : Object]),
     __metadata("design:returntype", typeof (_6 = typeof Promise !== "undefined" && Promise) === "function" ? _6 : Object)
@@ -11595,13 +12024,39 @@ __decorate([
 __decorate([
     (0, common_1.Post)('connect/data'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot Data 연결 요청',
-        description: 'Cobot Data 연결을 요청합니다.',
+        summary: '협동로봇(Cobot) Data 포트 연결',
+        description: `
+협동로봇의 Data 소켓 서버에 연결합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러의 Data 포트를 연결합니다.
+- 기존 연결이 있다면 해제 후 다시 연결합니다.
+- Data 포트에 연결되어 있어야 협동로봇의 상태를 조회할 수 있습니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot Data 연결 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_7 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _7 : Object]),
     __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
@@ -11609,13 +12064,39 @@ __decorate([
 __decorate([
     (0, common_1.Post)('disconnect/command'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot Command 연결 요청',
-        description: 'Cobot Command 연결을 요청합니다.',
+        summary: '협동로봇(Cobot) Command 포트 연결 종료',
+        description: `
+협동로봇의 Command 소켓 서버와 연결을 종료합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러의 Command 포트를 연결 종료합니다.
+- 기존 연결이 없다면 아무것도 하지 않습니다.
+- Command 포트에 연결되어 있어야 협동로봇으로 명령을 송신할 수 있습니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot Command 연결 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_9 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _9 : Object]),
     __metadata("design:returntype", typeof (_10 = typeof Promise !== "undefined" && Promise) === "function" ? _10 : Object)
@@ -11623,13 +12104,39 @@ __decorate([
 __decorate([
     (0, common_1.Post)('disconnect/data'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot Data 연결 요청',
-        description: 'Cobot Data 연결을 요청합니다.',
+        summary: '협동로봇(Cobot) Data 포트 연결 종료',
+        description: `
+협동로봇의 Data 소켓 서버와 연결을 종료합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러의 Data 포트를  연결 종료합니다.
+- 기존 연결이 없다면 아무것도 하지 않습니다.
+- Data 포트에 연결되어 있어야 협동로봇의 상태를 조회할 수 있습니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot Data 연결 요청 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_11 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _11 : Object]),
     __metadata("design:returntype", typeof (_12 = typeof Promise !== "undefined" && Promise) === "function" ? _12 : Object)
@@ -11637,8 +12144,36 @@ __decorate([
 __decorate([
     (0, common_1.Get)('connect'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Cobot 연결 상태 조회',
-        description: 'Cobot 연결 상태를 조회합니다.',
+        summary: '협동로봇(Cobot) 연결 상태 조회',
+        description: `
+협동로봇의 연결 상태를 조회합니다.
+
+## 📌 기능 설명
+
+- 지정한 \`cobotId\` 의 컨트롤러 연결 상태를 조회합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| cobotId | string | ✅ | - | 대상 협동로봇 ID | 'cobot1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cobotId | string | 요청에 사용된 협동로봇 ID | 'cobot1' |
+| commandConnected | bool | Command 소켓 연결 상태 | true |
+| dataConnected | bool | Data 소켓 연결 상태 | true |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+- 파라메터 값이 없을 때
+### **404** NOT_FOUND
+- 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+- 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_2.ApiOkResponse)({
         description: 'Cobot 연결 상태 조회 성공',
@@ -11649,7 +12184,7 @@ __decorate([
     __metadata("design:returntype", typeof (_14 = typeof Promise !== "undefined" && Promise) === "function" ? _14 : Object)
 ], CobotApiController.prototype, "GetCobotConnectState", null);
 exports.CobotApiController = CobotApiController = __decorate([
-    (0, swagger_1.ApiTags)('Cobot 컨트롤 API'),
+    (0, swagger_1.ApiTags)('협동로봇(Cobot) 컨트롤 API'),
     (0, common_1.Controller)('cobot'),
     __metadata("design:paramtypes", [typeof (_a = typeof cobot_api_service_1.CobotApiService !== "undefined" && cobot_api_service_1.CobotApiService) === "function" ? _a : Object])
 ], CobotApiController);
@@ -12266,7 +12801,7 @@ __decorate([
     (0, swagger_1.ApiOkResponse)({
         description: 'TCP 서버 생성 성공',
     }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_c = typeof cobot_dto_1.CreateTcpServerRequestDto !== "undefined" && cobot_dto_1.CreateTcpServerRequestDto) === "function" ? _c : Object]),
     __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
@@ -14184,7 +14719,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketGateway = void 0;
 const websockets_1 = __webpack_require__(153);
@@ -14199,9 +14734,12 @@ const mapping_dto_1 = __webpack_require__(117);
 const control_dto_1 = __webpack_require__(9);
 const safety_io_dto_1 = __webpack_require__(46);
 const path_dto_1 = __webpack_require__(162);
+const saveLog_service_1 = __webpack_require__(42);
 let ClientSocketGateway = class ClientSocketGateway {
-    constructor(clientService) {
+    constructor(clientService, saveLogService) {
         this.clientService = clientService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-client');
     }
     afterInit(server) {
         this.clientService.setServer(server);
@@ -14261,18 +14799,18 @@ let ClientSocketGateway = class ClientSocketGateway {
 exports.ClientSocketGateway = ClientSocketGateway;
 __decorate([
     (0, websockets_1.WebSocketServer)(),
-    __metadata("design:type", typeof (_b = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _b : Object)
+    __metadata("design:type", typeof (_c = typeof socket_io_1.Server !== "undefined" && socket_io_1.Server) === "function" ? _c : Object)
 ], ClientSocketGateway.prototype, "server", void 0);
 __decorate([
     __param(0, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], ClientSocketGateway.prototype, "handleConnection", null);
 __decorate([
     __param(0, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], ClientSocketGateway.prototype, "handleDisconnect", null);
 __decorate([
@@ -14287,7 +14825,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _e : Object, typeof (_f = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _f : Object, typeof (_g = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "handelSubscribe", null);
 __decorate([
@@ -14302,7 +14840,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _g : Object, typeof (_h = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof subscribe_dto_1.SubscribeDto !== "undefined" && subscribe_dto_1.SubscribeDto) === "function" ? _h : Object, typeof (_j = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "handelUnsubscribe", null);
 __decorate([
@@ -14322,7 +14860,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "MoveRequest", null);
 __decorate([
@@ -14336,7 +14874,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_l = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _l : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "handleMoveJogMessage", null);
 __decorate([
@@ -14356,7 +14894,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof localization_dto_1.LocalizationRequestDto !== "undefined" && localization_dto_1.LocalizationRequestDto) === "function" ? _l : Object]),
+    __metadata("design:paramtypes", [typeof (_m = typeof localization_dto_1.LocalizationRequestDto !== "undefined" && localization_dto_1.LocalizationRequestDto) === "function" ? _m : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "LocalizationRequest", null);
 __decorate([
@@ -14376,7 +14914,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof load_dto_1.LoadRequestDto !== "undefined" && load_dto_1.LoadRequestDto) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof load_dto_1.LoadRequestDto !== "undefined" && load_dto_1.LoadRequestDto) === "function" ? _o : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "LoadRequest", null);
 __decorate([
@@ -14396,7 +14934,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _o : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _p : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "MappingRequest", null);
 __decorate([
@@ -14416,7 +14954,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _q : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "OnOffControlRequest", null);
 __decorate([
@@ -14436,7 +14974,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _q : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _r : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "LedControlRequest", null);
 __decorate([
@@ -14456,7 +14994,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _s : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "WorkControlRequest", null);
 __decorate([
@@ -14495,7 +15033,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_t = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _t : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "SetSafetyFieldRequest", null);
 __decorate([
@@ -14534,7 +15072,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_u = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _u : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "SetSafetyIoControlRequest", null);
 __decorate([
@@ -14553,7 +15091,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof path_dto_1.PathResponseDto !== "undefined" && path_dto_1.PathResponseDto) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof path_dto_1.PathResponseDto !== "undefined" && path_dto_1.PathResponseDto) === "function" ? _v : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketGateway.prototype, "PathResponse", null);
 exports.ClientSocketGateway = ClientSocketGateway = __decorate([
@@ -14566,7 +15104,7 @@ exports.ClientSocketGateway = ClientSocketGateway = __decorate([
         host: '0.0.0.0',
         transports: ['websocket', 'polling'],
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof client_socket_service_1.ClientSocketService !== "undefined" && client_socket_service_1.ClientSocketService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof client_socket_service_1.ClientSocketService !== "undefined" && client_socket_service_1.ClientSocketService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], ClientSocketGateway);
 
 

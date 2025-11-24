@@ -888,21 +888,272 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(30), exports);
-__exportStar(__webpack_require__(53), exports);
 
 
 /***/ }),
 /* 30 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoggerService = void 0;
-const winston_1 = __webpack_require__(31);
-const DailyRotateFile = __webpack_require__(32);
-const util_1 = __webpack_require__(33);
-const chalk_1 = __webpack_require__(52);
-const fs_1 = __webpack_require__(39);
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
+
+
+/***/ }),
+/* 31 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 32 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapModule = void 0;
+const common_1 = __webpack_require__(33);
+const microservices_1 = __webpack_require__(3);
+const map_grpc_controller_1 = __webpack_require__(34);
+const map_service_1 = __webpack_require__(57);
+const map_socketio_adapter_1 = __webpack_require__(66);
+const map_mqtt_controller_1 = __webpack_require__(76);
+const config_1 = __webpack_require__(2);
+const pg_1 = __webpack_require__(85);
+const constant_1 = __webpack_require__(67);
+const map_pending_service_1 = __webpack_require__(74);
+const map_file_adapter_1 = __webpack_require__(86);
+const log_module_1 = __webpack_require__(87);
+const mongoose_1 = __webpack_require__(90);
+const map_mongo_adapter_1 = __webpack_require__(91);
+const map_mongo_entity_1 = __webpack_require__(93);
+let MapModule = class MapModule {
+};
+exports.MapModule = MapModule;
+exports.MapModule = MapModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            log_module_1.LogModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            mongoose_1.MongooseModule.forFeature([
+                {
+                    name: map_mongo_entity_1.Map.name,
+                    schema: map_mongo_entity_1.MapSchema,
+                },
+            ]),
+            mongoose_1.MongooseModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: (configService) => ({
+                    uri: configService.get('MONGO_URL'),
+                }),
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.MQTT_BROKER,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.MQTT,
+                            options: {
+                                url: configService.get('MQTT_URL'),
+                            },
+                        }),
+                    },
+                ],
+            }),
+        ],
+        controllers: [map_grpc_controller_1.MapGrpcInputController, map_mqtt_controller_1.MapMqttInputController],
+        providers: [
+            map_service_1.MapService,
+            map_pending_service_1.MapPendingResponseService,
+            {
+                provide: 'DatabaseOutputPort',
+                useClass: map_mongo_adapter_1.MapMongoAdapter,
+            },
+            {
+                provide: 'SlamnavOutputPort',
+                useClass: map_socketio_adapter_1.MapSocketIOAdapter,
+            },
+            {
+                provide: 'MapFileOutputPort',
+                useClass: map_file_adapter_1.MapFileAdapter,
+            },
+        ],
+    })
+], MapModule);
+async function ensureMapDatabase() {
+    const client = new pg_1.Client({
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '7000'),
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || 'postgres',
+        database: 'postgres',
+    });
+    try {
+        await client.connect();
+        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'map'");
+        if (result.rows.length === 0) {
+            await client.query('CREATE DATABASE map');
+            console.log('🎉 map 데이터베이스 생성 완료');
+        }
+        else {
+            console.log('✅ map 데이터베이스 이미 존재');
+        }
+    }
+    catch (error) {
+        console.warn('⚠️ semlog DB 생성 실패:', error.message);
+    }
+    finally {
+        await client.end();
+    }
+}
+
+
+/***/ }),
+/* 33 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/common");
+
+/***/ }),
+/* 34 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapGrpcInputController = void 0;
+const common_1 = __webpack_require__(4);
+const saveLog_service_1 = __webpack_require__(35);
+const rxjs_1 = __webpack_require__(28);
+const common_2 = __webpack_require__(33);
+const microservices_1 = __webpack_require__(3);
+const map_service_1 = __webpack_require__(57);
+let MapGrpcInputController = class MapGrpcInputController {
+    constructor(mapService, saveLogService) {
+        this.mapService = mapService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('host');
+    }
+    getMapTileExist(request, metadata) {
+        return this.mapService.getMapTileExist(request);
+    }
+    getMapTile(request, metadata) {
+        try {
+            return (0, rxjs_1.from)(this.mapService.getMapTile(request));
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException) {
+                throw error;
+            }
+            throw new microservices_1.RpcException(error);
+        }
+    }
+    mapping(request) {
+        return this.mapService.mappingRequest(request);
+    }
+    getMapList() {
+        return this.mapService.getMapList();
+    }
+    getCloud(request) {
+        return this.mapService.getCloud(request);
+    }
+    saveCloud(request) {
+        return this.mapService.saveCloud(request);
+    }
+    getTopology(request) {
+        return this.mapService.getTopology(request);
+    }
+    saveTopology(request) {
+        return this.mapService.saveTopology(request);
+    }
+    uploadMap(request, metadata) {
+        return this.mapService.uploadMap(request);
+    }
+    downloadMap(request, metadata) {
+        return this.mapService.downloadMap(request);
+    }
+    publishMap(request, metadata) {
+        return this.mapService.publishMap(request);
+    }
+    getCurrentMap() {
+        return this.mapService.getCurrentMap();
+    }
+    load(request) {
+        return this.mapService.loadRequest(request);
+    }
+};
+exports.MapGrpcInputController = MapGrpcInputController;
+exports.MapGrpcInputController = MapGrpcInputController = __decorate([
+    (0, common_2.Controller)(),
+    common_1.MapMicroservice.MapGrpcServiceControllerMethods(),
+    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
+    __metadata("design:paramtypes", [typeof (_a = typeof map_service_1.MapService !== "undefined" && map_service_1.MapService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], MapGrpcInputController);
+
+
+/***/ }),
+/* 35 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SaveLogService = void 0;
+const common_1 = __webpack_require__(33);
+const winston_1 = __webpack_require__(36);
+const DailyRotateFile = __webpack_require__(37);
+const util_1 = __webpack_require__(38);
+const chalk_1 = __webpack_require__(56);
+const fs_1 = __webpack_require__(44);
 const levelColorMap = {
     error: chalk_1.default.red,
     warn: chalk_1.default.magenta,
@@ -920,7 +1171,7 @@ function formatLogMessage(message) {
         if (message.includes('items:')) {
             return message;
         }
-        const jsonRegex = /:\s*(\[.*?\]|\{.*?\})/g;
+        const jsonRegex = /:\s*(\[[\s\S]*?\]|\{[\s\S]*?\})/g;
         return message.replace(jsonRegex, (match, jsonStr) => {
             try {
                 const data = JSON.parse(jsonStr);
@@ -939,21 +1190,13 @@ function formatLogMessage(message) {
 function formatDataRecursive(data) {
     if (Array.isArray(data)) {
         if (data.length <= 4) {
-            const items = data.map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
+            const items = data.map((item) => typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item)));
             return `[${items.join(', ')}]`;
         }
         else {
-            const items = data.slice(0, 4).map((item) => {
-                if (typeof item === 'object' && item !== null) {
-                    return formatDataRecursive(item);
-                }
-                return cleanJsonString(JSON.stringify(item));
-            });
+            const items = data
+                .slice(0, 4)
+                .map((item) => (typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item))));
             return `[${data.length} items: [${items.join(', ')}]...]`;
         }
     }
@@ -980,9 +1223,9 @@ const customFormat = winston_1.format.printf(({ timestamp, level, message }) => 
     const levelText = levelTextMap[level] || level;
     if (typeof message === 'string') {
         const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        let logtext = message.replace(/\[(?!['"])[A-Za-z0-9 _-]+\]/g, '').trim();
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
         logtext = formatLogMessage(logtext);
         return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
     }
@@ -993,28 +1236,49 @@ const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
     const levelText = levelTextMap[level] || level;
     if (typeof message === 'string') {
         const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatches = message.match(/\[([^\]]+)\]/g);
-        const category = categoryMatches ? categoryMatches.map((match) => match.slice(1, -1)) : [];
-        const logtext = message.replace(/\[[^\]]+\]/g, '').trim();
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
         return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
     }
 });
-const loggers = new Map();
-class LoggerService {
-    constructor(service) {
-        const logPath = '/data/log/' + service;
-        if (!(0, fs_1.existsSync)(logPath)) {
-            (0, fs_1.mkdirSync)(logPath, { recursive: true });
-        }
+let SaveLogService = class SaveLogService {
+    constructor() {
+        this.loggers = new Map();
+        this.rootPath = '/data/log';
+        this.logPath = this.rootPath;
         chalk_1.default.level = 3;
-        this.logger = (0, winston_1.createLogger)({
+    }
+    get(service) {
+        let logger = this.loggers.get(service);
+        if (!logger) {
+            logger = this.createLogger(service);
+            this.loggers.set(service, logger);
+        }
+        return logger;
+    }
+    createLogger(service) {
+        this.logPath = `${this.rootPath}/${service}`;
+        if (!(0, fs_1.existsSync)(this.logPath)) {
+            (0, fs_1.mkdirSync)(this.logPath, { recursive: true });
+        }
+        try {
+            (0, fs_1.chownSync)(this.logPath, 1000, 1000);
+        }
+        catch (error) {
+            console.error('LoggerService chownSync Error : ', error);
+        }
+        return (0, winston_1.createLogger)({
             level: 'debug',
             transports: [
                 new DailyRotateFile({
-                    filename: logPath + '/%DATE%.log',
+                    filename: `${this.logPath}/%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
                     level: 'debug',
                     format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
+                    zippedArchive: true,
+                    maxSize: '10m',
+                    maxFiles: '14d',
                 }),
                 new winston_1.transports.Console({
                     level: 'debug',
@@ -1023,69 +1287,55 @@ class LoggerService {
             ],
         });
     }
-    static get(service) {
-        if (!loggers.has(service)) {
-            loggers.set(service, new LoggerService(service));
-        }
-        return loggers.get(service);
-    }
-    error(str) {
-        this.logger.error(str);
-    }
-    warn(str) {
-        this.logger.warn(str);
-    }
-    info(str) {
-        this.logger.info(str);
-    }
-    debug(str) {
-        this.logger.debug(str);
-    }
-}
-exports.LoggerService = LoggerService;
+};
+exports.SaveLogService = SaveLogService;
+exports.SaveLogService = SaveLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], SaveLogService);
 
 
 /***/ }),
-/* 31 */
+/* 36 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 32 */
+/* 37 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
 
 /***/ }),
-/* 33 */
+/* 38 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(34);
+var url_util_1 = __webpack_require__(39);
 Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(36);
+var date_util_1 = __webpack_require__(41);
 Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(38);
+var file_util_1 = __webpack_require__(43);
 Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(49);
+var parse_util_1 = __webpack_require__(53);
 Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(50);
+var crypto_util_1 = __webpack_require__(54);
 Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(51);
+var validation_util_1 = __webpack_require__(55);
 Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
 
 
 /***/ }),
-/* 34 */
+/* 39 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(35);
+const uuid_1 = __webpack_require__(40);
 class UrlUtil {
     static generateUUID() {
         return (0, uuid_1.v4)();
@@ -1095,19 +1345,19 @@ exports.UrlUtil = UrlUtil;
 
 
 /***/ }),
-/* 35 */
+/* 40 */
 /***/ ((module) => {
 
 module.exports = require("uuid");
 
 /***/ }),
-/* 36 */
+/* 41 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(37);
+const date_fns_1 = __webpack_require__(42);
 class DateUtil {
     static toDatetimeString(date) {
         return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
@@ -1254,28 +1504,28 @@ exports.DateUtil = DateUtil;
 
 
 /***/ }),
-/* 37 */
+/* 42 */
 /***/ ((module) => {
 
 module.exports = require("date-fns");
 
 /***/ }),
-/* 38 */
+/* 43 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUtil = void 0;
-const fs = __webpack_require__(39);
-const path = __webpack_require__(40);
-const unzipper = __webpack_require__(41);
-const il = __webpack_require__(42);
-const uuid_1 = __webpack_require__(35);
-const archiver_1 = __webpack_require__(43);
-const csv = __webpack_require__(44);
-const zlib_1 = __webpack_require__(45);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
+const fs = __webpack_require__(44);
+const path = __webpack_require__(31);
+const unzipper = __webpack_require__(45);
+const il = __webpack_require__(46);
+const uuid_1 = __webpack_require__(40);
+const archiver_1 = __webpack_require__(47);
+const csv = __webpack_require__(48);
+const zlib_1 = __webpack_require__(49);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
 const microservices_1 = __webpack_require__(3);
 class FileUtil {
     static checkBasePath() {
@@ -1549,49 +1799,43 @@ exports.FileUtil = FileUtil;
 
 
 /***/ }),
-/* 39 */
+/* 44 */
 /***/ ((module) => {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 40 */
-/***/ ((module) => {
-
-module.exports = require("path");
-
-/***/ }),
-/* 41 */
+/* 45 */
 /***/ ((module) => {
 
 module.exports = require("unzipper");
 
 /***/ }),
-/* 42 */
+/* 46 */
 /***/ ((module) => {
 
 module.exports = require("iconv-lite");
 
 /***/ }),
-/* 43 */
+/* 47 */
 /***/ ((module) => {
 
 module.exports = require("archiver");
 
 /***/ }),
-/* 44 */
+/* 48 */
 /***/ ((module) => {
 
 module.exports = require("csv");
 
 /***/ }),
-/* 45 */
+/* 49 */
 /***/ ((module) => {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 46 */
+/* 50 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1608,7 +1852,7 @@ exports.RpcCodeException = RpcCodeException;
 
 
 /***/ }),
-/* 47 */
+/* 51 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1627,11 +1871,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(48), exports);
+__exportStar(__webpack_require__(52), exports);
 
 
 /***/ }),
-/* 48 */
+/* 52 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1661,7 +1905,7 @@ var GrpcCode;
 
 
 /***/ }),
-/* 49 */
+/* 53 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1711,7 +1955,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 50 */
+/* 54 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1723,7 +1967,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 51 */
+/* 55 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1757,165 +2001,10 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 52 */
-/***/ ((module) => {
-
-module.exports = require("chalk");
-
-/***/ }),
-/* 53 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.errorToJson = errorToJson;
-function errorToJson(error) {
-    try {
-        if (error instanceof Error) {
-            const errorJson = {
-                name: error.name,
-                message: JSON.stringify(error.message),
-            };
-            if (error['error'] && error['error'].details) {
-                errorJson['details'] = error['error'].details;
-                errorJson['code'] = error['error'].code;
-            }
-            return JSON.stringify(errorJson);
-        }
-        else {
-            const json = JSON.parse(error);
-            return JSON.stringify(json);
-        }
-    }
-    catch (err) {
-        return JSON.stringify(error);
-    }
-}
-
-
-/***/ }),
-/* 54 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MapModule = void 0;
-const common_1 = __webpack_require__(55);
-const microservices_1 = __webpack_require__(3);
-const typeorm_1 = __webpack_require__(56);
-const map_grpc_controller_1 = __webpack_require__(57);
-const map_service_1 = __webpack_require__(58);
-const map_postgres_adapter_1 = __webpack_require__(67);
-const map_socketio_adapter_1 = __webpack_require__(70);
-const map_entity_1 = __webpack_require__(68);
-const map_mqtt_controller_1 = __webpack_require__(80);
-const config_1 = __webpack_require__(2);
-const pg_1 = __webpack_require__(89);
-const constant_1 = __webpack_require__(71);
-const map_pending_service_1 = __webpack_require__(78);
-const map_file_adapter_1 = __webpack_require__(90);
-let MapModule = class MapModule {
-};
-exports.MapModule = MapModule;
-exports.MapModule = MapModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '.env',
-            }),
-            typeorm_1.TypeOrmModule.forRootAsync({
-                inject: [config_1.ConfigService],
-                useFactory: async (configService) => {
-                    await ensureMapDatabase();
-                    return {
-                        type: 'postgres',
-                        url: configService.get('POSTGRES_URL') + '/map',
-                        autoLoadEntities: true,
-                        synchronize: true,
-                    };
-                },
-            }),
-            typeorm_1.TypeOrmModule.forFeature([map_entity_1.Map]),
-            microservices_1.ClientsModule.registerAsync({
-                clients: [
-                    {
-                        inject: [config_1.ConfigService],
-                        name: constant_1.MQTT_BROKER,
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.MQTT,
-                            options: {
-                                url: configService.get('MQTT_URL'),
-                            },
-                        }),
-                    },
-                ],
-            }),
-        ],
-        controllers: [map_grpc_controller_1.MapGrpcInputController, map_mqtt_controller_1.MapMqttInputController],
-        providers: [
-            map_service_1.MapService,
-            map_pending_service_1.MapPendingResponseService,
-            {
-                provide: 'DatabaseOutputPort',
-                useClass: map_postgres_adapter_1.MapPostgresAdapter,
-            },
-            {
-                provide: 'SlamnavOutputPort',
-                useClass: map_socketio_adapter_1.MapSocketIOAdapter,
-            },
-            {
-                provide: 'MapFileOutputPort',
-                useClass: map_file_adapter_1.MapFileAdapter,
-            },
-        ],
-    })
-], MapModule);
-async function ensureMapDatabase() {
-    const client = new pg_1.Client({
-        host: process.env.POSTGRES_HOST || 'localhost',
-        port: parseInt(process.env.POSTGRES_PORT || '7000'),
-        user: process.env.POSTGRES_USER || 'postgres',
-        password: process.env.POSTGRES_PASSWORD || 'postgres',
-        database: 'postgres',
-    });
-    try {
-        await client.connect();
-        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'map'");
-        if (result.rows.length === 0) {
-            await client.query('CREATE DATABASE map');
-            console.log('🎉 map 데이터베이스 생성 완료');
-        }
-        else {
-            console.log('✅ map 데이터베이스 이미 존재');
-        }
-    }
-    catch (error) {
-        console.warn('⚠️ semlog DB 생성 실패:', error.message);
-    }
-    finally {
-        await client.end();
-    }
-}
-
-
-/***/ }),
-/* 55 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/common");
-
-/***/ }),
 /* 56 */
 /***/ ((module) => {
 
-module.exports = require("@nestjs/typeorm");
+module.exports = require("chalk");
 
 /***/ }),
 /* 57 */
@@ -1931,121 +2020,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MapGrpcInputController = void 0;
-const common_1 = __webpack_require__(4);
-const rxjs_1 = __webpack_require__(28);
-const common_2 = __webpack_require__(55);
-const microservices_1 = __webpack_require__(3);
-const map_service_1 = __webpack_require__(58);
-let MapGrpcInputController = class MapGrpcInputController {
-    constructor(mapService) {
-        this.mapService = mapService;
-        this.loggerService = common_1.LoggerService.get('host');
-    }
-    getMapTileExist(request, metadata) {
-        return this.mapService.getMapTileExist(request);
-    }
-    getMapTile(request, metadata) {
-        try {
-            return (0, rxjs_1.from)(this.mapService.getMapTile(request));
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException) {
-                throw error;
-            }
-            throw new microservices_1.RpcException(error);
-        }
-    }
-    mapping(request) {
-        return this.mapService.mappingRequest(request);
-    }
-    getMapList() {
-        return this.mapService.getMapList();
-    }
-    getCloud(request) {
-        return this.mapService.getCloud(request);
-    }
-    saveCloud(request) {
-        return this.mapService.saveCloud(request);
-    }
-    getTopology(request) {
-        return this.mapService.getTopology(request);
-    }
-    saveTopology(request) {
-        return this.mapService.saveTopology(request);
-    }
-    uploadMap(request, metadata) {
-        return this.mapService.uploadMap(request);
-    }
-    downloadMap(request, metadata) {
-        return this.mapService.downloadMap(request);
-    }
-    publishMap(request, metadata) {
-        return this.mapService.publishMap(request);
-    }
-    getCurrentMap() {
-        return this.mapService.getCurrentMap();
-    }
-    load(request) {
-        return this.mapService.loadRequest(request);
-    }
-};
-exports.MapGrpcInputController = MapGrpcInputController;
-exports.MapGrpcInputController = MapGrpcInputController = __decorate([
-    (0, common_2.Controller)(),
-    common_1.MapMicroservice.MapGrpcServiceControllerMethods(),
-    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
-    __metadata("design:paramtypes", [typeof (_a = typeof map_service_1.MapService !== "undefined" && map_service_1.MapService) === "function" ? _a : Object])
-], MapGrpcInputController);
-
-
-/***/ }),
-/* 58 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapService = void 0;
-const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(55);
-const map_database_output_port_1 = __webpack_require__(59);
-const map_slamnav_output_port_1 = __webpack_require__(60);
-const map_command_domain_1 = __webpack_require__(61);
+const common_1 = __webpack_require__(33);
+const map_database_output_port_1 = __webpack_require__(58);
+const map_slamnav_output_port_1 = __webpack_require__(59);
+const map_command_domain_1 = __webpack_require__(60);
 const microservices_1 = __webpack_require__(3);
-const fs_1 = __webpack_require__(39);
-const path_1 = __webpack_require__(40);
-const util_1 = __webpack_require__(33);
-const FormData = __webpack_require__(62);
-const zip_util_1 = __webpack_require__(63);
-const axios_1 = __webpack_require__(65);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-const map_file_output_port_1 = __webpack_require__(66);
+const fs_1 = __webpack_require__(44);
+const path_1 = __webpack_require__(31);
+const util_1 = __webpack_require__(38);
+const FormData = __webpack_require__(61);
+const zip_util_1 = __webpack_require__(62);
+const axios_1 = __webpack_require__(64);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const map_file_output_port_1 = __webpack_require__(65);
+const saveLog_service_1 = __webpack_require__(35);
 let MapService = class MapService {
-    constructor(databaseOutput, slamnavOutput, mapFileOutput) {
+    constructor(databaseOutput, slamnavOutput, mapFileOutput, saveLogService) {
         this.databaseOutput = databaseOutput;
         this.slamnavOutput = slamnavOutput;
         this.mapFileOutput = mapFileOutput;
+        this.saveLogService = saveLogService;
         this.slamnav_connection = false;
-        this.loggerService = common_1.LoggerService.get('host');
         this.serviceName = 'MAP';
         this.currentMap = '';
         console.log(process.env.DATA_DIR);
+        this.logger = saveLogService.get('host');
     }
     setCurrentMap(mapName) {
         this.currentMap = mapName;
@@ -2053,13 +2059,13 @@ let MapService = class MapService {
     async getMapList() {
         let command = null;
         try {
-            this.loggerService.debug(`[APP] getMapList`);
+            this.logger.debug(`[APP] getMapList`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getMapList });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
             command.checkVariables();
             const entries = await this.mapFileOutput.readMapList({});
-            this.loggerService.debug(`[APP] getMapList : 경로 내 Map 폴더 개수 = ${entries.list.length} (${command.path})`);
+            this.logger.debug(`[APP] getMapList : 경로 내 Map 폴더 개수 = ${entries.list.length} (${command.path})`);
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
             return entries;
@@ -2069,7 +2075,7 @@ let MapService = class MapService {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
             }
-            this.loggerService.error(`[APP] getMapList : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[APP] getMapList : ${util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('파일을 읽는 도중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
@@ -2078,7 +2084,7 @@ let MapService = class MapService {
     async getCloud(request) {
         let command = null;
         try {
-            this.loggerService.debug(`[APP] getCloud : ${JSON.stringify(request)})`);
+            this.logger.debug(`[APP] getCloud : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getCloud, ...request });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2097,7 +2103,7 @@ let MapService = class MapService {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
             }
-            this.loggerService.error(`[Map] getCloud : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] getCloud : ${util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('Cloud를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
@@ -2106,7 +2112,7 @@ let MapService = class MapService {
     async saveCloud(request) {
         let command = null;
         try {
-            this.loggerService.debug(`[Map] saveCloud : ${JSON.stringify(request)})`);
+            this.logger.debug(`[Map] saveCloud : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getCloud, ...request, cloud: request.cloud.map((row) => row.row) });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2122,7 +2128,7 @@ let MapService = class MapService {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
             }
-            this.loggerService.error(`[Map] saveCloud : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] saveCloud : ${util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('Cloud를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
@@ -2131,7 +2137,7 @@ let MapService = class MapService {
     async saveTopology(request) {
         let command = null;
         try {
-            this.loggerService.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
+            this.logger.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({
                 command: map_command_domain_1.MapCommand.saveTopo,
                 topo: request.data,
@@ -2177,7 +2183,7 @@ let MapService = class MapService {
             return request;
         }
         catch (error) {
-            this.loggerService.error(`[Map] saveTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] saveTopology : ${util_1.ParseUtil.errorToJson(error)}`);
             if (command) {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2216,7 +2222,7 @@ let MapService = class MapService {
     async getTopology(request) {
         let model = null;
         try {
-            this.loggerService.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
+            this.logger.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
             model = new map_command_domain_1.MapCommandModel({
                 command: map_command_domain_1.MapCommand.getTopo,
                 mapName: request.mapName,
@@ -2258,7 +2264,7 @@ let MapService = class MapService {
             return { ...request, fileName: model.fileName, data };
         }
         catch (error) {
-            this.loggerService.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
             if (model) {
                 model.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(model);
@@ -2272,7 +2278,7 @@ let MapService = class MapService {
         let zipPath = '';
         let command = null;
         try {
-            this.loggerService.debug(`[Map] uploadMap : ${JSON.stringify(request)})`);
+            this.logger.debug(`[Map] uploadMap : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({ ...request, command: map_command_domain_1.MapCommand.uploadMap });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2284,15 +2290,15 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException(`${command.mapName} 이름의 맵폴더가 존재하지 않습니다. ${mapPath}`, constant_1.GrpcCode.NotFound);
             }
             await zip_util_1.ZipUtil.zipFolder(mapPath, zipPath);
-            this.loggerService.debug(`[Map] uploadMap : zip success (${zipPath}, ${(0, path_1.basename)(zipPath)})`);
+            this.logger.debug(`[Map] uploadMap : zip success (${zipPath}, ${(0, path_1.basename)(zipPath)})`);
             const zipStream = (0, fs_1.createReadStream)(zipPath);
             const formData = new FormData();
             formData.append('file', zipStream, { filename: (0, path_1.basename)(zipPath) });
             formData.append('deleteZipAt', 'Y');
             const url = process.env.FRS_URL + '/api/maps/frs-map/upload';
-            this.loggerService.debug(`[Map] uploadMap : POST frs (${url})`);
+            this.logger.debug(`[Map] uploadMap : POST frs (${url})`);
             const response = await axios_1.default.post(url, formData);
-            this.loggerService.debug(`[Map] uploadMap : Response from FRS (${JSON.stringify(response.data)})`);
+            this.logger.debug(`[Map] uploadMap : Response from FRS (${JSON.stringify(response.data)})`);
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
             return {
@@ -2309,10 +2315,10 @@ let MapService = class MapService {
                 throw error;
             }
             if (error.response.data.message) {
-                this.loggerService.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                this.logger.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
                 throw new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError);
             }
-            this.loggerService.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+            this.logger.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
             throw new rpc_code_exception_1.RpcCodeException('맵을 업로드할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
@@ -2326,7 +2332,7 @@ let MapService = class MapService {
             let zipPath = '';
             let command = null;
             try {
-                this.loggerService.info(`[Map] downloadMap ================================`);
+                this.logger.info(`[Map] downloadMap ================================`);
                 command = new map_command_domain_1.MapCommandModel({
                     mapName: request.fileName,
                     isForce: request.isForce,
@@ -2338,7 +2344,7 @@ let MapService = class MapService {
                 command.assignId(result.id.toString());
                 command.checkVariables();
                 const url = process.env.FRS_URL + '/api/maps/frs-map/download';
-                this.loggerService.debug(`[Map] downloadMap : POST frs (${url}, ${command.mapName})`);
+                this.logger.debug(`[Map] downloadMap : POST frs (${url}, ${command.mapName})`);
                 const response = await axios_1.default.get(url, {
                     responseType: 'stream',
                     params: {
@@ -2350,15 +2356,15 @@ let MapService = class MapService {
                 if (!command.isForce && (0, fs_1.existsSync)(newMapPath)) {
                     throw new rpc_code_exception_1.RpcCodeException('이미 동일한 이름의 맵이 존재합니다.', constant_1.GrpcCode.AlreadyExists);
                 }
-                this.loggerService.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
+                this.logger.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
                 const fileStream = (0, fs_1.createWriteStream)(zipPath);
                 response.data.pipe(fileStream);
-                this.loggerService.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
+                this.logger.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
                 fileStream.on('finish', async () => {
-                    this.loggerService.info(`[Map] downloadMap: Download(Zip) Done ${zipPath}`);
-                    this.loggerService.info(`[Map] downloadMap: UnZip ${zipPath} -> ${newMapPath}`);
+                    this.logger.info(`[Map] downloadMap: Download(Zip) Done ${zipPath}`);
+                    this.logger.info(`[Map] downloadMap: UnZip ${zipPath} -> ${newMapPath}`);
                     await zip_util_1.ZipUtil.unzipFolder(zipPath, newMapPath);
-                    this.loggerService.debug(`[Map] downloadMap : Zip Done`);
+                    this.logger.debug(`[Map] downloadMap : Zip Done`);
                 });
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
@@ -2377,10 +2383,10 @@ let MapService = class MapService {
                     reject(error);
                 }
                 if (error.response?.data?.message) {
-                    this.loggerService.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                    this.logger.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
                     reject(new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError));
                 }
-                this.loggerService.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('맵을 다운로드할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
             finally {
@@ -2422,7 +2428,7 @@ let MapService = class MapService {
     async getCurrentMap() {
         return new Promise(async (resolve, reject) => {
             try {
-                this.loggerService.info(`[Map] getCurrentMap ================================`);
+                this.logger.info(`[Map] getCurrentMap ================================`);
                 resolve({
                     mapName: this.currentMap,
                 });
@@ -2437,7 +2443,7 @@ let MapService = class MapService {
             let zipPath = '';
             let command = null;
             try {
-                this.loggerService.info(`[Map] publishMap ================================`);
+                this.logger.info(`[Map] publishMap ================================`);
                 command = new map_command_domain_1.MapCommandModel({
                     mapName: request.fileName,
                     isForce: request.isForce,
@@ -2455,9 +2461,9 @@ let MapService = class MapService {
                 if ((0, fs_1.existsSync)(mapPath) && !request.isForce) {
                     throw new rpc_code_exception_1.RpcCodeException('동일한 이름의 맵이 이미 존재합니다.', constant_1.GrpcCode.AlreadyExists);
                 }
-                this.loggerService.info(`[Map] publishMap: UnZip ${zipPath} -> ${mapPath}`);
+                this.logger.info(`[Map] publishMap: UnZip ${zipPath} -> ${mapPath}`);
                 await zip_util_1.ZipUtil.unzipFolder(zipPath, mapPath);
-                this.loggerService.debug(`[Map] publishMap : Zip Done`);
+                this.logger.debug(`[Map] publishMap : Zip Done`);
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
                 resolve({
@@ -2476,10 +2482,10 @@ let MapService = class MapService {
                     reject(error);
                 }
                 if (error.response?.data?.message) {
-                    this.loggerService.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                    this.logger.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
                     reject(new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError));
                 }
-                this.loggerService.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('맵을 다운로드할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
             finally {
@@ -2492,7 +2498,7 @@ let MapService = class MapService {
     async loadRequest(request) {
         let command = null;
         try {
-            this.loggerService.info(`[Map] loadRequest : ${JSON.stringify(command)}`);
+            this.logger.info(`[Map] loadRequest : ${JSON.stringify(command)}`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.loadMap, mapName: request.mapName });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2501,11 +2507,11 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.loadRequest(command);
-            this.loggerService.info(`[Map] LoadMap Response : ${JSON.stringify(resp)}`);
+            this.logger.info(`[Map] LoadMap Response : ${JSON.stringify(resp)}`);
             if (resp.result === 'success' || resp.result === 'accept') {
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
-                this.loggerService.info(`[Map] LoadMap DB Update : ${result?.id.toString()}`);
+                this.logger.info(`[Map] LoadMap DB Update : ${result?.id.toString()}`);
                 return resp;
             }
             else {
@@ -2526,7 +2532,7 @@ let MapService = class MapService {
     async mappingRequest(request) {
         let command = null;
         try {
-            this.loggerService.info(`[Map] mappingRequest : ${JSON.stringify(command)}`);
+            this.logger.info(`[Map] mappingRequest : ${JSON.stringify(command)}`);
             command = new map_command_domain_1.MapCommandModel({ command: request.command, mapName: request.mapName });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2538,11 +2544,11 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.mappingRequest(command);
-            this.loggerService.info(`[Map] Mapping Response : ${JSON.stringify(resp)}`);
+            this.logger.info(`[Map] Mapping Response : ${JSON.stringify(resp)}`);
             if (resp.result === 'success' || resp.result === 'accept') {
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
-                this.loggerService.info(`[Map] Mapping DB Update : ${result?.id.toString()}`);
+                this.logger.info(`[Map] Mapping DB Update : ${result?.id.toString()}`);
                 return resp;
             }
             else {
@@ -2561,25 +2567,25 @@ let MapService = class MapService {
         }
     }
     async loadResponse(response) {
-        this.loggerService.info(`[Map] loadResponse : ${JSON.stringify(response)}`);
+        this.logger.info(`[Map] loadResponse : ${JSON.stringify(response)}`);
         const dbmodel = await this.databaseOutput.getNodebyId(response.id);
         if (dbmodel) {
             const model = new map_command_domain_1.MapCommandModel(dbmodel);
             model.assignId(dbmodel.id);
             model.statusChange(response.result);
             await this.databaseOutput.update(model);
-            this.loggerService.info(`[Map] loadResponse : ${model.id}, ${model.status}`);
+            this.logger.info(`[Map] loadResponse : ${model.id}, ${model.status}`);
         }
     }
     async mappingResponse(response) {
-        this.loggerService.info(`[Map] mappingResponse : ${JSON.stringify(response)}`);
+        this.logger.info(`[Map] mappingResponse : ${JSON.stringify(response)}`);
         const dbmodel = await this.databaseOutput.getNodebyId(response.id);
         if (dbmodel) {
             const model = new map_command_domain_1.MapCommandModel(dbmodel);
             model.assignId(dbmodel.id);
             model.statusChange(response.result);
             await this.databaseOutput.update(model);
-            this.loggerService.info(`[Map] mappingResponse : ${model.id}, ${model.status}`);
+            this.logger.info(`[Map] mappingResponse : ${model.id}, ${model.status}`);
         }
     }
     async parseMapList(path) {
@@ -2623,26 +2629,34 @@ let MapService = class MapService {
             return { list: list };
         }
         catch (error) {
-            this.loggerService.error(`[Map] parseMapList : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Map] parseMapList : ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('맵 리스트를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     slamConnect() {
-        this.loggerService.debug(`[Map] Slamnav Connected`);
+        this.logger.debug(`[Map] Slamnav Connected`);
         this.slamnav_connection = true;
     }
     slamDisconnect() {
-        this.loggerService.debug(`[Map] Slamnav Disonnected`);
+        this.logger.debug(`[Map] Slamnav Disonnected`);
         this.slamnav_connection = false;
     }
 };
 exports.MapService = MapService;
 exports.MapService = MapService = __decorate([
-    __param(0, (0, common_2.Inject)('DatabaseOutputPort')),
-    __param(1, (0, common_2.Inject)('SlamnavOutputPort')),
-    __param(2, (0, common_2.Inject)('MapFileOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof map_database_output_port_1.MapDatabaseOutputPort !== "undefined" && map_database_output_port_1.MapDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof map_slamnav_output_port_1.MapSlamnavOutputPort !== "undefined" && map_slamnav_output_port_1.MapSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof map_file_output_port_1.MapFileOutputPort !== "undefined" && map_file_output_port_1.MapFileOutputPort) === "function" ? _c : Object])
+    __param(0, (0, common_1.Inject)('DatabaseOutputPort')),
+    __param(1, (0, common_1.Inject)('SlamnavOutputPort')),
+    __param(2, (0, common_1.Inject)('MapFileOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof map_database_output_port_1.MapDatabaseOutputPort !== "undefined" && map_database_output_port_1.MapDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof map_slamnav_output_port_1.MapSlamnavOutputPort !== "undefined" && map_slamnav_output_port_1.MapSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof map_file_output_port_1.MapFileOutputPort !== "undefined" && map_file_output_port_1.MapFileOutputPort) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
 ], MapService);
+
+
+/***/ }),
+/* 58 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
@@ -2655,23 +2669,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 /* 60 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 61 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapCommandModel = exports.MapCommand = exports.CommandStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-const path_1 = __webpack_require__(40);
-const fs_1 = __webpack_require__(39);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const path_1 = __webpack_require__(31);
+const fs_1 = __webpack_require__(44);
 var CommandStatus;
 (function (CommandStatus) {
     CommandStatus["pending"] = "pending";
@@ -2875,24 +2881,24 @@ exports.MapCommandModel = MapCommandModel;
 
 
 /***/ }),
-/* 62 */
+/* 61 */
 /***/ ((module) => {
 
 module.exports = require("form-data");
 
 /***/ }),
-/* 63 */
+/* 62 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZipUtil = void 0;
-const AdmZip = __webpack_require__(64);
-const fs_1 = __webpack_require__(39);
-const path_1 = __webpack_require__(40);
+const AdmZip = __webpack_require__(63);
+const fs_1 = __webpack_require__(44);
+const path_1 = __webpack_require__(31);
 const microservices_1 = __webpack_require__(3);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
 class ZipUtil {
     static async zipFolder(sourcePath, zipPath) {
         try {
@@ -2938,19 +2944,19 @@ exports.ZipUtil = ZipUtil;
 
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ ((module) => {
 
 module.exports = require("adm-zip");
 
 /***/ }),
-/* 65 */
+/* 64 */
 /***/ ((module) => {
 
 module.exports = require("axios");
 
 /***/ }),
-/* 66 */
+/* 65 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2958,7 +2964,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 67 */
+/* 66 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2974,195 +2980,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MapPostgresAdapter = void 0;
-const typeorm_1 = __webpack_require__(56);
-const map_entity_1 = __webpack_require__(68);
-const typeorm_2 = __webpack_require__(69);
-const common_1 = __webpack_require__(4);
-const parse_util_1 = __webpack_require__(49);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-let MapPostgresAdapter = class MapPostgresAdapter {
-    constructor(commandRepository) {
-        this.commandRepository = commandRepository;
-        this.loggerService = common_1.LoggerService.get('host');
-    }
-    async getNodebyId(id) {
-        try {
-            return await this.commandRepository.findOneBy({ id });
-        }
-        catch (error) {
-            this.loggerService.error(`[Map] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
-        }
-    }
-    async save(command) {
-        try {
-            this.loggerService.debug(`[Map] DB save: ${JSON.stringify(command)}`);
-            const { topo, cloud, ...dbData } = command;
-            console.log('dbData : ', dbData);
-            console.log('id : ', dbData.id);
-            return await this.commandRepository.save(dbData);
-        }
-        catch (error) {
-            this.loggerService.error(`[Map] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
-        }
-    }
-    async update(command) {
-        try {
-            this.loggerService.debug(`[Map] DB update: ${JSON.stringify(command)}`);
-            const { topo, cloud, ...dbData } = command;
-            console.log('dbData : ', dbData);
-            console.log('id : ', dbData.id);
-            await this.commandRepository.update(command.id, dbData);
-            return await this.commandRepository.findOneBy({ id: command.id });
-        }
-        catch (error) {
-            this.loggerService.error(`[Map] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
-        }
-    }
-};
-exports.MapPostgresAdapter = MapPostgresAdapter;
-exports.MapPostgresAdapter = MapPostgresAdapter = __decorate([
-    __param(0, (0, typeorm_1.InjectRepository)(map_entity_1.Map)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _a : Object])
-], MapPostgresAdapter);
-
-
-/***/ }),
-/* 68 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Map = void 0;
-const typeorm_1 = __webpack_require__(69);
-let Map = class Map {
-};
-exports.Map = Map;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Map.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Map.prototype, "command", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Map.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Map.prototype, "mapName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Map.prototype, "newMapName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Map.prototype, "newPath", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Map.prototype, "path", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Map.prototype, "fileName", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Boolean)
-], Map.prototype, "isForce", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Map.prototype, "message", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Map.prototype, "createAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Map.prototype, "updateAt", void 0);
-__decorate([
-    (0, typeorm_1.VersionColumn)(),
-    __metadata("design:type", Number)
-], Map.prototype, "version", void 0);
-exports.Map = Map = __decorate([
-    (0, typeorm_1.Entity)()
-], Map);
-
-
-/***/ }),
-/* 69 */
-/***/ ((module) => {
-
-module.exports = require("typeorm");
-
-/***/ }),
-/* 70 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapSocketIOAdapter = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(4);
-const constant_1 = __webpack_require__(71);
-const map_pending_service_1 = __webpack_require__(78);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_2 = __webpack_require__(47);
+const constant_1 = __webpack_require__(67);
+const map_pending_service_1 = __webpack_require__(74);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_2 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
 let MapSocketIOAdapter = class MapSocketIOAdapter {
-    constructor(mqttService, pendingService) {
+    constructor(saveLogService, mqttService, pendingService) {
+        this.saveLogService = saveLogService;
         this.mqttService = mqttService;
         this.pendingService = pendingService;
-        this.loggerService = common_2.LoggerService.get('host');
+        this.logger = this.saveLogService.get('host');
     }
     async mappingRequest(request) {
-        this.loggerService.debug(`[Map] moveRequest : ${JSON.stringify(request)}`);
+        this.logger.debug(`[Map] moveRequest : ${JSON.stringify(request)}`);
         const response = this.waitForResponse(request.id, 5000);
         this.mqttService.emit('mappingRequest', request);
         const resp = await response;
-        this.loggerService.debug(`[Map] moveResponse : ${JSON.stringify(resp)}`);
+        this.logger.debug(`[Map] moveResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
     async loadRequest(request) {
-        this.loggerService.debug(`[Map] loadRequest : ${JSON.stringify(request)}`);
+        this.logger.debug(`[Map] loadRequest : ${JSON.stringify(request)}`);
         const response = this.waitForResponse(request.id, 5000);
         this.mqttService.emit('loadRequest', request);
         const resp = await response;
-        this.loggerService.debug(`[Map] loadResponse : ${JSON.stringify(resp)}`);
+        this.logger.debug(`[Map] loadResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
     async waitForResponse(id, timeoutMs) {
@@ -3171,7 +3019,7 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.loggerService.error(`[Map] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger.error(`[Map] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -3195,13 +3043,14 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
 };
 exports.MapSocketIOAdapter = MapSocketIOAdapter;
 exports.MapSocketIOAdapter = MapSocketIOAdapter = __decorate([
-    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof map_pending_service_1.MapPendingResponseService !== "undefined" && map_pending_service_1.MapPendingResponseService) === "function" ? _b : Object])
+    (0, common_1.Injectable)(),
+    __param(1, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof map_pending_service_1.MapPendingResponseService !== "undefined" && map_pending_service_1.MapPendingResponseService) === "function" ? _c : Object])
 ], MapSocketIOAdapter);
 
 
 /***/ }),
-/* 71 */
+/* 67 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3221,14 +3070,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.message = exports.environment = void 0;
-__exportStar(__webpack_require__(72), exports);
-__exportStar(__webpack_require__(73), exports);
-exports.environment = __webpack_require__(74);
-exports.message = __webpack_require__(76);
+__exportStar(__webpack_require__(68), exports);
+__exportStar(__webpack_require__(69), exports);
+exports.environment = __webpack_require__(70);
+exports.message = __webpack_require__(72);
 
 
 /***/ }),
-/* 72 */
+/* 68 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3259,7 +3108,7 @@ exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
 /***/ }),
-/* 73 */
+/* 69 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3267,7 +3116,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 74 */
+/* 70 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3286,11 +3135,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(75), exports);
+__exportStar(__webpack_require__(71), exports);
 
 
 /***/ }),
-/* 75 */
+/* 71 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3314,7 +3163,7 @@ exports.SYSTEM = {
 
 
 /***/ }),
-/* 76 */
+/* 72 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3333,11 +3182,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(77), exports);
+__exportStar(__webpack_require__(73), exports);
 
 
 /***/ }),
-/* 77 */
+/* 73 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3396,7 +3245,7 @@ exports.SUCCESS_MESSAGES = {
 
 
 /***/ }),
-/* 78 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3408,8 +3257,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapPendingResponseService = void 0;
-const pending_util_1 = __webpack_require__(79);
-const common_1 = __webpack_require__(55);
+const pending_util_1 = __webpack_require__(75);
+const common_1 = __webpack_require__(33);
 let MapPendingResponseService = class MapPendingResponseService extends pending_util_1.PendingResponseUtil {
 };
 exports.MapPendingResponseService = MapPendingResponseService;
@@ -3419,7 +3268,7 @@ exports.MapPendingResponseService = MapPendingResponseService = __decorate([
 
 
 /***/ }),
-/* 79 */
+/* 75 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3431,7 +3280,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PendingResponseUtil = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 let PendingResponseUtil = class PendingResponseUtil {
     constructor() {
         this.pendingResponses = new Map();
@@ -3444,7 +3293,7 @@ exports.PendingResponseUtil = PendingResponseUtil = __decorate([
 
 
 /***/ }),
-/* 80 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3460,31 +3309,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapMqttInputController = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const map_service_1 = __webpack_require__(58);
-const map_pending_service_1 = __webpack_require__(78);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-const common_2 = __webpack_require__(4);
-const mapping_dto_1 = __webpack_require__(81);
-const load_dto_1 = __webpack_require__(85);
-const status_type_1 = __webpack_require__(87);
+const map_service_1 = __webpack_require__(57);
+const map_pending_service_1 = __webpack_require__(74);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
+const logger_1 = __webpack_require__(29);
+const mapping_dto_1 = __webpack_require__(77);
+const load_dto_1 = __webpack_require__(81);
+const status_type_1 = __webpack_require__(83);
 let MapMqttInputController = class MapMqttInputController {
-    constructor(mapService, pendingService) {
+    constructor(saveLogService, mapService, pendingService) {
+        this.saveLogService = saveLogService;
         this.mapService = mapService;
         this.pendingService = pendingService;
-        this.loggerService = common_2.LoggerService.get('host');
+        this.logger = this.saveLogService.get('host');
     }
     getConnect() {
-        this.loggerService.info(`[Map] slam Connected`);
+        this.logger.info(`[Map] slam Connected`);
         this.mapService.slamConnect();
     }
     getDisconnect() {
-        this.loggerService.warn(`[Map] slam Disconnected`);
+        this.logger.warn(`[Map] slam Disconnected`);
         this.mapService.slamDisconnect();
         this.pendingService.pendingResponses.forEach((resp) => {
             resp.reject(new rpc_code_exception_1.RpcCodeException('SLAMNAV 연결이 끊어졌습니다', constant_1.GrpcCode.InternalError));
@@ -3520,7 +3371,7 @@ let MapMqttInputController = class MapMqttInputController {
             }
         }
         catch (error) {
-            this.loggerService.error(`[Map] getLoadResponse : ${(0, common_2.errorToJson)(error)}`);
+            this.logger.error(`[Map] getLoadResponse : ${(0, logger_1.errorToJson)(error)}`);
         }
     }
 };
@@ -3541,31 +3392,31 @@ __decorate([
     (0, microservices_1.MessagePattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], MapMqttInputController.prototype, "getStatus", null);
 __decorate([
     (0, microservices_1.MessagePattern)('mappingResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof mapping_dto_1.MappingResponseSlamnav !== "undefined" && mapping_dto_1.MappingResponseSlamnav) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof mapping_dto_1.MappingResponseSlamnav !== "undefined" && mapping_dto_1.MappingResponseSlamnav) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], MapMqttInputController.prototype, "getMoveResponse", null);
 __decorate([
     (0, microservices_1.MessagePattern)('loadResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _e : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _f : Object]),
     __metadata("design:returntype", void 0)
 ], MapMqttInputController.prototype, "getLoadResponse", null);
 exports.MapMqttInputController = MapMqttInputController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof map_service_1.MapService !== "undefined" && map_service_1.MapService) === "function" ? _a : Object, typeof (_b = typeof map_pending_service_1.MapPendingResponseService !== "undefined" && map_pending_service_1.MapPendingResponseService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object, typeof (_b = typeof map_service_1.MapService !== "undefined" && map_service_1.MapService) === "function" ? _b : Object, typeof (_c = typeof map_pending_service_1.MapPendingResponseService !== "undefined" && map_pending_service_1.MapPendingResponseService) === "function" ? _c : Object])
 ], MapMqttInputController);
 
 
 /***/ }),
-/* 81 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3580,11 +3431,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingRequestSlamnav = exports.MappingResponseDto = exports.MappingRequestDto = exports.Description = void 0;
-const swagger_1 = __webpack_require__(82);
-const class_validator_1 = __webpack_require__(83);
-const class_transformer_1 = __webpack_require__(84);
-const util_1 = __webpack_require__(33);
-const load_dto_1 = __webpack_require__(85);
+const swagger_1 = __webpack_require__(78);
+const class_validator_1 = __webpack_require__(79);
+const class_transformer_1 = __webpack_require__(80);
+const util_1 = __webpack_require__(38);
+const load_dto_1 = __webpack_require__(81);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
@@ -3713,25 +3564,25 @@ __decorate([
 
 
 /***/ }),
-/* 82 */
+/* 78 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 83 */
+/* 79 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 84 */
+/* 80 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 85 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3746,11 +3597,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadRequestSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = exports.MapCommand = void 0;
-const swagger_1 = __webpack_require__(82);
-const class_validator_1 = __webpack_require__(83);
-const util_1 = __webpack_require__(33);
-const description_1 = __webpack_require__(86);
-const class_transformer_1 = __webpack_require__(84);
+const swagger_1 = __webpack_require__(78);
+const class_validator_1 = __webpack_require__(79);
+const util_1 = __webpack_require__(38);
+const description_1 = __webpack_require__(82);
+const class_transformer_1 = __webpack_require__(80);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
@@ -3897,7 +3748,7 @@ __decorate([
 
 
 /***/ }),
-/* 86 */
+/* 82 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3912,7 +3763,7 @@ var FrsDescription;
 
 
 /***/ }),
-/* 87 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3927,11 +3778,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = exports.StatusPowerDto = exports.StatusStateDto = exports.StatusConditionDto = exports.StatuMotorDto = exports.StatusLidarDto = exports.StatusIMUDto = void 0;
-const date_util_1 = __webpack_require__(36);
-const swagger_1 = __webpack_require__(82);
-const class_validator_1 = __webpack_require__(83);
-const state_type_1 = __webpack_require__(88);
-const class_transformer_1 = __webpack_require__(84);
+const date_util_1 = __webpack_require__(41);
+const swagger_1 = __webpack_require__(78);
+const class_validator_1 = __webpack_require__(79);
+const state_type_1 = __webpack_require__(84);
+const class_transformer_1 = __webpack_require__(80);
 var Description;
 (function (Description) {
     Description["IMU"] = "IMU, Gyro \uC13C\uC11C \uB370\uC774\uD130";
@@ -4595,7 +4446,7 @@ __decorate([
 
 
 /***/ }),
-/* 88 */
+/* 84 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -4656,29 +4507,43 @@ var ChargeState;
 
 
 /***/ }),
-/* 89 */
+/* 85 */
 /***/ ((module) => {
 
 module.exports = require("pg");
 
 /***/ }),
-/* 90 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 86 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapFileAdapter = void 0;
+const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const common_1 = __webpack_require__(4);
-const util_1 = __webpack_require__(33);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-const fs_1 = __webpack_require__(39);
-const path_1 = __webpack_require__(40);
-const fs_2 = __webpack_require__(39);
-class MapFileAdapter {
-    constructor() {
-        this.loggerService = common_1.LoggerService.get('host');
+const saveLog_service_1 = __webpack_require__(35);
+const util_1 = __webpack_require__(38);
+const logger_1 = __webpack_require__(29);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const fs_1 = __webpack_require__(44);
+const path_1 = __webpack_require__(31);
+const fs_2 = __webpack_require__(44);
+let MapFileAdapter = class MapFileAdapter {
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
+        console.log(saveLogService);
+        this.logger = this.saveLogService.get('host');
     }
     async readMapList(request) {
         try {
@@ -4733,7 +4598,7 @@ class MapFileAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[File] readFileList : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[File] readFileList : ${(0, logger_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('리스트를 읽어올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4759,9 +4624,153 @@ class MapFileAdapter {
     onModuleInit() {
         this.mapPath = '/data/maps';
     }
-}
+};
 exports.MapFileAdapter = MapFileAdapter;
+exports.MapFileAdapter = MapFileAdapter = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
+], MapFileAdapter);
 
+
+/***/ }),
+/* 87 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogModule = void 0;
+const common_1 = __webpack_require__(33);
+const saveLog_service_1 = __webpack_require__(35);
+const cleanLog_service_1 = __webpack_require__(88);
+let LogModule = class LogModule {
+};
+exports.LogModule = LogModule;
+exports.LogModule = LogModule = __decorate([
+    (0, common_1.Module)({
+        imports: [],
+        controllers: [],
+        providers: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+        exports: [saveLog_service_1.SaveLogService, cleanLog_service_1.CleanLogService],
+    })
+], LogModule);
+
+
+/***/ }),
+/* 88 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CleanLogService = void 0;
+const common_1 = __webpack_require__(33);
+const schedule_1 = __webpack_require__(89);
+const path = __webpack_require__(31);
+const fs_1 = __webpack_require__(44);
+let CleanLogService = class CleanLogService {
+    constructor() {
+        this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
+        this.RETAIN_DAYS = Number(process.env.LOG_RETAIN_DAYS ?? '10');
+        this.runClean = false;
+    }
+    setLogger(logger, path, retainDays) {
+        this.logger = logger;
+        this.LOG_ROOT = path;
+        this.RETAIN_DAYS = retainDays;
+        this.runClean = true;
+    }
+    async handleCron() {
+        if (!this.runClean)
+            return;
+        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
+        try {
+            await this.cleanDir(this.LOG_ROOT);
+            this.logger?.info('[Log] 🧹 로그 정리 완료');
+        }
+        catch (e) {
+            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
+        }
+    }
+    async cleanDir(dir) {
+        let entries;
+        try {
+            entries = await fs_1.promises.readdir(dir, { withFileTypes: true });
+        }
+        catch {
+            return;
+        }
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                await this.cleanDir(fullPath);
+                continue;
+            }
+            if (!entry.name.endsWith('.log') && !entry.name.endsWith('.log.gz')) {
+                continue;
+            }
+            let stat;
+            try {
+                stat = await fs_1.promises.stat(fullPath);
+            }
+            catch {
+                continue;
+            }
+            if (this.isOlderThan(stat.mtime, this.RETAIN_DAYS)) {
+                this.logger?.info(`[Log] 🗑 delete: ${fullPath}`);
+                try {
+                    await fs_1.promises.unlink(fullPath);
+                }
+                catch (e) {
+                    console.warn(`삭제 실패: ${fullPath} (${e.message})`);
+                }
+            }
+        }
+    }
+    isOlderThan(mtime, days) {
+        const now = Date.now();
+        const diffMs = now - mtime.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        return diffDays > days;
+    }
+};
+exports.CleanLogService = CleanLogService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CleanLogService.prototype, "handleCron", null);
+exports.CleanLogService = CleanLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], CleanLogService);
+
+
+/***/ }),
+/* 89 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 90 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/mongoose");
 
 /***/ }),
 /* 91 */
@@ -4774,23 +4783,211 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapMongoAdapter = void 0;
+const common_1 = __webpack_require__(33);
+const config_1 = __webpack_require__(2);
+const mongoose_1 = __webpack_require__(90);
+const mongoose_2 = __webpack_require__(92);
+const map_mongo_entity_1 = __webpack_require__(93);
+const saveLog_service_1 = __webpack_require__(35);
+const util_1 = __webpack_require__(38);
+const error_to_json_1 = __webpack_require__(30);
+const constant_1 = __webpack_require__(51);
+const rpc_code_exception_1 = __webpack_require__(50);
+let MapMongoAdapter = class MapMongoAdapter {
+    constructor(Repository, saveLogService, configService) {
+        this.Repository = Repository;
+        this.saveLogService = saveLogService;
+        this.configService = configService;
+        this.logger = this.saveLogService.get('map');
+        this.setIndex(this.configService);
+    }
+    async setIndex(configService) {
+        try {
+            await this.Repository.collection.dropIndex('createdAt_1');
+        }
+        catch (error) {
+            this.logger.warn(`[Map] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+        }
+        try {
+            if (configService.get('DB_TTL_ENABLE') === 'true') {
+                const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
+                this.Repository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
+                this.logger.info(`[Map] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+            }
+        }
+        catch (error) {
+            this.logger.error(`[Map] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+        }
+    }
+    async getNodebyId(id) {
+        try {
+            return await this.Repository.findById(id);
+        }
+        catch (error) {
+            this.logger.error(`[Map] DB getNodebyId : ${id} => ${(0, error_to_json_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+    async save(model) {
+        try {
+            const result = await this.Repository.create(model);
+            return {
+                ...result,
+                id: result._id.toString(),
+            };
+        }
+        catch (error) {
+            this.logger.error(`[Map] DB save : ${JSON.stringify(model)} => ${(0, error_to_json_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+    async update(model) {
+        try {
+            const result = await this.Repository.findByIdAndUpdate(model.id, model);
+            return {
+                ...result,
+                id: result._id.toString(),
+            };
+        }
+        catch (error) {
+            this.logger.error(`[Map] DB update : ${JSON.stringify(model)} => ${(0, error_to_json_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 업데이트할 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+};
+exports.MapMongoAdapter = MapMongoAdapter;
+exports.MapMongoAdapter = MapMongoAdapter = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(map_mongo_entity_1.Map.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object, typeof (_c = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _c : Object])
+], MapMongoAdapter);
+
+
+/***/ }),
+/* 92 */
+/***/ ((module) => {
+
+module.exports = require("mongoose");
+
+/***/ }),
+/* 93 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MapSchema = exports.Map = void 0;
+const mongoose_1 = __webpack_require__(90);
+let Map = class Map {
+};
+exports.Map = Map;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], Map.prototype, "command", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], Map.prototype, "status", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "mapName", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "newMapName", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "newPath", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "path", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "fileName", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], Map.prototype, "isForce", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", String)
+], Map.prototype, "message", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Map.prototype, "createAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Map.prototype, "updateAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ nullable: true }),
+    __metadata("design:type", Number)
+], Map.prototype, "version", void 0);
+exports.Map = Map = __decorate([
+    (0, mongoose_1.Schema)()
+], Map);
+exports.MapSchema = mongoose_1.SchemaFactory.createForClass(Map);
+exports.MapSchema.set('timestamps', true);
+
+
+/***/ }),
+/* 94 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingModule = void 0;
-const common_1 = __webpack_require__(55);
-const setting_file_service_1 = __webpack_require__(92);
+const common_1 = __webpack_require__(33);
+const setting_file_service_1 = __webpack_require__(95);
 const config_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
-const setting_grpc_controller_1 = __webpack_require__(93);
-const constant_1 = __webpack_require__(71);
-const setting_postgres_adapter_1 = __webpack_require__(94);
-const setting_socketio_adpater_1 = __webpack_require__(95);
-const setting_slamnav_service_1 = __webpack_require__(96);
+const setting_grpc_controller_1 = __webpack_require__(96);
+const constant_1 = __webpack_require__(67);
+const setting_postgres_adapter_1 = __webpack_require__(97);
+const setting_socketio_adpater_1 = __webpack_require__(98);
+const setting_slamnav_service_1 = __webpack_require__(99);
+const log_module_1 = __webpack_require__(87);
 let SettingModule = class SettingModule {
 };
 exports.SettingModule = SettingModule;
 exports.SettingModule = SettingModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -4826,22 +5023,35 @@ exports.SettingModule = SettingModule = __decorate([
 
 
 /***/ }),
-/* 92 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 95 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingFileService = void 0;
-const Path = __webpack_require__(40);
-const fs = __webpack_require__(39);
+const Path = __webpack_require__(31);
+const fs = __webpack_require__(44);
 const common_1 = __webpack_require__(4);
 const microservices_1 = __webpack_require__(3);
-const file_util_1 = __webpack_require__(38);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-class SettingFileService {
-    constructor() {
-        this.loggerService = common_1.LoggerService.get('host');
+const file_util_1 = __webpack_require__(43);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
+const common_2 = __webpack_require__(33);
+let SettingFileService = class SettingFileService {
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('host');
     }
     getDiretoryPath(type) {
         return Path.join(process.env.HOME, 'slamnav2', 'config', type);
@@ -4861,13 +5071,13 @@ class SettingFileService {
     async getSetting(request) {
         try {
             if (request.type === undefined || request.type === '') {
-                this.loggerService.error(`[SETTING] getSetting : type 값이 없습니다.`);
+                this.logger.error(`[SETTING] getSetting : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getSettingPath(request.type);
             console.log(path);
             if (!fs.existsSync(path)) {
-                this.loggerService.error(`[SETTING] getSetting : ${request.type}에 해당하는 세팅파일이 없습니다.`);
+                this.logger.error(`[SETTING] getSetting : ${request.type}에 해당하는 세팅파일이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
             }
             const data = await file_util_1.FileUtil.readJson(path);
@@ -4877,24 +5087,24 @@ class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[SETTING] getSetting : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SETTING] getSetting : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('세팅을 불러오던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async saveSetting(request) {
         try {
-            this.loggerService.info(`[Setting] saveSetting : ${JSON.stringify(request)}`);
+            this.logger.info(`[Setting] saveSetting : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.loggerService.error(`[SETTING] saveSetting : type 값이 없습니다.`);
+                this.logger.error(`[SETTING] saveSetting : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.data === undefined || request.data === '') {
-                this.loggerService.error(`[SETTING] saveSetting : data 값이 없습니다.`);
+                this.logger.error(`[SETTING] saveSetting : data 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const jsonData = JSON.parse(request.data);
             if (typeof jsonData !== 'object' || jsonData === null) {
-                this.loggerService.error(`[SETTING] saveSetting : ${request.data}는 JSON 형식이 아닙니다.`);
+                this.logger.error(`[SETTING] saveSetting : ${request.data}는 JSON 형식이 아닙니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값을 파싱할 수 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const newData = await this.convertNumbersToStrings(jsonData);
@@ -4914,24 +5124,24 @@ class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[SETTING] saveSetting : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SETTING] saveSetting : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('세팅을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getPreset(request) {
-        this.loggerService.info(`[Setting] getPreset : ${JSON.stringify(request)}`);
+        this.logger.info(`[Setting] getPreset : ${JSON.stringify(request)}`);
         try {
             if (request.type === undefined || request.type === '') {
-                this.loggerService.error(`[SETTING] getPreset : type 값이 없습니다.`);
+                this.logger.error(`[SETTING] getPreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.loggerService.error(`[SETTING] getPreset : preset 값이 없습니다.`);
+                this.logger.error(`[SETTING] getPreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getPresetPath(request.type, request.preset);
             if (!fs.existsSync(path)) {
-                this.loggerService.error(`[SETTING] getPreset : ${path} is not exists`);
+                this.logger.error(`[SETTING] getPreset : ${path} is not exists`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.preset}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
             }
             const data = await file_util_1.FileUtil.readJson(path);
@@ -4940,24 +5150,24 @@ class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async deletePreset(request) {
         try {
-            this.loggerService.info(`[Setting] deletePreset : ${JSON.stringify(request)}`);
+            this.logger.info(`[Setting] deletePreset : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.loggerService.error(`[SETTING] deletePreset : type 값이 없습니다.`);
+                this.logger.error(`[SETTING] deletePreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.loggerService.error(`[SETTING] deletePreset : preset 값이 없습니다.`);
+                this.logger.error(`[SETTING] deletePreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getPresetPath(request.type, request.preset);
             if (!fs.existsSync(path)) {
-                this.loggerService.error(`[SETTING] getPreset : ${path} is not exists`);
+                this.logger.error(`[SETTING] getPreset : ${path} is not exists`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.preset}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
             }
             await file_util_1.FileUtil.deleteFile(path);
@@ -4966,28 +5176,28 @@ class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async createPreset(request) {
         try {
-            this.loggerService.info(`[Setting] createPreset : ${JSON.stringify(request)}`);
+            this.logger.info(`[Setting] createPreset : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.loggerService.error(`[SETTING] createPreset : type 값이 없습니다.`);
+                this.logger.error(`[SETTING] createPreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.loggerService.error(`[SETTING] createPreset : preset 값이 없습니다.`);
+                this.logger.error(`[SETTING] createPreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (isNaN(parseInt(request.preset))) {
-                this.loggerService.error(`[SETTING] createPreset : preset 값이 숫자가 아닙니다.`);
+                this.logger.error(`[SETTING] createPreset : preset 값이 숫자가 아닙니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 숫자가 아닙니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getPresetPath(request.type, request.preset);
             if (fs.existsSync(path)) {
-                this.loggerService.error(`[SETTING] createPreset : ${path} 파일이 이미 존재합니다.`);
+                this.logger.error(`[SETTING] createPreset : ${path} 파일이 이미 존재합니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.preset}에 해당하는 세팅파일이 이미 존재합니다.`, constant_1.GrpcCode.AlreadyExists);
             }
             const tempData = {
@@ -5013,28 +5223,28 @@ class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async savePreset(request) {
         try {
-            this.loggerService.info(`[Setting] savePreset : ${JSON.stringify(request)}`);
+            this.logger.info(`[Setting] savePreset : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.loggerService.error(`[SETTING] savePreset : type 값이 없습니다.`);
+                this.logger.error(`[SETTING] savePreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.loggerService.error(`[SETTING] savePreset : preset 값이 없습니다.`);
+                this.logger.error(`[SETTING] savePreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.data === undefined || request.data === '') {
-                this.loggerService.error(`[SETTING] savePreset : data 값이 없습니다.`);
+                this.logger.error(`[SETTING] savePreset : data 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const jsonData = JSON.parse(request.data);
             if (typeof jsonData !== 'object' || jsonData === null) {
-                this.loggerService.error(`[SETTING] savePreset : ${request.data}는 JSON 형식이 아닙니다.`);
+                this.logger.error(`[SETTING] savePreset : ${request.data}는 JSON 형식이 아닙니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값을 파싱할 수 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const newData = await this.convertNumbersToStrings(jsonData);
@@ -5049,19 +5259,19 @@ class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[SETTING] savePreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[SETTING] savePreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getPresetList(request) {
         try {
             if (request.type === undefined || request.type === '') {
-                this.loggerService.error(`[SETTING] getPresetList : type 값이 없습니다.`);
+                this.logger.error(`[SETTING] getPresetList : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getDiretoryPath(request.type);
             if (!fs.existsSync(path)) {
-                this.loggerService.error(`[SETTING] getPresetList : ${path} 경로가 없습니다.`);
+                this.logger.error(`[SETTING] getPresetList : ${path} 경로가 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.InvalidArgument);
             }
             const files = await fs.promises.readdir(path, { withFileTypes: true });
@@ -5083,7 +5293,7 @@ class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Setting] getPresetList : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Setting] getPresetList : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5239,12 +5449,16 @@ class SettingFileService {
         }
         return result;
     }
-}
+};
 exports.SettingFileService = SettingFileService;
+exports.SettingFileService = SettingFileService = __decorate([
+    (0, common_2.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
+], SettingFileService);
 
 
 /***/ }),
-/* 93 */
+/* 96 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5261,8 +5475,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingGrpcInputController = void 0;
 const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(55);
-const setting_file_service_1 = __webpack_require__(92);
+const common_2 = __webpack_require__(33);
+const setting_file_service_1 = __webpack_require__(95);
 let SettingGrpcInputController = class SettingGrpcInputController {
     constructor(settingService) {
         this.settingService = settingService;
@@ -5305,7 +5519,7 @@ exports.SettingGrpcInputController = SettingGrpcInputController = __decorate([
 
 
 /***/ }),
-/* 94 */
+/* 97 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5320,7 +5534,7 @@ exports.SettingPostgresAdapter = SettingPostgresAdapter;
 
 
 /***/ }),
-/* 95 */
+/* 98 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5335,7 +5549,7 @@ exports.SettingSocketioAdapter = SettingSocketioAdapter;
 
 
 /***/ }),
-/* 96 */
+/* 99 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5347,7 +5561,7 @@ exports.SettingSlamnavService = SettingSlamnavService;
 
 
 /***/ }),
-/* 97 */
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5359,20 +5573,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundModule = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const config_1 = __webpack_require__(2);
-const typeorm_1 = __webpack_require__(56);
-const pg_1 = __webpack_require__(89);
-const sound_entity_1 = __webpack_require__(98);
-const sound_grpc_controller_1 = __webpack_require__(99);
-const sound_service_1 = __webpack_require__(100);
-const sound_play_sound_adapter_1 = __webpack_require__(102);
+const typeorm_1 = __webpack_require__(101);
+const pg_1 = __webpack_require__(85);
+const sound_entity_1 = __webpack_require__(102);
+const sound_grpc_controller_1 = __webpack_require__(104);
+const sound_service_1 = __webpack_require__(105);
+const sound_play_sound_adapter_1 = __webpack_require__(107);
+const log_module_1 = __webpack_require__(87);
 let SoundModule = class SoundModule {
 };
 exports.SoundModule = SoundModule;
 exports.SoundModule = SoundModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -5430,7 +5646,13 @@ async function ensureSoundDatabase() {
 
 
 /***/ }),
-/* 98 */
+/* 101 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/typeorm");
+
+/***/ }),
+/* 102 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5446,7 +5668,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Sound = void 0;
-const typeorm_1 = __webpack_require__(69);
+const typeorm_1 = __webpack_require__(103);
 let Sound = class Sound {
 };
 exports.Sound = Sound;
@@ -5488,7 +5710,13 @@ exports.Sound = Sound = __decorate([
 
 
 /***/ }),
-/* 99 */
+/* 103 */
+/***/ ((module) => {
+
+module.exports = require("typeorm");
+
+/***/ }),
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5506,8 +5734,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundGrpcController = void 0;
 const common_1 = __webpack_require__(4);
 const grpc_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(55);
-const sound_service_1 = __webpack_require__(100);
+const common_2 = __webpack_require__(33);
+const sound_service_1 = __webpack_require__(105);
 let SoundGrpcController = class SoundGrpcController {
     constructor(soundService) {
         this.soundService = soundService;
@@ -5538,7 +5766,7 @@ exports.SoundGrpcController = SoundGrpcController = __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 105 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5554,21 +5782,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundService = void 0;
-const logger_1 = __webpack_require__(29);
-const common_1 = __webpack_require__(55);
-const sound_output_port_1 = __webpack_require__(101);
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(33);
+const sound_output_port_1 = __webpack_require__(106);
 const microservices_1 = __webpack_require__(3);
-const fs_1 = __webpack_require__(39);
-const path_1 = __webpack_require__(40);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
+const fs_1 = __webpack_require__(44);
+const path_1 = __webpack_require__(31);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
 let SoundService = class SoundService {
-    constructor(soundOutput) {
+    constructor(soundOutput, saveLogService) {
         this.soundOutput = soundOutput;
-        this.loggerService = logger_1.LoggerService.get('host');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('host');
     }
     getPlaying() {
         return this.soundOutput.getPlaying();
@@ -5592,7 +5822,7 @@ let SoundService = class SoundService {
             }
             const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
             if (!(0, fs_1.existsSync)(path)) {
-                this.loggerService.error(`[Sound] playSound : 경로의 파일이 존재하지 않습니다. ${path}`);
+                this.logger.error(`[Sound] playSound : 경로의 파일이 존재하지 않습니다. ${path}`);
                 throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. ${request.fileName}`, constant_1.GrpcCode.NotFound);
             }
             return this.soundOutput.play(request);
@@ -5600,7 +5830,7 @@ let SoundService = class SoundService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Sound] playSound : ${(0, logger_1.errorToJson)(error)}`);
+            this.logger.error(`[Sound] playSound : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5628,7 +5858,7 @@ let SoundService = class SoundService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Sound] getSoundList : ${(0, logger_1.errorToJson)(error)}`);
+            this.logger.error(`[Sound] getSoundList : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('리스트를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5650,20 +5880,20 @@ let SoundService = class SoundService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Sound] deleteSoundFile : ${(0, logger_1.errorToJson)(error)}`);
+            this.logger.error(`[Sound] deleteSoundFile : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('파일을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
 };
 exports.SoundService = SoundService;
 exports.SoundService = SoundService = __decorate([
-    __param(0, (0, common_1.Inject)('SoundOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof sound_output_port_1.SoundOutputPort !== "undefined" && sound_output_port_1.SoundOutputPort) === "function" ? _a : Object])
+    __param(0, (0, common_2.Inject)('SoundOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof sound_output_port_1.SoundOutputPort !== "undefined" && sound_output_port_1.SoundOutputPort) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SoundService);
 
 
 /***/ }),
-/* 101 */
+/* 106 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5671,27 +5901,40 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 102 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 107 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundPlaySoundAdapter = void 0;
 const common_1 = __webpack_require__(4);
-const fs_1 = __webpack_require__(39);
-const PlaySound = __webpack_require__(103);
+const fs_1 = __webpack_require__(44);
+const PlaySound = __webpack_require__(108);
 const microservices_1 = __webpack_require__(3);
-const child_process_1 = __webpack_require__(104);
-const path_1 = __webpack_require__(40);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-class SoundPlaySoundAdapter {
-    constructor() {
+const child_process_1 = __webpack_require__(109);
+const path_1 = __webpack_require__(31);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
+const common_2 = __webpack_require__(33);
+let SoundPlaySoundAdapter = class SoundPlaySoundAdapter {
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
         this.player = PlaySound();
         this.repeatCount = 0;
         this.curPlaying = null;
         this.curPlayingInfo = null;
-        this.loggerService = common_1.LoggerService.get('host');
+        this.logger = this.saveLogService.get('host');
     }
     getPlaying() {
         if (this.curPlayingInfo) {
@@ -5708,39 +5951,39 @@ class SoundPlaySoundAdapter {
         return new Promise(async (resolve, reject) => {
             try {
                 const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
-                this.loggerService.debug(`[Sound] Play: ${path}`);
+                this.logger.debug(`[Sound] Play: ${path}`);
                 if (!(0, fs_1.existsSync)(path)) {
                     reject(new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. ${path}`, constant_1.GrpcCode.NotFound));
                 }
                 if (this.curPlaying) {
-                    this.loggerService.info(`[Sound] Play: Stop cur Playing`);
+                    this.logger.info(`[Sound] Play: Stop cur Playing`);
                     await this.stopPlaying();
                 }
                 this.curPlayingInfo = request;
                 if (!request.isWaitUntilDone) {
-                    this.loggerService.info(`[Sound] Play: Play Start without Wait`);
+                    this.logger.info(`[Sound] Play: Play Start without Wait`);
                     resolve(request);
                 }
                 for (var i = 0; i < request.repeatCount; i++) {
                     await this.playSync(path, request.volume);
                 }
-                this.loggerService.info(`[Sound] Play: Play Wait Done`);
+                this.logger.info(`[Sound] Play: Play Wait Done`);
                 this.stopPlaying();
                 resolve(request);
             }
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     reject(error);
-                this.loggerService.error(`[Sound] Play: ${(0, common_1.errorToJson)(error)}`);
+                this.logger.error(`[Sound] Play: ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
     }
     async stop() {
         try {
-            this.loggerService.info(`[Sound] Stop`);
+            this.logger.info(`[Sound] Stop`);
             if (!this.curPlaying) {
-                this.loggerService.warn(`[Sound] Stop: curPlaying is null`);
+                this.logger.warn(`[Sound] Stop: curPlaying is null`);
                 throw new rpc_code_exception_1.RpcCodeException('실행중인 플레이가 없습니다.', constant_1.GrpcCode.NotFound);
             }
             await this.stopPlaying();
@@ -5748,22 +5991,22 @@ class SoundPlaySoundAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('플레이를 종료할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async playSync(path, volume) {
         return new Promise((resolve, reject) => {
-            this.loggerService.debug(`[Sound] playSync: ${path}, ${volume}`);
+            this.logger.debug(`[Sound] playSync: ${path}, ${volume}`);
             this.curPlaying = this.player.play(path, { mplayer: ['-ao', 'pulse', '-volume', volume] }, (err) => {
                 if (err) {
                     if (typeof err === 'number' && err === 1) {
-                        this.loggerService.error(`[Sound] Play: Code 1`);
+                        this.logger.error(`[Sound] Play: Code 1`);
                         reject(new rpc_code_exception_1.RpcCodeException('플레이가 중지되었습니다.', constant_1.GrpcCode.InternalError));
                     }
                     else {
                         console.error(err);
-                        this.loggerService.error(`[Sound] Play: ${(0, common_1.errorToJson)(err)}`);
+                        this.logger.error(`[Sound] Play: ${(0, common_1.errorToJson)(err)}`);
                         reject(new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError));
                     }
                 }
@@ -5777,29 +6020,33 @@ class SoundPlaySoundAdapter {
             (0, child_process_1.execSync)('pkill -x mplayer', { stdio: 'ignore' });
         }
         catch (error) {
-            this.loggerService.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
         }
         this.curPlaying = null;
         this.curPlayingInfo = null;
     }
-}
+};
 exports.SoundPlaySoundAdapter = SoundPlaySoundAdapter;
+exports.SoundPlaySoundAdapter = SoundPlaySoundAdapter = __decorate([
+    (0, common_2.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
+], SoundPlaySoundAdapter);
 
 
 /***/ }),
-/* 103 */
+/* 108 */
 /***/ ((module) => {
 
 module.exports = require("play-sound");
 
 /***/ }),
-/* 104 */
+/* 109 */
 /***/ ((module) => {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 105 */
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5811,28 +6058,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateModule = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const config_1 = __webpack_require__(2);
-const typeorm_1 = __webpack_require__(56);
+const typeorm_1 = __webpack_require__(101);
 const microservices_1 = __webpack_require__(3);
-const pg_1 = __webpack_require__(89);
-const update_command_entity_1 = __webpack_require__(106);
-const update_grpc_controller_1 = __webpack_require__(108);
-const update_service_1 = __webpack_require__(109);
-const update_sh_adapter_1 = __webpack_require__(117);
-const update_socketio_adapter_1 = __webpack_require__(118);
-const constant_1 = __webpack_require__(71);
-const update_pending_service_1 = __webpack_require__(119);
-const update_database_adapter_1 = __webpack_require__(120);
-const mongoose_1 = __webpack_require__(107);
-const update_version_entity_1 = __webpack_require__(122);
-const update_log_entity_1 = __webpack_require__(123);
+const pg_1 = __webpack_require__(85);
+const update_command_entity_1 = __webpack_require__(111);
+const update_grpc_controller_1 = __webpack_require__(112);
+const update_service_1 = __webpack_require__(113);
+const update_sh_adapter_1 = __webpack_require__(121);
+const update_socketio_adapter_1 = __webpack_require__(122);
+const constant_1 = __webpack_require__(67);
+const update_pending_service_1 = __webpack_require__(123);
+const update_database_adapter_1 = __webpack_require__(124);
+const mongoose_1 = __webpack_require__(90);
+const update_version_entity_1 = __webpack_require__(125);
+const update_log_entity_1 = __webpack_require__(126);
+const log_module_1 = __webpack_require__(87);
 let UpdateModule = class UpdateModule {
 };
 exports.UpdateModule = UpdateModule;
 exports.UpdateModule = UpdateModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -5929,7 +6178,7 @@ async function ensureHostDatabase() {
 
 
 /***/ }),
-/* 106 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5944,7 +6193,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateCommandSchema = exports.UpdateCommand = void 0;
-const mongoose_1 = __webpack_require__(107);
+const mongoose_1 = __webpack_require__(90);
 let UpdateCommand = class UpdateCommand {
 };
 exports.UpdateCommand = UpdateCommand;
@@ -6006,13 +6255,7 @@ exports.UpdateCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 107 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/mongoose");
-
-/***/ }),
-/* 108 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6029,8 +6272,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateGrpcController = void 0;
 const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(55);
-const update_service_1 = __webpack_require__(109);
+const common_2 = __webpack_require__(33);
+const update_service_1 = __webpack_require__(113);
 let UpdateGrpcController = class UpdateGrpcController {
     constructor(updateService) {
         this.updateService = updateService;
@@ -6070,7 +6313,7 @@ exports.UpdateGrpcController = UpdateGrpcController = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6086,34 +6329,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateService = void 0;
 const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(55);
-const net = __webpack_require__(110);
-const child_process_1 = __webpack_require__(104);
-const common_3 = __webpack_require__(55);
+const common_2 = __webpack_require__(33);
+const net = __webpack_require__(114);
+const child_process_1 = __webpack_require__(109);
+const common_3 = __webpack_require__(33);
 const config_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
-const crypto = __webpack_require__(111);
-const fs_1 = __webpack_require__(39);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-const os_1 = __webpack_require__(112);
-const path_1 = __webpack_require__(40);
-const update_domain_1 = __webpack_require__(113);
-const update_slamnav_output_port_1 = __webpack_require__(114);
-const update_database_output_port_1 = __webpack_require__(115);
-const map_command_domain_1 = __webpack_require__(61);
-const update_sh_output_port_1 = __webpack_require__(116);
+const crypto = __webpack_require__(115);
+const fs_1 = __webpack_require__(44);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const os_1 = __webpack_require__(116);
+const path_1 = __webpack_require__(31);
+const update_domain_1 = __webpack_require__(117);
+const update_slamnav_output_port_1 = __webpack_require__(118);
+const update_database_output_port_1 = __webpack_require__(119);
+const map_command_domain_1 = __webpack_require__(60);
+const update_sh_output_port_1 = __webpack_require__(120);
+const saveLog_service_1 = __webpack_require__(35);
 let UpdateService = class UpdateService {
-    constructor(configService, updateShOutputPort, updateSlamnavOutputPort, updateDatabaseOutputPort) {
+    constructor(configService, updateShOutputPort, updateSlamnavOutputPort, updateDatabaseOutputPort, saveLogService) {
         this.configService = configService;
         this.updateShOutputPort = updateShOutputPort;
         this.updateSlamnavOutputPort = updateSlamnavOutputPort;
         this.updateDatabaseOutputPort = updateDatabaseOutputPort;
-        this.loggerService = common_1.LoggerService.get('host');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('update');
         if (!this.configService) {
             throw new Error('ConfigService가 주입되지 않았습니다.');
         }
@@ -6124,7 +6369,7 @@ let UpdateService = class UpdateService {
     async checkRepositoryAccess() {
         try {
             console.log(this.configService.get('RELEASE_REPO_URL'));
-            this.loggerService.debug(`[UPDATE] checkRepositoryAccess URL : ${this.configService.get('RELEASE_REPO_URL')}`);
+            this.logger.debug(`[UPDATE] checkRepositoryAccess URL : ${this.configService.get('RELEASE_REPO_URL')}`);
             const response = await fetch(this.configService.get('RELEASE_REPO_URL'));
             if (!response.ok) {
                 throw new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.FailedPrecondition);
@@ -6134,7 +6379,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[UPDATE] checkRepositoryAccess : ${(0, common_1.errorToJson)(error)}}`);
+            this.logger.error(`[UPDATE] checkRepositoryAccess : ${(0, common_1.errorToJson)(error)}}`);
             throw new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6154,7 +6399,7 @@ let UpdateService = class UpdateService {
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     reject(error);
-                this.loggerService.error(`[UPDATE] pingSendToTarget : ${error}`);
+                this.logger.error(`[UPDATE] pingSendToTarget : ${error}`);
                 reject(new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -6162,7 +6407,7 @@ let UpdateService = class UpdateService {
     async getNewVersion(request) {
         let model;
         try {
-            this.loggerService.info(`[UPDATE] getNewVersion : ${JSON.stringify(request)}`);
+            this.logger.info(`[UPDATE] getNewVersion : ${JSON.stringify(request)}`);
             model = new update_domain_1.UpdateModel({
                 ...request,
                 command: update_domain_1.UpdateCommand.GetNewVersion,
@@ -6172,7 +6417,7 @@ let UpdateService = class UpdateService {
             model.checkVariables();
             await this.checkRepositoryAccess();
             const newVersionUrl = `${this.configService.get('RELEASE_REPO_RAW_URL')}/${model.branch}/${model.software}/version.json`;
-            this.loggerService.debug(`[UPDATE] getNewVersion URL : ${newVersionUrl}`);
+            this.logger.debug(`[UPDATE] getNewVersion URL : ${newVersionUrl}`);
             const newVersionData = await fetch(newVersionUrl);
             const newVersionDataJson = await newVersionData.json();
             model.version = newVersionDataJson.new_version;
@@ -6180,7 +6425,7 @@ let UpdateService = class UpdateService {
             model.statusChange(map_command_domain_1.CommandStatus.success);
             await this.updateDatabaseOutputPort.update(model);
             await this.updateDatabaseOutputPort.setNewVersion(model);
-            this.loggerService.debug(`[UPDATE] getNewVersion Data : ${JSON.stringify(newVersionDataJson)}`);
+            this.logger.debug(`[UPDATE] getNewVersion Data : ${JSON.stringify(newVersionDataJson)}`);
             return { ...model, software: model.software };
         }
         catch (error) {
@@ -6191,7 +6436,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.loggerService.error(`[UPDATE] getNewVersion : ${error}`);
+            this.logger.error(`[UPDATE] getNewVersion : ${error}`);
             throw new rpc_code_exception_1.RpcCodeException(`[${request.software}] ${request.branch} 브랜치의 version.json 파일을 찾을 수 없습니다.`, common_3.HttpStatus.NOT_FOUND);
         }
     }
@@ -6233,7 +6478,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[UPDATE] getCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] getCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6241,7 +6486,7 @@ let UpdateService = class UpdateService {
         try {
             const versionPath = (0, path_1.join)((0, os_1.homedir)(), software, 'version.json');
             if (!(0, fs_1.existsSync)(versionPath)) {
-                this.loggerService.error(`[UPDATE] getRrsCurrentVersion : ${versionPath} 파일을 찾을 수 없습니다.`);
+                this.logger.error(`[UPDATE] getRrsCurrentVersion : ${versionPath} 파일을 찾을 수 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.NotFound);
             }
             const versionData = (0, fs_1.readFileSync)(versionPath, 'utf-8');
@@ -6252,7 +6497,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.loggerService.error(`[UPDATE] getRrsCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] getRrsCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6260,7 +6505,7 @@ let UpdateService = class UpdateService {
         try {
             const branchPath = (0, path_1.join)((0, os_1.homedir)(), 'rrs-env.conf');
             if (!(0, fs_1.existsSync)(branchPath)) {
-                this.loggerService.error(`[UPDATE] getRrsCurrentBranch : ${branchPath} 파일을 찾을 수 없습니다.`);
+                this.logger.error(`[UPDATE] getRrsCurrentBranch : ${branchPath} 파일을 찾을 수 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('브랜치를 가져올 수 없습니다.', constant_1.GrpcCode.NotFound);
             }
             const branchData = (0, fs_1.readFileSync)(branchPath, 'utf-8').split('=')[1];
@@ -6269,7 +6514,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.loggerService.error(`[UPDATE] getRrsCurrentBranch : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] getRrsCurrentBranch : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('브랜치를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6286,7 +6531,7 @@ let UpdateService = class UpdateService {
             model.assignId(updateCommand._id);
             model.checkVariables();
             const url = `https://api.github.com/repos/rainbow-mobile/rainbow-release-apps/branches`;
-            this.loggerService.debug(`[UPDATE] getReleaseAppsBranches URL : ${url}`);
+            this.logger.debug(`[UPDATE] getReleaseAppsBranches URL : ${url}`);
             await this.checkRepositoryAccess();
             const res = await fetch(url, {
                 headers: {
@@ -6297,7 +6542,7 @@ let UpdateService = class UpdateService {
             const endIndex = startIndex + model.pageSize;
             const resJson = await res.json();
             const list = resJson.slice(startIndex, endIndex);
-            this.loggerService.debug(`[UPDATE] getReleaseAppsBranches Data : ${JSON.stringify(list)}`);
+            this.logger.debug(`[UPDATE] getReleaseAppsBranches Data : ${JSON.stringify(list)}`);
             return { list: list, pageSize: model.pageSize, totalCount: resJson.length, totalPage: Math.ceil(resJson.length / model.pageSize) };
         }
         catch (error) {
@@ -6308,7 +6553,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.loggerService.error(`[UPDATE] getReleaseAppsBranches : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] getReleaseAppsBranches : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('브랜치를 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6336,7 +6581,7 @@ let UpdateService = class UpdateService {
             model.assignId(updateCommand._id);
             model.checkVariables();
             const url = `https://api.github.com/repos/rainbow-mobile/rainbow-release-apps/contents/${model.software}?ref=${model.branch}`;
-            this.loggerService.debug(`[UPDATE] getReleaseAppsVersionList URL : ${url}`);
+            this.logger.debug(`[UPDATE] getReleaseAppsVersionList URL : ${url}`);
             await this.checkRepositoryAccess();
             const res = await fetch(url, {
                 headers: {
@@ -6345,7 +6590,7 @@ let UpdateService = class UpdateService {
                 method: 'GET',
             });
             const resJson = await res.json();
-            this.loggerService.debug(`[UPDATE] getReleaseAppsVersionList Data Length : ${resJson.length}`);
+            this.logger.debug(`[UPDATE] getReleaseAppsVersionList Data Length : ${resJson.length}`);
             return { list: resJson };
         }
         catch (error) {
@@ -6356,7 +6601,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.loggerService.error(`[UPDATE] getReleaseAppsVersionList : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] getReleaseAppsVersionList : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6385,7 +6630,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.loggerService.error(`[UPDATE] updateProgram : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] updateProgram : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프로그램을 업데이트할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6396,37 +6641,37 @@ exports.UpdateService = UpdateService = __decorate([
     __param(1, (0, common_2.Inject)('updateShOutputPort')),
     __param(2, (0, common_2.Inject)('updateSlamnavOutputPort')),
     __param(3, (0, common_2.Inject)('updateDatabaseOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof update_sh_output_port_1.UpdateShOutputPort !== "undefined" && update_sh_output_port_1.UpdateShOutputPort) === "function" ? _b : Object, typeof (_c = typeof update_slamnav_output_port_1.UpdateSlamnavOutputPort !== "undefined" && update_slamnav_output_port_1.UpdateSlamnavOutputPort) === "function" ? _c : Object, typeof (_d = typeof update_database_output_port_1.UpdateDatabaseOutputPort !== "undefined" && update_database_output_port_1.UpdateDatabaseOutputPort) === "function" ? _d : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof update_sh_output_port_1.UpdateShOutputPort !== "undefined" && update_sh_output_port_1.UpdateShOutputPort) === "function" ? _b : Object, typeof (_c = typeof update_slamnav_output_port_1.UpdateSlamnavOutputPort !== "undefined" && update_slamnav_output_port_1.UpdateSlamnavOutputPort) === "function" ? _c : Object, typeof (_d = typeof update_database_output_port_1.UpdateDatabaseOutputPort !== "undefined" && update_database_output_port_1.UpdateDatabaseOutputPort) === "function" ? _d : Object, typeof (_e = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _e : Object])
 ], UpdateService);
 
 
 /***/ }),
-/* 110 */
+/* 114 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 111 */
+/* 115 */
 /***/ ((module) => {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 112 */
+/* 116 */
 /***/ ((module) => {
 
 module.exports = require("os");
 
 /***/ }),
-/* 113 */
+/* 117 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateModel = exports.SoftwareName = exports.UpdateCommand = void 0;
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
 var CommandStatus;
 (function (CommandStatus) {
     CommandStatus["pending"] = "pending";
@@ -6566,7 +6811,7 @@ exports.UpdateModel = UpdateModel;
 
 
 /***/ }),
-/* 114 */
+/* 118 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -6574,7 +6819,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 115 */
+/* 119 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -6582,7 +6827,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 116 */
+/* 120 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -6590,29 +6835,42 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 117 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 121 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateShAdapter = void 0;
-const common_1 = __webpack_require__(4);
-const rpc_code_exception_1 = __webpack_require__(46);
-const grpc_code_constant_1 = __webpack_require__(48);
-const child_process_1 = __webpack_require__(104);
-const fs_1 = __webpack_require__(39);
-const os_1 = __webpack_require__(112);
-const path_1 = __webpack_require__(40);
-class UpdateShAdapter {
-    constructor(configService) {
+const rpc_code_exception_1 = __webpack_require__(50);
+const grpc_code_constant_1 = __webpack_require__(52);
+const config_1 = __webpack_require__(2);
+const child_process_1 = __webpack_require__(109);
+const fs_1 = __webpack_require__(44);
+const os_1 = __webpack_require__(116);
+const path_1 = __webpack_require__(31);
+const saveLog_service_1 = __webpack_require__(35);
+const common_1 = __webpack_require__(33);
+let UpdateShAdapter = class UpdateShAdapter {
+    constructor(configService, saveLogService) {
         this.configService = configService;
-        this.loggerService = common_1.LoggerService.get('host');
+        this.saveLogService = saveLogService;
         this.deployKitDir = (0, path_1.join)((0, os_1.homedir)(), 'rainbow-deploy-kit');
+        this.logger = saveLogService.get('update');
     }
     async updateRRS(request) {
         const updateScript = (0, path_1.join)(this.deployKitDir, 'rrs-server', 'rrs-update.sh');
         if (!(0, fs_1.existsSync)(updateScript)) {
-            this.loggerService.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
+            this.logger.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
             throw new rpc_code_exception_1.RpcCodeException(`rrs-update.sh 파일을 찾을 수 없습니다.`, grpc_code_constant_1.GrpcCode.NotFound);
         }
         (0, child_process_1.execSync)('git pull', {
@@ -6622,12 +6880,16 @@ class UpdateShAdapter {
         (0, child_process_1.execSync)(`nohup bash ${updateScript} --mode=${request.branch || 'main'} --version=${request.version} > /tmp/rrs-update.log 2>&1 &`);
         return { software: 'rrs', branch: request.branch, version: request.version, result: 'true', message: '' };
     }
-}
+};
 exports.UpdateShAdapter = UpdateShAdapter;
+exports.UpdateShAdapter = UpdateShAdapter = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], UpdateShAdapter);
 
 
 /***/ }),
-/* 118 */
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6643,51 +6905,53 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateSocketioAdapter = void 0;
 const microservices_1 = __webpack_require__(3);
 const common_1 = __webpack_require__(4);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-const common_2 = __webpack_require__(55);
-const constant_2 = __webpack_require__(71);
-const update_pending_service_1 = __webpack_require__(119);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const common_2 = __webpack_require__(33);
+const constant_2 = __webpack_require__(67);
+const update_pending_service_1 = __webpack_require__(123);
+const saveLog_service_1 = __webpack_require__(35);
 let UpdateSocketioAdapter = class UpdateSocketioAdapter {
-    constructor(mqttService, pendingService) {
+    constructor(mqttService, pendingService, saveLogService) {
         this.mqttService = mqttService;
         this.pendingService = pendingService;
-        this.loggerService = common_1.LoggerService.get('update');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('update');
     }
     async updateSLAMNAV(request) {
         try {
-            this.loggerService.debug(`[Update] updateSLAMNAV : ${JSON.stringify(request)}`);
+            this.logger.debug(`[Update] updateSLAMNAV : ${JSON.stringify(request)}`);
             const response = this.waitForResponse(request.id, 5000);
             this.mqttService.emit('updateRequest', request);
             const resp = await response;
-            this.loggerService.debug(`[Update] updateSLAMNAV Response : ${JSON.stringify(resp)}`);
+            this.logger.debug(`[Update] updateSLAMNAV Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[UPDATE] updateSLAMNAV : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] updateSLAMNAV : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('SLAMNAV 업데이트 실패', constant_1.GrpcCode.InternalError);
         }
     }
     async getVersion(request) {
         try {
-            this.loggerService.debug(`[Update] getVersion : ${JSON.stringify(request)}`);
+            this.logger.debug(`[Update] getVersion : ${JSON.stringify(request)}`);
             const response = this.waitForResponse(request.id, 5000);
             this.mqttService.emit('swVersionInfo', request);
             const resp = await response;
-            this.loggerService.debug(`[Update] getVersion Response : ${JSON.stringify(resp)}`);
+            this.logger.debug(`[Update] getVersion Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[UPDATE] getVersion : ${(0, common_1.errorToJson)(error)}`);
+            this.logger.error(`[UPDATE] getVersion : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6697,7 +6961,7 @@ let UpdateSocketioAdapter = class UpdateSocketioAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.loggerService.error(`[Update] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger.error(`[Update] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_1.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -6721,13 +6985,14 @@ let UpdateSocketioAdapter = class UpdateSocketioAdapter {
 };
 exports.UpdateSocketioAdapter = UpdateSocketioAdapter;
 exports.UpdateSocketioAdapter = UpdateSocketioAdapter = __decorate([
+    (0, common_2.Injectable)(),
     __param(0, (0, common_2.Inject)(constant_2.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof update_pending_service_1.UpdatePendingResponseService !== "undefined" && update_pending_service_1.UpdatePendingResponseService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof update_pending_service_1.UpdatePendingResponseService !== "undefined" && update_pending_service_1.UpdatePendingResponseService) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], UpdateSocketioAdapter);
 
 
 /***/ }),
-/* 119 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6739,8 +7004,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdatePendingResponseService = void 0;
-const pending_util_1 = __webpack_require__(79);
-const common_1 = __webpack_require__(55);
+const pending_util_1 = __webpack_require__(75);
+const common_1 = __webpack_require__(33);
 let UpdatePendingResponseService = class UpdatePendingResponseService extends pending_util_1.PendingResponseUtil {
 };
 exports.UpdatePendingResponseService = UpdatePendingResponseService;
@@ -6750,7 +7015,7 @@ exports.UpdatePendingResponseService = UpdatePendingResponseService = __decorate
 
 
 /***/ }),
-/* 120 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6766,32 +7031,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateDatabaseAdapter = void 0;
-const mongoose_1 = __webpack_require__(107);
-const mongoose_2 = __webpack_require__(121);
-const common_1 = __webpack_require__(4);
-const typeorm_1 = __webpack_require__(56);
-const parse_util_1 = __webpack_require__(49);
-const typeorm_2 = __webpack_require__(69);
-const util_1 = __webpack_require__(33);
-const update_command_entity_1 = __webpack_require__(106);
-const update_version_entity_1 = __webpack_require__(122);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
+const mongoose_1 = __webpack_require__(90);
+const mongoose_2 = __webpack_require__(92);
+const typeorm_1 = __webpack_require__(101);
+const parse_util_1 = __webpack_require__(53);
+const typeorm_2 = __webpack_require__(103);
+const util_1 = __webpack_require__(38);
+const update_command_entity_1 = __webpack_require__(111);
+const update_version_entity_1 = __webpack_require__(125);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
+const common_1 = __webpack_require__(33);
 let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
-    constructor(Repository, VersionRepository) {
+    constructor(Repository, VersionRepository, saveLogService) {
         this.Repository = Repository;
         this.VersionRepository = VersionRepository;
-        this.loggerService = common_1.LoggerService.get('host');
+        this.saveLogService = saveLogService;
+        this.logger = saveLogService.get('update');
     }
     async getVersion(software, branch) {
         try {
             return await this.VersionRepository.findOne({ where: { software, branch } });
         }
         catch (error) {
-            this.loggerService.error(`[Move] DB getVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Move] DB getVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6810,7 +7077,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             }
         }
         catch (error) {
-            this.loggerService.error(`[Move] DB setCurrentVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Move] DB setCurrentVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6827,7 +7094,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             }
         }
         catch (error) {
-            this.loggerService.error(`[Move] DB setNewVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Move] DB setNewVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6836,7 +7103,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             return await this.Repository.findById(id).lean();
         }
         catch (error) {
-            this.loggerService.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6846,7 +7113,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             return await this.Repository.create({ ...model, _id });
         }
         catch (error) {
-            this.loggerService.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6855,26 +7122,21 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             return await this.Repository.findByIdAndUpdate(model.id, model).lean();
         }
         catch (error) {
-            this.loggerService.error(`[Move] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Move] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
 };
 exports.UpdateDatabaseAdapter = UpdateDatabaseAdapter;
 exports.UpdateDatabaseAdapter = UpdateDatabaseAdapter = __decorate([
+    (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(update_command_entity_1.UpdateCommand.name)),
     __param(1, (0, typeorm_1.InjectRepository)(update_version_entity_1.UpdateVersion)),
-    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof typeorm_2.Repository !== "undefined" && typeorm_2.Repository) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], UpdateDatabaseAdapter);
 
 
 /***/ }),
-/* 121 */
-/***/ ((module) => {
-
-module.exports = require("mongoose");
-
-/***/ }),
-/* 122 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6890,7 +7152,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateVersion = void 0;
-const typeorm_1 = __webpack_require__(69);
+const typeorm_1 = __webpack_require__(103);
 let UpdateVersion = class UpdateVersion {
 };
 exports.UpdateVersion = UpdateVersion;
@@ -6928,7 +7190,7 @@ exports.UpdateVersion = UpdateVersion = __decorate([
 
 
 /***/ }),
-/* 123 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6943,7 +7205,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateLogSchema = exports.UpdateLog = void 0;
-const mongoose_1 = __webpack_require__(107);
+const mongoose_1 = __webpack_require__(90);
 let UpdateLog = class UpdateLog {
 };
 exports.UpdateLog = UpdateLog;
@@ -6991,7 +7253,7 @@ exports.UpdateLogSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 124 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7003,23 +7265,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkModule = void 0;
-const common_1 = __webpack_require__(55);
-const network_grpc_controller_1 = __webpack_require__(125);
-const network_service_1 = __webpack_require__(126);
+const common_1 = __webpack_require__(33);
+const network_grpc_controller_1 = __webpack_require__(128);
+const network_service_1 = __webpack_require__(129);
 const microservices_1 = __webpack_require__(3);
 const config_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(71);
-const network_nmcli_adapter_1 = __webpack_require__(130);
-const network_mongo_adapter_1 = __webpack_require__(132);
-const network_mqtt_controller_1 = __webpack_require__(134);
-const network_command_entity_1 = __webpack_require__(133);
-const mongoose_1 = __webpack_require__(107);
+const constant_1 = __webpack_require__(67);
+const network_nmcli_adapter_1 = __webpack_require__(133);
+const network_mongo_adapter_1 = __webpack_require__(135);
+const network_mqtt_controller_1 = __webpack_require__(137);
+const network_command_entity_1 = __webpack_require__(136);
+const mongoose_1 = __webpack_require__(90);
+const log_module_1 = __webpack_require__(87);
 let NetworkModule = class NetworkModule {
 };
 exports.NetworkModule = NetworkModule;
 exports.NetworkModule = NetworkModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -7066,7 +7330,7 @@ exports.NetworkModule = NetworkModule = __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7083,8 +7347,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkGrpcInputController = void 0;
 const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(55);
-const network_service_1 = __webpack_require__(126);
+const common_2 = __webpack_require__(33);
+const network_service_1 = __webpack_require__(129);
 let NetworkGrpcInputController = class NetworkGrpcInputController {
     constructor(networkService) {
         this.networkService = networkService;
@@ -7127,7 +7391,7 @@ exports.NetworkGrpcInputController = NetworkGrpcInputController = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7143,25 +7407,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkService = void 0;
-const common_1 = __webpack_require__(4);
-const parse_util_1 = __webpack_require__(49);
-const common_2 = __webpack_require__(55);
+const parse_util_1 = __webpack_require__(53);
+const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(71);
-const network_output_port_1 = __webpack_require__(127);
-const network_database_output_port_1 = __webpack_require__(128);
-const network_domain_1 = __webpack_require__(129);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_2 = __webpack_require__(47);
+const constant_1 = __webpack_require__(67);
+const network_output_port_1 = __webpack_require__(130);
+const network_database_output_port_1 = __webpack_require__(131);
+const network_domain_1 = __webpack_require__(132);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_2 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
 let NetworkService = class NetworkService {
-    constructor(mqttMicroservice, networkOutput, networkDatabase) {
+    constructor(mqttMicroservice, networkOutput, networkDatabase, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
         this.networkOutput = networkOutput;
         this.networkDatabase = networkDatabase;
-        this.loggerService = common_1.LoggerService.get('host');
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('host');
     }
     onModuleInit() {
         this.ready();
@@ -7172,7 +7437,7 @@ let NetworkService = class NetworkService {
     async getNetwork() {
         let model;
         try {
-            this.loggerService.info(`[Network] getNetwork ================================`);
+            this.logger.info(`[Network] getNetwork ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getNetwork });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7190,14 +7455,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getEthernet() {
         let model;
         try {
-            this.loggerService.info(`[Network] getEthernet ================================`);
+            this.logger.info(`[Network] getEthernet ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getEthernet });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7215,14 +7480,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getWifi() {
         let model;
         try {
-            this.loggerService.info(`[Network] getWifi ================================`);
+            this.logger.info(`[Network] getWifi ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getWifi });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7240,14 +7505,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getBluetooth() {
         let model;
         try {
-            this.loggerService.info(`[Network] getBluetooth ================================`);
+            this.logger.info(`[Network] getBluetooth ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getBluetooth });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7265,14 +7530,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getDevice(device) {
         let model;
         try {
-            this.loggerService.info(`[Network] getDevice ================================`);
+            this.logger.info(`[Network] getDevice ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getDevice, device: device });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7290,14 +7555,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async setNetwork(request) {
         let model;
         try {
-            this.loggerService.info(`[Network] setNetwork ================================`);
+            this.logger.info(`[Network] setNetwork ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.setNetwork, ...request });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7315,14 +7580,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 수정할 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async connectWifi(request) {
         let model;
         try {
-            this.loggerService.info(`[Network] connectWifi ================================`);
+            this.logger.info(`[Network] connectWifi ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.connectWifi, ...request });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7340,14 +7605,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] connectWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] connectWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('와이파이 연결에 실패했습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async wifiScan() {
         let model;
         try {
-            this.loggerService.info(`[Network] wifiScan ================================`);
+            this.logger.info(`[Network] wifiScan ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.wifiScan });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7365,14 +7630,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] wifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] wifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('와이파이 스캔에 실패했습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getWifiList() {
         let model;
         try {
-            this.loggerService.info(`[Network] getWifiList ================================`);
+            this.logger.info(`[Network] getWifiList ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getWifiList });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7390,23 +7655,23 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getWifiList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getWifiList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('와이파이 목록을 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
 };
 exports.NetworkService = NetworkService;
 exports.NetworkService = NetworkService = __decorate([
-    (0, common_2.Controller)(),
-    __param(0, (0, common_2.Inject)(constant_1.MQTT_BROKER)),
-    __param(1, (0, common_2.Inject)('NetworkOutputPort')),
-    __param(2, (0, common_2.Inject)('NetworkDatabaseOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof network_output_port_1.NetworkOutputPort !== "undefined" && network_output_port_1.NetworkOutputPort) === "function" ? _b : Object, typeof (_c = typeof network_database_output_port_1.NetworkDatabaseOutputPort !== "undefined" && network_database_output_port_1.NetworkDatabaseOutputPort) === "function" ? _c : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __param(1, (0, common_1.Inject)('NetworkOutputPort')),
+    __param(2, (0, common_1.Inject)('NetworkDatabaseOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof network_output_port_1.NetworkOutputPort !== "undefined" && network_output_port_1.NetworkOutputPort) === "function" ? _b : Object, typeof (_c = typeof network_database_output_port_1.NetworkDatabaseOutputPort !== "undefined" && network_database_output_port_1.NetworkDatabaseOutputPort) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
 ], NetworkService);
 
 
 /***/ }),
-/* 127 */
+/* 130 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7414,7 +7679,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 128 */
+/* 131 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7422,14 +7687,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 129 */
+/* 132 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkModel = exports.NetworkCommand = exports.NetworkStatus = void 0;
-const constant_1 = __webpack_require__(47);
-const rpc_code_exception_1 = __webpack_require__(46);
+const constant_1 = __webpack_require__(51);
+const rpc_code_exception_1 = __webpack_require__(50);
 var NetworkStatus;
 (function (NetworkStatus) {
     NetworkStatus["pending"] = "pending";
@@ -7536,25 +7801,37 @@ exports.NetworkModel = NetworkModel;
 
 
 /***/ }),
-/* 130 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 133 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkNmcliAdapter = void 0;
-const service_logger_1 = __webpack_require__(30);
-const wifi = __webpack_require__(131);
+const wifi = __webpack_require__(134);
 const microservices_1 = __webpack_require__(3);
-const parse_util_1 = __webpack_require__(49);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
-const child_process_1 = __webpack_require__(104);
-class NetworkNmcliAdapter {
-    constructor() {
-        this.loggerService = service_logger_1.LoggerService.get('host');
+const parse_util_1 = __webpack_require__(53);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const child_process_1 = __webpack_require__(109);
+const saveLog_service_1 = __webpack_require__(35);
+const common_1 = __webpack_require__(33);
+let NetworkNmcliAdapter = class NetworkNmcliAdapter {
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
         this.curEthernet = [];
         this.curWifi = [];
         this.curBluetooth = [];
+        this.logger = this.saveLogService.get('host');
         wifi.init({
             iface: null,
         });
@@ -7579,7 +7856,7 @@ class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7595,7 +7872,7 @@ class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7618,7 +7895,7 @@ class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7632,7 +7909,7 @@ class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7654,7 +7931,7 @@ class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.loggerService.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7663,7 +7940,7 @@ class NetworkNmcliAdapter {
             let cmd;
             if (model.dhcp) {
                 cmd = `nmcli con modify '${model.name}' ipv4.method auto`;
-                this.loggerService.info(`[Network] SET Network DHCP : ${model.name}`);
+                this.logger.info(`[Network] SET Network DHCP : ${model.name}`);
             }
             else {
                 let dns_str = '"';
@@ -7683,7 +7960,7 @@ class NetworkNmcliAdapter {
                         ' ipv4.dns ' +
                         dns_str +
                         ' ipv4.method manual';
-                this.loggerService.info(`[Network] SET Network Manual : ${model.name} -> ${cmd}, ${JSON.stringify(model)}`);
+                this.logger.info(`[Network] SET Network Manual : ${model.name} -> ${cmd}, ${JSON.stringify(model)}`);
             }
             (0, child_process_1.execSync)(cmd);
             (0, child_process_1.execSync)(`nmcli con up ${model.name}`);
@@ -7698,7 +7975,7 @@ class NetworkNmcliAdapter {
             };
         }
         catch (error) {
-            this.loggerService.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 수정할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7711,11 +7988,11 @@ class NetworkNmcliAdapter {
             else {
                 cmd_line = 'nmcli dev wifi connect "' + model.ssid + '" password "' + model.password + '"';
             }
-            this.loggerService.info(`[Network] Connect Wifi : ${cmd_line}, ${JSON.stringify(model)}`);
+            this.logger.info(`[Network] Connect Wifi : ${cmd_line}, ${JSON.stringify(model)}`);
             (0, child_process_1.execSync)('nmcli dev wifi rescan');
             await new Promise((resolve) => setTimeout(resolve, 2000));
             const data = (0, child_process_1.execSync)(cmd_line);
-            this.loggerService.info(`[Network] Connect Wifi Response: ${data}`);
+            this.logger.info(`[Network] Connect Wifi Response: ${data}`);
             if (data.includes('successfully')) {
                 return { ssid: model.ssid };
             }
@@ -7731,7 +8008,7 @@ class NetworkNmcliAdapter {
                 throw error;
             }
             const errorStr = parse_util_1.ParseUtil.errorToJson(error);
-            this.loggerService.warn(`[Network] Connect Wifi: ${errorStr}`);
+            this.logger.warn(`[Network] Connect Wifi: ${errorStr}`);
             if (errorStr.includes('Secrets were required')) {
                 throw new rpc_code_exception_1.RpcCodeException('비밀번호가 틀렸습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -7761,7 +8038,7 @@ class NetworkNmcliAdapter {
         return new Promise((resolve, reject) => {
             wifi.scan((error, networks) => {
                 if (error) {
-                    this.loggerService.error(`[Network] WifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                    this.logger.error(`[Network] WifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
                     return reject(new rpc_code_exception_1.RpcCodeException('와이파이 목록을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError));
                 }
                 const wifiMap = new Map();
@@ -7782,17 +8059,17 @@ class NetworkNmcliAdapter {
             try {
                 wifi.getCurrentConnections((error, networks) => {
                     if (error) {
-                        this.loggerService.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                        this.logger.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
                         reject();
                     }
                     else {
-                        this.loggerService.debug(`[Network] getCurrentWifi: ${JSON.stringify(networks)}`);
+                        this.logger.debug(`[Network] getCurrentWifi: ${JSON.stringify(networks)}`);
                         resolve(networks);
                     }
                 });
             }
             catch (error) {
-                this.loggerService.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -7818,7 +8095,7 @@ class NetworkNmcliAdapter {
             }
         }
         catch (error) {
-            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7855,7 +8132,7 @@ class NetworkNmcliAdapter {
             }
         }
         catch (error) {
-            this.loggerService.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7963,22 +8240,26 @@ class NetworkNmcliAdapter {
             return network;
         }
         catch (error) {
-            this.loggerService.error(`[Network] parseNMCLI: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] parseNMCLI: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 파싱할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
-}
+};
 exports.NetworkNmcliAdapter = NetworkNmcliAdapter;
+exports.NetworkNmcliAdapter = NetworkNmcliAdapter = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
+], NetworkNmcliAdapter);
 
 
 /***/ }),
-/* 131 */
+/* 134 */
 /***/ ((module) => {
 
 module.exports = require("node-wifi");
 
 /***/ }),
-/* 132 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7994,28 +8275,51 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkMongoAdapter = void 0;
-const mongoose_1 = __webpack_require__(107);
-const mongoose_2 = __webpack_require__(121);
-const common_1 = __webpack_require__(4);
-const parse_util_1 = __webpack_require__(49);
-const util_1 = __webpack_require__(33);
-const network_command_entity_1 = __webpack_require__(133);
-const rpc_code_exception_1 = __webpack_require__(46);
-const constant_1 = __webpack_require__(47);
+const mongoose_1 = __webpack_require__(90);
+const mongoose_2 = __webpack_require__(92);
+const parse_util_1 = __webpack_require__(53);
+const util_1 = __webpack_require__(38);
+const network_command_entity_1 = __webpack_require__(136);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
+const common_1 = __webpack_require__(33);
+const config_1 = __webpack_require__(2);
 let NetworkMongoAdapter = class NetworkMongoAdapter {
-    constructor(Repository) {
+    constructor(saveLogService, Repository, configService) {
+        this.saveLogService = saveLogService;
         this.Repository = Repository;
-        this.loggerService = common_1.LoggerService.get('host');
+        this.configService = configService;
+        this.logger = this.saveLogService.get('host');
+        this.setIndex(this.configService);
+    }
+    async setIndex(configService) {
+        try {
+            await this.Repository.collection.dropIndex('createdAt_1');
+        }
+        catch (error) {
+            this.logger.warn(`[Network] DB dropIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+        }
+        try {
+            if (configService.get('DB_TTL_ENABLE') === 'true') {
+                const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
+                this.logger.info(`[Network] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+                this.Repository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
+            }
+        }
+        catch (error) {
+            this.logger.error(`[Network] DB createIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+        }
     }
     async getNodebyId(id) {
         try {
             return await this.Repository.findById(id).lean();
         }
         catch (error) {
-            this.loggerService.error(`[Network] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -8025,7 +8329,7 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
             return await this.Repository.create({ ...model, _id });
         }
         catch (error) {
-            this.loggerService.error(`[Network] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -8034,19 +8338,20 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
             return await this.Repository.findByIdAndUpdate(move.id, move).lean();
         }
         catch (error) {
-            this.loggerService.error(`[Network] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Network] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
 };
 exports.NetworkMongoAdapter = NetworkMongoAdapter;
 exports.NetworkMongoAdapter = NetworkMongoAdapter = __decorate([
-    __param(0, (0, mongoose_1.InjectModel)(network_command_entity_1.NetworkCommand.name)),
-    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+    (0, common_1.Injectable)(),
+    __param(1, (0, mongoose_1.InjectModel)(network_command_entity_1.NetworkCommand.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object, typeof (_b = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _b : Object, typeof (_c = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _c : Object])
 ], NetworkMongoAdapter);
 
 
 /***/ }),
-/* 133 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8061,7 +8366,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkCommandSchema = exports.NetworkCommand = void 0;
-const mongoose_1 = __webpack_require__(107);
+const mongoose_1 = __webpack_require__(90);
 let NetworkCommand = class NetworkCommand {
 };
 exports.NetworkCommand = NetworkCommand;
@@ -8089,7 +8394,7 @@ exports.NetworkCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 134 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8108,10 +8413,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkMqttController = void 0;
-const constant_1 = __webpack_require__(71);
-const common_1 = __webpack_require__(55);
+const constant_1 = __webpack_require__(67);
+const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const network_service_1 = __webpack_require__(126);
+const network_service_1 = __webpack_require__(129);
 let NetworkMqttController = class NetworkMqttController {
     constructor(mqttMicroservice, networkService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -8136,7 +8441,7 @@ exports.NetworkMqttController = NetworkMqttController = __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8148,26 +8453,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifModule = void 0;
-const common_1 = __webpack_require__(55);
-const onvif_api_controller_1 = __webpack_require__(136);
-const onvif_device_service_1 = __webpack_require__(142);
-const onvif_ptz_service_1 = __webpack_require__(145);
-const onvif_media_service_1 = __webpack_require__(139);
-const onvif_event_service_1 = __webpack_require__(148);
-const onvif_deviceio_service_1 = __webpack_require__(147);
+const common_1 = __webpack_require__(33);
+const onvif_api_controller_1 = __webpack_require__(139);
+const onvif_device_service_1 = __webpack_require__(145);
+const onvif_ptz_service_1 = __webpack_require__(148);
+const onvif_media_service_1 = __webpack_require__(142);
+const onvif_event_service_1 = __webpack_require__(151);
+const onvif_deviceio_service_1 = __webpack_require__(150);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(4);
-const path_1 = __webpack_require__(40);
-const onvif_mqtt_controller_1 = __webpack_require__(149);
-const constant_1 = __webpack_require__(71);
+const path_1 = __webpack_require__(31);
+const onvif_mqtt_controller_1 = __webpack_require__(152);
+const constant_1 = __webpack_require__(67);
 const config_1 = __webpack_require__(2);
-const onvif_pending_service_1 = __webpack_require__(150);
+const onvif_pending_service_1 = __webpack_require__(153);
+const log_module_1 = __webpack_require__(87);
 let OnvifModule = class OnvifModule {
 };
 exports.OnvifModule = OnvifModule;
 exports.OnvifModule = OnvifModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            log_module_1.LogModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -8222,7 +8529,7 @@ exports.OnvifModule = OnvifModule = __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8238,29 +8545,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifApiController = void 0;
-const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(55);
-const xml2js = __webpack_require__(137);
-const express_1 = __webpack_require__(138);
-const onvif_media_service_1 = __webpack_require__(139);
-const onvif_device_service_1 = __webpack_require__(142);
-const fs_1 = __webpack_require__(39);
-const onvif_ptz_service_1 = __webpack_require__(145);
-const onvif_deviceio_service_1 = __webpack_require__(147);
-const onvif_event_service_1 = __webpack_require__(148);
-const parse_util_1 = __webpack_require__(49);
+const common_1 = __webpack_require__(33);
+const xml2js = __webpack_require__(140);
+const express_1 = __webpack_require__(141);
+const onvif_media_service_1 = __webpack_require__(142);
+const onvif_device_service_1 = __webpack_require__(145);
+const fs_1 = __webpack_require__(44);
+const onvif_ptz_service_1 = __webpack_require__(148);
+const onvif_deviceio_service_1 = __webpack_require__(150);
+const onvif_event_service_1 = __webpack_require__(151);
+const parse_util_1 = __webpack_require__(53);
+const saveLog_service_1 = __webpack_require__(35);
 let OnvifApiController = class OnvifApiController {
-    constructor(mediaService, deviceService, ptzService, deviceIOService, eventService) {
+    constructor(mediaService, deviceService, ptzService, deviceIOService, eventService, saveLogService) {
         this.mediaService = mediaService;
         this.deviceService = deviceService;
         this.ptzService = ptzService;
         this.deviceIOService = deviceIOService;
         this.eventService = eventService;
+        this.saveLogService = saveLogService;
         this.isPlatformLinux = false;
-        this.loggerService = common_1.LoggerService.get('onvif');
+        this.logger = this.saveLogService.get('onvif');
         if (process.env.HOST_OS === 'Linux') {
             this.isPlatformLinux = true;
         }
@@ -8276,12 +8584,12 @@ let OnvifApiController = class OnvifApiController {
         });
         parser.parseString(body, async (err, result) => {
             if (err) {
-                this.loggerService.error(`[Onvif] Request Device Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
-                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐임');
+                this.logger.error(`[Onvif] Request Device Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐임');
                 return;
             }
             const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
-            this.loggerService.info(`[Onvif] Request Device Service : ${methodName}, ${JSON.stringify(result)}`);
+            this.logger.info(`[Onvif] Request Device Service : ${methodName}, ${JSON.stringify(result)}`);
             let responseXml;
             if (methodName == 'GetSystemDateAndTime') {
                 responseXml = await this.deviceService.responseSystemDateAndTime();
@@ -8330,8 +8638,8 @@ let OnvifApiController = class OnvifApiController {
                 res.send(responseXml);
             }
             else {
-                this.loggerService.error(`[Onvif] methodName not matching ${methodName}`);
-                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐임??');
+                this.logger.error(`[Onvif] methodName not matching ${methodName}`);
+                res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐임??');
             }
         });
     }
@@ -8343,12 +8651,12 @@ let OnvifApiController = class OnvifApiController {
         });
         parser.parseString(body, async (err, result) => {
             if (err) {
-                this.loggerService.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
-                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐냐고??');
+                this.logger.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐냐고??');
                 return;
             }
             const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
-            this.loggerService.info(`[Onvif] Request Media Service : ${methodName}, ${JSON.stringify(result)}`);
+            this.logger.info(`[Onvif] Request Media Service : ${methodName}, ${JSON.stringify(result)}`);
             let responseXml;
             if (methodName == 'GetProfiles') {
                 responseXml = await this.mediaService.responseMediaProfiles();
@@ -8379,21 +8687,21 @@ let OnvifApiController = class OnvifApiController {
                 res.send(responseXml);
             }
             else {
-                this.loggerService.error(`[Onvif] methodName not matching ${methodName}`);
-                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐임????');
+                this.logger.error(`[Onvif] methodName not matching ${methodName}`);
+                res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐임????');
             }
         });
     }
     async getSnapshot(res) {
         try {
-            this.loggerService.info(`[Onvif] getSnapshot`);
+            this.logger.info(`[Onvif] getSnapshot`);
             const data = (0, fs_1.readFileSync)('/root/snapshot.jpg');
-            this.loggerService.info(`[Onvif] getSnapshot : Done`);
+            this.logger.info(`[Onvif] getSnapshot : Done`);
             res.setHeader('Content-Type', 'image/jpeg');
             res.send(data);
         }
         catch (error) {
-            this.loggerService.error(`[Onvif] getSnapshot : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Onvif] getSnapshot : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             res.status(500).send('Error reading snapshot');
             return;
         }
@@ -8406,23 +8714,23 @@ let OnvifApiController = class OnvifApiController {
         });
         parser.parseString(body, async (err, result) => {
             if (err) {
-                this.loggerService.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
-                res.status(common_2.HttpStatus.BAD_REQUEST).send('뭐꼬냐고');
+                this.logger.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐꼬냐고');
                 return;
             }
             const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
-            this.loggerService.info(`[Onvif] Request PTZ Service : ${methodName}, ${JSON.stringify(result)}`);
+            this.logger.info(`[Onvif] Request PTZ Service : ${methodName}, ${JSON.stringify(result)}`);
             let responseXml;
             if (methodName == 'ContinuousMove') {
                 const token = result['Envelope']['Body']['ContinuousMove']['ProfileToken'];
                 if (result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']) {
                     const x = result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']['$'].x;
                     const y = result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']['$'].y;
-                    this.loggerService.info(`[Onvif] PTZ Move PanTilt : ${token}, Velocity(${x}, ${y})`);
+                    this.logger.info(`[Onvif] PTZ Move PanTilt : ${token}, Velocity(${x}, ${y})`);
                 }
                 else if (result['Envelope']['Body']['ContinuousMove']['Velocity']['Zoom']) {
                     const velocity = result['Envelope']['Body']['ContinuousMove']['Velocity']['Zoom']['$'].x;
-                    this.loggerService.info(`[Onvif] PTZ Move Zoom : ${token}, Velocity(${velocity})`);
+                    this.logger.info(`[Onvif] PTZ Move Zoom : ${token}, Velocity(${velocity})`);
                 }
                 responseXml = await this.ptzService.responsePtzMove('<ptz:ContinuousMoveResponse/>');
             }
@@ -8432,7 +8740,7 @@ let OnvifApiController = class OnvifApiController {
                 const zoom = result['Envelope']['Body']['RelativeMove']['Translation']['Zoom']?.['$'];
                 const pantilt_vel = result['Envelope']['Body']['RelativeMove']['Speed']?.['PanTilt']?.['$'];
                 const zoom_vel = result['Envelope']['Body']['RelativeMove']['Speed']?.['Zoom']?.['$'];
-                this.loggerService.info(`[Onvif] PTZ Move RelativeMove : ${token}, PanTilt(${pantilt?.x},${pantilt?.y}), Zoom(${zoom?.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
+                this.logger.info(`[Onvif] PTZ Move RelativeMove : ${token}, PanTilt(${pantilt?.x},${pantilt?.y}), Zoom(${zoom?.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
                 responseXml = await this.ptzService.responsePtzMove('<ptz:RelativeMoveResponse/>');
             }
             else if (methodName == 'AbsoluteMove') {
@@ -8441,104 +8749,104 @@ let OnvifApiController = class OnvifApiController {
                 const zoom = result['Envelope']['Body']['AbsoluteMove']['Position']['Zoom']['$'];
                 const pantilt_vel = result['Envelope']['Body']['AbsoluteMove']['Speed']?.['PanTilt']?.['$'];
                 const zoom_vel = result['Envelope']['Body']['AbsoluteMove']['Speed']?.['Zoom']?.['$'];
-                this.loggerService.info(`[Onvif] PTZ Move AbsoluteMove : ${token}, PanTilt(${pantilt.x},${pantilt.y}), Zoom(${zoom.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
+                this.logger.info(`[Onvif] PTZ Move AbsoluteMove : ${token}, PanTilt(${pantilt.x},${pantilt.y}), Zoom(${zoom.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
                 responseXml = await this.ptzService.responsePtzMove('<ptz:AbsoluteMoveResponse/>');
             }
             else if (methodName == 'Stop') {
                 const token = result['Envelope']['Body']['Stop']['ProfileToken'];
                 const pantilt = result['Envelope']['Body']['Stop']['PanTilt'];
                 const zoom = result['Envelope']['Body']['Stop']['Zoom'];
-                this.loggerService.info(`[Onvif] PTZ Move Stop : ${token}, PanTilt(${pantilt}), Zoom(${zoom})`);
+                this.logger.info(`[Onvif] PTZ Move Stop : ${token}, PanTilt(${pantilt}), Zoom(${zoom})`);
                 responseXml = await this.ptzService.responsePtzMove('<ptz:StopResponse/>');
             }
             else if (methodName == 'GotoHomePosition') {
                 const token = result['Envelope']['Body']['GotoHomePosition']['ProfileToken'];
-                this.loggerService.info(`[Onvif] PTZ Move GotoHomePosition : ${token}`);
+                this.logger.info(`[Onvif] PTZ Move GotoHomePosition : ${token}`);
             }
             else if (methodName == 'SetHomePosition') {
                 const token = result['Envelope']['Body']['SetHomePosition']['ProfileToken'];
-                this.loggerService.info(`[Onvif] PTZ Move SetHomePosition : ${token}`);
+                this.logger.info(`[Onvif] PTZ Move SetHomePosition : ${token}`);
             }
             else if (methodName == 'SetPreset') {
                 const token = result['Envelope']['Body']['SetPreset']['ProfileToken'];
                 const name = result['Envelope']['Body']['SetPreset']['PresetName'];
-                this.loggerService.info(`[Onvif] PTZ Move SetPreset : ${token}, ${name}`);
+                this.logger.info(`[Onvif] PTZ Move SetPreset : ${token}, ${name}`);
             }
             if (responseXml) {
                 res.set('Content-Type', 'application/soap+xml');
                 res.send(responseXml);
             }
             else {
-                this.loggerService.error(`[Onvif] methodName not matching ${methodName}`);
-                res.status(common_2.HttpStatus.BAD_REQUEST).send('머머');
+                this.logger.error(`[Onvif] methodName not matching ${methodName}`);
+                res.status(common_1.HttpStatus.BAD_REQUEST).send('머머');
             }
         });
     }
 };
 exports.OnvifApiController = OnvifApiController;
 __decorate([
-    (0, common_2.Post)('hello'),
+    (0, common_1.Post)('hello'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], OnvifApiController.prototype, "testHello", null);
 __decorate([
-    (0, common_2.Post)('device_service'),
-    (0, common_2.UsePipes)(new common_2.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
-    __param(0, (0, common_2.RawBody)()),
-    __param(1, (0, common_2.Req)()),
-    __param(2, (0, common_2.Res)()),
+    (0, common_1.Post)('device_service'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
+    __param(0, (0, common_1.RawBody)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_f = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _f : Object, typeof (_g = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [String, typeof (_g = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _g : Object, typeof (_h = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _h : Object]),
     __metadata("design:returntype", Promise)
 ], OnvifApiController.prototype, "DeviceService", null);
 __decorate([
-    (0, common_2.Post)('media_service'),
-    (0, common_2.UsePipes)(new common_2.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
-    __param(0, (0, common_2.RawBody)()),
-    __param(1, (0, common_2.Req)()),
-    __param(2, (0, common_2.Res)()),
+    (0, common_1.Post)('media_service'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
+    __param(0, (0, common_1.RawBody)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_h = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _h : Object, typeof (_j = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [String, typeof (_j = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _j : Object, typeof (_k = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], OnvifApiController.prototype, "MediaService", null);
 __decorate([
-    (0, common_2.Get)('snapshot.jpg'),
-    __param(0, (0, common_2.Res)()),
+    (0, common_1.Get)('snapshot.jpg'),
+    __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_l = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _l : Object]),
     __metadata("design:returntype", Promise)
 ], OnvifApiController.prototype, "getSnapshot", null);
 __decorate([
-    (0, common_2.Post)('ptz_service'),
-    (0, common_2.UsePipes)(new common_2.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
-    __param(0, (0, common_2.RawBody)()),
-    __param(1, (0, common_2.Req)()),
-    __param(2, (0, common_2.Res)()),
+    (0, common_1.Post)('ptz_service'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: false, forbidNonWhitelisted: false })),
+    __param(0, (0, common_1.RawBody)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_l = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _l : Object, typeof (_m = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [String, typeof (_m = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _m : Object, typeof (_o = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _o : Object]),
     __metadata("design:returntype", Promise)
 ], OnvifApiController.prototype, "PTZService", null);
 exports.OnvifApiController = OnvifApiController = __decorate([
-    (0, common_2.Controller)('onvif'),
-    __metadata("design:paramtypes", [typeof (_a = typeof onvif_media_service_1.OnvifMediaService !== "undefined" && onvif_media_service_1.OnvifMediaService) === "function" ? _a : Object, typeof (_b = typeof onvif_device_service_1.OnvifDeviceService !== "undefined" && onvif_device_service_1.OnvifDeviceService) === "function" ? _b : Object, typeof (_c = typeof onvif_ptz_service_1.OnvifPtzService !== "undefined" && onvif_ptz_service_1.OnvifPtzService) === "function" ? _c : Object, typeof (_d = typeof onvif_deviceio_service_1.OnvifDeviceIOService !== "undefined" && onvif_deviceio_service_1.OnvifDeviceIOService) === "function" ? _d : Object, typeof (_e = typeof onvif_event_service_1.OnvifEventService !== "undefined" && onvif_event_service_1.OnvifEventService) === "function" ? _e : Object])
+    (0, common_1.Controller)('onvif'),
+    __metadata("design:paramtypes", [typeof (_a = typeof onvif_media_service_1.OnvifMediaService !== "undefined" && onvif_media_service_1.OnvifMediaService) === "function" ? _a : Object, typeof (_b = typeof onvif_device_service_1.OnvifDeviceService !== "undefined" && onvif_device_service_1.OnvifDeviceService) === "function" ? _b : Object, typeof (_c = typeof onvif_ptz_service_1.OnvifPtzService !== "undefined" && onvif_ptz_service_1.OnvifPtzService) === "function" ? _c : Object, typeof (_d = typeof onvif_deviceio_service_1.OnvifDeviceIOService !== "undefined" && onvif_deviceio_service_1.OnvifDeviceIOService) === "function" ? _d : Object, typeof (_e = typeof onvif_event_service_1.OnvifEventService !== "undefined" && onvif_event_service_1.OnvifEventService) === "function" ? _e : Object, typeof (_f = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _f : Object])
 ], OnvifApiController);
 
 
 /***/ }),
-/* 137 */
+/* 140 */
 /***/ ((module) => {
 
 module.exports = require("xml2js");
 
 /***/ }),
-/* 138 */
+/* 141 */
 /***/ ((module) => {
 
 module.exports = require("express");
 
 /***/ }),
-/* 139 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8554,28 +8862,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifMediaService = void 0;
-const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(28);
-const parse_util_1 = __webpack_require__(49);
-const constant_1 = __webpack_require__(71);
-const template_1 = __webpack_require__(140);
-const wsdl_util_1 = __webpack_require__(141);
-const os_1 = __webpack_require__(112);
+const parse_util_1 = __webpack_require__(53);
+const constant_1 = __webpack_require__(67);
+const template_1 = __webpack_require__(143);
+const wsdl_util_1 = __webpack_require__(144);
+const os_1 = __webpack_require__(116);
+const saveLog_service_1 = __webpack_require__(35);
 let OnvifMediaService = class OnvifMediaService {
-    constructor(configMicroservice) {
+    constructor(configMicroservice, saveLogService) {
         this.configMicroservice = configMicroservice;
-        this.loggerService = common_1.LoggerService.get('onvif');
+        this.saveLogService = saveLogService;
         this.ONVIF_PORT = 3005;
         this.CONFIG = {
             Name: '',
             Width: '0',
             Height: '0',
         };
+        this.logger = this.saveLogService.get('onvif');
     }
     async onModuleInit() {
         try {
@@ -8583,10 +8892,10 @@ let OnvifMediaService = class OnvifMediaService {
             this.CONFIG.Name = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_name' }))).value ?? '';
             this.CONFIG.Width = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_width' }))).value ?? '';
             this.CONFIG.Height = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_height' }))).value ?? '';
-            this.loggerService.info(`[Media] get Config : ${JSON.stringify(this.CONFIG)}`);
+            this.logger.info(`[Media] get Config : ${JSON.stringify(this.CONFIG)}`);
         }
         catch (error) {
-            this.loggerService.error(`[Media] onModuleInit : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Media] onModuleInit : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async responseMediaProfiles() {
@@ -8597,11 +8906,11 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
                 console.log(query);
-                this.loggerService.debug(`[Media] GetProfilesResponse`);
+                this.logger.debug(`[Media] GetProfilesResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Media] GetProfilesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Media] GetProfilesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8613,12 +8922,12 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__NAME__/g, this.CONFIG.Name);
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
-                this.loggerService.debug(`[Media] GetProfileResponse`);
+                this.logger.debug(`[Media] GetProfileResponse`);
                 console.log(query);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Media] GetProfileResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Media] GetProfileResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8630,11 +8939,11 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__NAME__/g, this.CONFIG.Name);
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
-                this.loggerService.debug(`[Media] GetVideoSourceConfigurationResponse`);
+                this.logger.debug(`[Media] GetVideoSourceConfigurationResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Media] GetVideoSourceConfigurationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Media] GetVideoSourceConfigurationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8646,12 +8955,12 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__NAME__/g, this.CONFIG.Name);
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
-                this.loggerService.debug(`[Media] GetVideoSourcesResponse`);
+                this.logger.debug(`[Media] GetVideoSourcesResponse`);
                 console.log(query);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Media] GetVideoSourcesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Media] GetVideoSourcesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8665,11 +8974,11 @@ let OnvifMediaService = class OnvifMediaService {
                 let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.SnapShotURI];
                 query = query.replace('__SNAPSHOT_URI__', wsdl_util_1.WsdlUtil.getXaddrs('snapshot.jpg', (0, os_1.networkInterfaces)()));
                 console.log(query);
-                this.loggerService.debug(`[Media] GetSnapshotUriResponse`);
+                this.logger.debug(`[Media] GetSnapshotUriResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Media] GetSnapshotUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Media] GetSnapshotUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8680,12 +8989,12 @@ let OnvifMediaService = class OnvifMediaService {
                 let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.StreamURI];
                 const ip = wsdl_util_1.WsdlUtil.getLocalIp(_ip, (0, os_1.networkInterfaces)());
                 query = query.replace('__RTSP_URI__', wsdl_util_1.WsdlUtil.getStream(ip, this.CONFIG.Name));
-                this.loggerService.debug(`[Media] GetStreamUriResponse`);
+                this.logger.debug(`[Media] GetStreamUriResponse`);
                 console.log(query);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Media] GetStreamUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Media] GetStreamUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8693,13 +9002,13 @@ let OnvifMediaService = class OnvifMediaService {
 };
 exports.OnvifMediaService = OnvifMediaService;
 exports.OnvifMediaService = OnvifMediaService = __decorate([
-    __param(0, (0, common_2.Inject)(constant_1.CONFIG_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object])
+    __param(0, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], OnvifMediaService);
 
 
 /***/ }),
-/* 140 */
+/* 143 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -8906,7 +9215,7 @@ exports.MediaWSDLTemplate = {
 
 
 /***/ }),
-/* 141 */
+/* 144 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -8975,7 +9284,7 @@ exports.WsdlUtil = WsdlUtil;
 
 
 /***/ }),
-/* 142 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8991,27 +9300,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifDeviceService = void 0;
-const common_1 = __webpack_require__(4);
-const dgram = __webpack_require__(143);
-const xml2js = __webpack_require__(137);
-const common_2 = __webpack_require__(55);
-const os_1 = __webpack_require__(112);
+const dgram = __webpack_require__(146);
+const xml2js = __webpack_require__(140);
+const common_1 = __webpack_require__(33);
+const os_1 = __webpack_require__(116);
 const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(28);
-const date_util_1 = __webpack_require__(36);
-const parse_util_1 = __webpack_require__(49);
-const constant_1 = __webpack_require__(71);
-const template_1 = __webpack_require__(144);
-const wsdl_util_1 = __webpack_require__(141);
-const url_util_1 = __webpack_require__(34);
+const date_util_1 = __webpack_require__(41);
+const parse_util_1 = __webpack_require__(53);
+const constant_1 = __webpack_require__(67);
+const template_1 = __webpack_require__(147);
+const wsdl_util_1 = __webpack_require__(144);
+const url_util_1 = __webpack_require__(39);
+const saveLog_service_1 = __webpack_require__(35);
 let OnvifDeviceService = class OnvifDeviceService {
-    constructor(networkMicroservice, configMicroservice) {
+    constructor(networkMicroservice, configMicroservice, saveLogService) {
         this.networkMicroservice = networkMicroservice;
         this.configMicroservice = configMicroservice;
-        this.loggerService = common_1.LoggerService.get('onvif');
+        this.saveLogService = saveLogService;
         this.messageNum = 0;
         this.MULTICAST_ADDRESS = '239.255.255.250';
         this.PORT = 3702;
@@ -9023,6 +9332,7 @@ let OnvifDeviceService = class OnvifDeviceService {
             Version: '',
             HardwareID: '',
         };
+        this.logger = this.saveLogService.get('onvif');
     }
     async onModuleInit() {
         this.instanceId = wsdl_util_1.WsdlUtil.generateInstanceId();
@@ -9041,7 +9351,7 @@ let OnvifDeviceService = class OnvifDeviceService {
     async onReady() {
         const ok = await this.waitForGrpc(this.configMicroservice, 'ConfigGrpcService', 3000);
         if (!ok) {
-            this.loggerService.error('[Device] Config 연결 안됨');
+            this.logger.error('[Device] Config 연결 안됨');
             return;
         }
         const svc = this.configMicroservice.getService('ConfigGrpcService');
@@ -9050,40 +9360,40 @@ let OnvifDeviceService = class OnvifDeviceService {
             this.initConfig();
         }
         catch (e) {
-            this.loggerService.warn(`RPC 호출 실패 ${e}`);
+            this.logger.warn(`RPC 호출 실패 ${e}`);
         }
     }
     async initConfig() {
         try {
-            this.loggerService.debug(`[Device] InitConfig --------------------------`);
+            this.logger.debug(`[Device] InitConfig --------------------------`);
             this.CONFIG.Serial = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_serial' }))).value ?? '';
             this.CONFIG.Manufacturer = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_manufacturer' }))).value ?? '';
             this.CONFIG.Model = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_model' }))).value ?? '';
             this.CONFIG.Version = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_version' }))).value ?? '';
             this.CONFIG.HardwareID = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_hardware_id' }))).value ?? '';
-            this.loggerService.info(`[Device] initConfig : ${JSON.stringify(this.CONFIG)}`);
+            this.logger.info(`[Device] initConfig : ${JSON.stringify(this.CONFIG)}`);
             this.initMulticast();
         }
         catch (error) {
-            this.loggerService.error(`[Device] initConfig : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Device] initConfig : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             this.configService = null;
         }
     }
     async initNetwork() {
         try {
-            this.loggerService.debug(`[Device] initNetwork --------------------------`);
+            this.logger.debug(`[Device] initNetwork --------------------------`);
             this.networkService = this.networkMicroservice.getService('NetworkGrpcService');
             this.currentWifi = await (0, rxjs_1.lastValueFrom)(this.networkService.getWifi({}));
             this.initMulticast();
         }
         catch (error) {
-            this.loggerService.error(`[Device] initNetwork : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger.error(`[Device] initNetwork : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             this.networkService = null;
         }
     }
     async initMulticast() {
         if (this.networkService && this.configService) {
-            this.loggerService.debug(`[Device] initMulticast --------------------------`);
+            this.logger.debug(`[Device] initMulticast --------------------------`);
             this.server = dgram.createSocket({ type: 'udp4', reuseAddr: true });
             this.server.on('message', (msg, rinfo) => {
                 try {
@@ -9101,7 +9411,7 @@ let OnvifDeviceService = class OnvifDeviceService {
                             result['Envelope']['Header'] &&
                             result['Envelope']['Header']['MessageID']) {
                             if (result['Envelope']['Body']['Probe'] && JSON.stringify(result['Envelope']['Body']['Probe']['Types']).includes('Device')) {
-                                this.loggerService.debug(`[Device] Probe Message Read : ${rinfo.address}`);
+                                this.logger.debug(`[Device] Probe Message Read : ${rinfo.address}`);
                                 this.responseProbe(result, rinfo);
                             }
                         }
@@ -9114,7 +9424,7 @@ let OnvifDeviceService = class OnvifDeviceService {
             this.server.bind(this.PORT, '0.0.0.0', () => {
                 this.server.setMulticastLoopback(false);
                 this.server.addMembership(this.MULTICAST_ADDRESS);
-                this.loggerService.info(`[Device] ONVIF listening on ${this.MULTICAST_ADDRESS}:${this.PORT}`);
+                this.logger.info(`[Device] ONVIF listening on ${this.MULTICAST_ADDRESS}:${this.PORT}`);
                 this.hello();
             });
         }
@@ -9128,10 +9438,10 @@ let OnvifDeviceService = class OnvifDeviceService {
         helloMsg = helloMsg.replace('__MESSAGE_NUMBER__', (++this.messageNum).toString());
         const xaddrs = wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)());
         helloMsg = helloMsg.replace('__XADDRS__', xaddrs);
-        this.loggerService.info(`[Device] Hello: Serial(${this.CONFIG.Serial}) MessageID(${messageId}), Xaddrs(${xaddrs})`);
+        this.logger.info(`[Device] Hello: Serial(${this.CONFIG.Serial}) MessageID(${messageId}), Xaddrs(${xaddrs})`);
         this.server.send(helloMsg, 0, helloMsg.length, this.PORT, this.MULTICAST_ADDRESS, (err) => {
             if (err) {
-                this.loggerService.error(`[Device] Hello: ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                this.logger.error(`[Device] Hello: ${parse_util_1.ParseUtil.errorToJson(err)}`);
             }
         });
     }
@@ -9146,7 +9456,7 @@ let OnvifDeviceService = class OnvifDeviceService {
         probeMatchMsg = probeMatchMsg.replace('__ADDRESS__', this.CONFIG.Serial);
         const deviceXaddrs = wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)());
         probeMatchMsg = probeMatchMsg.replace('__DEVICE_XADDRS__', deviceXaddrs);
-        this.loggerService.info(`[Device] ProbeMatches : Serial(${this.CONFIG.Serial}), MessageID(${messageId}), RelatesTo(${relatesTo}), Xaddrs(${deviceXaddrs})`);
+        this.logger.info(`[Device] ProbeMatches : Serial(${this.CONFIG.Serial}), MessageID(${messageId}), RelatesTo(${relatesTo}), Xaddrs(${deviceXaddrs})`);
         const messageBuffer = Buffer.from(probeMatchMsg, 'utf-8');
         this.server.send(messageBuffer, 0, messageBuffer.length, rinfo.port, rinfo.address, (err) => {
             if (err)
@@ -9171,11 +9481,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__HOUR__', date_util_1.DateUtil.formatTimeHourKST(nowTime));
                 query = query.replace('__MINUTE__', date_util_1.DateUtil.formatTimeMinuteKST(nowTime));
                 query = query.replace('__SECOND__', date_util_1.DateUtil.formatTimeSecondKST(nowTime));
-                this.loggerService.debug(`[Device] GetSystemDateAndTimeResponse`);
+                this.logger.debug(`[Device] GetSystemDateAndTimeResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetSystemDateAndTimeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetSystemDateAndTimeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9192,11 +9502,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__EVENTS_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('events_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__PTZ_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('ptz_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__DEVICE_IO_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('deviceio_service', (0, os_1.networkInterfaces)()));
-                this.loggerService.info(`[Device] GetCapabilitiesResponse`);
+                this.logger.info(`[Device] GetCapabilitiesResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetCapabilitiesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetCapabilitiesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9210,11 +9520,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__FIRMWARE__VERSION__', this.CONFIG.Version);
                 query = query.replace('__SERIAL_NUMBER__', this.CONFIG.Serial);
                 query = query.replace('__HARDWARE_ID__', this.CONFIG.HardwareID);
-                this.loggerService.debug(`[Device] GetDeviceInformationResponse`);
+                this.logger.debug(`[Device] GetDeviceInformationResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetDeviceInformationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetDeviceInformationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9231,11 +9541,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://www.onvif.org/name/' + this.CONFIG.Serial);
                 scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://onvif://www.onvif.org/Profile/Streaming');
                 query = query.replace('__SCOPES__', scopes_query);
-                this.loggerService.debug(`[Device] GetScopeResponse`);
+                this.logger.debug(`[Device] GetScopeResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetScopeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetScopeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9252,11 +9562,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                     query = query.replace('__IS_DHCP__', this.currentWifi.dhcp ? 'true' : 'false');
                     query = query.replace(/__IPV4_SUBNET__/g, this.currentWifi.mask);
                 }
-                this.loggerService.info(`[Device] NetworkInterfaces: ${query}`);
+                this.logger.info(`[Device] NetworkInterfaces: ${query}`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] NetworkInterfaces : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] NetworkInterfaces : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9272,11 +9582,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                     }
                     query = query.replace('__DNS__', dns_query);
                 }
-                this.loggerService.debug(`[Device] GetDNSResponse`);
+                this.logger.debug(`[Device] GetDNSResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetDNSResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetDNSResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9285,11 +9595,11 @@ let OnvifDeviceService = class OnvifDeviceService {
         return new Promise(async (resolve, reject) => {
             try {
                 const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.NTP];
-                this.loggerService.debug(`[Device] GETNTPResponse`);
+                this.logger.debug(`[Device] GETNTPResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetNTPResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetNTPResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9301,11 +9611,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 if (this.currentWifi) {
                     query = query.replace('__GATEWAY__', this.currentWifi.gateway);
                 }
-                this.loggerService.debug(`[Device] GetDefaultGatewayResponse`);
+                this.logger.debug(`[Device] GetDefaultGatewayResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetDefaultGatewayResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetDefaultGatewayResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9314,11 +9624,11 @@ let OnvifDeviceService = class OnvifDeviceService {
         return new Promise(async (resolve, reject) => {
             try {
                 const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.DeiscoveryMode];
-                this.loggerService.debug(`[Device] GetDiscoveryModeResponse`);
+                this.logger.debug(`[Device] GetDiscoveryModeResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetDiscoveryModeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetDiscoveryModeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9327,11 +9637,11 @@ let OnvifDeviceService = class OnvifDeviceService {
         return new Promise(async (resolve, reject) => {
             try {
                 const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.NetworkProtocols];
-                this.loggerService.debug(`[Device] GetNetworkProtocolsResponse`);
+                this.logger.debug(`[Device] GetNetworkProtocolsResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetNetworkProtocolsResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetNetworkProtocolsResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9344,11 +9654,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                     query = query.replace('__DHCP__', this.currentWifi.dhcp ? 'true' : 'false');
                     query = query.replace('__NAME__', (0, os_1.hostname)());
                 }
-                this.loggerService.debug(`[Device] GetHostnameResponse`);
+                this.logger.debug(`[Device] GetHostnameResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetHostnameResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetHostnameResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9360,11 +9670,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__DEVICE_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__MEDIA_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('media_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__PTZ_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('ptz_service', (0, os_1.networkInterfaces)()));
-                this.loggerService.debug(`[Device] GetServicesResponse`);
+                this.logger.debug(`[Device] GetServicesResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Device] GetServicesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Device] GetServicesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9372,20 +9682,20 @@ let OnvifDeviceService = class OnvifDeviceService {
 };
 exports.OnvifDeviceService = OnvifDeviceService;
 exports.OnvifDeviceService = OnvifDeviceService = __decorate([
-    __param(0, (0, common_2.Inject)(constant_1.NETWORK_SERVICE)),
-    __param(1, (0, common_2.Inject)(constant_1.CONFIG_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object])
+    __param(0, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
+    __param(1, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], OnvifDeviceService);
 
 
 /***/ }),
-/* 143 */
+/* 146 */
 /***/ ((module) => {
 
 module.exports = require("dgram");
 
 /***/ }),
-/* 144 */
+/* 147 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -9794,19 +10104,15 @@ exports.NetworkWSDLTemplate = {
 
 
 /***/ }),
-/* 145 */
+/* 148 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifPtzService = void 0;
-const common_1 = __webpack_require__(4);
-const parse_util_1 = __webpack_require__(49);
-const template_1 = __webpack_require__(146);
+const parse_util_1 = __webpack_require__(53);
+const template_1 = __webpack_require__(149);
 class OnvifPtzService {
-    constructor() {
-        this.loggerService = common_1.LoggerService.get('onvif');
-    }
     async responsePtzMove(title) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -9815,7 +10121,7 @@ class OnvifPtzService {
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Ptz] responsePTZContinousMove : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Ptz] responsePTZContinousMove : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9827,7 +10133,7 @@ class OnvifPtzService {
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.loggerService.error(`[Ptz] responseSetPreset : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger.error(`[Ptz] responseSetPreset : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9837,7 +10143,7 @@ exports.OnvifPtzService = OnvifPtzService;
 
 
 /***/ }),
-/* 146 */
+/* 149 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -9870,7 +10176,7 @@ exports.PTZWSDLTemplate = {
 
 
 /***/ }),
-/* 147 */
+/* 150 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -9882,7 +10188,7 @@ exports.OnvifDeviceIOService = OnvifDeviceIOService;
 
 
 /***/ }),
-/* 148 */
+/* 151 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -9894,7 +10200,7 @@ exports.OnvifEventService = OnvifEventService;
 
 
 /***/ }),
-/* 149 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9913,10 +10219,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifMqttController = void 0;
-const common_1 = __webpack_require__(55);
+const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const onvif_device_service_1 = __webpack_require__(142);
-const constant_1 = __webpack_require__(71);
+const onvif_device_service_1 = __webpack_require__(145);
+const constant_1 = __webpack_require__(67);
 let OnvifMqttController = class OnvifMqttController {
     constructor(mqttMicroservice, deviceService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -9952,7 +10258,7 @@ exports.OnvifMqttController = OnvifMqttController = __decorate([
 
 
 /***/ }),
-/* 150 */
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9964,8 +10270,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifPendingService = void 0;
-const pending_util_1 = __webpack_require__(79);
-const common_1 = __webpack_require__(55);
+const pending_util_1 = __webpack_require__(75);
+const common_1 = __webpack_require__(33);
 let OnvifPendingService = class OnvifPendingService extends pending_util_1.PendingResponseUtil {
 };
 exports.OnvifPendingService = OnvifPendingService;
@@ -9975,13 +10281,13 @@ exports.OnvifPendingService = OnvifPendingService = __decorate([
 
 
 /***/ }),
-/* 151 */
+/* 154 */
 /***/ ((module) => {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 152 */
+/* 155 */
 /***/ ((module) => {
 
 module.exports = require("express-xml-bodyparser");
@@ -10024,16 +10330,16 @@ const core_1 = __webpack_require__(1);
 const config_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
 const common_1 = __webpack_require__(4);
-const path_1 = __webpack_require__(40);
-const map_module_1 = __webpack_require__(54);
-const setting_module_1 = __webpack_require__(91);
-const sound_module_1 = __webpack_require__(97);
-const update_module_1 = __webpack_require__(105);
-const network_module_1 = __webpack_require__(124);
-const onvif_module_1 = __webpack_require__(135);
-const bodyParser = __webpack_require__(151);
-const xmlParser = __webpack_require__(152);
-const common_2 = __webpack_require__(55);
+const path_1 = __webpack_require__(31);
+const map_module_1 = __webpack_require__(32);
+const setting_module_1 = __webpack_require__(94);
+const sound_module_1 = __webpack_require__(100);
+const update_module_1 = __webpack_require__(110);
+const network_module_1 = __webpack_require__(127);
+const onvif_module_1 = __webpack_require__(138);
+const bodyParser = __webpack_require__(154);
+const xmlParser = __webpack_require__(155);
+const common_2 = __webpack_require__(33);
 async function bootstrap() {
     console.log('🚀 호스트 서버 시작...');
     const mapModule = await core_1.NestFactory.create(map_module_1.MapModule);
