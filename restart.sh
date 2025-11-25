@@ -15,7 +15,6 @@ git pull
 pnpm install
 
 echo "=========== 4) 혹시 모르니 도커이미지 받기 "
-docker login
 docker pull rainbowyujin/node_host_root:latest
 
 echo "=========== 5) 다시 PM2 실행 (기존 서버는 안켜짐)"
