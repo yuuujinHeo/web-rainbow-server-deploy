@@ -10,9 +10,15 @@ echo "=========== 2) 도커 완전히 내리기 "
 cd ~/web-rainbow-server-deploy
 docker compose -f rrs-compose.yml down
 
-echo "=========== 3) 혹시 모르니 재설치 "
+echo "=========== 3) 혹시 모르니 재설치 (git pull + pnpm install)"
 git pull
-pnpm install
+
+# 👉 pnpm install 실패 시 바로 종료
+if ! pnpm install; then
+  echo "❌ pnpm install 실패! 이후 작업을 중단합니다."
+  echo "   로그를 확인해서 원인을 해결한 뒤, 스크립트를 다시 실행해 주세요."
+  exit 1
+fi
 
 echo "=========== 4) 혹시 모르니 도커이미지 받기 "
 docker pull rainbowyujin/node_host_root:latest
@@ -22,8 +28,7 @@ pm2 start --cwd ~/web-rainbow-server-deploy ~/web-rainbow-server-deploy/start_do
 pm2 start --cwd ~/web-rainbow-server-deploy ~/web-rainbow-server-deploy/start_host.sh
 pm2 save
 startup_command=$(pm2 startup | grep 'sudo' | tail -n 1)
-eval $startup_command
-
+eval "$startup_command"
 
 echo "=========== 등록 완료. 도커 이미지 생성 시간 소요될 수 있음"
 echo "설치과정 확인하려면 터미널창에 다음 입력 : docker logs"
