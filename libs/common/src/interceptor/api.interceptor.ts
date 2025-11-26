@@ -1,7 +1,6 @@
 // logging.interceptor.ts
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
-// import { LoggerService } from '../logger';
 import { LogService } from '../log/saveLog.service';
 
 @Injectable()

@@ -234,6 +234,45 @@ exports.ControlApiController = ControlApiController;
 __decorate([
     (0, common_1.Post)('onoff'),
     (0, swagger_1.ApiOperation)({
+        summary: '모터, 라이다, 패스 OnOff 요청',
+        description: `
+SLAMNAV의 기능에 관련된 제어를 켜고 끄는 요청을 합니다.
+
+## 📌 기능 설명
+- **motorOnOff** : **모터 제어**를 켜고 끄는 요청을 합니다.
+- **lidarOnOff** : 라이다 제어가 아닌, **라이다 소켓 전송**을 켜고 끄거나 전송주기를 설정합니다.
+- **pathOnOff** : 패스 제어가 아닌, **패스 소켓 전송**을 켜고 끄거나 전송주기를 설정합니다.
+- 기능은 로봇을 껏다켜도 유지되지 않습니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| command | string | ✅ | - | 요청 명령 | 'motorOnOff', 'lidarOnOff', 'pathOnOff' |
+| onoff | boolean | ✅ | - | 요청 명령 켜고 끌지를 결정합니다. | true |
+| frequency | number | - | Hz | 요청 명령의 onoff가 true일 시, 전송 주기를 입력하세요. <br> 단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다. | 10 |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'motorOnOff', 'lidarOnOff', 'pathOnOff' |
+| onoff | boolean | 요청 명령 켜고 끌지를 결정합니다. | true |
+| frequency | number | 요청 명령의 onoff가 true일 시, 전송 주기를 입력하세요. <br>단위는 Hz이며 예로 lidarOnOff를 on하고 frequency를 10으로 입력하면 lidar 데이터를 10Hz로 송신합니다. | 10 |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
+    }),
+    (0, swagger_1.ApiOperation)({
         summary: '기능 OnOff 요청',
         description: `특정 기능을 켜고 끄는 요청을 합니다. \n\n
     현재 사용가능한 Command는 lidarOnOff, pathOnOff, motorOnOff가 있습니다.
@@ -881,6 +920,26 @@ __decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], OnOffResponseDto.prototype, "frequency", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+        example: 'accept',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], OnOffResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], OnOffResponseDto.prototype, "message", void 0);
 class WorkRequestDto {
 }
 exports.WorkRequestDto = WorkRequestDto;
@@ -2291,7 +2350,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(49), exports);
 __exportStar(__webpack_require__(70), exports);
-__exportStar(__webpack_require__(72), exports);
+__exportStar(__webpack_require__(73), exports);
 
 
 /***/ }),
@@ -3112,7 +3171,8 @@ exports.GrpcInterceptor = GrpcInterceptor;
 
 
 /***/ }),
-/* 72 */
+/* 72 */,
+/* 73 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3131,38 +3191,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(73), exports);
-
-
-/***/ }),
-/* 73 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.errorToJson = errorToJson;
-function errorToJson(error) {
-    try {
-        if (error instanceof Error) {
-            const errorJson = {
-                name: error.name,
-                message: JSON.stringify(error.message),
-            };
-            if (error['error'] && error['error'].details) {
-                errorJson['details'] = error['error'].details;
-                errorJson['code'] = error['error'].code;
-            }
-            return JSON.stringify(errorJson);
-        }
-        else {
-            const json = JSON.parse(error);
-            return JSON.stringify(json);
-        }
-    }
-    catch (err) {
-        return JSON.stringify(error);
-    }
-}
+__exportStar(__webpack_require__(215), exports);
 
 
 /***/ }),
@@ -13090,14 +13119,14 @@ __decorate([
     __metadata("design:type", typeof (_c = typeof socket_api_service_1.SocketApiService !== "undefined" && socket_api_service_1.SocketApiService) === "function" ? _c : Object)
 ], SocketMqttController.prototype, "socketService", void 0);
 __decorate([
-    (0, microservices_1.MessagePattern)('status'),
+    (0, microservices_1.EventPattern)('status'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], SocketMqttController.prototype, "handleStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveStatus'),
+    (0, microservices_1.EventPattern)('moveStatus'),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_e = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _e : Object]),
@@ -14536,6 +14565,10 @@ let ClientSocketService = class ClientSocketService {
         this.taskMicroservice = taskMicroservice;
         this.tcpMicroservice = tcpMicroservice;
         this.mapMicroservice = mapMicroservice;
+        this.slamnavConnection = false;
+        this.frsConnection = false;
+        this.taskmanConnection = false;
+        this.exAccessoryConnection = false;
         this.logger = this.saveLogService.get('gateway-client');
     }
     onModuleInit() {
@@ -14550,6 +14583,59 @@ let ClientSocketService = class ClientSocketService {
         this.updateService = this.updateMicroservice.getService('UpdateGrpcService');
         this.taskService = this.taskMicroservice.getService('TaskGrpcService');
         this.tcpService = this.tcpMicroservice.getService('TcpGrpcService');
+        this.intervalProgramStatus = setInterval(() => {
+            this.sendProgramStatus();
+        }, 1000);
+    }
+    sendProgramStatus() {
+        const statusData = {
+            robotSerial: global.robotSerial,
+            data: {
+                slam: { connection: this.slamnavConnection },
+                frs: { connection: this.frsConnection },
+                taskman: { connection: this.taskmanConnection },
+                exAccessory: { connection: this.exAccessoryConnection },
+                time: Date.now().toString(),
+            },
+        };
+        this.server.to(['programStatus', 'all', 'allStatus']).emit('programStatus', statusData.data);
+    }
+    onApplicationShutdown() {
+        this.server?.disconnectSockets(true);
+        this.server?.close();
+        clearInterval(this.intervalProgramStatus);
+    }
+    slamConnect() {
+        this.slamnavConnection = true;
+        this.sendProgramStatus();
+    }
+    slamDisconnect() {
+        this.slamnavConnection = false;
+        this.sendProgramStatus();
+    }
+    frsConnect() {
+        this.frsConnection = true;
+        this.sendProgramStatus();
+    }
+    frsDisconnect() {
+        this.frsConnection = false;
+        this.sendProgramStatus();
+    }
+    taskmanConnect() {
+        this.taskmanConnection = true;
+        this.sendProgramStatus();
+    }
+    taskmanDisconnect() {
+        this.taskmanConnection = false;
+        this.sendProgramStatus();
+    }
+    exAccessoryConnect() {
+        this.exAccessoryConnection = true;
+        this.sendProgramStatus();
+    }
+    exAccessoryDisconnect() {
+        this.exAccessoryConnection = false;
+        this.sendProgramStatus();
     }
     setServer(server) {
         this.server = server;
@@ -15332,6 +15418,30 @@ let ClientSocketMqttController = class ClientSocketMqttController {
     constructor(clientService) {
         this.clientService = clientService;
     }
+    getConnectSlamnav() {
+        this.clientService.slamConnect();
+    }
+    getDisconnectSlamnav() {
+        this.clientService.slamDisconnect();
+    }
+    getConnectFRS() {
+        this.clientService.frsConnect();
+    }
+    getDisconnectFRS() {
+        this.clientService.frsDisconnect();
+    }
+    getConnectTaskman() {
+        this.clientService.taskmanConnect();
+    }
+    getDisconnectTaskman() {
+        this.clientService.taskmanDisconnect();
+    }
+    getConnectExAccessory() {
+        this.clientService.exAccessoryConnect();
+    }
+    getDisconnectExAccessory() {
+        this.clientService.exAccessoryDisconnect();
+    }
     getMoveResponse(data) {
         this.clientService.moveResponse(data);
     }
@@ -15377,7 +15487,55 @@ let ClientSocketMqttController = class ClientSocketMqttController {
 };
 exports.ClientSocketMqttController = ClientSocketMqttController;
 __decorate([
-    (0, microservices_1.MessagePattern)('moveResponse'),
+    (0, microservices_1.EventPattern)('con:slamnav'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getConnectSlamnav", null);
+__decorate([
+    (0, microservices_1.EventPattern)('discon:slamnav'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getDisconnectSlamnav", null);
+__decorate([
+    (0, microservices_1.EventPattern)('con:frs'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getConnectFRS", null);
+__decorate([
+    (0, microservices_1.EventPattern)('discon:frs'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getDisconnectFRS", null);
+__decorate([
+    (0, microservices_1.EventPattern)('con:taskman'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getConnectTaskman", null);
+__decorate([
+    (0, microservices_1.EventPattern)('discon:taskman'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getDisconnectTaskman", null);
+__decorate([
+    (0, microservices_1.EventPattern)('con:exAccessory'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getConnectExAccessory", null);
+__decorate([
+    (0, microservices_1.EventPattern)('discon:exAccessory'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClientSocketMqttController.prototype, "getDisconnectExAccessory", null);
+__decorate([
+    (0, microservices_1.EventPattern)('moveResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'moveResponse',
         message: {
@@ -15391,7 +15549,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ClientSocketMqttController.prototype, "getMoveResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('localizationResponse'),
+    (0, microservices_1.EventPattern)('localizationResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'localizationResponse',
         message: {
@@ -15405,7 +15563,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleLocalizationResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('loadResponse'),
+    (0, microservices_1.EventPattern)('loadResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'loadResponse',
         message: {
@@ -15419,7 +15577,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleLoadResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('mappingResponse'),
+    (0, microservices_1.EventPattern)('mappingResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'mappingResponse',
         message: {
@@ -15433,7 +15591,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleMappingResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('controlResponse'),
+    (0, microservices_1.EventPattern)('controlResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'controlResponse',
         message: {
@@ -15447,7 +15605,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleControlResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('status'),
+    (0, microservices_1.EventPattern)('status'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'status',
         message: {
@@ -15461,7 +15619,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveStatus'),
+    (0, microservices_1.EventPattern)('moveStatus'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'moveStatus',
         message: {
@@ -15475,7 +15633,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleMoveStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('localPath'),
+    (0, microservices_1.EventPattern)('localPath'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'localPath',
         message: {
@@ -15489,7 +15647,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleLocalPath", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('globalPath'),
+    (0, microservices_1.EventPattern)('globalPath'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'globalPath',
         message: {
@@ -15503,7 +15661,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleGlobalPath", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('lidarCloud'),
+    (0, microservices_1.EventPattern)('lidarCloud'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'lidarCloud',
         message: {
@@ -15517,7 +15675,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleLidarCloud", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('mappingCloud'),
+    (0, microservices_1.EventPattern)('mappingCloud'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'mappingCloud',
         message: {
@@ -15531,7 +15689,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleMappingCloud", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('cobotResponse'),
+    (0, microservices_1.EventPattern)('cobotResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'cobotResponse',
         message: {
@@ -15545,7 +15703,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleCobotResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('exAccessoryResponse'),
+    (0, microservices_1.EventPattern)('exAccessoryResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'exAccessoryResponse',
         message: {
@@ -15559,7 +15717,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleExAccessoryResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('exAccessoryStatus'),
+    (0, microservices_1.EventPattern)('exAccessoryStatus'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'exAccessoryStatus',
         message: {
@@ -16372,6 +16530,7 @@ let RobotSocketMqttController = class RobotSocketMqttController {
     getConnection() {
         this.slamnavService.getConnection();
         this.taskmanService.getConnection();
+        this.exAccessoryService.getConnection();
     }
     moveJog(data) {
         this.slamnavService.moveJog(data);
@@ -16434,20 +16593,20 @@ let RobotSocketMqttController = class RobotSocketMqttController {
 };
 exports.RobotSocketMqttController = RobotSocketMqttController;
 __decorate([
-    (0, microservices_1.MessagePattern)('getConnection'),
+    (0, microservices_1.EventPattern)('get:socket:connection'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getConnection", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveJog'),
+    (0, microservices_1.EventPattern)('moveJog'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_e = typeof move_dto_1.MoveRequestSlamnav !== "undefined" && move_dto_1.MoveRequestSlamnav) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "moveJog", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveRequest'),
+    (0, microservices_1.EventPattern)('moveRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'moveRequest',
         message: {
@@ -16461,7 +16620,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "MoveRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('localizationRequest'),
+    (0, microservices_1.EventPattern)('localizationRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'localizationRequest',
         message: {
@@ -16475,14 +16634,14 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "LocalizationRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('swVersionInfo'),
+    (0, microservices_1.EventPattern)('swVersionInfo'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_h = typeof version_dto_1.GetCurrentVersionRequestSocketDto !== "undefined" && version_dto_1.GetCurrentVersionRequestSocketDto) === "function" ? _h : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "swVersionInfo", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('mappingRequest'),
+    (0, microservices_1.EventPattern)('mappingRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'mappingRequest',
         message: {
@@ -16496,7 +16655,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "MappingRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('controlRequest'),
+    (0, microservices_1.EventPattern)('controlRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'controlRequest',
         message: {
@@ -16510,7 +16669,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "ControlRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('loadRequest'),
+    (0, microservices_1.EventPattern)('loadRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'loadRequest',
         message: {
@@ -16524,7 +16683,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "LoadRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('settingRequest'),
+    (0, microservices_1.EventPattern)('settingRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'settingRequest',
         message: {
@@ -16538,7 +16697,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "SettingRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('pathResponse'),
+    (0, microservices_1.EventPattern)('pathResponse'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'pathResponse',
         message: {
@@ -16551,56 +16710,56 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "PathResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveResponse'),
+    (0, microservices_1.EventPattern)('moveResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_p = typeof move_dto_2.MoveResponseSlamnav !== "undefined" && move_dto_2.MoveResponseSlamnav) === "function" ? _p : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('dockResponse'),
+    (0, microservices_1.EventPattern)('dockResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _q : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getDockResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('status'),
+    (0, microservices_1.EventPattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_r = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _r : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveStatus'),
+    (0, microservices_1.EventPattern)('moveStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_s = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _s : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('exAccessoryRequest'),
+    (0, microservices_1.EventPattern)('exAccessoryRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_t = typeof exAccessory_dto_1.ExAccessoryRequestExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryRequestExAccessory) === "function" ? _t : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "exAccessoryRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('taskman:taskRequest'),
+    (0, microservices_1.EventPattern)('taskman:taskRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_u = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _u : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "taskRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('taskman:stateRequest'),
+    (0, microservices_1.EventPattern)('taskman:stateRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "stateRequest", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('taskman:variableRequest'),
+    (0, microservices_1.EventPattern)('taskman:variableRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -16628,11 +16787,11 @@ var MoveStatus;
     MoveStatus["pending"] = "pending";
     MoveStatus["accepted"] = "accept";
     MoveStatus["rejected"] = "reject";
-    MoveStatus["moving"] = "moving";
-    MoveStatus["paused"] = "paused";
+    MoveStatus["success"] = "success";
+    MoveStatus["moving"] = "start";
+    MoveStatus["paused"] = "pause";
     MoveStatus["fail"] = "fail";
-    MoveStatus["cancelled"] = "cancelled";
-    MoveStatus["done"] = "done";
+    MoveStatus["cancelled"] = "cancel";
     MoveStatus["unknown"] = "unknown";
 })(MoveStatus || (exports.MoveStatus = MoveStatus = {}));
 var MoveMethod;
@@ -16888,11 +17047,13 @@ class ControlModel {
                 if (this.onoff === undefined) {
                     throw new rpc_code_exception_1.RpcCodeException('onoff 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
-                if (this.frequency === undefined || this.frequency === 0) {
-                    throw new rpc_code_exception_1.RpcCodeException('frequency 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-                }
-                if (this.frequency < 0 || this.frequency > 1000) {
-                    throw new rpc_code_exception_1.RpcCodeException('frequency 값이 범위를 초과합니다. frequency의 단위는 Hz입니다.', constant_1.GrpcCode.InvalidArgument);
+                if (this.onoff) {
+                    if (this.frequency === undefined) {
+                        throw new rpc_code_exception_1.RpcCodeException('frequency 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
+                    if (this.frequency < 0 || this.frequency > 1000) {
+                        throw new rpc_code_exception_1.RpcCodeException('frequency 값이 범위를 초과합니다. frequency의 단위는 Hz입니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
                 }
                 break;
             }
@@ -19716,16 +19877,16 @@ let TcpControlService = class TcpControlService {
         this.localizationMicroservice = localizationMicroservice;
     }
     async moveRequest(dto) {
-        this.mqttMicroservice.send('moveRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
+        this.mqttMicroservice.emit('moveRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
     }
     async controlRequest(dto) {
-        this.mqttMicroservice.send('controlRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
+        this.mqttMicroservice.emit('controlRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
     }
     async localizationRequest(dto) {
-        this.mqttMicroservice.send('localizationRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
+        this.mqttMicroservice.emit('localizationRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
     }
     async loadRequest(dto) {
-        this.mqttMicroservice.send('loadRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
+        this.mqttMicroservice.emit('loadRequest', { ...dto, id: util_1.UrlUtil.generateUUID() });
     }
 };
 exports.TcpControlService = TcpControlService;
@@ -19793,42 +19954,42 @@ let TcpMqttController = class TcpMqttController {
 };
 exports.TcpMqttController = TcpMqttController;
 __decorate([
-    (0, microservices_1.MessagePattern)('moveResponse'),
+    (0, microservices_1.EventPattern)('moveResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof move_dto_1.MoveResponseSlamnav !== "undefined" && move_dto_1.MoveResponseSlamnav) === "function" ? _b : Object]),
     __metadata("design:returntype", void 0)
 ], TcpMqttController.prototype, "getMoveResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('controlResponse'),
+    (0, microservices_1.EventPattern)('controlResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_c = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _c : Object]),
     __metadata("design:returntype", void 0)
 ], TcpMqttController.prototype, "getControlResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('localizationResponse'),
+    (0, microservices_1.EventPattern)('localizationResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof localization_dto_1.LocalizationResponseSlamnav !== "undefined" && localization_dto_1.LocalizationResponseSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], TcpMqttController.prototype, "getLocalizationResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('loadResponse'),
+    (0, microservices_1.EventPattern)('loadResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_e = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], TcpMqttController.prototype, "getLoadResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('status'),
+    (0, microservices_1.EventPattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_f = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _f : Object]),
     __metadata("design:returntype", void 0)
 ], TcpMqttController.prototype, "getStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveStatus'),
+    (0, microservices_1.EventPattern)('moveStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_g = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _g : Object]),
@@ -21511,6 +21672,37 @@ exports.CobotConnectionEntity = CobotConnectionEntity = __decorate([
 ], CobotConnectionEntity);
 exports.CobotConnectionSchema = mongoose_1.SchemaFactory.createForClass(CobotConnectionEntity);
 exports.CobotConnectionSchema.set('timestamps', true);
+
+
+/***/ }),
+/* 215 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
 
 
 /***/ })

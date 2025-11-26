@@ -35,7 +35,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(4), exports);
 __exportStar(__webpack_require__(25), exports);
-__exportStar(__webpack_require__(28), exports);
+__exportStar(__webpack_require__(116), exports);
 
 
 /***/ }),
@@ -862,29 +862,7 @@ exports.GrpcInterceptor = GrpcInterceptor;
 module.exports = require("rxjs");
 
 /***/ }),
-/* 28 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(29), exports);
-
-
-/***/ }),
+/* 28 */,
 /* 29 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -2146,7 +2124,6 @@ let ControlService = class ControlService {
     }
     onModuleInit() {
         this.logger?.debug(`[Control] Module Init`);
-        this.slamnavOutput.checkSocketConnection();
     }
     async OnOffControl(request) {
         let command = null;
@@ -2352,7 +2329,7 @@ let ControlService = class ControlService {
             if (dbmodel) {
                 const model = new control_domain_1.ControlModel(dbmodel);
                 model.assignId(dbmodel._id);
-                model.statusChange('accept');
+                model.statusChange(resp.result);
                 this.databaseOutput.update(model);
                 this.logger?.info(`[Control] update Response : ${model.id}, ${model.status}`);
             }
@@ -2559,11 +2536,13 @@ class ControlModel {
                 if (this.onoff === undefined) {
                     throw new rpc_code_exception_1.RpcCodeException('onoff 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
-                if (this.frequency === undefined || this.frequency === 0) {
-                    throw new rpc_code_exception_1.RpcCodeException('frequency 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-                }
-                if (this.frequency < 0 || this.frequency > 1000) {
-                    throw new rpc_code_exception_1.RpcCodeException('frequency 값이 범위를 초과합니다. frequency의 단위는 Hz입니다.', constant_1.GrpcCode.InvalidArgument);
+                if (this.onoff) {
+                    if (this.frequency === undefined) {
+                        throw new rpc_code_exception_1.RpcCodeException('frequency 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
+                    if (this.frequency < 0 || this.frequency > 1000) {
+                        throw new rpc_code_exception_1.RpcCodeException('frequency 값이 범위를 초과합니다. frequency의 단위는 Hz입니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
                 }
                 break;
             }
@@ -2751,9 +2730,6 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
         const resp = await response;
         this.logger?.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(resp)}`);
         return resp;
-    }
-    checkSocketConnection() {
-        this.mqttMicroservice.emit('getConnection', {});
     }
     async onoffControl(data) {
         this.logger?.debug(`[Control] Socket onoffControl : ${JSON.stringify(data)}`);
@@ -3137,19 +3113,19 @@ let ControlMqttController = class ControlMqttController {
 };
 exports.ControlMqttController = ControlMqttController;
 __decorate([
-    (0, microservices_1.MessagePattern)('con:slamnav'),
+    (0, microservices_1.EventPattern)('con:slamnav'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], ControlMqttController.prototype, "getConnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('discon:slamnav'),
+    (0, microservices_1.EventPattern)('discon:slamnav'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], ControlMqttController.prototype, "getDisconnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('controlResponse'),
+    (0, microservices_1.EventPattern)('controlResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _d : Object]),
@@ -3608,6 +3584,26 @@ __decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
 ], OnOffResponseDto.prototype, "frequency", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+        example: 'accept',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], OnOffResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], OnOffResponseDto.prototype, "message", void 0);
 class WorkRequestDto {
 }
 exports.WorkRequestDto = WorkRequestDto;
@@ -4032,7 +4028,6 @@ let LocalizationService = class LocalizationService {
         this.slamnav_connection = false;
         this.logger = this.saveLogService.get('localization');
         console.log('LocalizationService Constructed');
-        this.mqttMicroservice.emit('getConnection', {});
     }
     async Localization(initDto) {
         this.logger?.info(`[Localization] Localization ================================`);
@@ -4438,19 +4433,19 @@ let LocalizationMqttInputController = class LocalizationMqttInputController {
 };
 exports.LocalizationMqttInputController = LocalizationMqttInputController;
 __decorate([
-    (0, microservices_1.MessagePattern)('con:slamnav'),
+    (0, microservices_1.EventPattern)('con:slamnav'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], LocalizationMqttInputController.prototype, "getConnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('discon:slamnav'),
+    (0, microservices_1.EventPattern)('discon:slamnav'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], LocalizationMqttInputController.prototype, "getDisconnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('localizationResponse'),
+    (0, microservices_1.EventPattern)('localizationResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof localization_dto_1.LocalizationResponseSlamnav !== "undefined" && localization_dto_1.LocalizationResponseSlamnav) === "function" ? _d : Object]),
@@ -4816,9 +4811,6 @@ let MoveService = class MoveService {
             if (this.slamnav_connection) {
                 const resp = await this.slamnavOutput.moveRequest(command);
                 this.logger?.info(`[Move] Move Response : ${JSON.stringify(resp)}`);
-                command.statusChange('accept');
-                const result = await this.databaseOutput.update(command);
-                this.logger?.info(`[Move] Move DB Update : ${result?._id.toString()}`);
                 return resp;
             }
             else {
@@ -4957,11 +4949,11 @@ var MoveStatus;
     MoveStatus["pending"] = "pending";
     MoveStatus["accepted"] = "accept";
     MoveStatus["rejected"] = "reject";
-    MoveStatus["moving"] = "moving";
-    MoveStatus["paused"] = "paused";
+    MoveStatus["success"] = "success";
+    MoveStatus["moving"] = "start";
+    MoveStatus["paused"] = "pause";
     MoveStatus["fail"] = "fail";
-    MoveStatus["cancelled"] = "cancelled";
-    MoveStatus["done"] = "done";
+    MoveStatus["cancelled"] = "cancel";
     MoveStatus["unknown"] = "unknown";
 })(MoveStatus || (exports.MoveStatus = MoveStatus = {}));
 var MoveMethod;
@@ -5645,11 +5637,11 @@ let MoveMqttInputController = class MoveMqttInputController {
         this.logger = this.saveLogService.get('move');
     }
     getConnect() {
-        this.logger?.info(`[Move] slam Connected`);
+        this.logger?.info(`[Move] Slamnav Connected`);
         this.moveService.slamConnect();
     }
     getDisconnect() {
-        this.logger?.warn(`[Move] slam Disconnected`);
+        this.logger?.warn(`[Move] Slamnav Disconnected`);
         this.moveService.slamDisconnect();
         this.pendingService.pendingResponses.forEach((resp) => {
             resp.reject(new rpc_code_exception_1.RpcCodeException('SLAMNAV 연결이 끊어졌습니다', constant_1.GrpcCode.InternalError));
@@ -5672,8 +5664,8 @@ let MoveMqttInputController = class MoveMqttInputController {
                 listener.received.push(data);
                 listener.resolve(data);
                 this.pendingService.pendingResponses.delete(id);
-                this.moveService.updateResponse(data);
             }
+            this.moveService.updateResponse(data);
         }
         catch (error) {
             this.logger?.error(`[Move] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
@@ -5682,33 +5674,33 @@ let MoveMqttInputController = class MoveMqttInputController {
 };
 exports.MoveMqttInputController = MoveMqttInputController;
 __decorate([
-    (0, microservices_1.MessagePattern)('con:slamnav'),
+    (0, microservices_1.EventPattern)('con:slamnav'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], MoveMqttInputController.prototype, "getConnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('discon:slamanv'),
+    (0, microservices_1.EventPattern)('discon:slamanv'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], MoveMqttInputController.prototype, "getDisconnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('con:frs'),
+    (0, microservices_1.EventPattern)('con:frs'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MoveMqttInputController.prototype, "getConnectFRS", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('discon:frs'),
+    (0, microservices_1.EventPattern)('discon:frs'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MoveMqttInputController.prototype, "getDisconnectFRS", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveResponse'),
+    (0, microservices_1.EventPattern)('moveResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof move_dto_1.MoveResponseSlamnav !== "undefined" && move_dto_1.MoveResponseSlamnav) === "function" ? _d : Object]),
@@ -6416,6 +6408,29 @@ __decorate([
 ], PaginationResponse.prototype, "list", void 0);
 
 
+/***/ }),
+/* 116 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(29), exports);
+
+
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -6458,6 +6473,7 @@ const control_module_1 = __webpack_require__(31);
 const localization_module_1 = __webpack_require__(85);
 const config_1 = __webpack_require__(59);
 const move_module_1 = __webpack_require__(99);
+const constant_1 = __webpack_require__(68);
 async function bootstrap() {
     const controlModule = await core_1.NestFactory.create(control_module_1.ControlModule);
     const config = controlModule.get(config_1.ConfigService);
@@ -6523,6 +6539,10 @@ async function bootstrap() {
     });
     await moveModule.init();
     await moveModule.startAllMicroservices();
+    const mqttClient = moveModule.get(constant_1.MQTT_BROKER);
+    await mqttClient.connect();
+    mqttClient.emit('get:socket:connection', {});
+    console.log('[Move] startup: get:socket:connection emit 완료');
 }
 bootstrap();
 

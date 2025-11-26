@@ -270,7 +270,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(10), exports);
 __exportStar(__webpack_require__(31), exports);
-__exportStar(__webpack_require__(34), exports);
+__exportStar(__webpack_require__(88), exports);
 
 
 /***/ }),
@@ -1097,29 +1097,7 @@ exports.GrpcInterceptor = GrpcInterceptor;
 module.exports = require("rxjs");
 
 /***/ }),
-/* 34 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(35), exports);
-
-
-/***/ }),
+/* 34 */,
 /* 35 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -3177,33 +3155,33 @@ let TaskMqttInputController = class TaskMqttInputController {
 };
 exports.TaskMqttInputController = TaskMqttInputController;
 __decorate([
-    (0, microservices_1.MessagePattern)('con:taskman'),
+    (0, microservices_1.EventPattern)('con:taskman'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TaskMqttInputController.prototype, "getTaskConnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('discon:taskman'),
+    (0, microservices_1.EventPattern)('discon:taskman'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TaskMqttInputController.prototype, "getTaskDisconnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('stateResponse'),
+    (0, microservices_1.EventPattern)('stateResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_c = typeof state_dto_1.TaskStateResponseTaskman !== "undefined" && state_dto_1.TaskStateResponseTaskman) === "function" ? _c : Object]),
     __metadata("design:returntype", void 0)
 ], TaskMqttInputController.prototype, "getStateResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('taskResponse'),
+    (0, microservices_1.EventPattern)('taskResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof task_dto_1.TaskResponseTaskman !== "undefined" && task_dto_1.TaskResponseTaskman) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], TaskMqttInputController.prototype, "getTaskResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('variablesResponse'),
+    (0, microservices_1.EventPattern)('variablesResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_e = typeof variables_dto_1.TaskVariablesResponseTaskman !== "undefined" && variables_dto_1.TaskVariablesResponseTaskman) === "function" ? _e : Object]),
@@ -3580,7 +3558,7 @@ let TaskSocketioOutputController = class TaskSocketioOutputController {
         this.logger = this.saveLogService.get('task');
     }
     checkSocketConnection() {
-        this.mqttMicroservice.emit('getConnection', {});
+        this.mqttMicroservice.emit('get:socket:connection', {});
     }
     async taskSocketRequest(data) {
         try {
@@ -3996,6 +3974,29 @@ exports.CleanLogService = CleanLogService = __decorate([
 /***/ ((module) => {
 
 module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 88 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(35), exports);
+
 
 /***/ })
 /******/ 	]);

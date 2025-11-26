@@ -1,7 +1,7 @@
 import * as AdmZip from 'adm-zip';
 import { existsSync, mkdirSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { errorToJson } from '../../logger';
+import { errorToJson } from '../../log';
 import { RpcException } from '@nestjs/microservices';
 import { RpcCodeException } from '@app/common/exception/rpc-code.exception';
 import { GrpcCode } from '@app/common/grpc/constant';

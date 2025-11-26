@@ -1,7 +1,7 @@
 // grpc-to-http.filter.ts
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { errorToJson } from '@app/common/logger';
+import { errorToJson } from '@app/common/log';
 import { GrpcCode } from '../constant';
 
 // RpcCodeException 등의 예외를 HttpException으로 변환하여 처리

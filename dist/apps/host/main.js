@@ -2051,7 +2051,7 @@ let MapService = class MapService {
         this.serviceName = 'MAP';
         this.currentMap = '';
         console.log(process.env.DATA_DIR);
-        this.logger = saveLogService.get('host');
+        this.logger = this.saveLogService.get('host');
     }
     setCurrentMap(mapName) {
         this.currentMap = mapName;
@@ -2059,13 +2059,13 @@ let MapService = class MapService {
     async getMapList() {
         let command = null;
         try {
-            this.logger.debug(`[APP] getMapList`);
+            this.logger?.debug(`[APP] getMapList`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getMapList });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
             command.checkVariables();
             const entries = await this.mapFileOutput.readMapList({});
-            this.logger.debug(`[APP] getMapList : 경로 내 Map 폴더 개수 = ${entries.list.length} (${command.path})`);
+            this.logger?.debug(`[APP] getMapList : 경로 내 Map 폴더 개수 = ${entries.list.length} (${command.path})`);
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
             return entries;
@@ -2075,7 +2075,7 @@ let MapService = class MapService {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
             }
-            this.logger.error(`[APP] getMapList : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[APP] getMapList : ${util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('파일을 읽는 도중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
@@ -2084,7 +2084,7 @@ let MapService = class MapService {
     async getCloud(request) {
         let command = null;
         try {
-            this.logger.debug(`[APP] getCloud : ${JSON.stringify(request)})`);
+            this.logger?.debug(`[APP] getCloud : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getCloud, ...request });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2103,7 +2103,7 @@ let MapService = class MapService {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
             }
-            this.logger.error(`[Map] getCloud : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] getCloud : ${util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('Cloud를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
@@ -2112,7 +2112,7 @@ let MapService = class MapService {
     async saveCloud(request) {
         let command = null;
         try {
-            this.logger.debug(`[Map] saveCloud : ${JSON.stringify(request)})`);
+            this.logger?.debug(`[Map] saveCloud : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.getCloud, ...request, cloud: request.cloud.map((row) => row.row) });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2128,7 +2128,7 @@ let MapService = class MapService {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
             }
-            this.logger.error(`[Map] saveCloud : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] saveCloud : ${util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('Cloud를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
@@ -2137,7 +2137,7 @@ let MapService = class MapService {
     async saveTopology(request) {
         let command = null;
         try {
-            this.logger.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
+            this.logger?.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({
                 command: map_command_domain_1.MapCommand.saveTopo,
                 topo: request.data,
@@ -2183,7 +2183,7 @@ let MapService = class MapService {
             return request;
         }
         catch (error) {
-            this.logger.error(`[Map] saveTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] saveTopology : ${util_1.ParseUtil.errorToJson(error)}`);
             if (command) {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2222,7 +2222,7 @@ let MapService = class MapService {
     async getTopology(request) {
         let model = null;
         try {
-            this.logger.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
+            this.logger?.debug(`[Map] getTopology : ${JSON.stringify(request)})`);
             model = new map_command_domain_1.MapCommandModel({
                 command: map_command_domain_1.MapCommand.getTopo,
                 mapName: request.mapName,
@@ -2264,7 +2264,7 @@ let MapService = class MapService {
             return { ...request, fileName: model.fileName, data };
         }
         catch (error) {
-            this.logger.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] getTopology : ${util_1.ParseUtil.errorToJson(error)}`);
             if (model) {
                 model.statusChange(map_command_domain_1.CommandStatus.fail);
                 await this.databaseOutput.update(model);
@@ -2278,7 +2278,7 @@ let MapService = class MapService {
         let zipPath = '';
         let command = null;
         try {
-            this.logger.debug(`[Map] uploadMap : ${JSON.stringify(request)})`);
+            this.logger?.debug(`[Map] uploadMap : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({ ...request, command: map_command_domain_1.MapCommand.uploadMap });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2290,15 +2290,15 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException(`${command.mapName} 이름의 맵폴더가 존재하지 않습니다. ${mapPath}`, constant_1.GrpcCode.NotFound);
             }
             await zip_util_1.ZipUtil.zipFolder(mapPath, zipPath);
-            this.logger.debug(`[Map] uploadMap : zip success (${zipPath}, ${(0, path_1.basename)(zipPath)})`);
+            this.logger?.debug(`[Map] uploadMap : zip success (${zipPath}, ${(0, path_1.basename)(zipPath)})`);
             const zipStream = (0, fs_1.createReadStream)(zipPath);
             const formData = new FormData();
             formData.append('file', zipStream, { filename: (0, path_1.basename)(zipPath) });
             formData.append('deleteZipAt', 'Y');
             const url = process.env.FRS_URL + '/api/maps/frs-map/upload';
-            this.logger.debug(`[Map] uploadMap : POST frs (${url})`);
+            this.logger?.debug(`[Map] uploadMap : POST frs (${url})`);
             const response = await axios_1.default.post(url, formData);
-            this.logger.debug(`[Map] uploadMap : Response from FRS (${JSON.stringify(response.data)})`);
+            this.logger?.debug(`[Map] uploadMap : Response from FRS (${JSON.stringify(response.data)})`);
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
             return {
@@ -2315,10 +2315,10 @@ let MapService = class MapService {
                 throw error;
             }
             if (error.response.data.message) {
-                this.logger.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                this.logger?.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
                 throw new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError);
             }
-            this.logger.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+            this.logger?.error(`[Map] uploadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
             throw new rpc_code_exception_1.RpcCodeException('맵을 업로드할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
@@ -2332,7 +2332,7 @@ let MapService = class MapService {
             let zipPath = '';
             let command = null;
             try {
-                this.logger.info(`[Map] downloadMap ================================`);
+                this.logger?.info(`[Map] downloadMap ================================`);
                 command = new map_command_domain_1.MapCommandModel({
                     mapName: request.fileName,
                     isForce: request.isForce,
@@ -2344,7 +2344,7 @@ let MapService = class MapService {
                 command.assignId(result.id.toString());
                 command.checkVariables();
                 const url = process.env.FRS_URL + '/api/maps/frs-map/download';
-                this.logger.debug(`[Map] downloadMap : POST frs (${url}, ${command.mapName})`);
+                this.logger?.debug(`[Map] downloadMap : POST frs (${url}, ${command.mapName})`);
                 const response = await axios_1.default.get(url, {
                     responseType: 'stream',
                     params: {
@@ -2356,15 +2356,15 @@ let MapService = class MapService {
                 if (!command.isForce && (0, fs_1.existsSync)(newMapPath)) {
                     throw new rpc_code_exception_1.RpcCodeException('이미 동일한 이름의 맵이 존재합니다.', constant_1.GrpcCode.AlreadyExists);
                 }
-                this.logger.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
+                this.logger?.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
                 const fileStream = (0, fs_1.createWriteStream)(zipPath);
                 response.data.pipe(fileStream);
-                this.logger.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
+                this.logger?.info(`[Map] downloadMap: Download(Zip) Start ${zipPath}`);
                 fileStream.on('finish', async () => {
-                    this.logger.info(`[Map] downloadMap: Download(Zip) Done ${zipPath}`);
-                    this.logger.info(`[Map] downloadMap: UnZip ${zipPath} -> ${newMapPath}`);
+                    this.logger?.info(`[Map] downloadMap: Download(Zip) Done ${zipPath}`);
+                    this.logger?.info(`[Map] downloadMap: UnZip ${zipPath} -> ${newMapPath}`);
                     await zip_util_1.ZipUtil.unzipFolder(zipPath, newMapPath);
-                    this.logger.debug(`[Map] downloadMap : Zip Done`);
+                    this.logger?.debug(`[Map] downloadMap : Zip Done`);
                 });
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
@@ -2383,10 +2383,10 @@ let MapService = class MapService {
                     reject(error);
                 }
                 if (error.response?.data?.message) {
-                    this.logger.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                    this.logger?.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
                     reject(new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError));
                 }
-                this.logger.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Map] downloadMap : ${util_1.ParseUtil.errorToJson(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('맵을 다운로드할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
             finally {
@@ -2428,7 +2428,7 @@ let MapService = class MapService {
     async getCurrentMap() {
         return new Promise(async (resolve, reject) => {
             try {
-                this.logger.info(`[Map] getCurrentMap ================================`);
+                this.logger?.info(`[Map] getCurrentMap ================================`);
                 resolve({
                     mapName: this.currentMap,
                 });
@@ -2443,7 +2443,7 @@ let MapService = class MapService {
             let zipPath = '';
             let command = null;
             try {
-                this.logger.info(`[Map] publishMap ================================`);
+                this.logger?.info(`[Map] publishMap ================================`);
                 command = new map_command_domain_1.MapCommandModel({
                     mapName: request.fileName,
                     isForce: request.isForce,
@@ -2461,9 +2461,9 @@ let MapService = class MapService {
                 if ((0, fs_1.existsSync)(mapPath) && !request.isForce) {
                     throw new rpc_code_exception_1.RpcCodeException('동일한 이름의 맵이 이미 존재합니다.', constant_1.GrpcCode.AlreadyExists);
                 }
-                this.logger.info(`[Map] publishMap: UnZip ${zipPath} -> ${mapPath}`);
+                this.logger?.info(`[Map] publishMap: UnZip ${zipPath} -> ${mapPath}`);
                 await zip_util_1.ZipUtil.unzipFolder(zipPath, mapPath);
-                this.logger.debug(`[Map] publishMap : Zip Done`);
+                this.logger?.debug(`[Map] publishMap : Zip Done`);
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
                 resolve({
@@ -2482,10 +2482,10 @@ let MapService = class MapService {
                     reject(error);
                 }
                 if (error.response?.data?.message) {
-                    this.logger.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
+                    this.logger?.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error.response.data)}`);
                     reject(new rpc_code_exception_1.RpcCodeException(error.response.data.message, constant_1.GrpcCode.InternalError));
                 }
-                this.logger.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Map] publishMap : ${util_1.ParseUtil.errorToJson(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('맵을 다운로드할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
             finally {
@@ -2498,7 +2498,7 @@ let MapService = class MapService {
     async loadRequest(request) {
         let command = null;
         try {
-            this.logger.info(`[Map] loadRequest : ${JSON.stringify(command)}`);
+            this.logger?.info(`[Map] loadRequest : ${JSON.stringify(command)}`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.loadMap, mapName: request.mapName });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2507,11 +2507,11 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.loadRequest(command);
-            this.logger.info(`[Map] LoadMap Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Map] LoadMap Response : ${JSON.stringify(resp)}`);
             if (resp.result === 'success' || resp.result === 'accept') {
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
-                this.logger.info(`[Map] LoadMap DB Update : ${result?.id.toString()}`);
+                this.logger?.info(`[Map] LoadMap DB Update : ${result?.id.toString()}`);
                 return resp;
             }
             else {
@@ -2532,7 +2532,7 @@ let MapService = class MapService {
     async mappingRequest(request) {
         let command = null;
         try {
-            this.logger.info(`[Map] mappingRequest : ${JSON.stringify(command)}`);
+            this.logger?.info(`[Map] mappingRequest : ${JSON.stringify(command)}`);
             command = new map_command_domain_1.MapCommandModel({ command: request.command, mapName: request.mapName });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
@@ -2544,11 +2544,11 @@ let MapService = class MapService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.mappingRequest(command);
-            this.logger.info(`[Map] Mapping Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Map] Mapping Response : ${JSON.stringify(resp)}`);
             if (resp.result === 'success' || resp.result === 'accept') {
                 command.statusChange(map_command_domain_1.CommandStatus.success);
                 await this.databaseOutput.update(command);
-                this.logger.info(`[Map] Mapping DB Update : ${result?.id.toString()}`);
+                this.logger?.info(`[Map] Mapping DB Update : ${result?.id.toString()}`);
                 return resp;
             }
             else {
@@ -2567,25 +2567,25 @@ let MapService = class MapService {
         }
     }
     async loadResponse(response) {
-        this.logger.info(`[Map] loadResponse : ${JSON.stringify(response)}`);
+        this.logger?.info(`[Map] loadResponse : ${JSON.stringify(response)}`);
         const dbmodel = await this.databaseOutput.getNodebyId(response.id);
         if (dbmodel) {
             const model = new map_command_domain_1.MapCommandModel(dbmodel);
             model.assignId(dbmodel.id);
             model.statusChange(response.result);
             await this.databaseOutput.update(model);
-            this.logger.info(`[Map] loadResponse : ${model.id}, ${model.status}`);
+            this.logger?.info(`[Map] loadResponse : ${model.id}, ${model.status}`);
         }
     }
     async mappingResponse(response) {
-        this.logger.info(`[Map] mappingResponse : ${JSON.stringify(response)}`);
+        this.logger?.info(`[Map] mappingResponse : ${JSON.stringify(response)}`);
         const dbmodel = await this.databaseOutput.getNodebyId(response.id);
         if (dbmodel) {
             const model = new map_command_domain_1.MapCommandModel(dbmodel);
             model.assignId(dbmodel.id);
             model.statusChange(response.result);
             await this.databaseOutput.update(model);
-            this.logger.info(`[Map] mappingResponse : ${model.id}, ${model.status}`);
+            this.logger?.info(`[Map] mappingResponse : ${model.id}, ${model.status}`);
         }
     }
     async parseMapList(path) {
@@ -2629,16 +2629,16 @@ let MapService = class MapService {
             return { list: list };
         }
         catch (error) {
-            this.logger.error(`[Map] parseMapList : ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] parseMapList : ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('맵 리스트를 읽을 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     slamConnect() {
-        this.logger.debug(`[Map] Slamnav Connected`);
+        this.logger?.debug(`[Map] Slamnav Connected`);
         this.slamnav_connection = true;
     }
     slamDisconnect() {
-        this.logger.debug(`[Map] Slamnav Disonnected`);
+        this.logger?.debug(`[Map] Slamnav Disonnected`);
         this.slamnav_connection = false;
     }
 };
@@ -2998,19 +2998,19 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
         this.logger = this.saveLogService.get('host');
     }
     async mappingRequest(request) {
-        this.logger.debug(`[Map] moveRequest : ${JSON.stringify(request)}`);
+        this.logger?.debug(`[Map] moveRequest : ${JSON.stringify(request)}`);
         const response = this.waitForResponse(request.id, 5000);
         this.mqttService.emit('mappingRequest', request);
         const resp = await response;
-        this.logger.debug(`[Map] moveResponse : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Map] moveResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
     async loadRequest(request) {
-        this.logger.debug(`[Map] loadRequest : ${JSON.stringify(request)}`);
+        this.logger?.debug(`[Map] loadRequest : ${JSON.stringify(request)}`);
         const response = this.waitForResponse(request.id, 5000);
         this.mqttService.emit('loadRequest', request);
         const resp = await response;
-        this.logger.debug(`[Map] loadResponse : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Map] loadResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
     async waitForResponse(id, timeoutMs) {
@@ -3019,7 +3019,7 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.logger.error(`[Map] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger?.error(`[Map] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -3319,7 +3319,7 @@ const map_pending_service_1 = __webpack_require__(74);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const saveLog_service_1 = __webpack_require__(35);
-const logger_1 = __webpack_require__(29);
+const log_1 = __webpack_require__(29);
 const mapping_dto_1 = __webpack_require__(77);
 const load_dto_1 = __webpack_require__(81);
 const status_type_1 = __webpack_require__(83);
@@ -3331,11 +3331,11 @@ let MapMqttInputController = class MapMqttInputController {
         this.logger = this.saveLogService.get('host');
     }
     getConnect() {
-        this.logger.info(`[Map] slam Connected`);
+        this.logger?.info(`[Map] slam Connected`);
         this.mapService.slamConnect();
     }
     getDisconnect() {
-        this.logger.warn(`[Map] slam Disconnected`);
+        this.logger?.warn(`[Map] slam Disconnected`);
         this.mapService.slamDisconnect();
         this.pendingService.pendingResponses.forEach((resp) => {
             resp.reject(new rpc_code_exception_1.RpcCodeException('SLAMNAV 연결이 끊어졌습니다', constant_1.GrpcCode.InternalError));
@@ -3371,39 +3371,39 @@ let MapMqttInputController = class MapMqttInputController {
             }
         }
         catch (error) {
-            this.logger.error(`[Map] getLoadResponse : ${(0, logger_1.errorToJson)(error)}`);
+            this.logger?.error(`[Map] getLoadResponse : ${(0, log_1.errorToJson)(error)}`);
         }
     }
 };
 exports.MapMqttInputController = MapMqttInputController;
 __decorate([
-    (0, microservices_1.MessagePattern)('con:slamnav'),
+    (0, microservices_1.EventPattern)('con:slamnav'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], MapMqttInputController.prototype, "getConnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('discon:slamnav'),
+    (0, microservices_1.EventPattern)('discon:slamnav'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], MapMqttInputController.prototype, "getDisconnect", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('status'),
+    (0, microservices_1.EventPattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], MapMqttInputController.prototype, "getStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('mappingResponse'),
+    (0, microservices_1.EventPattern)('mappingResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_e = typeof mapping_dto_1.MappingResponseSlamnav !== "undefined" && mapping_dto_1.MappingResponseSlamnav) === "function" ? _e : Object]),
     __metadata("design:returntype", void 0)
 ], MapMqttInputController.prototype, "getMoveResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('loadResponse'),
+    (0, microservices_1.EventPattern)('loadResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_f = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _f : Object]),
@@ -4533,7 +4533,7 @@ const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
 const saveLog_service_1 = __webpack_require__(35);
 const util_1 = __webpack_require__(38);
-const logger_1 = __webpack_require__(29);
+const log_1 = __webpack_require__(29);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const fs_1 = __webpack_require__(44);
@@ -4598,7 +4598,7 @@ let MapFileAdapter = class MapFileAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[File] readFileList : ${(0, logger_1.errorToJson)(error)}`);
+            this.logger?.error(`[File] readFileList : ${(0, log_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('리스트를 읽어올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4815,17 +4815,17 @@ let MapMongoAdapter = class MapMongoAdapter {
             await this.Repository.collection.dropIndex('createdAt_1');
         }
         catch (error) {
-            this.logger.warn(`[Map] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.warn(`[Map] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
         try {
             if (configService.get('DB_TTL_ENABLE') === 'true') {
                 const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
                 this.Repository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
-                this.logger.info(`[Map] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+                this.logger?.info(`[Map] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
             }
         }
         catch (error) {
-            this.logger.error(`[Map] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getNodebyId(id) {
@@ -4833,7 +4833,7 @@ let MapMongoAdapter = class MapMongoAdapter {
             return await this.Repository.findById(id);
         }
         catch (error) {
-            this.logger.error(`[Map] DB getNodebyId : ${id} => ${(0, error_to_json_1.errorToJson)(error)}`);
+            this.logger?.error(`[Map] DB getNodebyId : ${id} => ${(0, error_to_json_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -4846,7 +4846,7 @@ let MapMongoAdapter = class MapMongoAdapter {
             };
         }
         catch (error) {
-            this.logger.error(`[Map] DB save : ${JSON.stringify(model)} => ${(0, error_to_json_1.errorToJson)(error)}`);
+            this.logger?.error(`[Map] DB save : ${JSON.stringify(model)} => ${(0, error_to_json_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -4859,7 +4859,7 @@ let MapMongoAdapter = class MapMongoAdapter {
             };
         }
         catch (error) {
-            this.logger.error(`[Map] DB update : ${JSON.stringify(model)} => ${(0, error_to_json_1.errorToJson)(error)}`);
+            this.logger?.error(`[Map] DB update : ${JSON.stringify(model)} => ${(0, error_to_json_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 업데이트할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -5071,13 +5071,13 @@ let SettingFileService = class SettingFileService {
     async getSetting(request) {
         try {
             if (request.type === undefined || request.type === '') {
-                this.logger.error(`[SETTING] getSetting : type 값이 없습니다.`);
+                this.logger?.error(`[SETTING] getSetting : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getSettingPath(request.type);
             console.log(path);
             if (!fs.existsSync(path)) {
-                this.logger.error(`[SETTING] getSetting : ${request.type}에 해당하는 세팅파일이 없습니다.`);
+                this.logger?.error(`[SETTING] getSetting : ${request.type}에 해당하는 세팅파일이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
             }
             const data = await file_util_1.FileUtil.readJson(path);
@@ -5087,24 +5087,24 @@ let SettingFileService = class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[SETTING] getSetting : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SETTING] getSetting : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('세팅을 불러오던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async saveSetting(request) {
         try {
-            this.logger.info(`[Setting] saveSetting : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Setting] saveSetting : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.logger.error(`[SETTING] saveSetting : type 값이 없습니다.`);
+                this.logger?.error(`[SETTING] saveSetting : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.data === undefined || request.data === '') {
-                this.logger.error(`[SETTING] saveSetting : data 값이 없습니다.`);
+                this.logger?.error(`[SETTING] saveSetting : data 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const jsonData = JSON.parse(request.data);
             if (typeof jsonData !== 'object' || jsonData === null) {
-                this.logger.error(`[SETTING] saveSetting : ${request.data}는 JSON 형식이 아닙니다.`);
+                this.logger?.error(`[SETTING] saveSetting : ${request.data}는 JSON 형식이 아닙니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값을 파싱할 수 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const newData = await this.convertNumbersToStrings(jsonData);
@@ -5124,24 +5124,24 @@ let SettingFileService = class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[SETTING] saveSetting : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SETTING] saveSetting : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('세팅을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getPreset(request) {
-        this.logger.info(`[Setting] getPreset : ${JSON.stringify(request)}`);
+        this.logger?.info(`[Setting] getPreset : ${JSON.stringify(request)}`);
         try {
             if (request.type === undefined || request.type === '') {
-                this.logger.error(`[SETTING] getPreset : type 값이 없습니다.`);
+                this.logger?.error(`[SETTING] getPreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.logger.error(`[SETTING] getPreset : preset 값이 없습니다.`);
+                this.logger?.error(`[SETTING] getPreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getPresetPath(request.type, request.preset);
             if (!fs.existsSync(path)) {
-                this.logger.error(`[SETTING] getPreset : ${path} is not exists`);
+                this.logger?.error(`[SETTING] getPreset : ${path} is not exists`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.preset}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
             }
             const data = await file_util_1.FileUtil.readJson(path);
@@ -5150,24 +5150,24 @@ let SettingFileService = class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async deletePreset(request) {
         try {
-            this.logger.info(`[Setting] deletePreset : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Setting] deletePreset : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.logger.error(`[SETTING] deletePreset : type 값이 없습니다.`);
+                this.logger?.error(`[SETTING] deletePreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.logger.error(`[SETTING] deletePreset : preset 값이 없습니다.`);
+                this.logger?.error(`[SETTING] deletePreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getPresetPath(request.type, request.preset);
             if (!fs.existsSync(path)) {
-                this.logger.error(`[SETTING] getPreset : ${path} is not exists`);
+                this.logger?.error(`[SETTING] getPreset : ${path} is not exists`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.preset}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.NotFound);
             }
             await file_util_1.FileUtil.deleteFile(path);
@@ -5176,28 +5176,28 @@ let SettingFileService = class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async createPreset(request) {
         try {
-            this.logger.info(`[Setting] createPreset : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Setting] createPreset : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.logger.error(`[SETTING] createPreset : type 값이 없습니다.`);
+                this.logger?.error(`[SETTING] createPreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.logger.error(`[SETTING] createPreset : preset 값이 없습니다.`);
+                this.logger?.error(`[SETTING] createPreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (isNaN(parseInt(request.preset))) {
-                this.logger.error(`[SETTING] createPreset : preset 값이 숫자가 아닙니다.`);
+                this.logger?.error(`[SETTING] createPreset : preset 값이 숫자가 아닙니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 숫자가 아닙니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getPresetPath(request.type, request.preset);
             if (fs.existsSync(path)) {
-                this.logger.error(`[SETTING] createPreset : ${path} 파일이 이미 존재합니다.`);
+                this.logger?.error(`[SETTING] createPreset : ${path} 파일이 이미 존재합니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}/${request.preset}에 해당하는 세팅파일이 이미 존재합니다.`, constant_1.GrpcCode.AlreadyExists);
             }
             const tempData = {
@@ -5223,28 +5223,28 @@ let SettingFileService = class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SETTING] getPreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async savePreset(request) {
         try {
-            this.logger.info(`[Setting] savePreset : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Setting] savePreset : ${JSON.stringify(request)}`);
             if (request.type === undefined || request.type === '') {
-                this.logger.error(`[SETTING] savePreset : type 값이 없습니다.`);
+                this.logger?.error(`[SETTING] savePreset : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.preset === undefined || request.preset === '') {
-                this.logger.error(`[SETTING] savePreset : preset 값이 없습니다.`);
+                this.logger?.error(`[SETTING] savePreset : preset 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('preset 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.data === undefined || request.data === '') {
-                this.logger.error(`[SETTING] savePreset : data 값이 없습니다.`);
+                this.logger?.error(`[SETTING] savePreset : data 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const jsonData = JSON.parse(request.data);
             if (typeof jsonData !== 'object' || jsonData === null) {
-                this.logger.error(`[SETTING] savePreset : ${request.data}는 JSON 형식이 아닙니다.`);
+                this.logger?.error(`[SETTING] savePreset : ${request.data}는 JSON 형식이 아닙니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('data 값을 파싱할 수 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const newData = await this.convertNumbersToStrings(jsonData);
@@ -5259,19 +5259,19 @@ let SettingFileService = class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[SETTING] savePreset : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SETTING] savePreset : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async getPresetList(request) {
         try {
             if (request.type === undefined || request.type === '') {
-                this.logger.error(`[SETTING] getPresetList : type 값이 없습니다.`);
+                this.logger?.error(`[SETTING] getPresetList : type 값이 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('type 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const path = this.getDiretoryPath(request.type);
             if (!fs.existsSync(path)) {
-                this.logger.error(`[SETTING] getPresetList : ${path} 경로가 없습니다.`);
+                this.logger?.error(`[SETTING] getPresetList : ${path} 경로가 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.type}에 해당하는 세팅파일이 없습니다.`, constant_1.GrpcCode.InvalidArgument);
             }
             const files = await fs.promises.readdir(path, { withFileTypes: true });
@@ -5293,7 +5293,7 @@ let SettingFileService = class SettingFileService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Setting] getPresetList : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Setting] getPresetList : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프리셋을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5822,7 +5822,7 @@ let SoundService = class SoundService {
             }
             const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
             if (!(0, fs_1.existsSync)(path)) {
-                this.logger.error(`[Sound] playSound : 경로의 파일이 존재하지 않습니다. ${path}`);
+                this.logger?.error(`[Sound] playSound : 경로의 파일이 존재하지 않습니다. ${path}`);
                 throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. ${request.fileName}`, constant_1.GrpcCode.NotFound);
             }
             return this.soundOutput.play(request);
@@ -5830,7 +5830,7 @@ let SoundService = class SoundService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Sound] playSound : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Sound] playSound : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5858,7 +5858,7 @@ let SoundService = class SoundService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Sound] getSoundList : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Sound] getSoundList : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('리스트를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5880,7 +5880,7 @@ let SoundService = class SoundService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Sound] deleteSoundFile : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Sound] deleteSoundFile : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('파일을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5951,39 +5951,39 @@ let SoundPlaySoundAdapter = class SoundPlaySoundAdapter {
         return new Promise(async (resolve, reject) => {
             try {
                 const path = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
-                this.logger.debug(`[Sound] Play: ${path}`);
+                this.logger?.debug(`[Sound] Play: ${path}`);
                 if (!(0, fs_1.existsSync)(path)) {
                     reject(new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. ${path}`, constant_1.GrpcCode.NotFound));
                 }
                 if (this.curPlaying) {
-                    this.logger.info(`[Sound] Play: Stop cur Playing`);
+                    this.logger?.info(`[Sound] Play: Stop cur Playing`);
                     await this.stopPlaying();
                 }
                 this.curPlayingInfo = request;
                 if (!request.isWaitUntilDone) {
-                    this.logger.info(`[Sound] Play: Play Start without Wait`);
+                    this.logger?.info(`[Sound] Play: Play Start without Wait`);
                     resolve(request);
                 }
                 for (var i = 0; i < request.repeatCount; i++) {
                     await this.playSync(path, request.volume);
                 }
-                this.logger.info(`[Sound] Play: Play Wait Done`);
+                this.logger?.info(`[Sound] Play: Play Wait Done`);
                 this.stopPlaying();
                 resolve(request);
             }
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     reject(error);
-                this.logger.error(`[Sound] Play: ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[Sound] Play: ${(0, common_1.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
     }
     async stop() {
         try {
-            this.logger.info(`[Sound] Stop`);
+            this.logger?.info(`[Sound] Stop`);
             if (!this.curPlaying) {
-                this.logger.warn(`[Sound] Stop: curPlaying is null`);
+                this.logger?.warn(`[Sound] Stop: curPlaying is null`);
                 throw new rpc_code_exception_1.RpcCodeException('실행중인 플레이가 없습니다.', constant_1.GrpcCode.NotFound);
             }
             await this.stopPlaying();
@@ -5991,22 +5991,22 @@ let SoundPlaySoundAdapter = class SoundPlaySoundAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('플레이를 종료할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async playSync(path, volume) {
         return new Promise((resolve, reject) => {
-            this.logger.debug(`[Sound] playSync: ${path}, ${volume}`);
+            this.logger?.debug(`[Sound] playSync: ${path}, ${volume}`);
             this.curPlaying = this.player.play(path, { mplayer: ['-ao', 'pulse', '-volume', volume] }, (err) => {
                 if (err) {
                     if (typeof err === 'number' && err === 1) {
-                        this.logger.error(`[Sound] Play: Code 1`);
+                        this.logger?.error(`[Sound] Play: Code 1`);
                         reject(new rpc_code_exception_1.RpcCodeException('플레이가 중지되었습니다.', constant_1.GrpcCode.InternalError));
                     }
                     else {
                         console.error(err);
-                        this.logger.error(`[Sound] Play: ${(0, common_1.errorToJson)(err)}`);
+                        this.logger?.error(`[Sound] Play: ${(0, common_1.errorToJson)(err)}`);
                         reject(new rpc_code_exception_1.RpcCodeException('파일을 플레이할 수 없습니다.', constant_1.GrpcCode.InternalError));
                     }
                 }
@@ -6020,7 +6020,7 @@ let SoundPlaySoundAdapter = class SoundPlaySoundAdapter {
             (0, child_process_1.execSync)('pkill -x mplayer', { stdio: 'ignore' });
         }
         catch (error) {
-            this.logger.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Sound] Stop: ${(0, common_1.errorToJson)(error)}`);
         }
         this.curPlaying = null;
         this.curPlayingInfo = null;
@@ -6358,7 +6358,7 @@ let UpdateService = class UpdateService {
         this.updateSlamnavOutputPort = updateSlamnavOutputPort;
         this.updateDatabaseOutputPort = updateDatabaseOutputPort;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('update');
+        this.logger = this.saveLogService.get('update');
         if (!this.configService) {
             throw new Error('ConfigService가 주입되지 않았습니다.');
         }
@@ -6369,7 +6369,7 @@ let UpdateService = class UpdateService {
     async checkRepositoryAccess() {
         try {
             console.log(this.configService.get('RELEASE_REPO_URL'));
-            this.logger.debug(`[UPDATE] checkRepositoryAccess URL : ${this.configService.get('RELEASE_REPO_URL')}`);
+            this.logger?.debug(`[UPDATE] checkRepositoryAccess URL : ${this.configService.get('RELEASE_REPO_URL')}`);
             const response = await fetch(this.configService.get('RELEASE_REPO_URL'));
             if (!response.ok) {
                 throw new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.FailedPrecondition);
@@ -6379,7 +6379,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[UPDATE] checkRepositoryAccess : ${(0, common_1.errorToJson)(error)}}`);
+            this.logger?.error(`[UPDATE] checkRepositoryAccess : ${(0, common_1.errorToJson)(error)}}`);
             throw new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6399,7 +6399,7 @@ let UpdateService = class UpdateService {
             catch (error) {
                 if (error instanceof microservices_1.RpcException)
                     reject(error);
-                this.logger.error(`[UPDATE] pingSendToTarget : ${error}`);
+                this.logger?.error(`[UPDATE] pingSendToTarget : ${error}`);
                 reject(new rpc_code_exception_1.RpcCodeException('외부망에 접근할 수 없습니다.', constant_1.GrpcCode.InternalError));
             }
         });
@@ -6407,7 +6407,7 @@ let UpdateService = class UpdateService {
     async getNewVersion(request) {
         let model;
         try {
-            this.logger.info(`[UPDATE] getNewVersion : ${JSON.stringify(request)}`);
+            this.logger?.info(`[UPDATE] getNewVersion : ${JSON.stringify(request)}`);
             model = new update_domain_1.UpdateModel({
                 ...request,
                 command: update_domain_1.UpdateCommand.GetNewVersion,
@@ -6417,7 +6417,7 @@ let UpdateService = class UpdateService {
             model.checkVariables();
             await this.checkRepositoryAccess();
             const newVersionUrl = `${this.configService.get('RELEASE_REPO_RAW_URL')}/${model.branch}/${model.software}/version.json`;
-            this.logger.debug(`[UPDATE] getNewVersion URL : ${newVersionUrl}`);
+            this.logger?.debug(`[UPDATE] getNewVersion URL : ${newVersionUrl}`);
             const newVersionData = await fetch(newVersionUrl);
             const newVersionDataJson = await newVersionData.json();
             model.version = newVersionDataJson.new_version;
@@ -6425,7 +6425,7 @@ let UpdateService = class UpdateService {
             model.statusChange(map_command_domain_1.CommandStatus.success);
             await this.updateDatabaseOutputPort.update(model);
             await this.updateDatabaseOutputPort.setNewVersion(model);
-            this.logger.debug(`[UPDATE] getNewVersion Data : ${JSON.stringify(newVersionDataJson)}`);
+            this.logger?.debug(`[UPDATE] getNewVersion Data : ${JSON.stringify(newVersionDataJson)}`);
             return { ...model, software: model.software };
         }
         catch (error) {
@@ -6436,7 +6436,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.logger.error(`[UPDATE] getNewVersion : ${error}`);
+            this.logger?.error(`[UPDATE] getNewVersion : ${error}`);
             throw new rpc_code_exception_1.RpcCodeException(`[${request.software}] ${request.branch} 브랜치의 version.json 파일을 찾을 수 없습니다.`, common_3.HttpStatus.NOT_FOUND);
         }
     }
@@ -6478,7 +6478,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[UPDATE] getCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] getCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6486,7 +6486,7 @@ let UpdateService = class UpdateService {
         try {
             const versionPath = (0, path_1.join)((0, os_1.homedir)(), software, 'version.json');
             if (!(0, fs_1.existsSync)(versionPath)) {
-                this.logger.error(`[UPDATE] getRrsCurrentVersion : ${versionPath} 파일을 찾을 수 없습니다.`);
+                this.logger?.error(`[UPDATE] getRrsCurrentVersion : ${versionPath} 파일을 찾을 수 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.NotFound);
             }
             const versionData = (0, fs_1.readFileSync)(versionPath, 'utf-8');
@@ -6497,7 +6497,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.logger.error(`[UPDATE] getRrsCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] getRrsCurrentVersion : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6505,7 +6505,7 @@ let UpdateService = class UpdateService {
         try {
             const branchPath = (0, path_1.join)((0, os_1.homedir)(), 'rrs-env.conf');
             if (!(0, fs_1.existsSync)(branchPath)) {
-                this.logger.error(`[UPDATE] getRrsCurrentBranch : ${branchPath} 파일을 찾을 수 없습니다.`);
+                this.logger?.error(`[UPDATE] getRrsCurrentBranch : ${branchPath} 파일을 찾을 수 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException('브랜치를 가져올 수 없습니다.', constant_1.GrpcCode.NotFound);
             }
             const branchData = (0, fs_1.readFileSync)(branchPath, 'utf-8').split('=')[1];
@@ -6514,7 +6514,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.logger.error(`[UPDATE] getRrsCurrentBranch : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] getRrsCurrentBranch : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('브랜치를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6531,7 +6531,7 @@ let UpdateService = class UpdateService {
             model.assignId(updateCommand._id);
             model.checkVariables();
             const url = `https://api.github.com/repos/rainbow-mobile/rainbow-release-apps/branches`;
-            this.logger.debug(`[UPDATE] getReleaseAppsBranches URL : ${url}`);
+            this.logger?.debug(`[UPDATE] getReleaseAppsBranches URL : ${url}`);
             await this.checkRepositoryAccess();
             const res = await fetch(url, {
                 headers: {
@@ -6542,7 +6542,7 @@ let UpdateService = class UpdateService {
             const endIndex = startIndex + model.pageSize;
             const resJson = await res.json();
             const list = resJson.slice(startIndex, endIndex);
-            this.logger.debug(`[UPDATE] getReleaseAppsBranches Data : ${JSON.stringify(list)}`);
+            this.logger?.debug(`[UPDATE] getReleaseAppsBranches Data : ${JSON.stringify(list)}`);
             return { list: list, pageSize: model.pageSize, totalCount: resJson.length, totalPage: Math.ceil(resJson.length / model.pageSize) };
         }
         catch (error) {
@@ -6553,7 +6553,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.logger.error(`[UPDATE] getReleaseAppsBranches : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] getReleaseAppsBranches : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('브랜치를 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6581,7 +6581,7 @@ let UpdateService = class UpdateService {
             model.assignId(updateCommand._id);
             model.checkVariables();
             const url = `https://api.github.com/repos/rainbow-mobile/rainbow-release-apps/contents/${model.software}?ref=${model.branch}`;
-            this.logger.debug(`[UPDATE] getReleaseAppsVersionList URL : ${url}`);
+            this.logger?.debug(`[UPDATE] getReleaseAppsVersionList URL : ${url}`);
             await this.checkRepositoryAccess();
             const res = await fetch(url, {
                 headers: {
@@ -6590,7 +6590,7 @@ let UpdateService = class UpdateService {
                 method: 'GET',
             });
             const resJson = await res.json();
-            this.logger.debug(`[UPDATE] getReleaseAppsVersionList Data Length : ${resJson.length}`);
+            this.logger?.debug(`[UPDATE] getReleaseAppsVersionList Data Length : ${resJson.length}`);
             return { list: resJson };
         }
         catch (error) {
@@ -6601,7 +6601,7 @@ let UpdateService = class UpdateService {
             }
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.logger.error(`[UPDATE] getReleaseAppsVersionList : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] getReleaseAppsVersionList : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6630,7 +6630,7 @@ let UpdateService = class UpdateService {
         catch (error) {
             if (error instanceof rpc_code_exception_1.RpcCodeException)
                 throw error;
-            this.logger.error(`[UPDATE] updateProgram : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] updateProgram : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프로그램을 업데이트할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6865,12 +6865,12 @@ let UpdateShAdapter = class UpdateShAdapter {
         this.configService = configService;
         this.saveLogService = saveLogService;
         this.deployKitDir = (0, path_1.join)((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        this.logger = saveLogService.get('update');
+        this.logger = this.saveLogService.get('update');
     }
     async updateRRS(request) {
         const updateScript = (0, path_1.join)(this.deployKitDir, 'rrs-server', 'rrs-update.sh');
         if (!(0, fs_1.existsSync)(updateScript)) {
-            this.logger.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
+            this.logger?.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
             throw new rpc_code_exception_1.RpcCodeException(`rrs-update.sh 파일을 찾을 수 없습니다.`, grpc_code_constant_1.GrpcCode.NotFound);
         }
         (0, child_process_1.execSync)('git pull', {
@@ -6921,37 +6921,37 @@ let UpdateSocketioAdapter = class UpdateSocketioAdapter {
         this.mqttService = mqttService;
         this.pendingService = pendingService;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('update');
+        this.logger = this.saveLogService.get('update');
     }
     async updateSLAMNAV(request) {
         try {
-            this.logger.debug(`[Update] updateSLAMNAV : ${JSON.stringify(request)}`);
+            this.logger?.debug(`[Update] updateSLAMNAV : ${JSON.stringify(request)}`);
             const response = this.waitForResponse(request.id, 5000);
             this.mqttService.emit('updateRequest', request);
             const resp = await response;
-            this.logger.debug(`[Update] updateSLAMNAV Response : ${JSON.stringify(resp)}`);
+            this.logger?.debug(`[Update] updateSLAMNAV Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[UPDATE] updateSLAMNAV : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] updateSLAMNAV : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('SLAMNAV 업데이트 실패', constant_1.GrpcCode.InternalError);
         }
     }
     async getVersion(request) {
         try {
-            this.logger.debug(`[Update] getVersion : ${JSON.stringify(request)}`);
+            this.logger?.debug(`[Update] getVersion : ${JSON.stringify(request)}`);
             const response = this.waitForResponse(request.id, 5000);
             this.mqttService.emit('swVersionInfo', request);
             const resp = await response;
-            this.logger.debug(`[Update] getVersion Response : ${JSON.stringify(resp)}`);
+            this.logger?.debug(`[Update] getVersion Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[UPDATE] getVersion : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[UPDATE] getVersion : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('버전을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -6961,7 +6961,7 @@ let UpdateSocketioAdapter = class UpdateSocketioAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.logger.error(`[Update] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger?.error(`[Update] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_1.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -7051,14 +7051,14 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
         this.Repository = Repository;
         this.VersionRepository = VersionRepository;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('update');
+        this.logger = this.saveLogService.get('update');
     }
     async getVersion(software, branch) {
         try {
             return await this.VersionRepository.findOne({ where: { software, branch } });
         }
         catch (error) {
-            this.logger.error(`[Move] DB getVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB getVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7077,7 +7077,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             }
         }
         catch (error) {
-            this.logger.error(`[Move] DB setCurrentVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB setCurrentVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7094,7 +7094,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             }
         }
         catch (error) {
-            this.logger.error(`[Move] DB setNewVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB setNewVersion: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7103,7 +7103,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             return await this.Repository.findById(id).lean();
         }
         catch (error) {
-            this.logger.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7113,7 +7113,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             return await this.Repository.create({ ...model, _id });
         }
         catch (error) {
-            this.logger.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7122,7 +7122,7 @@ let UpdateDatabaseAdapter = class UpdateDatabaseAdapter {
             return await this.Repository.findByIdAndUpdate(model.id, model).lean();
         }
         catch (error) {
-            this.logger.error(`[Move] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
 };
@@ -7437,7 +7437,7 @@ let NetworkService = class NetworkService {
     async getNetwork() {
         let model;
         try {
-            this.logger.info(`[Network] getNetwork ================================`);
+            this.logger?.info(`[Network] getNetwork ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getNetwork });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7455,14 +7455,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getEthernet() {
         let model;
         try {
-            this.logger.info(`[Network] getEthernet ================================`);
+            this.logger?.info(`[Network] getEthernet ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getEthernet });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7480,14 +7480,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getWifi() {
         let model;
         try {
-            this.logger.info(`[Network] getWifi ================================`);
+            this.logger?.info(`[Network] getWifi ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getWifi });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7505,14 +7505,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getBluetooth() {
         let model;
         try {
-            this.logger.info(`[Network] getBluetooth ================================`);
+            this.logger?.info(`[Network] getBluetooth ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getBluetooth });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7530,14 +7530,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getDevice(device) {
         let model;
         try {
-            this.logger.info(`[Network] getDevice ================================`);
+            this.logger?.info(`[Network] getDevice ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getDevice, device: device });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7555,14 +7555,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async setNetwork(request) {
         let model;
         try {
-            this.logger.info(`[Network] setNetwork ================================`);
+            this.logger?.info(`[Network] setNetwork ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.setNetwork, ...request });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7580,14 +7580,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 수정할 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async connectWifi(request) {
         let model;
         try {
-            this.logger.info(`[Network] connectWifi ================================`);
+            this.logger?.info(`[Network] connectWifi ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.connectWifi, ...request });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7605,14 +7605,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] connectWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] connectWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('와이파이 연결에 실패했습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async wifiScan() {
         let model;
         try {
-            this.logger.info(`[Network] wifiScan ================================`);
+            this.logger?.info(`[Network] wifiScan ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.wifiScan });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7630,14 +7630,14 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] wifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] wifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('와이파이 스캔에 실패했습니다.', constant_2.GrpcCode.InternalError);
         }
     }
     async getWifiList() {
         let model;
         try {
-            this.logger.info(`[Network] getWifiList ================================`);
+            this.logger?.info(`[Network] getWifiList ================================`);
             model = new network_domain_1.NetworkModel({ command: network_domain_1.NetworkCommand.getWifiList });
             const db = await this.networkDatabase.save(model);
             model.assignId(db._id);
@@ -7655,7 +7655,7 @@ let NetworkService = class NetworkService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getWifiList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getWifiList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('와이파이 목록을 가져올 수 없습니다.', constant_2.GrpcCode.InternalError);
         }
     }
@@ -7856,7 +7856,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7872,7 +7872,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getEthernet: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7895,7 +7895,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7909,7 +7909,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getBluetooth: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7931,7 +7931,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getDevice: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7940,7 +7940,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
             let cmd;
             if (model.dhcp) {
                 cmd = `nmcli con modify '${model.name}' ipv4.method auto`;
-                this.logger.info(`[Network] SET Network DHCP : ${model.name}`);
+                this.logger?.info(`[Network] SET Network DHCP : ${model.name}`);
             }
             else {
                 let dns_str = '"';
@@ -7960,7 +7960,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
                         ' ipv4.dns ' +
                         dns_str +
                         ' ipv4.method manual';
-                this.logger.info(`[Network] SET Network Manual : ${model.name} -> ${cmd}, ${JSON.stringify(model)}`);
+                this.logger?.info(`[Network] SET Network Manual : ${model.name} -> ${cmd}, ${JSON.stringify(model)}`);
             }
             (0, child_process_1.execSync)(cmd);
             (0, child_process_1.execSync)(`nmcli con up ${model.name}`);
@@ -7975,7 +7975,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
             };
         }
         catch (error) {
-            this.logger.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] setNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 수정할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -7988,11 +7988,11 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
             else {
                 cmd_line = 'nmcli dev wifi connect "' + model.ssid + '" password "' + model.password + '"';
             }
-            this.logger.info(`[Network] Connect Wifi : ${cmd_line}, ${JSON.stringify(model)}`);
+            this.logger?.info(`[Network] Connect Wifi : ${cmd_line}, ${JSON.stringify(model)}`);
             (0, child_process_1.execSync)('nmcli dev wifi rescan');
             await new Promise((resolve) => setTimeout(resolve, 2000));
             const data = (0, child_process_1.execSync)(cmd_line);
-            this.logger.info(`[Network] Connect Wifi Response: ${data}`);
+            this.logger?.info(`[Network] Connect Wifi Response: ${data}`);
             if (data.includes('successfully')) {
                 return { ssid: model.ssid };
             }
@@ -8008,7 +8008,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
                 throw error;
             }
             const errorStr = parse_util_1.ParseUtil.errorToJson(error);
-            this.logger.warn(`[Network] Connect Wifi: ${errorStr}`);
+            this.logger?.warn(`[Network] Connect Wifi: ${errorStr}`);
             if (errorStr.includes('Secrets were required')) {
                 throw new rpc_code_exception_1.RpcCodeException('비밀번호가 틀렸습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -8038,7 +8038,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         return new Promise((resolve, reject) => {
             wifi.scan((error, networks) => {
                 if (error) {
-                    this.logger.error(`[Network] WifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                    this.logger?.error(`[Network] WifiScan: ${parse_util_1.ParseUtil.errorToJson(error)}`);
                     return reject(new rpc_code_exception_1.RpcCodeException('와이파이 목록을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError));
                 }
                 const wifiMap = new Map();
@@ -8059,17 +8059,17 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
             try {
                 wifi.getCurrentConnections((error, networks) => {
                     if (error) {
-                        this.logger.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                        this.logger?.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
                         reject();
                     }
                     else {
-                        this.logger.debug(`[Network] getCurrentWifi: ${JSON.stringify(networks)}`);
+                        this.logger?.debug(`[Network] getCurrentWifi: ${JSON.stringify(networks)}`);
                         resolve(networks);
                     }
                 });
             }
             catch (error) {
-                this.logger.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Network] getCurrentWifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8095,7 +8095,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
             }
         }
         catch (error) {
-            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -8132,7 +8132,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
             }
         }
         catch (error) {
-            this.logger.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] getNetwork: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -8240,7 +8240,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
             return network;
         }
         catch (error) {
-            this.logger.error(`[Network] parseNMCLI: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] parseNMCLI: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('네트워크 정보를 파싱할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -8301,17 +8301,17 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
             await this.Repository.collection.dropIndex('createdAt_1');
         }
         catch (error) {
-            this.logger.warn(`[Network] DB dropIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.warn(`[Network] DB dropIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
         try {
             if (configService.get('DB_TTL_ENABLE') === 'true') {
                 const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
-                this.logger.info(`[Network] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+                this.logger?.info(`[Network] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
                 this.Repository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
             }
         }
         catch (error) {
-            this.logger.error(`[Network] DB createIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB createIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getNodebyId(id) {
@@ -8319,7 +8319,7 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
             return await this.Repository.findById(id).lean();
         }
         catch (error) {
-            this.logger.error(`[Network] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -8329,7 +8329,7 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
             return await this.Repository.create({ ...model, _id });
         }
         catch (error) {
-            this.logger.error(`[Network] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -8338,7 +8338,7 @@ let NetworkMongoAdapter = class NetworkMongoAdapter {
             return await this.Repository.findByIdAndUpdate(move.id, move).lean();
         }
         catch (error) {
-            this.logger.error(`[Network] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
 };
@@ -8428,7 +8428,7 @@ let NetworkMqttController = class NetworkMqttController {
 };
 exports.NetworkMqttController = NetworkMqttController;
 __decorate([
-    (0, microservices_1.MessagePattern)('ready:network'),
+    (0, microservices_1.EventPattern)('ready:network'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
@@ -8584,12 +8584,12 @@ let OnvifApiController = class OnvifApiController {
         });
         parser.parseString(body, async (err, result) => {
             if (err) {
-                this.logger.error(`[Onvif] Request Device Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                this.logger?.error(`[Onvif] Request Device Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
                 res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐임');
                 return;
             }
             const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
-            this.logger.info(`[Onvif] Request Device Service : ${methodName}, ${JSON.stringify(result)}`);
+            this.logger?.info(`[Onvif] Request Device Service : ${methodName}, ${JSON.stringify(result)}`);
             let responseXml;
             if (methodName == 'GetSystemDateAndTime') {
                 responseXml = await this.deviceService.responseSystemDateAndTime();
@@ -8638,7 +8638,7 @@ let OnvifApiController = class OnvifApiController {
                 res.send(responseXml);
             }
             else {
-                this.logger.error(`[Onvif] methodName not matching ${methodName}`);
+                this.logger?.error(`[Onvif] methodName not matching ${methodName}`);
                 res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐임??');
             }
         });
@@ -8651,12 +8651,12 @@ let OnvifApiController = class OnvifApiController {
         });
         parser.parseString(body, async (err, result) => {
             if (err) {
-                this.logger.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                this.logger?.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
                 res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐냐고??');
                 return;
             }
             const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
-            this.logger.info(`[Onvif] Request Media Service : ${methodName}, ${JSON.stringify(result)}`);
+            this.logger?.info(`[Onvif] Request Media Service : ${methodName}, ${JSON.stringify(result)}`);
             let responseXml;
             if (methodName == 'GetProfiles') {
                 responseXml = await this.mediaService.responseMediaProfiles();
@@ -8687,21 +8687,21 @@ let OnvifApiController = class OnvifApiController {
                 res.send(responseXml);
             }
             else {
-                this.logger.error(`[Onvif] methodName not matching ${methodName}`);
+                this.logger?.error(`[Onvif] methodName not matching ${methodName}`);
                 res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐임????');
             }
         });
     }
     async getSnapshot(res) {
         try {
-            this.logger.info(`[Onvif] getSnapshot`);
+            this.logger?.info(`[Onvif] getSnapshot`);
             const data = (0, fs_1.readFileSync)('/root/snapshot.jpg');
-            this.logger.info(`[Onvif] getSnapshot : Done`);
+            this.logger?.info(`[Onvif] getSnapshot : Done`);
             res.setHeader('Content-Type', 'image/jpeg');
             res.send(data);
         }
         catch (error) {
-            this.logger.error(`[Onvif] getSnapshot : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Onvif] getSnapshot : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             res.status(500).send('Error reading snapshot');
             return;
         }
@@ -8714,23 +8714,23 @@ let OnvifApiController = class OnvifApiController {
         });
         parser.parseString(body, async (err, result) => {
             if (err) {
-                this.logger.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                this.logger?.error(`[Onvif] Request Media Service : Parsing Error -> ${JSON.stringify(body)}, ${parse_util_1.ParseUtil.errorToJson(err)}`);
                 res.status(common_1.HttpStatus.BAD_REQUEST).send('뭐꼬냐고');
                 return;
             }
             const methodName = Object.keys(result['Envelope']['Body']).find((key) => key !== '$');
-            this.logger.info(`[Onvif] Request PTZ Service : ${methodName}, ${JSON.stringify(result)}`);
+            this.logger?.info(`[Onvif] Request PTZ Service : ${methodName}, ${JSON.stringify(result)}`);
             let responseXml;
             if (methodName == 'ContinuousMove') {
                 const token = result['Envelope']['Body']['ContinuousMove']['ProfileToken'];
                 if (result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']) {
                     const x = result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']['$'].x;
                     const y = result['Envelope']['Body']['ContinuousMove']['Velocity']['PanTilt']['$'].y;
-                    this.logger.info(`[Onvif] PTZ Move PanTilt : ${token}, Velocity(${x}, ${y})`);
+                    this.logger?.info(`[Onvif] PTZ Move PanTilt : ${token}, Velocity(${x}, ${y})`);
                 }
                 else if (result['Envelope']['Body']['ContinuousMove']['Velocity']['Zoom']) {
                     const velocity = result['Envelope']['Body']['ContinuousMove']['Velocity']['Zoom']['$'].x;
-                    this.logger.info(`[Onvif] PTZ Move Zoom : ${token}, Velocity(${velocity})`);
+                    this.logger?.info(`[Onvif] PTZ Move Zoom : ${token}, Velocity(${velocity})`);
                 }
                 responseXml = await this.ptzService.responsePtzMove('<ptz:ContinuousMoveResponse/>');
             }
@@ -8740,7 +8740,7 @@ let OnvifApiController = class OnvifApiController {
                 const zoom = result['Envelope']['Body']['RelativeMove']['Translation']['Zoom']?.['$'];
                 const pantilt_vel = result['Envelope']['Body']['RelativeMove']['Speed']?.['PanTilt']?.['$'];
                 const zoom_vel = result['Envelope']['Body']['RelativeMove']['Speed']?.['Zoom']?.['$'];
-                this.logger.info(`[Onvif] PTZ Move RelativeMove : ${token}, PanTilt(${pantilt?.x},${pantilt?.y}), Zoom(${zoom?.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
+                this.logger?.info(`[Onvif] PTZ Move RelativeMove : ${token}, PanTilt(${pantilt?.x},${pantilt?.y}), Zoom(${zoom?.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
                 responseXml = await this.ptzService.responsePtzMove('<ptz:RelativeMoveResponse/>');
             }
             else if (methodName == 'AbsoluteMove') {
@@ -8749,35 +8749,35 @@ let OnvifApiController = class OnvifApiController {
                 const zoom = result['Envelope']['Body']['AbsoluteMove']['Position']['Zoom']['$'];
                 const pantilt_vel = result['Envelope']['Body']['AbsoluteMove']['Speed']?.['PanTilt']?.['$'];
                 const zoom_vel = result['Envelope']['Body']['AbsoluteMove']['Speed']?.['Zoom']?.['$'];
-                this.logger.info(`[Onvif] PTZ Move AbsoluteMove : ${token}, PanTilt(${pantilt.x},${pantilt.y}), Zoom(${zoom.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
+                this.logger?.info(`[Onvif] PTZ Move AbsoluteMove : ${token}, PanTilt(${pantilt.x},${pantilt.y}), Zoom(${zoom.x}), PanTiltSpeed(${pantilt_vel?.x},${pantilt_vel?.y}), ZoomSpeed(${zoom_vel?.x})`);
                 responseXml = await this.ptzService.responsePtzMove('<ptz:AbsoluteMoveResponse/>');
             }
             else if (methodName == 'Stop') {
                 const token = result['Envelope']['Body']['Stop']['ProfileToken'];
                 const pantilt = result['Envelope']['Body']['Stop']['PanTilt'];
                 const zoom = result['Envelope']['Body']['Stop']['Zoom'];
-                this.logger.info(`[Onvif] PTZ Move Stop : ${token}, PanTilt(${pantilt}), Zoom(${zoom})`);
+                this.logger?.info(`[Onvif] PTZ Move Stop : ${token}, PanTilt(${pantilt}), Zoom(${zoom})`);
                 responseXml = await this.ptzService.responsePtzMove('<ptz:StopResponse/>');
             }
             else if (methodName == 'GotoHomePosition') {
                 const token = result['Envelope']['Body']['GotoHomePosition']['ProfileToken'];
-                this.logger.info(`[Onvif] PTZ Move GotoHomePosition : ${token}`);
+                this.logger?.info(`[Onvif] PTZ Move GotoHomePosition : ${token}`);
             }
             else if (methodName == 'SetHomePosition') {
                 const token = result['Envelope']['Body']['SetHomePosition']['ProfileToken'];
-                this.logger.info(`[Onvif] PTZ Move SetHomePosition : ${token}`);
+                this.logger?.info(`[Onvif] PTZ Move SetHomePosition : ${token}`);
             }
             else if (methodName == 'SetPreset') {
                 const token = result['Envelope']['Body']['SetPreset']['ProfileToken'];
                 const name = result['Envelope']['Body']['SetPreset']['PresetName'];
-                this.logger.info(`[Onvif] PTZ Move SetPreset : ${token}, ${name}`);
+                this.logger?.info(`[Onvif] PTZ Move SetPreset : ${token}, ${name}`);
             }
             if (responseXml) {
                 res.set('Content-Type', 'application/soap+xml');
                 res.send(responseXml);
             }
             else {
-                this.logger.error(`[Onvif] methodName not matching ${methodName}`);
+                this.logger?.error(`[Onvif] methodName not matching ${methodName}`);
                 res.status(common_1.HttpStatus.BAD_REQUEST).send('머머');
             }
         });
@@ -8892,10 +8892,10 @@ let OnvifMediaService = class OnvifMediaService {
             this.CONFIG.Name = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_name' }))).value ?? '';
             this.CONFIG.Width = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_width' }))).value ?? '';
             this.CONFIG.Height = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'media_height' }))).value ?? '';
-            this.logger.info(`[Media] get Config : ${JSON.stringify(this.CONFIG)}`);
+            this.logger?.info(`[Media] get Config : ${JSON.stringify(this.CONFIG)}`);
         }
         catch (error) {
-            this.logger.error(`[Media] onModuleInit : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Media] onModuleInit : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async responseMediaProfiles() {
@@ -8906,11 +8906,11 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
                 console.log(query);
-                this.logger.debug(`[Media] GetProfilesResponse`);
+                this.logger?.debug(`[Media] GetProfilesResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Media] GetProfilesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Media] GetProfilesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8922,12 +8922,12 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__NAME__/g, this.CONFIG.Name);
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
-                this.logger.debug(`[Media] GetProfileResponse`);
+                this.logger?.debug(`[Media] GetProfileResponse`);
                 console.log(query);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Media] GetProfileResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Media] GetProfileResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8939,11 +8939,11 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__NAME__/g, this.CONFIG.Name);
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
-                this.logger.debug(`[Media] GetVideoSourceConfigurationResponse`);
+                this.logger?.debug(`[Media] GetVideoSourceConfigurationResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Media] GetVideoSourceConfigurationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Media] GetVideoSourceConfigurationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8955,12 +8955,12 @@ let OnvifMediaService = class OnvifMediaService {
                 query = query.replace(/__NAME__/g, this.CONFIG.Name);
                 query = query.replace(/__WIDTH__/g, this.CONFIG.Width);
                 query = query.replace(/__HEIGHT__/g, this.CONFIG.Height);
-                this.logger.debug(`[Media] GetVideoSourcesResponse`);
+                this.logger?.debug(`[Media] GetVideoSourcesResponse`);
                 console.log(query);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Media] GetVideoSourcesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Media] GetVideoSourcesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8974,11 +8974,11 @@ let OnvifMediaService = class OnvifMediaService {
                 let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.SnapShotURI];
                 query = query.replace('__SNAPSHOT_URI__', wsdl_util_1.WsdlUtil.getXaddrs('snapshot.jpg', (0, os_1.networkInterfaces)()));
                 console.log(query);
-                this.logger.debug(`[Media] GetSnapshotUriResponse`);
+                this.logger?.debug(`[Media] GetSnapshotUriResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Media] GetSnapshotUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Media] GetSnapshotUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -8989,12 +8989,12 @@ let OnvifMediaService = class OnvifMediaService {
                 let query = template_1.MediaWSDLTemplate[template_1.MediaWSDL.StreamURI];
                 const ip = wsdl_util_1.WsdlUtil.getLocalIp(_ip, (0, os_1.networkInterfaces)());
                 query = query.replace('__RTSP_URI__', wsdl_util_1.WsdlUtil.getStream(ip, this.CONFIG.Name));
-                this.logger.debug(`[Media] GetStreamUriResponse`);
+                this.logger?.debug(`[Media] GetStreamUriResponse`);
                 console.log(query);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Media] GetStreamUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Media] GetStreamUriResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9002,6 +9002,7 @@ let OnvifMediaService = class OnvifMediaService {
 };
 exports.OnvifMediaService = OnvifMediaService;
 exports.OnvifMediaService = OnvifMediaService = __decorate([
+    (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], OnvifMediaService);
@@ -9351,7 +9352,7 @@ let OnvifDeviceService = class OnvifDeviceService {
     async onReady() {
         const ok = await this.waitForGrpc(this.configMicroservice, 'ConfigGrpcService', 3000);
         if (!ok) {
-            this.logger.error('[Device] Config 연결 안됨');
+            this.logger?.error('[Device] Config 연결 안됨');
             return;
         }
         const svc = this.configMicroservice.getService('ConfigGrpcService');
@@ -9360,40 +9361,40 @@ let OnvifDeviceService = class OnvifDeviceService {
             this.initConfig();
         }
         catch (e) {
-            this.logger.warn(`RPC 호출 실패 ${e}`);
+            this.logger?.warn(`RPC 호출 실패 ${e}`);
         }
     }
     async initConfig() {
         try {
-            this.logger.debug(`[Device] InitConfig --------------------------`);
+            this.logger?.debug(`[Device] InitConfig --------------------------`);
             this.CONFIG.Serial = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_serial' }))).value ?? '';
             this.CONFIG.Manufacturer = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_manufacturer' }))).value ?? '';
             this.CONFIG.Model = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_model' }))).value ?? '';
             this.CONFIG.Version = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_version' }))).value ?? '';
             this.CONFIG.HardwareID = (await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_hardware_id' }))).value ?? '';
-            this.logger.info(`[Device] initConfig : ${JSON.stringify(this.CONFIG)}`);
+            this.logger?.info(`[Device] initConfig : ${JSON.stringify(this.CONFIG)}`);
             this.initMulticast();
         }
         catch (error) {
-            this.logger.error(`[Device] initConfig : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Device] initConfig : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             this.configService = null;
         }
     }
     async initNetwork() {
         try {
-            this.logger.debug(`[Device] initNetwork --------------------------`);
+            this.logger?.debug(`[Device] initNetwork --------------------------`);
             this.networkService = this.networkMicroservice.getService('NetworkGrpcService');
             this.currentWifi = await (0, rxjs_1.lastValueFrom)(this.networkService.getWifi({}));
             this.initMulticast();
         }
         catch (error) {
-            this.logger.error(`[Device] initNetwork : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Device] initNetwork : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             this.networkService = null;
         }
     }
     async initMulticast() {
         if (this.networkService && this.configService) {
-            this.logger.debug(`[Device] initMulticast --------------------------`);
+            this.logger?.debug(`[Device] initMulticast --------------------------`);
             this.server = dgram.createSocket({ type: 'udp4', reuseAddr: true });
             this.server.on('message', (msg, rinfo) => {
                 try {
@@ -9411,7 +9412,7 @@ let OnvifDeviceService = class OnvifDeviceService {
                             result['Envelope']['Header'] &&
                             result['Envelope']['Header']['MessageID']) {
                             if (result['Envelope']['Body']['Probe'] && JSON.stringify(result['Envelope']['Body']['Probe']['Types']).includes('Device')) {
-                                this.logger.debug(`[Device] Probe Message Read : ${rinfo.address}`);
+                                this.logger?.debug(`[Device] Probe Message Read : ${rinfo.address}`);
                                 this.responseProbe(result, rinfo);
                             }
                         }
@@ -9424,7 +9425,7 @@ let OnvifDeviceService = class OnvifDeviceService {
             this.server.bind(this.PORT, '0.0.0.0', () => {
                 this.server.setMulticastLoopback(false);
                 this.server.addMembership(this.MULTICAST_ADDRESS);
-                this.logger.info(`[Device] ONVIF listening on ${this.MULTICAST_ADDRESS}:${this.PORT}`);
+                this.logger?.info(`[Device] ONVIF listening on ${this.MULTICAST_ADDRESS}:${this.PORT}`);
                 this.hello();
             });
         }
@@ -9438,10 +9439,10 @@ let OnvifDeviceService = class OnvifDeviceService {
         helloMsg = helloMsg.replace('__MESSAGE_NUMBER__', (++this.messageNum).toString());
         const xaddrs = wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)());
         helloMsg = helloMsg.replace('__XADDRS__', xaddrs);
-        this.logger.info(`[Device] Hello: Serial(${this.CONFIG.Serial}) MessageID(${messageId}), Xaddrs(${xaddrs})`);
+        this.logger?.info(`[Device] Hello: Serial(${this.CONFIG.Serial}) MessageID(${messageId}), Xaddrs(${xaddrs})`);
         this.server.send(helloMsg, 0, helloMsg.length, this.PORT, this.MULTICAST_ADDRESS, (err) => {
             if (err) {
-                this.logger.error(`[Device] Hello: ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                this.logger?.error(`[Device] Hello: ${parse_util_1.ParseUtil.errorToJson(err)}`);
             }
         });
     }
@@ -9456,7 +9457,7 @@ let OnvifDeviceService = class OnvifDeviceService {
         probeMatchMsg = probeMatchMsg.replace('__ADDRESS__', this.CONFIG.Serial);
         const deviceXaddrs = wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)());
         probeMatchMsg = probeMatchMsg.replace('__DEVICE_XADDRS__', deviceXaddrs);
-        this.logger.info(`[Device] ProbeMatches : Serial(${this.CONFIG.Serial}), MessageID(${messageId}), RelatesTo(${relatesTo}), Xaddrs(${deviceXaddrs})`);
+        this.logger?.info(`[Device] ProbeMatches : Serial(${this.CONFIG.Serial}), MessageID(${messageId}), RelatesTo(${relatesTo}), Xaddrs(${deviceXaddrs})`);
         const messageBuffer = Buffer.from(probeMatchMsg, 'utf-8');
         this.server.send(messageBuffer, 0, messageBuffer.length, rinfo.port, rinfo.address, (err) => {
             if (err)
@@ -9481,11 +9482,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__HOUR__', date_util_1.DateUtil.formatTimeHourKST(nowTime));
                 query = query.replace('__MINUTE__', date_util_1.DateUtil.formatTimeMinuteKST(nowTime));
                 query = query.replace('__SECOND__', date_util_1.DateUtil.formatTimeSecondKST(nowTime));
-                this.logger.debug(`[Device] GetSystemDateAndTimeResponse`);
+                this.logger?.debug(`[Device] GetSystemDateAndTimeResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetSystemDateAndTimeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetSystemDateAndTimeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9502,11 +9503,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__EVENTS_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('events_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__PTZ_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('ptz_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__DEVICE_IO_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('deviceio_service', (0, os_1.networkInterfaces)()));
-                this.logger.info(`[Device] GetCapabilitiesResponse`);
+                this.logger?.info(`[Device] GetCapabilitiesResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetCapabilitiesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetCapabilitiesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9520,11 +9521,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__FIRMWARE__VERSION__', this.CONFIG.Version);
                 query = query.replace('__SERIAL_NUMBER__', this.CONFIG.Serial);
                 query = query.replace('__HARDWARE_ID__', this.CONFIG.HardwareID);
-                this.logger.debug(`[Device] GetDeviceInformationResponse`);
+                this.logger?.debug(`[Device] GetDeviceInformationResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetDeviceInformationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetDeviceInformationResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9541,11 +9542,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://www.onvif.org/name/' + this.CONFIG.Serial);
                 scopes_query += wsdl_util_1.WsdlUtil.getScopeQuery('onvif://onvif://www.onvif.org/Profile/Streaming');
                 query = query.replace('__SCOPES__', scopes_query);
-                this.logger.debug(`[Device] GetScopeResponse`);
+                this.logger?.debug(`[Device] GetScopeResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetScopeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetScopeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9562,11 +9563,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                     query = query.replace('__IS_DHCP__', this.currentWifi.dhcp ? 'true' : 'false');
                     query = query.replace(/__IPV4_SUBNET__/g, this.currentWifi.mask);
                 }
-                this.logger.info(`[Device] NetworkInterfaces: ${query}`);
+                this.logger?.info(`[Device] NetworkInterfaces: ${query}`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] NetworkInterfaces : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] NetworkInterfaces : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9582,11 +9583,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                     }
                     query = query.replace('__DNS__', dns_query);
                 }
-                this.logger.debug(`[Device] GetDNSResponse`);
+                this.logger?.debug(`[Device] GetDNSResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetDNSResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetDNSResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9595,11 +9596,11 @@ let OnvifDeviceService = class OnvifDeviceService {
         return new Promise(async (resolve, reject) => {
             try {
                 const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.NTP];
-                this.logger.debug(`[Device] GETNTPResponse`);
+                this.logger?.debug(`[Device] GETNTPResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetNTPResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetNTPResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9611,11 +9612,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 if (this.currentWifi) {
                     query = query.replace('__GATEWAY__', this.currentWifi.gateway);
                 }
-                this.logger.debug(`[Device] GetDefaultGatewayResponse`);
+                this.logger?.debug(`[Device] GetDefaultGatewayResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetDefaultGatewayResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetDefaultGatewayResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9624,11 +9625,11 @@ let OnvifDeviceService = class OnvifDeviceService {
         return new Promise(async (resolve, reject) => {
             try {
                 const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.DeiscoveryMode];
-                this.logger.debug(`[Device] GetDiscoveryModeResponse`);
+                this.logger?.debug(`[Device] GetDiscoveryModeResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetDiscoveryModeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetDiscoveryModeResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9637,11 +9638,11 @@ let OnvifDeviceService = class OnvifDeviceService {
         return new Promise(async (resolve, reject) => {
             try {
                 const query = template_1.DeviceWSDLTemplate[template_1.DeviceWSDL.NetworkProtocols];
-                this.logger.debug(`[Device] GetNetworkProtocolsResponse`);
+                this.logger?.debug(`[Device] GetNetworkProtocolsResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetNetworkProtocolsResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetNetworkProtocolsResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9654,11 +9655,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                     query = query.replace('__DHCP__', this.currentWifi.dhcp ? 'true' : 'false');
                     query = query.replace('__NAME__', (0, os_1.hostname)());
                 }
-                this.logger.debug(`[Device] GetHostnameResponse`);
+                this.logger?.debug(`[Device] GetHostnameResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetHostnameResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetHostnameResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9670,11 +9671,11 @@ let OnvifDeviceService = class OnvifDeviceService {
                 query = query.replace('__DEVICE_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('device_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__MEDIA_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('media_service', (0, os_1.networkInterfaces)()));
                 query = query.replace('__PTZ_SERVICE__', wsdl_util_1.WsdlUtil.getXaddrs('ptz_service', (0, os_1.networkInterfaces)()));
-                this.logger.debug(`[Device] GetServicesResponse`);
+                this.logger?.debug(`[Device] GetServicesResponse`);
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Device] GetServicesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Device] GetServicesResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -9682,6 +9683,7 @@ let OnvifDeviceService = class OnvifDeviceService {
 };
 exports.OnvifDeviceService = OnvifDeviceService;
 exports.OnvifDeviceService = OnvifDeviceService = __decorate([
+    (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.NETWORK_SERVICE)),
     __param(1, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
@@ -10105,14 +10107,33 @@ exports.NetworkWSDLTemplate = {
 
 /***/ }),
 /* 148 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifPtzService = void 0;
 const parse_util_1 = __webpack_require__(53);
 const template_1 = __webpack_require__(149);
-class OnvifPtzService {
+const saveLog_service_1 = __webpack_require__(35);
+const common_1 = __webpack_require__(33);
+let OnvifPtzService = class OnvifPtzService {
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('onvif');
+    }
+    async onModuleInit() {
+        this.logger?.info(`[Ptz] OnvifPtzService initialized`);
+    }
     async responsePtzMove(title) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -10121,7 +10142,7 @@ class OnvifPtzService {
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Ptz] responsePTZContinousMove : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Ptz] responsePTZContinousMove : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -10133,13 +10154,17 @@ class OnvifPtzService {
                 resolve(Buffer.from(query, 'utf-8'));
             }
             catch (error) {
-                this.logger.error(`[Ptz] responseSetPreset : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Ptz] responseSetPreset : ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
     }
-}
+};
 exports.OnvifPtzService = OnvifPtzService;
+exports.OnvifPtzService = OnvifPtzService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
+], OnvifPtzService);
 
 
 /***/ }),
@@ -10239,13 +10264,13 @@ let OnvifMqttController = class OnvifMqttController {
 };
 exports.OnvifMqttController = OnvifMqttController;
 __decorate([
-    (0, microservices_1.MessagePattern)('ready:config'),
+    (0, microservices_1.EventPattern)('ready:config'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], OnvifMqttController.prototype, "readyConfig", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('ready:network'),
+    (0, microservices_1.EventPattern)('ready:network'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

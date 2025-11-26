@@ -1373,21 +1373,21 @@ let TsdbMqttInputController = class TsdbMqttInputController {
 };
 exports.TsdbMqttInputController = TsdbMqttInputController;
 __decorate([
-    (0, microservices_1.MessagePattern)('status'),
+    (0, microservices_1.EventPattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_c = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _c : Object]),
     __metadata("design:returntype", void 0)
 ], TsdbMqttInputController.prototype, "getCobotCommandResponse", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('moveStatus'),
+    (0, microservices_1.EventPattern)('moveStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], TsdbMqttInputController.prototype, "getMoveStatus", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('exAccessoryStatus'),
+    (0, microservices_1.EventPattern)('exAccessoryStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_e = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _e : Object]),
@@ -4212,13 +4212,13 @@ let SemLogMqttInputController = class SemLogMqttInputController {
 };
 exports.SemLogMqttInputController = SemLogMqttInputController;
 __decorate([
-    (0, microservices_1.MessagePattern)('semlog:alarm'),
+    (0, microservices_1.EventPattern)('semlog:alarm'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SemLogMqttInputController.prototype, "alarm", null);
 __decorate([
-    (0, microservices_1.MessagePattern)('semlog:generalLog'),
+    (0, microservices_1.EventPattern)('semlog:generalLog'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
