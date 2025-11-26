@@ -298,33 +298,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(2);
-exports.protobufPackage = "control";
-exports.CONTROL_PACKAGE_NAME = "control";
+exports.protobufPackage = 'control';
+exports.CONTROL_PACKAGE_NAME = 'control';
 function ControlGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
-            "onOffControl",
-            "workControl",
-            "ledControl",
-            "setSafetyField",
-            "getSafetyField",
-            "exAccessoryControl",
-            "safetyIoControl",
-            "setObsBox",
-            "getObsBox",
+            'onOffControl',
+            'workControl',
+            'ledControl',
+            'setSafetyField',
+            'getSafetyField',
+            'exAccessoryControl',
+            'safetyIoControl',
+            'setObsBox',
+            'getObsBox',
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
         }
         const grpcStreamMethods = [];
         for (const method of grpcStreamMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcStreamMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
         }
     };
 }
-exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
+exports.CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
 
 
 /***/ }),
@@ -1149,6 +1149,14 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], Control.prototype, "status", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Control.prototype, "message", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Control.prototype, "result", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Boolean)
@@ -2420,8 +2428,10 @@ let ControlService = class ControlService {
                     const model = new control_domain_1.ControlModel(dbmodel);
                     model.assignId(dbmodel._id);
                     model.statusChange(resp.result);
-                    this.databaseOutput.update(model);
-                    this.logger?.info(`[Control] update DB : ${model.id}, ${model.status}`);
+                    model.message = resp.message;
+                    model.result = resp.result;
+                    await this.databaseOutput.update(model);
+                    this.logger?.info(`[Control] update DB : ${model.id}, ${model.status}, ${model.result}, ${model.message}`);
                 }
             }
         }
@@ -2591,6 +2601,8 @@ class ControlModel {
         this.minZ = param?.minZ;
         this.maxZ = param?.maxZ;
         this.mapRange = param?.mapRange;
+        this.message = param?.message;
+        this.result = param?.result;
     }
     onOffControl(param) {
         this.status = ControlStatus.pending;
@@ -2660,6 +2672,8 @@ class ControlModel {
     }
     async checkResult(result, message) {
         this.statusChange(result);
+        this.message = message;
+        this.result = result;
         if (result === 'reject' || result === 'fail') {
             throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
         }
@@ -4053,6 +4067,14 @@ __decorate([
     __metadata("design:type", String)
 ], Localization.prototype, "command", void 0);
 __decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Localization.prototype, "message", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Localization.prototype, "result", void 0);
+__decorate([
     (0, mongoose_1.Prop)({
         required: true,
     }),
@@ -4196,7 +4218,7 @@ let LocalizationService = class LocalizationService {
             this.logger?.info(`[Localization] Localization DB Save : ${result._id.toString()}`);
             command.assignId(result._id.toString());
             if (!this.slamnav_connection) {
-                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_2.GrpcCode.Aborted);
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_2.GrpcCode.FailedPrecondition);
             }
             resp = await this.slamnavOutput.localizationRequest(command);
             this.logger?.info(`[Localization] Localization Response : ${JSON.stringify(resp)}`);
@@ -4233,8 +4255,10 @@ let LocalizationService = class LocalizationService {
                 const model = new localization_domain_1.LocalizationModel(dbmodel);
                 model.assignId(dbmodel._id);
                 model.statusChange(resp.result);
-                this.databaseOutput.update(model);
-                this.logger?.info(`[Localization] update Response : ${model.id}, ${model.status}`);
+                model.message = resp.message;
+                model.result = resp.result;
+                await this.databaseOutput.update(model);
+                this.logger?.info(`[Localization] update Response : ${model.id}, ${model.status}, ${model.result}, ${model.message}`);
             }
         }
     }
@@ -4295,6 +4319,8 @@ class LocalizationModel {
         this.y = param.y;
         this.z = param.z;
         this.rz = param.rz;
+        this.message = param.message;
+        this.result = param.result;
         this.id = util_1.UrlUtil.generateUUID();
     }
     assignId(id) {
@@ -4309,6 +4335,8 @@ class LocalizationModel {
     }
     async checkResult(result, message) {
         this.statusChange(result);
+        this.message = message;
+        this.result = result;
         if (result === 'reject' || result === 'fail') {
             throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
         }
@@ -5071,8 +5099,10 @@ let MoveService = class MoveService {
                 const model = new move_domain_1.MoveModel(dbmodel);
                 model.assignId(dbmodel._id);
                 model.statusChange(resp.result);
-                this.databaseOutput.update(model);
-                this.logger?.info(`[Move] update Response : ${model.id}, ${model.status}`);
+                model.message = resp.message;
+                model.result = resp.result;
+                await this.databaseOutput.update(model);
+                this.logger?.info(`[Move] update Response : ${model.id}, ${model.status},  ${model.result}, ${model.message}`);
             }
         }
     }
@@ -5147,6 +5177,8 @@ class MoveModel {
         this.command = param.command;
         this.method = param.method;
         this.direction = param.direction ?? 'forward';
+        this.message = param.message;
+        this.result = param.result;
         this.preset = param.preset;
         this.goalId = param.goalId;
         this.x = param.x;
@@ -5165,6 +5197,8 @@ class MoveModel {
     }
     async checkResult(result, message) {
         this.statusChange(result);
+        this.result = result;
+        this.message = message;
         if (result === 'reject' || result === 'fail') {
             throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
         }
@@ -5551,6 +5585,14 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Move.prototype, "direction", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Move.prototype, "message", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Move.prototype, "result", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)

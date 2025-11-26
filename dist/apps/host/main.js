@@ -304,33 +304,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "control";
-exports.CONTROL_PACKAGE_NAME = "control";
+exports.protobufPackage = 'control';
+exports.CONTROL_PACKAGE_NAME = 'control';
 function ControlGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
-            "onOffControl",
-            "workControl",
-            "ledControl",
-            "setSafetyField",
-            "getSafetyField",
-            "exAccessoryControl",
-            "safetyIoControl",
-            "setObsBox",
-            "getObsBox",
+            'onOffControl',
+            'workControl',
+            'ledControl',
+            'setSafetyField',
+            'getSafetyField',
+            'exAccessoryControl',
+            'safetyIoControl',
+            'setObsBox',
+            'getObsBox',
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
         }
         const grpcStreamMethods = [];
         for (const method of grpcStreamMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcStreamMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
         }
     };
 }
-exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
+exports.CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
 
 
 /***/ }),
@@ -2026,7 +2026,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapService = void 0;
-const common_1 = __webpack_require__(33);
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(33);
 const map_database_output_port_1 = __webpack_require__(58);
 const map_slamnav_output_port_1 = __webpack_require__(59);
 const map_command_domain_1 = __webpack_require__(60);
@@ -2451,7 +2452,7 @@ let MapService = class MapService {
                     mapName: request.fileName,
                     isForce: request.isForce,
                     newMapName: request.newMapName,
-                    command: map_command_domain_1.MapCommand.downloadMap,
+                    command: map_command_domain_1.MapCommand.publishMap,
                 });
                 const result = await this.databaseOutput.save(command);
                 command.assignId(result.id.toString());
@@ -2500,6 +2501,7 @@ let MapService = class MapService {
     }
     async loadRequest(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Map] loadRequest : ${JSON.stringify(command)}`);
             command = new map_command_domain_1.MapCommandModel({ command: map_command_domain_1.MapCommand.loadMap, mapName: request.mapName });
@@ -2509,64 +2511,59 @@ let MapService = class MapService {
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.loadRequest(command);
+            resp = await this.slamnavOutput.loadRequest(command);
             this.logger?.info(`[Map] LoadMap Response : ${JSON.stringify(resp)}`);
-            if (resp.result === 'success' || resp.result === 'accept') {
-                command.statusChange(map_command_domain_1.CommandStatus.success);
-                await this.databaseOutput.update(command);
-                this.logger?.info(`[Map] LoadMap DB Update : ${result?.id.toString()}`);
-                return resp;
-            }
-            else {
-                throw new rpc_code_exception_1.RpcCodeException(resp.message, constant_1.GrpcCode.Aborted);
-            }
+            await command.checkResult(resp.result, resp.message);
+            this.logger?.info(`[Map] LoadMap DB Update : ${result?.id.toString()}`);
+            return resp;
         }
         catch (error) {
+            this.logger?.error(`[Map] loadRequest : ${(0, common_1.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(map_command_domain_1.CommandStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? map_command_domain_1.CommandStatus.fail);
             }
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
             throw new rpc_code_exception_1.RpcCodeException('맵을 로드할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async mappingRequest(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Map] mappingRequest : ${JSON.stringify(command)}`);
             command = new map_command_domain_1.MapCommandModel({ command: request.command, mapName: request.mapName });
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
             command.checkVariables();
-            if (!(0, fs_1.existsSync)(command.path)) {
-                throw new rpc_code_exception_1.RpcCodeException(`${command.mapName} 이름의 맵폴더가 존재하지 않습니다.`, constant_1.GrpcCode.NotFound);
-            }
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.mappingRequest(command);
+            resp = await this.slamnavOutput.mappingRequest(command);
             this.logger?.info(`[Map] Mapping Response : ${JSON.stringify(resp)}`);
-            if (resp.result === 'success' || resp.result === 'accept') {
-                command.statusChange(map_command_domain_1.CommandStatus.success);
-                await this.databaseOutput.update(command);
-                this.logger?.info(`[Map] Mapping DB Update : ${result?.id.toString()}`);
-                return resp;
-            }
-            else {
-                throw new rpc_code_exception_1.RpcCodeException(resp.message, constant_1.GrpcCode.Aborted);
-            }
+            await command.checkResult(resp.result, resp.message);
+            this.logger?.info(`[Map] Mapping DB Update : ${result?.id.toString()}`);
+            return resp;
         }
         catch (error) {
             if (command) {
-                command.statusChange(map_command_domain_1.CommandStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? map_command_domain_1.CommandStatus.fail);
             }
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
             throw new rpc_code_exception_1.RpcCodeException('맵을 로드할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
         }
     }
     async loadResponse(response) {
@@ -2647,9 +2644,9 @@ let MapService = class MapService {
 };
 exports.MapService = MapService;
 exports.MapService = MapService = __decorate([
-    __param(0, (0, common_1.Inject)('DatabaseOutputPort')),
-    __param(1, (0, common_1.Inject)('SlamnavOutputPort')),
-    __param(2, (0, common_1.Inject)('MapFileOutputPort')),
+    __param(0, (0, common_2.Inject)('DatabaseOutputPort')),
+    __param(1, (0, common_2.Inject)('SlamnavOutputPort')),
+    __param(2, (0, common_2.Inject)('MapFileOutputPort')),
     __metadata("design:paramtypes", [typeof (_a = typeof map_database_output_port_1.MapDatabaseOutputPort !== "undefined" && map_database_output_port_1.MapDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof map_slamnav_output_port_1.MapSlamnavOutputPort !== "undefined" && map_slamnav_output_port_1.MapSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof map_file_output_port_1.MapFileOutputPort !== "undefined" && map_file_output_port_1.MapFileOutputPort) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
 ], MapService);
 
@@ -2875,6 +2872,25 @@ class MapCommandModel {
                     throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
                 }
                 this.path = this.getMapsDir(this.mapName, this.fileName);
+                break;
+            }
+            case MapCommand.mappingStart: {
+                break;
+            }
+            case MapCommand.mappingStop: {
+                break;
+            }
+            case MapCommand.mappingSave: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName);
+                if ((0, fs_1.existsSync)(this.path)) {
+                    throw new rpc_code_exception_1.RpcCodeException(`${this.mapName} 이름의 맵폴더가 존재합니다.`, constant_1.GrpcCode.AlreadyExists);
+                }
+                break;
+            }
+            case MapCommand.mappingReload: {
                 break;
             }
         }
@@ -3610,7 +3626,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadRequestSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = exports.MapCommand = void 0;
+exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadRequestSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = exports.MapLoadRequestDto = exports.MapCommand = void 0;
 const swagger_1 = __webpack_require__(78);
 const class_validator_1 = __webpack_require__(79);
 const util_1 = __webpack_require__(38);
@@ -3646,6 +3662,19 @@ var MapCommand;
     MapCommand["mappingSave"] = "mappingSave";
     MapCommand["mappingReload"] = "mappingReload";
 })(MapCommand || (exports.MapCommand = MapCommand = {}));
+class MapLoadRequestDto {
+}
+exports.MapLoadRequestDto = MapLoadRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MAPNAME,
+        example: 'Large',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MapLoadRequestDto.prototype, "mapName", void 0);
 class LoadRequestDto {
 }
 exports.LoadRequestDto = LoadRequestDto;

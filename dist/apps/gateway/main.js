@@ -241,6 +241,8 @@ SLAMNAV의 기능에 관련된 제어를 켜고 끄는 요청을 합니다.
 - **lidarOnOff** : 라이다 제어가 아닌, **라이다 소켓 전송**을 켜고 끄거나 전송주기를 설정합니다.
 - **pathOnOff** : 패스 제어가 아닌, **패스 소켓 전송**을 켜고 끄거나 전송주기를 설정합니다.
 - 기능은 로봇을 껏다켜도 유지되지 않습니다.
+- 로봇은 명령이 없으면 기본적으로 모두 on 상태입니다.
+- 통신주기 제어는 버전에 따라 지원되지 않을 수 있습니다.
 
 ## 📌 요청 바디(JSON)
 
@@ -264,18 +266,14 @@ SLAMNAV의 기능에 관련된 제어를 켜고 끄는 요청을 합니다.
 ### **403** INVALID_ARGUMENT
   - 요청한 명령이 지원하지 않는 명령일 때
   - 파라메터가 없거나 잘못된 값일 때
-### **404** NOT_FOUND
-  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
 ### **500** INTERNAL_SERVER_ERROR
-  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
     `,
-    }),
-    (0, swagger_1.ApiOperation)({
-        summary: '기능 OnOff 요청',
-        description: `특정 기능을 켜고 끄는 요청을 합니다. \n\n
-    현재 사용가능한 Command는 lidarOnOff, pathOnOff, motorOnOff가 있습니다.
-    motorOnOff는 모터 제어를 켜고 끄는 것을 의미하며 기본값은 항상 on입니다.
-    (pathOnOff와 lidarOnOff는 통신 주기를 설정할 수 있습니다. 현재 미지원하는 기능입니다.)`,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '기능 OnOff 요청 성공',
@@ -294,8 +292,40 @@ SLAMNAV의 기능에 관련된 제어를 켜고 끄는 요청을 합니다.
 __decorate([
     (0, common_1.Post)('work'),
     (0, swagger_1.ApiOperation)({
-        summary: '특정 기능 실행 요청',
-        description: '특정 기능을 실행 합니다.',
+        summary: '기능 실행 요청',
+        description: `
+SLAMNAV의 선언된 기능을 실행/중지 요청합니다.
+
+## 📌 기능 설명
+- **dock** : **도킹**을 요청합니다. 도킹스테이션을 지원하는 모델만 사용가능합니다. 자세한 내용은 work/dock 요청을 참고하세요.
+- **undock** : **언도킹**을 요청합니다. 도킹 명령 후 언도킹 명령을 요청해야 합니다. 자세한 내용은 work/undock 요청을 참고하세요.
+- **randomSeq** : **랜덤 시퀀스**를 요청합니다. 자세한 내용은 work/randomSeq 요청을 참고하세요.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| command | string | ✅ | - | 요청 명령 | 'dock', 'undock', 'randomSeq' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'dock', 'undock', 'randomSeq' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '특정 기능 실행 요청 성공',
@@ -315,7 +345,34 @@ __decorate([
     (0, common_1.Post)('work/dock'),
     (0, swagger_1.ApiOperation)({
         summary: '도킹 실행 요청',
-        description: '도킹 명령을 요청합니다.',
+        description: `
+도킹 명령을 요청합니다.
+
+## 📌 기능 설명
+- 도킹스테이션을 지원하는 모델만 사용가능합니다.
+- 도킹 명령은 위치초기화, 맵 로드와 상관없이 가능합니다.
+- 도킹 완료 후에는 반드시 언도킹을 수행한 뒤에 로봇이동이 가능합니다. 그렇지 않으면 스테이션과 로봇이 충돌나거나 장애물 인식으로 인해 움직이지 않을 수 있습니다.
+- 도킹 명령을 시작하기 위해서는 로봇의 카메라가 도킹스테이션을 바라보고 있는 방향으로 약 1m 가량 떨어져있어야 합니다.
+- 위의 조건을 만족하기 위해, 도킹스테이션을 고정된 자리에 두고 이를 바라보는 방향으로 로봇의 노드를 맵 상에 추가하는 것을 권장합니다.
+- 도킹 시작 시, 인식된 도킹스테이션 방향으로 로봇이 이동합니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'dock' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '도킹 실행 요청 성공',
@@ -334,7 +391,31 @@ __decorate([
     (0, common_1.Post)('work/undock'),
     (0, swagger_1.ApiOperation)({
         summary: '언도킹 실행 요청',
-        description: '언도킹 명령을 요청합니다. 도킹 명령 후 언도킹 명령을 요청해야 합니다.',
+        description: `
+언도킹 명령을 요청합니다.
+
+## 📌 기능 설명
+- 도킹스테이션을 지원하는 모델만 사용가능합니다.
+- 도킹 완료 후에는 반드시 언도킹을 수행한 뒤에 로봇이동이 가능합니다. 그렇지 않으면 스테이션과 로봇이 충돌나거나 장애물 인식으로 인해 움직이지 않을 수 있습니다.
+- 도킹 중이 아닌데 언도킹을 하면 뒤로 1m 가량 이동할 수 있습니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'undock' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '도킹 실행 요청 성공',
@@ -352,8 +433,33 @@ __decorate([
 __decorate([
     (0, common_1.Get)('safetyField'),
     (0, swagger_1.ApiOperation)({
-        summary: '세이프티영역 조회',
-        description: '현재 설정된 세이프티 영역을 조회합니다.',
+        summary: '세이프티 영역 조회',
+        description: `
+현재 설정된 세이프티 영역을 조회합니다.
+
+## 📌 기능 설명
+- 세이프티영역을 지원하는 모델만 사용가능합니다.
+- 세이프티영역은 라이다 센서의 장애물 인식 영역을 설정하는 기능입니다.
+- 세이프티영역은 id값으로 지정되며 id값에 대한 영역설정은 라이다에서 설정가능합니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'getSafetyField' |
+| safetyField | string | 설정된 세이프티 영역 | '1' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '조회 요청 성공',
@@ -371,8 +477,39 @@ __decorate([
 __decorate([
     (0, common_1.Post)('safetyField'),
     (0, swagger_1.ApiOperation)({
-        summary: '세이프티영역 설정',
-        description: '세이프티 영역을 설정합니다.',
+        summary: '세이프티 영역 설정',
+        description: `
+세이프티 영역을 설정합니다.
+
+## 📌 기능 설명
+- 세이프티영역을 지원하는 모델만 사용가능합니다.
+- 세이프티영역은 라이다 센서의 장애물 인식 영역을 설정하는 기능입니다.
+- 세이프티영역은 id값으로 지정되며 id값에 대한 영역설정은 라이다에서 설정가능합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| safetyField | string | ✅ | - | 세이프티 영역 | '1' |
+ 
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'setSafetyField' |
+| safetyField | string | 설정된 세이프티 영역 | '1' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '설정 요청 성공',
@@ -392,7 +529,41 @@ __decorate([
     (0, common_1.Post)('led'),
     (0, swagger_1.ApiOperation)({
         summary: 'LED 제어 요청',
-        description: 'LED의 수동 제어를 요청합니다.',
+        description: `
+LED의 수동 제어를 요청합니다.
+
+## 📌 기능 설명
+- onoff값이 true인 경우 LED를 수동으로 제어합니다. LED의 색상을 설정하거나 켜고 끌 수 있습니다. 이때 SLAMNAV 내부 시스템에 의한 제어는 무시됩니다.
+- onoff값이 false인 경우 SLAMNAV 내부 시스템에 의해 LED가 자동으로 제어됩니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| onoff | boolean | ✅ | - | LED 수동 제어 켜고 끌지를 결정합니다. | true |
+| color | string | - | - | LED 색상을 입력합니다. onoff가 true일 경우에만 사용됩니다. | 'none','red', 'blue', 'white', 'green', 'magenta', 'yellow', 'red_blink', 'blue_blink', 'white_blink', 'green_blink', 'magenta_blink', 'yellow_blink' |
+ 
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'ledControl' |
+| onoff | boolean | LED 수동 제어 켜고 끌지를 결정합니다. | true |
+| color | string | LED 색상을 입력합니다. onoff가 true일 경우에만 사용됩니다. | 'none','red', 'blue', 'white', 'green', 'magenta', 'yellow', 'red_blink', 'blue_blink', 'white_blink', 'green_blink', 'magenta_blink', 'yellow_blink' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: 'LED 제어 요청 성공',
@@ -412,7 +583,40 @@ __decorate([
     (0, common_1.Post)('safetyIo'),
     (0, swagger_1.ApiOperation)({
         summary: '세이프티 IO 제어 요청',
-        description: '세이프티 IO를 제어합니다.',
+        description: `
+세이프티 IO를 제어합니다.
+
+## 📌 기능 설명
+- 세이프티 IO를 지원하는 모델만 사용가능합니다.
+- MCU의 DIO를 제어하는 기능입니다.
+- MCU의 DIO는 0번 핀부터 7번 핀까지 순서대로 제어합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mcuDio | number[][] | ✅ | 0/1 | MCU DIO 제어. 0번 핀부터 7번 핀까지 순서대로 입력하세요. <br> 예로 [0,0,0,0,0,1,1,1] 은 0번 핀부터 7번 핀까지 순서대로 0,0,0,0,0,1,1,1 로 제어합니다. | [[0,0,0,0,0,1,1,1], [1,0,0,0,0,0,0,0]] |
+ 
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'setDigitalIO' |
+| mcuDio | number[][] | MCU DIO 제어. 0번 핀부터 7번 핀까지 순서대로 입력하세요. <br> 예로 [0,0,0,0,0,1,1,1] 은 0번 핀부터 7번 핀까지 순서대로 0,0,0,0,0,1,1,1 로 제어합니다. | [[0,0,0,0,0,1,1,1], [1,0,0,0,0,0,0,0]] |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세이프티 IO 제어 요청 성공',
@@ -427,7 +631,35 @@ __decorate([
     (0, common_1.Get)('safetyIo'),
     (0, swagger_1.ApiOperation)({
         summary: '세이프티 IO 조회 요청',
-        description: '세이프티 IO를 조회합니다.',
+        description: `
+세이프티 IO를 조회합니다.
+
+## 📌 기능 설명
+- 세이프티 IO를 지원하는 모델만 사용가능합니다.
+- 세이프티 IO는 MCU의 DIO, DIN을 조회하는 기능입니다.
+- 세이프티 IO는 0번 핀부터 7번 핀까지 순서대로 조회합니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'setDigitalIO' |
+| mcuDio | number[][] | MCU DIO. 0번 핀부터 7번 핀 순서대로 조회합니다. | [[0,0,0,0,0,1,1,1], [1,0,0,0,0,0,0,0]] |
+| mcuDin | number[][] | MCU DIN. 0번 핀부터 7번 핀 순서대로 조회합니다. | [[0,0,0,0,0,1,1,1], [1,0,0,0,0,0,0,0]] |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세이프티 IO 조회 요청 성공',
@@ -440,8 +672,37 @@ __decorate([
 __decorate([
     (0, common_1.Get)('obsbox'),
     (0, swagger_1.ApiOperation)({
-        summary: '장애물감지 영역 설정 조회',
-        description: 'AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.',
+        summary: '장애물감지 영역 조회 요청',
+        description: `
+장애물감지 영역을 조회합니다.
+
+## 📌 기능 설명
+- 장애물감지 영역을 지원하는 모델만 사용가능합니다.
+- 장애물감지 영역은 AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| minX | number | 장애물감지 영역 최소 x값 | 1.3 |
+| maxX | number | 장애물감지 영역 최대 x값 | 1.3 |
+| minY | number | 장애물감지 영역 최소 y값 | 1.3 |
+| maxY | number | 장애물감지 영역 최대 y값 | 1.3 |
+| minZ | number | 장애물감지 영역 최소 z값 | 1.3 |
+| maxZ | number | 장애물감지 영역 최대 z값 | 1.3 |
+| mapRange | number | 장애물감지 영역 맵 범위 | 1.3 |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -450,8 +711,51 @@ __decorate([
 __decorate([
     (0, common_1.Post)('obsbox'),
     (0, swagger_1.ApiOperation)({
-        summary: '장애물감지 영역 설정',
-        description: 'AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.',
+        summary: '장애물감지 영역 설정 요청',
+        description: `
+장애물감지 영역을 설정합니다.
+
+## 📌 기능 설명
+- 장애물감지 영역을 지원하는 모델만 사용가능합니다.
+- 장애물감지 영역은 AMR 상부의 Torso, Arm이 움직일때 장애물감지 영역을 추가로 설정하기 위해 사용됩니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| minX | number | ✅ | m | 장애물감지 영역 최소 x값 | 1.3 |
+| maxX | number | ✅ | m | 장애물감지 영역 최대 x값 | 1.3 |
+| minY | number | ✅ | m | 장애물감지 영역 최소 y값 | 1.3 |
+| maxY | number | ✅ | m | 장애물감지 영역 최대 y값 | 1.3 |
+| minZ | number | ✅ | m | 장애물감지 영역 최소 z값 | 1.3 |
+| maxZ | number | ✅ | m | 장애물감지 영역 최대 z값 | 1.3 |
+| mapRange | number | ✅ | m | 장애물감지 영역 맵 범위 | 1.3 |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| minX | number | 장애물감지 영역 최소 x값 | 1.3 |
+| maxX | number | 장애물감지 영역 최대 x값 | 1.3 |
+| minY | number | 장애물감지 영역 최소 y값 | 1.3 |
+| maxY | number | 장애물감지 영역 최대 y값 | 1.3 |
+| minZ | number | 장애물감지 영역 최소 z값 | 1.3 |
+| maxZ | number | 장애물감지 영역 최대 z값 | 1.3 |
+| mapRange | number | 장애물감지 영역 맵 범위 | 1.3 |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -2611,33 +2915,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "control";
-exports.CONTROL_PACKAGE_NAME = "control";
+exports.protobufPackage = 'control';
+exports.CONTROL_PACKAGE_NAME = 'control';
 function ControlGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
-            "onOffControl",
-            "workControl",
-            "ledControl",
-            "setSafetyField",
-            "getSafetyField",
-            "exAccessoryControl",
-            "safetyIoControl",
-            "setObsBox",
-            "getObsBox",
+            'onOffControl',
+            'workControl',
+            'ledControl',
+            'setSafetyField',
+            'getSafetyField',
+            'exAccessoryControl',
+            'safetyIoControl',
+            'setObsBox',
+            'getObsBox',
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
         }
         const grpcStreamMethods = [];
         for (const method of grpcStreamMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcStreamMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
         }
     };
 }
-exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
+exports.CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
 
 
 /***/ }),
@@ -3483,15 +3787,57 @@ exports.LocalizationApiController = LocalizationApiController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({
-        summary: '위치초기화 명령',
-        description: `위치초기화 명령을 전달합니다.
-        command는 init,semiautoinit,randominit,autoinit,start,stop을 지원합니다.
-        init은 지도 상의 특정위치(x,y,z,rz) 값을 입력으로 받습니다.
-        semiautoinit은 init속성이 있는 node를 후보군으로 위치를 추정합니다.
-        randominit은 시뮬레이션모드에서 사용되며 랜덤한 node로 위치를 추정합니다.
-        autoinit은 지도상의 모든 위치를 후보군으로 위치를 추정하며 시간이 오래 걸릴 수 있습니다.
-        start와 stop으로 slam을 실행하고 끕니다. init후에 반드시 start를 실행시켜주어야 slam이 동작합니다.
-        `,
+        summary: '위치초기화 요청',
+        description: `
+SLAMNAV로 위치초기화 명령을 전달합니다.
+
+## 📌 기능 설명
+- **init** : **지도 상의 특정위치(x,y,z,rz) 값을 입력으로 받습니다.**
+- **semiautoinit** : **init속성이 있는 node를 후보군으로 위치를 추정합니다.**
+- **randominit** : **시뮬레이션모드에서 사용되며 랜덤한 node로 위치를 추정합니다.**
+- **autoinit** : **지도상의 모든 위치를 후보군으로 위치초기화를 진행합니다. 다소 시간이 걸릴 수 있습니다.**
+- **start** : **위치추정 시작 명령을 전달합니다. 로봇이 초기화된 위치로부터 위치추정을 시작합니다. 위치추정이 실행되지 않으면 주행할 수 없습니다.**
+- **stop** : **위치추정 종료 명령을 전달합니다. **
+- 위치초기화는 맵 로드가 완료된 후에 실행되어야 합니다.
+- init후에 반드시 start를 실행시켜주어야 SLAMNAV가 동작합니다.
+- 위치초기화의 결과는 API 응답으로 받을 수 없습니다. 소켓의 localizationResponse 이벤트 혹은 status 이벤트로 localization 상태를 확인해주세요.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| command | string | ✅ | - | 요청 명령 | 'init', 'semiautoinit', 'randominit', 'autoinit', 'start', 'stop' |
+| x | number | - | m | command가 init인 경우, 지도 상의 x좌표를 입력하세요. | 1.3 |
+| y | number | - | m | command가 init인 경우, 지도 상의 y좌표를 입력하세요. | 1.3 |
+| z | number | - | m | command가 init인 경우, 지도 상의 z좌표를 입력하세요. 특정 모델만 사용합니다. 기본값 0으로 입력해주세요. | 0 |
+| rz | number | - | deg | command가 init인 경우, 로봇의 z축 방향값을 입력하세요. | 1.3 |
+| randomSeed | string | - | - | command가 randominit인 경우, 시뮬레이션모드에서 사용되며 랜덤한 node로 위치를 추정합니다. | '1234567890' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'init', 'semiautoinit', 'randominit', 'autoinit', 'start', 'stop' |
+| x | number | command가 init인 경우, 지도 상의 x좌표를 입력하세요. | 1.3 |
+| y | number | command가 init인 경우, 지도 상의 y좌표를 입력하세요. | 1.3 |
+| z | number | command가 init인 경우, 지도 상의 z좌표를 입력하세요. 특정 모델만 사용합니다. 기본값 0으로 입력해주세요. | 0 |
+| rz | number | command가 init인 경우, 로봇의 z축 방향값을 입력하세요. | 1.3 |
+| randomSeed | string | command가 randominit인 경우, 시뮬레이션모드에서 사용되며 랜덤한 node로 위치를 추정합니다. | '1234567890' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '위치초기화 명령 성공',
@@ -3510,8 +3856,36 @@ __decorate([
 __decorate([
     (0, common_1.Post)('randominit'),
     (0, swagger_1.ApiOperation)({
-        summary: '랜덤위치초기화 명령',
-        description: `랜덤위치초기화 명령을 전달합니다. 지도상의 노드 중 랜덤한 위치로 초기화됩니다.`,
+        summary: '랜덤위치초기화 요청',
+        description: `
+SLAMNAV로 랜덤위치초기화 명령을 전달합니다.
+
+## 📌 기능 설명
+- 랜덤위치초기화 명령을 지원하는 모델만 사용가능합니다.
+- 시뮬레이션모드에서 사용되며 랜덤한 node로 위치를 추정합니다.
+- 위치초기화는 맵 로드가 완료된 후에 실행되어야 합니다.
+- init후에 반드시 start를 실행시켜주어야 SLAMNAV가 동작합니다.
+- 위치초기화의 결과는 API 응답으로 받을 수 없습니다. 소켓의 localizationResponse 이벤트 혹은 status 이벤트로 localization 상태를 확인해주세요.
+
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'randominit' |
+| randomSeed | string | command가 randominit인 경우, 시뮬레이션모드에서 사용되며 랜덤한 node로 위치를 추정합니다. | '1234567890' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '랜덤위치초기화 명령 성공',
@@ -3529,8 +3903,35 @@ __decorate([
 __decorate([
     (0, common_1.Post)('autoinit'),
     (0, swagger_1.ApiOperation)({
-        summary: '자동 위치초기화 명령',
-        description: `자동 위치초기화 명령을 전달합니다. 지도상의 모든 위치를 후보군으로 위치초기화를 진행합니다. 다소 시간이 걸리거나 실패할 수 있습니다.`,
+        summary: '자동 위치초기화 요청',
+        description: `
+SLAMNAV로 자동 위치초기화 명령을 전달합니다.
+
+## 📌 기능 설명
+- 자동위치초기화 명령을 지원하는 모델만 사용가능합니다.
+- 지도상의 모든 위치를 후보군으로 위치초기화를 진행합니다. 다소 시간이 걸릴 수 있습니다.
+- 위치초기화는 맵 로드가 완료된 후에 실행되어야 합니다.
+- init후에 반드시 start를 실행시켜주어야 SLAMNAV가 동작합니다.
+- 위치초기화의 결과는 API 응답으로 받을 수 없습니다. 소켓의 localizationResponse 이벤트 혹은 status 이벤트로 localization 상태를 확인해주세요.
+
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'autoinit' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '자동 위치초기화 명령 성공',
@@ -3548,8 +3949,35 @@ __decorate([
 __decorate([
     (0, common_1.Post)('semiautoinit'),
     (0, swagger_1.ApiOperation)({
-        summary: '자동 위치초기화(INIT노드기반) 명령',
-        description: `자동 위치초기화 명령을 전달합니다. INIT노드로 지정된 노드들을 후보군으로 위치초기화를 진행합니다. autoinit보다 빠르며 로봇이 해당 노드의 위에 위치해야합니다.`,
+        summary: '자동 위치초기화(INIT노드기반) 요청',
+        description: `
+SLAMNAV로 자동 위치초기화(INIT노드기반) 명령을 전달합니다.
+
+## 📌 기능 설명
+- 자동위치초기화(INIT노드기반) 명령을 지원하는 모델만 사용가능합니다.
+- INIT노드로 지정된 노드들을 후보군으로 위치초기화를 진행합니다. autoinit보다 빠르며 로봇이 해당 노드의 위에 위치해야합니다.
+- 위치초기화는 맵 로드가 완료된 후에 실행되어야 합니다.
+- init후에 반드시 start를 실행시켜주어야 SLAMNAV가 동작합니다.
+- 위치초기화의 결과는 API 응답으로 받을 수 없습니다. 소켓의 localizationResponse 이벤트 혹은 status 이벤트로 localization 상태를 확인해주세요.
+
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'semiautoinit' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '자동 위치초기화(INIT노드기반) 명령 성공',
@@ -3568,7 +3996,30 @@ __decorate([
     (0, common_1.Post)('start'),
     (0, swagger_1.ApiOperation)({
         summary: '위치추정 시작 명령',
-        description: `위치추정 시작 명령을 전달합니다. 로봇이 초기화된 위치로부터 위치추정을 시작합니다. 위치추정이 실행되지 않으면 주행할 수 없습니다.`,
+        description: `
+SLAMNAV로 위치추정 시작 명령을 전달합니다.
+
+## 📌 기능 설명
+- 위치초기화가 완료된 이후 start를 실행시켜주어야 SLAMNAV가 동작합니다.
+- 위치추정이 되어야 로봇의 현재 위치가 맵을 기반으로 출력되며 주행 가능한 상태가 됩니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'start' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '위치추정 시작 명령 성공',
@@ -3587,7 +4038,30 @@ __decorate([
     (0, common_1.Post)('stop'),
     (0, swagger_1.ApiOperation)({
         summary: '위치추정 종료 명령',
-        description: `위치추정 종료 명령을 전달합니다. `,
+        description: `
+SLAMNAV로 위치추정 종료 명령을 전달합니다.
+
+## 📌 기능 설명
+- 위치초기화가 완료된 이후 start를 실행시켜주어야 SLAMNAV가 동작합니다.
+- 위치추정이 되어야 로봇의 현재 위치가 맵을 기반으로 출력되며 주행 가능한 상태가 됩니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'stop' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '위치추정 종료 명령 성공',
@@ -5731,15 +6205,67 @@ exports.MoveApiController = MoveApiController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({
-        summary: '이동 명령',
-        description: `이동 명령을 요청합니다. \n\n
-    command의 값에는 goal, target, jog, stop, pause, resume 이 존재합니다. 
-    command가 goal인 경우, id, method, preset을 파라메터로 인식합니다.
-    command가 target인 경우, x,y,z,rz,method,preset을 파라메터로 인식합니다.
-    command가 jog인 경우, vx, vy, wz를 파라메터로 인식합니다.
-    그 외의 command는 파라메터를 입력받지 않습니다.
-    method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
-    preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
+        summary: '주행 요청',
+        description: `
+SLAMNAV로 주행 명령을 전달합니다.
+
+## 📌 기능 설명
+- **goal** : **목표 노드 지정**. 지도 상의 특정 노드를 목표로 주행합니다.
+- **target** : **타겟 위치 지정**. 지도 상의 특정 위치(x,y,z,rz)를 목표로 주행합니다.
+- **jog** : **조이스틱 이동 명령**. 로봇의 속도(vx, vy, wz)를 입력으로 받아 이동합니다. 주기적으로 계속해서 요청을 주지 않으면 주행이 중단됩니다. 응답 없이 일방적으로 송신합니다.
+- **stop** : **이동 정지 명령**. 로봇의 주행을 중단합니다.
+- **pause** : **이동 일시정지 명령**. 로봇의 주행을 일시정지합니다.
+- **resume** : **이동 일시재개 명령**. 로봇의 주행을 일시재개합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| command | string | ✅ | - | 요청 명령 | 'goal', 'target', 'jog', 'stop', 'pause', 'resume', 'xLinear', 'circular', 'rotate' |
+| goalId | string | - | - | command가 goal인 경우, 목표 노드의 ID를 입력하세요. | 'N_123' |
+| x | number | - | m | command가 target인 경우, 지도 상의 x좌표를 입력하세요. | 1.3 |
+| y | number | - | m | command가 target인 경우, 지도 상의 y좌표를 입력하세요. | 1.3 |
+| z | number | - | m | command가 target인 경우, 지도 상의 z좌표를 입력하세요. 특정 모델만 사용합니다. 기본값 0으로 입력해주세요. | 0 |
+| rz | number | - | deg | command가 target인 경우, 로봇의 z축 방향값을 입력하세요. | 1.3 |
+| vx | number | - | m/s | command가 jog인 경우, 로봇의 x방향 속도를 입력하세요. | 1.3 |
+| vy | number | - | m/s | command가 jog인 경우, 로봇의 y방향 속도를 입력하세요. | 1.3 |
+| wz | number | - | deg/s | command가 jog인 경우, 로봇의 z축 회전 속도를 입력하세요. | 1.3 |
+| direction | string | - | - | command가 circular인 경우, 주행 방향을 입력하세요. | 'right' |
+| target | number | - | m | command가 xLinear, circular, rotate인 경우, 목표 위치를 입력하세요. | 1.3 |
+| speed | number | - | m/s | command가 xLinear, circular, rotate인 경우, 주행 속도를 입력하세요. | 1.3 |
+| preset | number | - | - | 지정된 속도프리셋을 설정합니다. | 0 |
+| method | string | - | - | 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 모델마다 지원하는 방식이 다릅니다. | 'pp', 'hpp' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'goal', 'target', 'jog', 'stop', 'pause', 'resume', 'xLinear', 'circular', 'rotate' |
+| goalId | string | command가 goal인 경우, 목표 노드의 ID. | 'N_123' |
+| x | number | command가 target인 경우, 지도 상의 x좌표. | 1.3 |
+| y | number | command가 target인 경우, 지도 상의 y좌표. | 1.3 |
+| z | number | command가 target인 경우, 지도 상의 z좌표. 특정 모델만 사용합니다. | 0 |
+| rz | number | command가 target인 경우, 로봇의 z축 방향값. | 1.3 |
+| direction | string | command가 circular인 경우, 주행 방향. | 'right' |
+| target | number | command가 xLinear, circular, rotate인 경우, 목표 위치. | 1.3 |
+| speed | number | command가 xLinear, circular, rotate인 경우, 주행 속도. | 1.3 |
+| preset | number | command가 xLinear, circular, rotate인 경우, 지정된 속도프리셋. | 0 |
+| method | string | command가 goal, target인 경우, 주행방식. | 'pp' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 명령 성공',
@@ -5758,11 +6284,51 @@ __decorate([
 __decorate([
     (0, common_1.Post)('target'),
     (0, swagger_1.ApiOperation)({
-        summary: '이동 명령 (타켓위치 지정)',
-        description: `특정한 좌표값으로 이동 명령을 요청합니다. \n\n
-    타겟은 지도 상의 특정 x,y,z,rz 값으로 지정합니다.
-    method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
-    preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
+        summary: '특정 위치로 주행 요청',
+        description: `
+SLAMNAV로 특정 위치로 주행 명령을 전달합니다.
+
+## 📌 기능 설명
+- 특정 위치로 주행 명령을 요청합니다.
+- 지도상의 위치값(x,y,z,rz)을 입력으로 받아 주행합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| x | number | - | m | 지도 상의 x좌표를 입력하세요. | 1.3 |
+| y | number | - | m | 지도 상의 y좌표를 입력하세요. | 1.3 |
+| z | number | - | m | 지도 상의 z좌표를 입력하세요. 특정 모델만 사용합니다. 기본값 0으로 입력해주세요. | 0 |
+| rz | number | - | deg | 로봇의 z축 방향값을 입력하세요. | 1.3 |
+| preset | number | - | - | 지정된 속도프리셋을 설정합니다. | 0 |
+| method | string | - | - | 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 모델마다 지원하는 방식이 다릅니다. | 'pp', 'hpp' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'target' |
+| x | number | command가 target인 경우, 지도 상의 x좌표. | 1.3 |
+| y | number | command가 target인 경우, 지도 상의 y좌표. | 1.3 |
+| z | number | command가 target인 경우, 지도 상의 z좌표. 특정 모델만 사용합니다. | 0 |
+| rz | number | command가 target인 경우, 로봇의 z축 방향값. | 1.3 |
+| preset | number | 지정된 속도프리셋 | 0 |
+| method | string | 주행방식 | 'pp' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 명령 성공',
@@ -5781,11 +6347,44 @@ __decorate([
 __decorate([
     (0, common_1.Post)('goal'),
     (0, swagger_1.ApiOperation)({
-        summary: '이동 명령 (목표 노드 지정)',
-        description: `이동 명령을 요청합니다. \n\n
-    목표 노드는 지도 상에 선언된 goal노드의 id값으로(goalId) 지정합니다.
-    method는 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 아직 미지원합니다.
-    preset은 지정된 속도프리셋을 설정합니다. 아직 미지원합니다.`,
+        summary: '목표 노드로 주행 요청',
+        description: `
+SLAMNAV로 목표 노드로 주행 명령을 전달합니다.
+
+## 📌 기능 설명
+- 지도상의 목표 노드를 입력으로 받아 주행합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| goalId | string | - | - | 지도 상의 목표 노드의 ID를 입력하세요. | 'N_123' |
+| preset | number | - | - | 지정된 속도프리셋을 설정합니다. | 0 |
+| method | string | - | - | 주행방식을 선언합니다. 기본 pp (point to point) 방식으로 주행하며 그 외 주행방식은 모델마다 지원하는 방식이 다릅니다. | 'pp', 'hpp' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'goal' |
+| goalId | string | command가 goal인 경우, 목표 노드의 ID. | 'N_123' |
+| preset | number | 지정된 속도프리셋 | 0 |
+| method | string | 주행방식 | 'pp', 'hpp' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 명령 성공',
@@ -5804,8 +6403,35 @@ __decorate([
 __decorate([
     (0, common_1.Post)('jog'),
     (0, swagger_1.ApiOperation)({
-        summary: '조이스틱 이동 명령',
-        description: `이동 명령을 요청합니다. 속도값으로 vx, vy, wz를 입력으로 받습니다.`,
+        summary: '조이스틱 이동 요청',
+        description: `
+SLAMNAV로 조이스틱 이동 명령을 전달합니다.
+
+## 📌 기능 설명
+- 로봇의 속도(vx, vy, wz)를 입력으로 받아 이동합니다. 
+- 주기적으로 계속해서 요청을 주지 않으면 주행이 중단됩니다. 
+- 응답 없이 일방적으로 송신합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| vx | number | - | m/s | 로봇의 x방향 속도를 입력하세요. | 1.3 |
+| vy | number | - | m/s | 로봇의 y방향 속도를 입력하세요. | 1.3 |
+| wz | number | - | deg/s | 로봇의 z축 회전 속도를 입력하세요. | 1.3 |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '조이스틱 이동 명령 성공',
@@ -5825,7 +6451,30 @@ __decorate([
     (0, common_1.Post)('stop'),
     (0, swagger_1.ApiOperation)({
         summary: '이동 정지 명령',
-        description: `이동 정지 명령을 요청합니다. body값은 필요하지 않습니다.`,
+        description: `
+SLAMNAV로 이동 정지 명령을 전달합니다.
+
+## 📌 기능 설명
+- 로봇의 주행을 중단합니다.
+- 주행 중이 아닐때는 아무런 동작을 하지 않습니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'stop' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 정지 명령 성공',
@@ -5844,7 +6493,30 @@ __decorate([
     (0, common_1.Post)('pause'),
     (0, swagger_1.ApiOperation)({
         summary: '이동 일시정지 명령',
-        description: `이동 일시정지 명령을 요청합니다. body값은 필요하지 않습니다.`,
+        description: `
+SLAMNAV로 이동 일시정지 명령을 전달합니다.
+
+## 📌 기능 설명
+- 로봇의 주행을 일시정지합니다.
+- 주행 중이 아닐때는 아무런 동작을 하지 않습니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'pause' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 일시정지 명령 성공',
@@ -5863,7 +6535,30 @@ __decorate([
     (0, common_1.Post)('resume'),
     (0, swagger_1.ApiOperation)({
         summary: '이동 일시재개 명령',
-        description: `이동 일시재개 명령을 요청합니다. body값은 필요하지 않습니다.`,
+        description: `
+SLAMNAV로 이동 일시재개 명령을 전달합니다.
+
+## 📌 기능 설명
+- 로봇의 주행을 일시재개합니다.
+- 주행 일시정지 상태에서만 일시재개할 수 있습니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'resume' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 일시재개 명령 성공',
@@ -5882,7 +6577,47 @@ __decorate([
     (0, common_1.Post)('profile'),
     (0, swagger_1.ApiOperation)({
         summary: '프로필 이동 명령',
-        description: '프로필 이동 명령을 요청합니다. (command == xLinear, rotate, circular, stop)',
+        description: `
+SLAMNAV로 프로필 이동 명령을 전달합니다.
+
+## 📌 기능 설명
+- 로봇의 주행을 프로필 속도로 주행합니다.
+- **xLinear** : **선형 이동 명령**. 로봇의 x방향으로 주행합니다.
+- **circular** : **원형 이동 명령**. 로봇의 원형 경로를 따라 주행합니다. 방향을 입력하여 주행 방향을 설정할 수 있습니다.
+- **rotate** : **회전 이동 명령**. 로봇의 z축을 기준으로 회전합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| command | string | ✅ | - | 요청 명령 | 'xLinear', 'circular', 'rotate' |
+| target | number | ✅ | m, deg | 목표 위치를 입력하세요. | 1.3 |
+| speed | number | ✅ | m/s, deg/s | 주행 속도를 입력하세요. | 1.3 |
+| direction | string | - | - | command가 circular인 경우, 주행 방향을 입력하세요. | 'left', 'right' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'xLinear', 'circular', 'rotate' |
+| target | number | - | m | 목표 위치를 입력하세요. | 1.3 |
+| speed | number | - | m/s | 주행 속도를 입력하세요. | 1.3 |
+| direction | string | - | - | 주행 방향을 입력하세요. | 'left', 'right' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+    `,
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -5892,8 +6627,34 @@ __decorate([
 __decorate([
     (0, common_1.Get)('log/last'),
     (0, swagger_1.ApiOperation)({
-        summary: '이동 로그 조회 (최근 로그)',
-        description: `이동 로그를 조회합니다. 최근에 실행된 로그를 num개 만큼 조회합니다. command값이 있는 경우 해당 command와 일치하는 로그만 조회합니다.`,
+        summary: '이동 명령 조회 (최근 로그)',
+        description: `
+이동 명령 로그를 조회합니다. 
+
+## 📌 기능 설명
+- 최근에 실행된 로그를 num개 만큼 조회합니다.
+- command값이 있는 경우 해당 command와 일치하는 로그만 조회합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| num | number | ✅ | - | 조회할 로그 개수 | 5 |
+| command | string | - | - | 조회할 명령 | 'goal', 'target', 'jog', 'pause', 'resume', 'stop', 'xLinear', 'circular', 'rotate' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| list | array | 조회된 로그 목록 | [{id: '1234567890', command: 'goal', status: 'success', result: 'accept', message: 'moveGoal 명령 성공', createdAt: '2025-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z',}] |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 로그 조회 성공',
@@ -5906,8 +6667,43 @@ __decorate([
 __decorate([
     (0, common_1.Get)('log'),
     (0, swagger_1.ApiOperation)({
-        summary: '이동 로그 조회',
-        description: `이동 로그를 조회합니다.`,
+        summary: '이동 명령 조회',
+        description: `
+이동 명령 로그를 조회합니다. 
+
+## 📌 기능 설명
+- 최근에 실행된 로그를 num개 만큼 조회합니다.
+- command값이 있는 경우 해당 command와 일치하는 로그만 조회합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| pageNo | number | ✅ | - | 조회할 페이지 번호 | 1 |
+| pageSize | number | ✅ | - | 조회할 페이지 크기 | 10 |
+| searchText | string | - | - | 검색어 | 'moveGoal' |
+| searchType | string | - | - | 검색 타입 | 'command', 'goalId', 'status' |
+| sortOption | string | - | - | 정렬 옵션 | 'createdAt', 'updatedAt' |
+| sortDirection | string | - | - | 정렬 방향 | 'asc', 'desc' |
+| dateFrom | string | - | - | 검색 시작 날짜 | '2025-01-01' |
+| dateTo | string | - | - | 검색 종료 날짜 | '2025-01-01' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| pageSize | number | 조회할 페이지 크기 | 10 |
+| totalCount | number | 전체 로그 개수 | 100 |
+| totalPage | number | 전체 페이지 수 | 10 |
+| list | array | 조회된 로그 목록 | [{id: '1234567890', command: 'goal', status: 'success', result: 'accept', message: 'moveGoal 명령 성공', createdAt: '2025-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z',}] |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+  - 파라메터가 없거나 잘못된 값일 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '이동 로그 조회 성공',
@@ -6714,11 +7510,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiController = void 0;
-const common_1 = __webpack_require__(48);
-const common_2 = __webpack_require__(5);
+const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const map_api_service_1 = __webpack_require__(108);
 const path_1 = __webpack_require__(20);
@@ -6727,16 +7522,10 @@ const stream_1 = __webpack_require__(110);
 const express_1 = __webpack_require__(111);
 const mapping_dto_1 = __webpack_require__(112);
 const util_1 = __webpack_require__(13);
-const platform_express_1 = __webpack_require__(114);
-const multer_1 = __webpack_require__(115);
-const fs_1 = __webpack_require__(19);
 const error_response_dto_1 = __webpack_require__(32);
 const map_dto_1 = __webpack_require__(116);
 const load_dto_1 = __webpack_require__(113);
 const map_dto_2 = __webpack_require__(116);
-const map_dto_3 = __webpack_require__(116);
-const zlib = __webpack_require__(25);
-const fs = __webpack_require__(19);
 const saveLog_service_1 = __webpack_require__(42);
 let MapApiController = class MapApiController {
     constructor(mapService, saveLogService) {
@@ -6750,11 +7539,8 @@ let MapApiController = class MapApiController {
     async CurrentMap() {
         return this.mapService.getCurrentMap();
     }
-    async loadMap(name) {
-        if (name == '' || name == undefined) {
-            throw new common_2.HttpException('로드할 map 이름을 입력하세요.', common_2.HttpStatus.BAD_REQUEST);
-        }
-        return this.mapService.loadMap(name);
+    async loadMap(dto) {
+        return this.mapService.loadMap(dto);
     }
     async getCloud(dto, res) {
         const data = await this.mapService.getCloud(dto);
@@ -6775,7 +7561,7 @@ let MapApiController = class MapApiController {
         catch (error) {
             console.error(error);
             this.logger?.error(`[Map] getCloudPipe: ${util_1.ParseUtil.errorToJson(error)}`);
-            throw new common_2.HttpException(error, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async saveCloud(req, dto) {
@@ -6785,35 +7571,12 @@ let MapApiController = class MapApiController {
             return this.mapService.saveCloud(dto);
         }
     }
-    async uploadCloudGzip(dto, file) {
-        try {
-            const decompressedData = zlib.gunzipSync(file.buffer);
-            const cloudDataString = decompressedData.toString('utf-8');
-            const cloudData = cloudDataString
-                .split('\n')
-                .filter((line) => line.trim())
-                .map((line) => line.split(',').map((val) => val.trim()));
-            await this.mapService.saveCloud({ ...dto, cloud: cloudData.map((e) => e.map((val) => Number(val))) });
-            const filePath = `/uploads/${dto.mapName}_${dto.fileName}`;
-            fs.writeFileSync(filePath, JSON.stringify(cloudData), 'utf-8');
-            return {
-                mapName: dto.mapName,
-                fileName: dto.fileName,
-                success: true,
-                filePath: filePath,
-            };
-        }
-        catch (error) {
-            this.logger?.error(`[Map] uploadCloudGzip: ${util_1.ParseUtil.errorToJson(error)}`);
-            throw new common_2.HttpException('gzip 파일 처리 중 오류가 발생했습니다.', common_2.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     async getTilesExists(mapName) {
         return this.mapService.getTilesExists(mapName);
     }
     async getTiles(mapName, z, x, y) {
         const buf = await this.mapService.getTiles(mapName, z, x, y);
-        return new common_2.StreamableFile(buf.data, { type: 'image/png' });
+        return new common_1.StreamableFile(buf.data, { type: 'image/png' });
     }
     async getTopology(dto) {
         return this.mapService.getTopology(dto.mapName, dto.fileName);
@@ -6835,7 +7598,7 @@ let MapApiController = class MapApiController {
         catch (error) {
             console.error(error);
             this.logger?.error(`[Map] getTopologyPipe: ${util_1.ParseUtil.errorToJson(error)}`);
-            throw new common_2.HttpException(error, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async saveTopology(dto) {
@@ -6853,56 +7616,48 @@ let MapApiController = class MapApiController {
     async mappingReload() {
         return this.mapService.mappingReload();
     }
-    async uploadMap(dto) {
-        return this.mapService.uploadMap(dto);
-    }
-    async downloadMap(dto) {
-        return this.mapService.downloadMap(dto);
-    }
-    async pulishMap(file, req, name, isForce) {
-        try {
-            if (name === undefined || name === '') {
-                name = file.originalname;
-            }
-            return this.mapService.publishMap({ newMapName: name, fileName: file.filename, isForce: isForce });
-            const newMapname = `${name.split('.')[0]}`;
-            const newPath = (0, path_1.join)('/data/maps', newMapname);
-            if ((0, fs_1.existsSync)(newPath)) {
-                (0, fs_1.unlinkSync)(file.path);
-                throw new common_2.HttpException('동일한 이름의 맵이 이미 존재합니다', common_2.HttpStatus.BAD_REQUEST);
-            }
-            this.logger?.info(`[Map] pulishMap : ${newMapname}, ${file.filename}`);
-            (0, fs_1.renameSync)(file.path, newPath);
-            return {
-                originalName: file.originalname,
-                mapName: newMapname,
-                path: file.path,
-            };
-        }
-        catch (error) {
-            if (error instanceof TypeError) {
-                console.error(error);
-                if (file) {
-                    throw new common_2.HttpException('맵을 저장할 수 없습니다.', common_2.HttpStatus.BAD_REQUEST);
-                }
-                else {
-                    throw new common_2.HttpException('맵을 저장할 수 없습니다. (빈 파일)', common_2.HttpStatus.BAD_REQUEST);
-                }
-            }
-            else if (error instanceof common_2.HttpException) {
-                throw error;
-            }
-            this.logger?.error(`[Map] pulishMap : ${(0, common_1.errorToJson)(error)}`);
-            throw new common_2.HttpException('맵을 저장하던 중 에러가 발생했습니다.', common_2.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 };
 exports.MapApiController = MapApiController;
 __decorate([
-    (0, common_2.Get)(),
+    (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
-        summary: '맵 리스트 요청',
-        description: '저장된 맵 리스트를 요청합니다.',
+        summary: '맵 리스트 조회',
+        description: `
+저장된 맵 리스트를 조회합니다. 
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| list | array | 조회된 맵 목록. 아래 MapDto 형식을 가집니다. | [MapDto] |
+ 
+## 📌 MapDto(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| fileName | string | 맵 이름 | 'map1' |
+| createAt | string | 맵 생성 시간 | '2025-01-01 12:00:00' |
+| updateAt | string | 맵 업데이트 시간 | '2025-01-01 12:00:00' |
+| fileType | string | 맵 파일 타입 | 'csv', 'json' |
+| cloudFiles | array | 맵 클라우드 데이터. 아래 FileInfoDto 형식을 가집니다. | [FileInfoDto] |
+| topoFiles | array | 맵 토폴로지 데이터. 아래 FileInfoDto 형식을 가집니다. | [FileInfoDto] |
+ 
+## 📌 FileInfoDto(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| fileName | string | 파일 이름 | 'cloud.csv' |
+| createAt | string | 맵 생성 시간 | '2025-01-01 12:00:00' |
+| updateAt | string | 파일 업데이트 시간 | '2025-01-01 12:00:00' |
+| fileType | string | 파일 타입 | 'csv', 'json' |
+| fileSize | number | 파일 크기 | 100 |
+
+## ⚠️ 에러 케이스
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '맵 리스트 요청 성공',
@@ -6918,20 +7673,70 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "MapList", null);
 __decorate([
-    (0, common_2.Get)('current'),
+    (0, common_1.Get)('current'),
     (0, swagger_1.ApiOperation)({
         summary: 'SLAMNAV 로드된 맵 정보 요청',
-        description: 'SLAMNAV에 로드된 맵 정보를 요청합니다.',
+        description: `
+SLAMNAV에 로드된 맵 이름을 요청합니다. 
+
+## 📌 기능 설명
+- SLAMNAV에 로드된 맵 이름을 요청합니다.
+- SLAMNAV에 로드된 맵 이름이 없으면 빈 문자열을 반환합니다.
+- SLAMNAV에 연결되어 있지 않더라도 마지막으로 가지고 있던 맵 이름을 반환합니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| mapName | string | 맵 이름 | 'map1' |
+ 
+## ⚠️ 에러 케이스
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "CurrentMap", null);
 __decorate([
-    (0, common_2.Post)('load/:name'),
+    (0, common_1.Post)('load'),
     (0, swagger_1.ApiOperation)({
         summary: '맵 로드 요청',
-        description: 'SLAMNAV로 맵 로드를 요청합니다.',
+        description: `
+SLAMNAV에 맵을 로드 요청합니다. 
+
+## 📌 기능 설명
+- SLAMNAV에 맵을 로드 요청합니다.
+- 맵 이름을 입력하여 로드할 맵을 선택합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청한 명령 | 'loadMap' |
+| mapName | string | 맵 이름 | 'map1' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 맵 이름이 비어있을 때
+### **404** NOT_FOUND
+  - 맵이 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '맵 로드 요청 성공',
@@ -6942,16 +7747,48 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('name')),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof load_dto_1.MapLoadRequestDto !== "undefined" && load_dto_1.MapLoadRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], MapApiController.prototype, "loadMap", null);
 __decorate([
-    (0, common_2.Get)('cloud'),
+    (0, common_1.Get)('cloud'),
     (0, swagger_1.ApiOperation)({
         summary: '맵 클라우드 데이터 요청',
-        description: '맵 클라우드 데이터를 요청합니다.',
+        description: `
+맵 클라우드 데이터를 요청합니다. 
+
+## 📌 기능 설명
+- 맵 클라우드 데이터를 요청합니다.
+- 맵 이름을 입력하여 클라우드 데이터를 요청합니다.
+
+## 📌 요청 쿼리
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| fileName | string | ✅ | - | 클라우드 파일 이름 | 'cloud.csv' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청한 명령 | 'getCloud' |
+| mapName | string | 맵 이름 | 'map1' |
+| fileName | string | 클라우드 파일 이름 | 'cloud.csv' |
+| cloud | array | 클라우드 데이터. 각 줄에는 4개의 값이 존재하며 순서대로 x, y, z, intensity 을 나타냅니다. | [[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0]] |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **404** NOT_FOUND
+  - 파일이 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '맵 클라우드 데이터 요청 성공',
@@ -6962,17 +7799,40 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
-    __param(1, (0, common_2.Res)()),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _d : Object, typeof (_e = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _e : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _e : Object, typeof (_f = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _f : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getCloud", null);
 __decorate([
-    (0, common_2.Get)('cloudpipe'),
+    (0, common_1.Get)('cloudpipe'),
     (0, swagger_1.ApiOperation)({
-        summary: '맵 클라우드 데이터 요청(파일)',
-        description: '로봇에 저장된 맵 클라우드 파일을 요청합니다.',
+        summary: '맵 클라우드 데이터 요청 (파일 반환)',
+        description: `
+맵 클라우드 데이터를 요청합니다. 
+
+## 📌 기능 설명
+- SLAMNAV에 맵 클라우드 데이터를 요청합니다.
+- 맵 이름을 입력하여 클라우드 데이터를 요청합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| fileName | string | ✅ | - | 클라우드 파일 이름 | 'cloud.csv' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **404** NOT_FOUND
+  - 파일이 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '맵 클라우드 데이터 요청 성공',
@@ -6983,17 +7843,49 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
-    __param(1, (0, common_2.Res)()),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _f : Object, typeof (_g = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [typeof (_g = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _g : Object, typeof (_h = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _h : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getCloudPipe", null);
 __decorate([
-    (0, common_2.Post)('cloud'),
+    (0, common_1.Post)('cloud'),
     (0, swagger_1.ApiOperation)({
-        summary: '클라우드 저장 요청',
-        description: '클라우드파일을 저장합니다.',
+        summary: '맵 클라우드 데이터 저장 요청',
+        description: `
+맵 클라우드 데이터를 저장합니다. 
+
+## 📌 기능 설명
+- 맵 클라우드 데이터를 저장합니다.
+- 맵 이름을 입력하여 클라우드 데이터를 저장합니다.
+- 기존 파일을 덮어씌웁니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| fileName | string | ✅ | - | 클라우드 파일 이름 | 'cloud.csv' |
+| cloud | array | ✅ | - | 클라우드 데이터. 각 줄에는 4개의 값이 존재하며 순서대로 x, y, z, intensity 을 나타냅니다. | [[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0]] |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청한 명령 | 'saveCloud' |
+| mapName | string | 맵 이름 | 'map1' |
+| fileName | string | 클라우드 파일 이름 | 'cloud.csv' |
+| cloud | array | 클라우드 데이터. 각 줄에는 4개의 값이 존재하며 순서대로 x, y, z, intensity 을 나타냅니다. | [[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0]] |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '클라우드 저장 성공',
@@ -7004,39 +7896,44 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Req)()),
-    __param(1, (0, common_2.Body)()),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _h : Object, typeof (_j = typeof map_dto_1.SaveCloudRequestDto !== "undefined" && map_dto_1.SaveCloudRequestDto) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [typeof (_j = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _j : Object, typeof (_k = typeof map_dto_1.SaveCloudRequestDto !== "undefined" && map_dto_1.SaveCloudRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "saveCloud", null);
 __decorate([
-    (0, common_2.Post)('cloudpipe'),
+    (0, common_1.Get)('tiles/:mapName'),
     (0, swagger_1.ApiOperation)({
-        summary: '클라우드 저장 요청',
-        description: '클라우드파일을 저장합니다. 파일을 gzip으로 압축하여 전송하세요.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '클라우드 저장 성공',
-        type: map_dto_1.SaveCloudPipeResponseDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 에러',
-        type: error_response_dto_1.ErrorResponseDto,
-    }),
-    (0, common_2.UseInterceptors)((0, platform_express_1.FileInterceptor)('cloudFile')),
-    __param(0, (0, common_2.Body)()),
-    __param(1, (0, common_2.UploadedFile)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof map_dto_1.SaveCloudPipeRequestDto !== "undefined" && map_dto_1.SaveCloudPipeRequestDto) === "function" ? _k : Object, typeof (_m = typeof Express !== "undefined" && (_l = Express.Multer) !== void 0 && _l.File) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
-], MapApiController.prototype, "uploadCloudGzip", null);
-__decorate([
-    (0, common_2.Get)('tiles/:mapName'),
-    (0, swagger_1.ApiOperation)({
-        summary: '타일 요청',
-        description: '타일 데이터를 요청합니다.',
+        summary: '맵 타일 존재 여부 요청',
+        description: `
+맵 타일 존재 여부를 요청합니다. 
+
+## 📌 기능 설명
+- 맵 타일 존재 여부를 요청합니다.
+- 맵 이름을 입력하여 타일 존재 여부를 요청합니다.
+- 타일은 특정 맵에만 존재하며 맵 오버레이를 위한 파일입니다.
+
+## 📌 요청 쿼리
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| exist | boolean | 타일 존재 여부 | true |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '타일 요청 성공',
@@ -7046,16 +7943,43 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('mapName')),
+    __param(0, (0, common_1.Param)('mapName')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTilesExists", null);
 __decorate([
-    (0, common_2.Get)('tiles/:mapName/:z/:x/:y'),
+    (0, common_1.Get)('tiles/:mapName/:z/:x/:y'),
     (0, swagger_1.ApiOperation)({
-        summary: '타일 요청',
-        description: '타일 데이터를 요청합니다.',
+        summary: '맵 타일 요청',
+        description: `
+맵 타일 데이터를 요청합니다. 
+
+## 📌 기능 설명
+- 맵 타일 데이터를 요청합니다.
+- 맵 이름을 입력하여 타일 데이터를 요청합니다.
+- 타일은 특정 맵에만 존재하며 맵 오버레이를 위한 파일입니다.
+- 응답은 png 파일 형식으로 반환됩니다.
+
+## 📌 요청 쿼리
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| z | number | ✅ | - | 타일 z 좌표 | 0 |
+| x | number | ✅ | - | 타일 x 좌표 | 0 |
+| y | number | ✅ | - | 타일 y 좌표 | 0 |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **404** NOT_FOUND
+  - 파일이 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '타일 요청 성공',
@@ -7065,19 +7989,70 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Param)('mapName')),
-    __param(1, (0, common_2.Param)('z')),
-    __param(2, (0, common_2.Param)('x')),
-    __param(3, (0, common_2.Param)('y')),
+    __param(0, (0, common_1.Param)('mapName')),
+    __param(1, (0, common_1.Param)('z')),
+    __param(2, (0, common_1.Param)('x')),
+    __param(3, (0, common_1.Param)('y')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTiles", null);
 __decorate([
-    (0, common_2.Get)('topo'),
+    (0, common_1.Get)('topo'),
     (0, swagger_1.ApiOperation)({
-        summary: '토폴로지 파일 요청',
-        description: '맵의 토폴로지 데이터를 요청합니다.',
+        summary: '맵 토폴로지 데이터 요청',
+        description: `
+맵 토폴로지 데이터를 요청합니다. 
+
+## 📌 기능 설명
+- 맵 토폴로지 데이터를 요청합니다.
+- 맵 이름을 입력하여 토폴로지 데이터를 요청합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| fileName | string | ✅ | - | 토폴로지 파일 이름 | 'topo.json' |
+| nodeType | string | - | - | 노드 타입. 사전에 지정된 타입만 조회가능하며 해당 타입값을 입력한 경우, 해당 타입만 조회합니다. | 'GOAL', 'ROUTE', 'INIT' |
+| searchText | string | - | - | 검색단어 | 'node1' |
+| sortOption | string | - | - | 정렬옵션. id 또는 name 값을 기준으로 정렬합니다. | 'id', 'name' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| data | array | 토폴로지 데이터 | [NodeDto] |
+
+## 📌 NodeDto
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| id | string | 노드의 고유 ID값 | 'node1' |
+| name | string | 노드의 이름 | 'node1' |
+| pose | Pose | 노드의 맵 상 글로벌 좌표값 | { x: 1.0, y: 2.0, z: 3.0, rx: 0.0, ry: 0.0, rz: 0.0 } |
+| info | string | 노드의 정보 | 'node1' |
+| links | array | 노드가 연결된 다른 노드의 id값 배열 | [LinkDto] |
+| type | string | 노드의 타입 | 'GOAL', 'ROUTE', 'INIT' |
+
+## 📌 LinkDto
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| id | string | 노드가 연결되는 다른 노드의 id 값 | 'node2' |
+| info | string | 링크의 정보값 | 'node2' |
+| speed | number | 링크의 속도값 | 0 |
+| method | string | 링크의 방법 | 'DIRECT' |
+| safetyField | number | 링크의 안전 필드값 | 0 |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **404** NOT_FOUND
+  - 파일이 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '토폴로지 파일 요청 성공',
@@ -7088,16 +8063,69 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:paramtypes", [typeof (_l = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], MapApiController.prototype, "getTopology", null);
 __decorate([
-    (0, common_2.Get)('topology'),
+    (0, common_1.Get)('topology'),
     (0, swagger_1.ApiOperation)({
-        summary: '토폴로지 파일 요청(페이지네이션)',
-        description: '맵의 토폴로지 데이터를 요청합니다. 검색을 포함한 페이지네이션 기능을 제공합니다.',
+        summary: '맵 토폴로지 데이터 요청(페이지네이션)',
+        description: `
+맵 토폴로지 데이터를 요청합니다. 검색을 포함한 페이지네이션 기능을 제공합니다.
+
+## 📌 요청 쿼리
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| fileName | string | ✅ | - | 토폴로지 파일 이름 | 'topo.json' |
+| nodeType | string | - | - | 노드 타입. 사전에 지정된 타입만 조회가능하며 해당 타입값을 입력한 경우, 해당 타입만 조회합니다. | 'GOAL', 'ROUTE', 'INIT' |
+| searchText | string | - | - | 검색단어 | 'node1' |
+| sortOption | string | - | - | 정렬옵션. id 또는 name 값을 기준으로 정렬합니다. | 'id', 'name' |
+| pageNo | number | - | - | 페이지 번호 | 1 |
+| pageSize | number | - | - | 페이지 크기 | 10 |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| pageNo | number | 페이지 번호 | 1 |
+| pageSize | number | 페이지 크기 | 10 |
+| totalCount | number | 총 노드 개수 | 100 |
+| totalPage | number | 총 페이지 수 | 10 |
+| list | array | 토폴로지 데이터 | [NodeDto] |
+
+## 📌 NodeDto
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| id | string | 노드의 고유 ID값 | 'node1' |
+| name | string | 노드의 이름 | 'node1' |
+| pose | Pose | 노드의 맵 상 글로벌 좌표값 | { x: 1.0, y: 2.0, z: 3.0, rx: 0.0, ry: 0.0, rz: 0.0 } |
+| info | string | 노드의 정보 | 'node1' |
+| links | array | 노드가 연결된 다른 노드의 id값 배열 | [LinkDto] |
+| type | string | 노드의 타입 | 'GOAL', 'ROUTE', 'INIT' |
+
+## 📌 LinkDto
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| id | string | 노드가 연결되는 다른 노드의 id 값 | 'node2' |
+| info | string | 링크의 정보값 | 'node2' |
+| speed | number | 링크의 속도값 | 0 |
+| method | string | 링크의 방법 | 'DIRECT' |
+| safetyField | number | 링크의 안전 필드값 | 0 |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **404** NOT_FOUND
+  - 파일이 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '토폴로지 파일 요청 성공 (페이지네이션)',
@@ -7108,16 +8136,35 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _o : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTopologyPagination", null);
 __decorate([
-    (0, common_2.Get)('topopipe'),
+    (0, common_1.Get)('topopipe'),
     (0, swagger_1.ApiOperation)({
-        summary: '토폴로지 파일 요청(파일)',
-        description: '맵의 토폴로지 데이터를 요청합니다. 파일로 전송합니다.',
+        summary: '맵 토폴로지 데이터 요청 (파일 반환)',
+        description: `
+맵 토폴로지 데이터를 요청합니다. 응답은 파일 형식으로 반환됩니다.
+
+## 📌 요청 쿼리
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| fileName | string | ✅ | - | 토폴로지 파일 이름 | 'topo.json' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **404** NOT_FOUND
+  - 파일이 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '토폴로지 파일 요청 성공',
@@ -7128,17 +8175,68 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Query)()),
-    __param(1, (0, common_2.Res)()),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof map_dto_2.GetTopologyPipeRequestDto !== "undefined" && map_dto_2.GetTopologyPipeRequestDto) === "function" ? _s : Object, typeof (_t = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof map_dto_2.GetTopologyPipeRequestDto !== "undefined" && map_dto_2.GetTopologyPipeRequestDto) === "function" ? _p : Object, typeof (_q = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _q : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTopologyPipe", null);
 __decorate([
-    (0, common_2.Post)('topology'),
+    (0, common_1.Post)('topology'),
     (0, swagger_1.ApiOperation)({
-        summary: '토폴로지 저장 요청',
-        description: '토폴로지 파일을 저장합니다.',
+        summary: '맵 토폴로지 데이터 저장',
+        description: `
+맵 토폴로지 데이터를 저장합니다.
+
+## 📌 기능 설명
+- 맵 토폴로지 데이터를 저장합니다.
+- 맵 이름을 입력하여 토폴로지 데이터를 저장합니다.
+- 기존의 파일을 덮어쓰기 합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| fileName | string | ✅ | - | 토폴로지 파일 이름 | 'topo.json' |
+| data | array | ✅ | - | 토폴로지 데이터 | [NodeDto] |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| mapName | string | 맵 이름 | 'map1' |
+| fileName | string | 토폴로지 파일 이름 | 'topo.json' |
+| data | array | 토폴로지 데이터 | [NodeDto] |
+
+## 📌 NodeDto
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| id | string | 노드의 고유 ID값 | 'node1' |
+| name | string | 노드의 이름 | 'node1' |
+| pose | Pose | 노드의 맵 상 글로벌 좌표값 | { x: 1.0, y: 2.0, z: 3.0, rx: 0.0, ry: 0.0, rz: 0.0 } |
+| info | string | 노드의 정보 | 'node1' |
+| links | array | 노드가 연결된 다른 노드의 id값 배열 | [LinkDto] |
+| type | string | 노드의 타입 | 'GOAL', 'ROUTE', 'INIT' |
+
+## 📌 LinkDto
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| id | string | 노드가 연결되는 다른 노드의 id 값 | 'node2' |
+| info | string | 링크의 정보값 | 'node2' |
+| speed | number | 링크의 속도값 | 0 |
+| method | string | 링크의 방법 | 'DIRECT' |
+| safetyField | number | 링크의 안전 필드값 | 0 |
+
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '토폴로지 저장 성공',
@@ -7149,16 +8247,43 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof map_dto_1.SaveTopologyRequestDto !== "undefined" && map_dto_1.SaveTopologyRequestDto) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof map_dto_1.SaveTopologyRequestDto !== "undefined" && map_dto_1.SaveTopologyRequestDto) === "function" ? _r : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "saveTopology", null);
 __decorate([
-    (0, common_2.Post)('mapping/start'),
+    (0, common_1.Post)('mapping/start'),
     (0, swagger_1.ApiOperation)({
         summary: '맵 생성 시작',
-        description: '맵 생성을 시작합니다. SLAMNAV가 연결되어 있어야 하며 save 요청을 하지 않으면 저장되지 않습니다.',
+        description: `
+맵 생성을 시작합니다. SLAMNAV가 연결되어 있어야 하며 save 요청을 하지 않으면 저장되지 않습니다.
+
+## 📌 기능 설명
+- 맵 생성을 시작합니다.
+- SLAMNAV에 로드되었던 맵이 초기화됩니다.
+- 소켓을 연결하고 mappingCloud 이벤트를 통해 현재 생성중인 맵 데이터를 시각화 할 수 있습니다.
+- mappingSave 요청을 하지 않으면 저장되지 않습니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청한 명령 | 'mappingStart' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **409** CONFLICT
+  - SLAMNAV에서 명령을 거절한 경우
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+  - SLAMNAV가 연결되어 있지 않을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '맵 생성 시작 성공',
@@ -7174,10 +8299,31 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingStart", null);
 __decorate([
-    (0, common_2.Post)('mapping/stop'),
+    (0, common_1.Post)('mapping/stop'),
     (0, swagger_1.ApiOperation)({
-        summary: '맵 생성 취소(저장x)',
-        description: '맵 생성을 취소합니다. 생성 중이던 맵은 저장되지 않고 삭제됩니다.',
+        summary: '맵 생성 종료',
+        description: `
+맵 생성을 종료합니다. 생성 중이던 맵은 저장되지 않고 삭제됩니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청한 명령 | 'mappingStop' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **409** CONFLICT
+  - SLAMNAV에서 명령을 거절한 경우
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+  - SLAMNAV가 연결되어 있지 않을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '맵 생성 취소 성공',
@@ -7193,10 +8339,45 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingStop", null);
 __decorate([
-    (0, common_2.Post)('mapping/save'),
+    (0, common_1.Post)('mapping/save'),
     (0, swagger_1.ApiOperation)({
-        summary: '맵 생성 종료(저장)',
-        description: '맵 생성을 종료하고 저장합니다. 맵은 저장된 후 자동으로 SLAMNAV로 로드됩니다.',
+        summary: '맵 생성 종료',
+        description: `
+맵 생성을 종료합니다. 생성 중이던 맵은 저장되지 않고 삭제됩니다.
+
+## 📌 기능 설명
+- 맵 생성을 종료합니다.
+- 생성 중이던 맵을 저장합니다.
+- 이미 존재하는 맵 이름의 경우 에러를 반환합니다.
+- 생성된 맵은 SLAMNAV로 로드됩니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청한 명령 | 'mappingStop' |
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **409** CONFLICT
+  - SLAMNAV에서 명령을 거절한 경우
+  - 동일한 이름의 맵 폴더가 이미 존재할 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+  - SLAMNAV가 연결되어 있지 않을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '맵 생성 종료 및 저장 성공',
@@ -7207,16 +8388,28 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_2.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _v : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _s : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingSave", null);
 __decorate([
-    (0, common_2.Get)('mapping/reload'),
+    (0, common_1.Get)('mapping/reload'),
     (0, swagger_1.ApiOperation)({
         summary: '매핑 클라우드 재요청',
-        description: '매핑 중인 데이터를 일괄로 재요청합니다. 매핑클라우드는 기본적으로 mappingStart 이후에 추가되는 포인트만 소켓으로 송신되며 브라우저 새로고침, 신규 브라우저 연결 등의 이유로 매핑 클라우드를 받고 싶으면 reload를 통하여 기존에 쌓인 매핑클라우드를 일괄로 소켓을 통해 받아볼 수 있습니다.',
+        description: `
+매핑 중인 데이터를 일괄로 재요청합니다. 매핑클라우드는 기본적으로 mappingStart 이후에 추가되는 포인트만 소켓으로 송신되며 브라우저 새로고침, 신규 브라우저 연결 등의 이유로 매핑 클라우드를 받고 싶으면 reload를 통하여 기존에 쌓인 매핑클라우드를 일괄로 소켓을 통해 받아볼 수 있습니다.
+
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - SLAMNAV에서 명령을 거절한 경우
+  - 동일한 이름의 맵 폴더가 이미 존재할 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+  - SLAMNAV가 연결되어 있지 않을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '매핑 클라우드 재요청 성공',
@@ -7231,108 +8424,9 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingReload", null);
-__decorate([
-    (0, common_2.Post)('upload'),
-    (0, swagger_1.ApiOperation)({
-        summary: '맵 FRS 업로드',
-        description: '맵을 압축하여 FRS로 업로드 합니다. 디렉토리 내 존재하는 map의 이름을 mapName으로 입력하고 FRS상에 저장되길 원하는 이름을 newMapName에 입력하세요. newMapName값이 없음연 본래 mapName으로 저장됩니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '맵 FRS 업로드 성공',
-        type: map_dto_2.UploadMapRequestDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 에러',
-        type: error_response_dto_1.ErrorResponseDto,
-    }),
-    __param(0, (0, common_2.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_w = typeof map_dto_2.UploadMapRequestDto !== "undefined" && map_dto_2.UploadMapRequestDto) === "function" ? _w : Object]),
-    __metadata("design:returntype", Promise)
-], MapApiController.prototype, "uploadMap", null);
-__decorate([
-    (0, common_2.Post)('download'),
-    (0, swagger_1.ApiOperation)({
-        summary: '맵 FRS 다운로드',
-        description: 'FRS로부터 맵을 다운로드 요청합니다. 다운로드는 RRS에서 FRS로 요청하여 받아오는 방식입니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '맵 FRS 다운로드 성공',
-        type: map_dto_3.DownloadMapRequestDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 에러',
-        type: error_response_dto_1.ErrorResponseDto,
-    }),
-    __param(0, (0, common_2.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof map_dto_3.DownloadMapRequestDto !== "undefined" && map_dto_3.DownloadMapRequestDto) === "function" ? _x : Object]),
-    __metadata("design:returntype", Promise)
-], MapApiController.prototype, "downloadMap", null);
-__decorate([
-    (0, common_2.Post)('publish'),
-    (0, swagger_1.ApiOperation)({
-        summary: '맵 수동 발행',
-        description: '맵을 직접 파일을 업로드하여 로봇에 저장합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '맵 수동 발행 성공',
-        schema: {
-            type: 'object',
-            properties: {
-                originalName: { type: 'string' },
-                mapName: { type: 'string' },
-                path: { type: 'string' },
-            },
-        },
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 에러',
-        type: error_response_dto_1.ErrorResponseDto,
-    }),
-    (0, swagger_1.ApiConsumes)('multipart/form-data'),
-    (0, swagger_1.ApiBody)({
-        schema: {
-            type: 'object',
-            properties: {
-                file: {
-                    type: 'string',
-                    format: 'binary',
-                },
-                name: {
-                    type: 'string',
-                },
-                isForce: {
-                    type: 'boolean',
-                },
-            },
-        },
-    }),
-    (0, common_2.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
-        storage: (0, multer_1.diskStorage)({
-            destination: '/data/temp',
-            filename: (req, file, callback) => {
-                console.log('[UPLOAD]', file);
-                const ext = (0, path_1.extname)(file.originalname);
-                const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}${ext}`;
-                callback(null, filename);
-            },
-        }),
-    })),
-    __param(0, (0, common_2.UploadedFile)()),
-    __param(1, (0, common_2.Req)()),
-    __param(2, (0, common_2.Body)('name')),
-    __param(3, (0, common_2.Body)('isForce')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_z = typeof Express !== "undefined" && (_y = Express.Multer) !== void 0 && _y.File) === "function" ? _z : Object, typeof (_0 = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _0 : Object, String, Boolean]),
-    __metadata("design:returntype", Promise)
-], MapApiController.prototype, "pulishMap", null);
 exports.MapApiController = MapApiController = __decorate([
     (0, swagger_1.ApiTags)('맵 API'),
-    (0, common_2.Controller)('map'),
+    (0, common_1.Controller)('map'),
     __metadata("design:paramtypes", [typeof (_a = typeof map_api_service_1.MapApiService !== "undefined" && map_api_service_1.MapApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], MapApiController);
 
@@ -7373,8 +8467,8 @@ let MapApiService = class MapApiService {
     onModuleInit() {
         this.mapService = this.mapMicroservice.getService('MapGrpcService');
     }
-    async loadMap(mapName) {
-        return await (0, rxjs_1.lastValueFrom)(this.mapService.load({ command: map_command_domain_1.MapCommand.loadMap, mapName }));
+    async loadMap(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.mapService.load({ command: map_command_domain_1.MapCommand.loadMap, mapName: dto.mapName }));
     }
     async getCloud(dto) {
         const resp = await (0, rxjs_1.lastValueFrom)(this.mapService.getCloud(dto));
@@ -7692,6 +8786,25 @@ class MapCommandModel {
                 this.path = this.getMapsDir(this.mapName, this.fileName);
                 break;
             }
+            case MapCommand.mappingStart: {
+                break;
+            }
+            case MapCommand.mappingStop: {
+                break;
+            }
+            case MapCommand.mappingSave: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName);
+                if ((0, fs_1.existsSync)(this.path)) {
+                    throw new rpc_code_exception_1.RpcCodeException(`${this.mapName} 이름의 맵폴더가 존재합니다.`, constant_1.GrpcCode.AlreadyExists);
+                }
+                break;
+            }
+            case MapCommand.mappingReload: {
+                break;
+            }
         }
     }
     parseStatus(value) {
@@ -7879,7 +8992,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadRequestSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = exports.MapCommand = void 0;
+exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadRequestSlamnav = exports.LoadResponseDto = exports.LoadRequestDto = exports.MapLoadRequestDto = exports.MapCommand = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const util_1 = __webpack_require__(13);
@@ -7915,6 +9028,19 @@ var MapCommand;
     MapCommand["mappingSave"] = "mappingSave";
     MapCommand["mappingReload"] = "mappingReload";
 })(MapCommand || (exports.MapCommand = MapCommand = {}));
+class MapLoadRequestDto {
+}
+exports.MapLoadRequestDto = MapLoadRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MAPNAME,
+        example: 'Large',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], MapLoadRequestDto.prototype, "mapName", void 0);
 class LoadRequestDto {
 }
 exports.LoadRequestDto = LoadRequestDto;
@@ -13757,7 +14883,7 @@ function mapGrpcToHttpStatus(code) {
         case constant_1.GrpcCode.ResourceExhausted:
             return common_1.HttpStatus.TOO_MANY_REQUESTS;
         case constant_1.GrpcCode.FailedPrecondition:
-            return common_1.HttpStatus.BAD_REQUEST;
+            return common_1.HttpStatus.BAD_GATEWAY;
         case constant_1.GrpcCode.Aborted:
             return common_1.HttpStatus.CONFLICT;
         case constant_1.GrpcCode.OutOfRange:
@@ -13772,6 +14898,8 @@ function mapGrpcToHttpStatus(code) {
             return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
         case constant_1.GrpcCode.Unauthenticated:
             return common_1.HttpStatus.UNAUTHORIZED;
+        case constant_1.GrpcCode.DBError:
+            return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
         default:
             return common_1.HttpStatus.INTERNAL_SERVER_ERROR;
     }
@@ -16296,6 +17424,8 @@ class MoveModel {
         this.command = param.command;
         this.method = param.method;
         this.direction = param.direction ?? 'forward';
+        this.message = param.message;
+        this.result = param.result;
         this.preset = param.preset;
         this.goalId = param.goalId;
         this.x = param.x;
@@ -16314,6 +17444,8 @@ class MoveModel {
     }
     async checkResult(result, message) {
         this.statusChange(result);
+        this.result = result;
+        this.message = message;
         if (result === 'reject' || result === 'fail') {
             throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
         }
@@ -16431,6 +17563,8 @@ class LocalizationModel {
         this.y = param.y;
         this.z = param.z;
         this.rz = param.rz;
+        this.message = param.message;
+        this.result = param.result;
         this.id = util_1.UrlUtil.generateUUID();
     }
     assignId(id) {
@@ -16445,6 +17579,8 @@ class LocalizationModel {
     }
     async checkResult(result, message) {
         this.statusChange(result);
+        this.message = message;
+        this.result = result;
         if (result === 'reject' || result === 'fail') {
             throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
         }
@@ -16505,6 +17641,8 @@ class ControlModel {
         this.minZ = param?.minZ;
         this.maxZ = param?.maxZ;
         this.mapRange = param?.mapRange;
+        this.message = param?.message;
+        this.result = param?.result;
     }
     onOffControl(param) {
         this.status = ControlStatus.pending;
@@ -16574,6 +17712,8 @@ class ControlModel {
     }
     async checkResult(result, message) {
         this.statusChange(result);
+        this.message = message;
+        this.result = result;
         if (result === 'reject' || result === 'fail') {
             throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
         }

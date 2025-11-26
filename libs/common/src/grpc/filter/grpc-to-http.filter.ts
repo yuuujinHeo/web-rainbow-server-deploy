@@ -74,7 +74,7 @@ function mapGrpcToHttpStatus(code: number): number {
     case GrpcCode.ResourceExhausted:
       return HttpStatus.TOO_MANY_REQUESTS;
     case GrpcCode.FailedPrecondition:
-      return HttpStatus.BAD_REQUEST;
+      return HttpStatus.BAD_GATEWAY;
     case GrpcCode.Aborted:
       return HttpStatus.CONFLICT;
     case GrpcCode.OutOfRange:
@@ -89,6 +89,8 @@ function mapGrpcToHttpStatus(code: number): number {
       return HttpStatus.INTERNAL_SERVER_ERROR;
     case GrpcCode.Unauthenticated:
       return HttpStatus.UNAUTHORIZED;
+    case GrpcCode.DBError:
+      return HttpStatus.INTERNAL_SERVER_ERROR;
     default:
       return HttpStatus.INTERNAL_SERVER_ERROR;
   }

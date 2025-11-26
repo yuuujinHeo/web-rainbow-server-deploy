@@ -34,6 +34,16 @@ export enum MapCommand {
   mappingReload = 'mappingReload',
 }
 
+export class MapLoadRequestDto {
+  @ApiProperty({
+    description: Description.MAPNAME,
+    example: 'Large',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  mapName: string;
+}
 export class LoadRequestDto {
   @ApiProperty({
     description: Description.COMMAND,

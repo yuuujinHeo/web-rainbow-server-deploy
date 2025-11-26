@@ -5,14 +5,13 @@
 // source: control.proto
 
 /* eslint-disable */
-import { Metadata } from "@grpc/grpc-js";
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
+import { Metadata } from '@grpc/grpc-js';
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
 
-export const protobufPackage = "control";
+export const protobufPackage = 'control';
 
-export interface Empty {
-}
+export interface Empty {}
 
 export interface OnOffControlRequest {
   command: string;
@@ -119,7 +118,7 @@ export interface GetObsBoxResponse {
   message?: string | undefined;
 }
 
-export const CONTROL_PACKAGE_NAME = "control";
+export const CONTROL_PACKAGE_NAME = 'control';
 
 /** led, */
 
@@ -161,10 +160,7 @@ export interface ControlGrpcServiceController {
     metadata?: Metadata,
   ): Promise<LEDControlResponse> | Observable<LEDControlResponse> | LEDControlResponse;
 
-  setSafetyField(
-    request: SafetyField,
-    metadata?: Metadata,
-  ): Promise<SafetyField> | Observable<SafetyField> | SafetyField;
+  setSafetyField(request: SafetyField, metadata?: Metadata): Promise<SafetyField> | Observable<SafetyField> | SafetyField;
 
   getSafetyField(request: Empty, metadata?: Metadata): Promise<SafetyField> | Observable<SafetyField> | SafetyField;
 
@@ -178,40 +174,34 @@ export interface ControlGrpcServiceController {
     metadata?: Metadata,
   ): Promise<SafetyIoControlResponse> | Observable<SafetyIoControlResponse> | SafetyIoControlResponse;
 
-  setObsBox(
-    request: SetObsBoxRequest,
-    metadata?: Metadata,
-  ): Promise<SetObsBoxResponse> | Observable<SetObsBoxResponse> | SetObsBoxResponse;
+  setObsBox(request: SetObsBoxRequest, metadata?: Metadata): Promise<SetObsBoxResponse> | Observable<SetObsBoxResponse> | SetObsBoxResponse;
 
-  getObsBox(
-    request: Empty,
-    metadata?: Metadata,
-  ): Promise<GetObsBoxResponse> | Observable<GetObsBoxResponse> | GetObsBoxResponse;
+  getObsBox(request: Empty, metadata?: Metadata): Promise<GetObsBoxResponse> | Observable<GetObsBoxResponse> | GetObsBoxResponse;
 }
 
 export function ControlGrpcServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      "onOffControl",
-      "workControl",
-      "ledControl",
-      "setSafetyField",
-      "getSafetyField",
-      "exAccessoryControl",
-      "safetyIoControl",
-      "setObsBox",
-      "getObsBox",
+      'onOffControl',
+      'workControl',
+      'ledControl',
+      'setSafetyField',
+      'getSafetyField',
+      'exAccessoryControl',
+      'safetyIoControl',
+      'setObsBox',
+      'getObsBox',
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+      GrpcMethod('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
+      GrpcStreamMethod('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
     }
   };
 }
 
-export const CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
+export const CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
