@@ -1,7 +1,5 @@
 #!/bin/bash
 
-sudo chmod +x *.sh
-
 echo "=========== 1) PM2에 등록된 서비스 종료 (없으면 에러남 정상)"
 pm2 delete start_docker
 pm2 delete start_host
@@ -17,7 +15,15 @@ if ! docker compose -f rrs-compose.yml down; then
 fi
 
 echo "=========== 3) 혹시 모르니 재설치 (git pull + pnpm install)"
-git pull
+git stash
+if ! git pull; then
+  echo "❌ git pull 실패! 이후 작업을 중단합니다."
+  echo "   git pull을 수동으로 해결하고 다시 시도해주세요."
+  exit 1
+fi
+
+sudo chmod +x *.sh
+
 
 # 👉 pnpm install 실패 시 바로 종료
 if ! pnpm install; then
