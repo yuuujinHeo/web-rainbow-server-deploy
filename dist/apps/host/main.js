@@ -8428,7 +8428,7 @@ let NetworkMqttController = class NetworkMqttController {
 };
 exports.NetworkMqttController = NetworkMqttController;
 __decorate([
-    (0, microservices_1.EventPattern)('ready:network'),
+    (0, microservices_1.EventPattern)('get:network:ready'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
@@ -9351,6 +9351,7 @@ let OnvifDeviceService = class OnvifDeviceService {
     }
     async onReady() {
         const ok = await this.waitForGrpc(this.configMicroservice, 'ConfigGrpcService', 3000);
+        this.initNetwork();
         if (!ok) {
             this.logger?.error('[Device] Config 연결 안됨');
             return;
@@ -10259,7 +10260,6 @@ let OnvifMqttController = class OnvifMqttController {
         this.deviceService.onReady();
     }
     async readyNetwork() {
-        this.deviceService.initNetwork();
     }
 };
 exports.OnvifMqttController = OnvifMqttController;
