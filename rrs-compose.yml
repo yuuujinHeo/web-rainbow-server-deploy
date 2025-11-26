@@ -139,32 +139,32 @@ services:
   #     timeout: 3s
   #     retries: 10
   #     start_period: 5s
-  microservice-task:
-    container_name: microservice-task
-    image: rainbowyujin/node_host_root:latest
-    command: pnpm nodemon dist/apps/task/main.js
-    network_mode: host
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - 4008:4008
-    volumes:
-      - ./dist/apps/task:/usr/src/app/dist/apps/task
-      - ./public:/usr/src/app/public
-      - ./libs:/usr/src/app/libs
-      - ./log:/log
-      - ./.env:/usr/src/app/.env
-      - ./proto:/usr/src/app/proto
-      - /usr/src/app/node_modules
-      - /data/maps:/data/maps
-      - ${HOST_DATA_DIR}:/data
-    healthcheck:
-      test: ['CMD', 'sh', '-c', 'netstat -tuln 4008']
-      interval: 10s
-      timeout: 3s
-      retries: 10
-      start_period: 5s
+  # microservice-task:
+  #   container_name: microservice-task
+  #   image: rainbowyujin/node_host_root:latest
+  #   command: pnpm nodemon dist/apps/task/main.js
+  #   network_mode: host
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   ports:
+  #     - 4008:4008
+  #   volumes:
+  #     - ./dist/apps/task:/usr/src/app/dist/apps/task
+  #     - ./public:/usr/src/app/public
+  #     - ./libs:/usr/src/app/libs
+  #     - ./log:/log
+  #     - ./.env:/usr/src/app/.env
+  #     - ./proto:/usr/src/app/proto
+  #     - /usr/src/app/node_modules
+  #     - /data/maps:/data/maps
+  #     - ${HOST_DATA_DIR}:/data
+  #   healthcheck:
+  #     test: ['CMD', 'sh', '-c', 'netstat -tuln 4008']
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 10
+  #     start_period: 5s
   postgres:
     container_name: postgres
     restart: always

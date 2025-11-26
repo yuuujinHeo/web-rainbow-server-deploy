@@ -2067,18 +2067,21 @@ let MapService = class MapService {
             const entries = await this.mapFileOutput.readMapList({});
             this.logger?.debug(`[APP] getMapList : 경로 내 Map 폴더 개수 = ${entries.list.length} (${command.path})`);
             command.statusChange(map_command_domain_1.CommandStatus.success);
-            await this.databaseOutput.update(command);
             return entries;
         }
         catch (error) {
             if (command) {
                 command.statusChange(map_command_domain_1.CommandStatus.fail);
-                await this.databaseOutput.update(command);
             }
             this.logger?.error(`[APP] getMapList : ${util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('파일을 읽는 도중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
         }
     }
     async getCloud(request) {
@@ -2742,6 +2745,12 @@ class MapCommandModel {
             return fileName;
         }
     }
+    async checkResult(result, message) {
+        this.statusChange(result);
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
+        }
+    }
     getMapsDir(mapName, fileName) {
         const paths = ['/data/maps'];
         if (mapName)
@@ -3346,15 +3355,20 @@ let MapMqttInputController = class MapMqttInputController {
         this.mapService.setCurrentMap(data.map.map_name);
     }
     getMoveResponse(data) {
-        const { id } = data;
-        const listener = this.pendingService.pendingResponses.get(id);
-        if (listener) {
-            listener.received.push(data);
-            listener.resolve(data);
-            this.pendingService.pendingResponses.delete(id);
+        try {
+            const { id } = data;
+            const listener = this.pendingService.pendingResponses.get(id);
+            if (listener) {
+                listener.received.push(data);
+                listener.resolve(data);
+                this.pendingService.pendingResponses.delete(id);
+            }
+            else {
+                this.mapService.mappingResponse(data);
+            }
         }
-        else {
-            this.mapService.mappingResponse(data);
+        catch (error) {
+            this.logger?.error(`[Map] getMoveResponse : ${(0, log_1.errorToJson)(error)}`);
         }
     }
     getLoadResponse(data) {
@@ -10365,6 +10379,7 @@ const onvif_module_1 = __webpack_require__(138);
 const bodyParser = __webpack_require__(154);
 const xmlParser = __webpack_require__(155);
 const common_2 = __webpack_require__(33);
+const constant_1 = __webpack_require__(67);
 async function bootstrap() {
     console.log('🚀 호스트 서버 시작...');
     const mapModule = await core_1.NestFactory.create(map_module_1.MapModule);
@@ -10479,6 +10494,9 @@ async function bootstrap() {
     await onvifModule.init();
     await onvifModule.startAllMicroservices();
     await onvifModule.listen(process.env.RRS_ONVIF_PORT, '0.0.0.0');
+    const mqttClient = onvifModule.get(constant_1.MQTT_BROKER);
+    await mqttClient.connect();
+    mqttClient.emit('get:socket:connection', {});
 }
 bootstrap().catch((error) => {
     console.error('❌ 호스트 서버 시작 실패:', error);

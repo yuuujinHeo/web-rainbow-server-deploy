@@ -270,7 +270,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(10), exports);
 __exportStar(__webpack_require__(31), exports);
-__exportStar(__webpack_require__(88), exports);
+__exportStar(__webpack_require__(34), exports);
 
 
 /***/ }),
@@ -1097,7 +1097,29 @@ exports.GrpcInterceptor = GrpcInterceptor;
 module.exports = require("rxjs");
 
 /***/ }),
-/* 34 */,
+/* 34 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(35), exports);
+
+
+/***/ }),
 /* 35 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -1278,12 +1300,14 @@ let TaskService = class TaskService {
     async updateResponse(resp) {
         try {
             this.logger?.info(`[Task] updateResponse : ${JSON.stringify(resp)}`);
-            const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
-            if (dbmodel) {
-                const model = new task_domain_1.TaskModel(dbmodel);
-                model.assignId(dbmodel.id);
-                model.statusChange('accept');
-                this.databaseOutput.update(model);
+            if (resp.id) {
+                const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
+                if (dbmodel) {
+                    const model = new task_domain_1.TaskModel(dbmodel);
+                    model.assignId(dbmodel.id);
+                    model.statusChange('accept');
+                    this.databaseOutput.update(model);
+                }
             }
         }
         catch (error) {
@@ -3140,8 +3164,8 @@ let TaskMqttInputController = class TaskMqttInputController {
             listener.received.push(data);
             listener.resolve(data);
             this.pendingService.pendingResponses.delete(data.id);
-            this.taskService.updateResponse(data);
         }
+        this.taskService.updateResponse(data);
     }
     getVariablesResponse(data) {
         console.log('variablesResponse Mqtt In : ', data.variables[0]);
@@ -3974,29 +3998,6 @@ exports.CleanLogService = CleanLogService = __decorate([
 /***/ ((module) => {
 
 module.exports = require("@nestjs/schedule");
-
-/***/ }),
-/* 88 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(35), exports);
-
 
 /***/ })
 /******/ 	]);

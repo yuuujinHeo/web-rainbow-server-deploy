@@ -35,7 +35,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(4), exports);
 __exportStar(__webpack_require__(25), exports);
-__exportStar(__webpack_require__(116), exports);
+__exportStar(__webpack_require__(28), exports);
 
 
 /***/ }),
@@ -862,7 +862,29 @@ exports.GrpcInterceptor = GrpcInterceptor;
 module.exports = require("rxjs");
 
 /***/ }),
-/* 28 */,
+/* 28 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(29), exports);
+
+
+/***/ }),
 /* 29 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -1056,6 +1078,7 @@ let ControlMongoAdapter = class ControlMongoAdapter {
     }
     async save(model) {
         try {
+            console.log('SAVE:', model);
             return await this.Repository.create(model);
         }
         catch (error) {
@@ -1065,6 +1088,7 @@ let ControlMongoAdapter = class ControlMongoAdapter {
     }
     async update(model) {
         try {
+            console.log('UPDATE:', model);
             return await this.Repository.findByIdAndUpdate(model.id, model);
         }
         catch (error) {
@@ -1133,6 +1157,54 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Array)
 ], Control.prototype, "mcuDio", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Control.prototype, "color", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "frequency", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Control.prototype, "safetyField", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Control.prototype, "resetFlag", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Control.prototype, "position", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "minX", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "maxX", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "minY", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "maxY", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "minZ", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "maxZ", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "mapRange", void 0);
 exports.Control = Control = __decorate([
     (0, mongoose_1.Schema)()
 ], Control);
@@ -2110,7 +2182,6 @@ const control_domain_1 = __webpack_require__(64);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
 const control_ex_accessory_output_port_1 = __webpack_require__(66);
-const control_type_1 = __webpack_require__(65);
 const saveLog_service_1 = __webpack_require__(40);
 let ControlService = class ControlService {
     constructor(databaseOutput, slamnavOutput, exAccessoryOutput, saveLogService) {
@@ -2127,145 +2198,154 @@ let ControlService = class ControlService {
     }
     async OnOffControl(request) {
         let command = null;
+        let resp = null;
         try {
+            this.logger?.info(`[Control] ================================`);
             this.logger?.info(`[Control] OnOffControl : ${JSON.stringify(request)}`);
-            command = new control_domain_1.ControlModel(request);
+            command = new control_domain_1.ControlModel();
+            command.onOffControl(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.onoffControl(command);
+            resp = await this.slamnavOutput.onoffControl(command);
             this.logger?.info(`[Control] OnOffControl Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            await this.databaseOutput.update(command);
+            await command.checkResult(resp.result, resp.message);
             return { ...resp, command: request.command, onoff: request.onoff };
         }
         catch (error) {
             this.logger?.error(`[Control] OnOffControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('OnOff 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async LEDControl(request) {
         let command = null;
+        let resp = null;
         try {
+            this.logger?.info(`[Control] ================================`);
             this.logger?.info(`[Control] LEDControl : ${JSON.stringify(request)}`);
-            command = new control_domain_1.ControlModel(request);
+            command = new control_domain_1.ControlModel();
+            command.ledControl(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.onoffControl(command);
+            resp = await this.slamnavOutput.onoffControl(command);
             this.logger?.info(`[Control] LEDControl Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            await this.databaseOutput.update(command);
+            await command.checkResult(resp.result, resp.message);
             return { ...resp, command: request.command, onoff: request.onoff };
         }
         catch (error) {
             this.logger?.error(`[Control] LEDControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('LEDControl 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async WorkControl(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Control] WorkControl : ${JSON.stringify(request)}`);
-            command = new control_domain_1.ControlModel(request);
+            command = new control_domain_1.ControlModel();
+            command.workControl(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.workControl(command);
+            resp = await this.slamnavOutput.workControl(command);
             this.logger?.info(`[Control] WorkControl Response : ${JSON.stringify(resp)}`);
-            if (resp.result === 'success' || resp.result === 'accept') {
-                command.statusChange(resp.result);
-                await this.databaseOutput.update(command);
-            }
-            else {
-                throw new rpc_code_exception_1.RpcCodeException(resp.message, constant_1.GrpcCode.Aborted);
-            }
+            await command.checkResult(resp.result, resp.message);
             return resp;
         }
         catch (error) {
             this.logger?.error(`[Control] WorkControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('WorkControl 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async ExAccessoryControl(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Control] ExAccessoryControl : ${JSON.stringify(request)}`);
-            command = new control_domain_1.ControlModel(request);
+            command = new control_domain_1.ControlModel();
+            command.exAccessoryControl(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.exAccessory_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('ExAccessory가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.exAccessoryOutput.exAccessoryControl(command);
+            resp = await this.exAccessoryOutput.exAccessoryControl(command);
             this.logger?.info(`[Control] ExAccessoryControl Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            await this.databaseOutput.update(command);
+            await command.checkResult(resp.result ?? '', resp.message);
             return resp;
         }
         catch (error) {
             this.logger?.error(`[Control] ExAccessoryControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('ExAccessoryControl 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async setObsBox(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Control] setObsBox : ${JSON.stringify(request)}`);
-            command = new control_domain_1.ControlModel({
-                command: control_type_1.ControlCommand.setObsBox,
-                minX: request.minX,
-                maxX: request.maxX,
-                minY: request.minY,
-                maxY: request.maxY,
-                minZ: request.minZ,
-                maxZ: request.maxZ,
-                mapRange: request.mapRange,
-            });
+            command = new control_domain_1.ControlModel();
+            command.setObsBoxRequest(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.obsBoxControl(command);
+            resp = await this.slamnavOutput.obsBoxControl(command);
             this.logger?.info(`[Control] setObsBox Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            await this.databaseOutput.update(command);
+            await command.checkResult(resp.result, resp.message);
             return {
                 ...resp,
                 minX: request.minX,
@@ -2280,40 +2360,49 @@ let ControlService = class ControlService {
         catch (error) {
             this.logger?.error(`[Control] setObsBox : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('setObsBox 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async getObsBox(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Control] getObsBox`);
-            command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.getObsBox });
+            command = new control_domain_1.ControlModel();
+            command.getObsBoxRequest();
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.obsBoxControl(command);
+            resp = await this.slamnavOutput.obsBoxControl(command);
             this.logger?.info(`[Control] getObsBox Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            await this.databaseOutput.update(command);
+            await command.checkResult(resp.result, resp.message);
             return { ...resp };
         }
         catch (error) {
             this.logger?.error(`[Control] getObsBox : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('getObsBox 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
         }
     }
     slamConnect() {
@@ -2324,107 +2413,119 @@ let ControlService = class ControlService {
     }
     async updateResponse(resp) {
         try {
-            this.logger?.info(`[Control] updateResponse : ${JSON.stringify(resp)}`);
-            const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
-            if (dbmodel) {
-                const model = new control_domain_1.ControlModel(dbmodel);
-                model.assignId(dbmodel._id);
-                model.statusChange(resp.result);
-                this.databaseOutput.update(model);
-                this.logger?.info(`[Control] update Response : ${model.id}, ${model.status}`);
+            this.logger?.info(`[Control] update controlResponse : ${JSON.stringify(resp)}`);
+            if (resp.id) {
+                const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
+                if (dbmodel) {
+                    const model = new control_domain_1.ControlModel(dbmodel);
+                    model.assignId(dbmodel._id);
+                    model.statusChange(resp.result);
+                    this.databaseOutput.update(model);
+                    this.logger?.info(`[Control] update DB : ${model.id}, ${model.status}`);
+                }
             }
         }
         catch (error) {
-            this.logger?.error(`[Control] updateResponse : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] update controlResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
     async SafetyIoControl(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Control] SafetyIoControl : ${JSON.stringify(request)}`);
-            const req = {
-                command: request.command,
-                mcuDio: request.mcuDio ? request.mcuDio.map((e) => e.channel) : undefined,
-            };
-            command = new control_domain_1.ControlModel(req);
+            command = new control_domain_1.ControlModel();
+            command.safetyIoControl(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.safetyIoControl(command);
-            if (resp.result == 'success' || resp.result == 'accept') {
-                this.logger?.info(`[Control] SafetyIoControl Response : ${JSON.stringify(resp)}`);
-                command.statusChange(resp.result);
-                await this.databaseOutput.update(command);
-                return { ...resp, mcuDio: resp.mcuDio?.map((e) => ({ channel: e })), mcuDin: resp.mcuDin?.map((e) => ({ channel: e })) };
-            }
-            else {
-                throw new rpc_code_exception_1.RpcCodeException(resp.message, constant_1.GrpcCode.Aborted);
-            }
+            resp = await this.slamnavOutput.safetyIoControl(command);
+            this.logger?.info(`[Control] SafetyIoControl Response : ${JSON.stringify(resp)}`);
+            await command.checkResult(resp.result, resp.message);
+            return { ...resp, mcuDio: resp.mcuDio?.map((e) => ({ channel: e })), mcuDin: resp.mcuDin?.map((e) => ({ channel: e })) };
         }
         catch (error) {
             this.logger?.error(`[Control] SafetyIoControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('SafetyIoControl 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async setSafetyField(request) {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Control] setSafetyField : ${JSON.stringify(request)}`);
-            command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.setSafetyField, safetyField: request.safetyField });
+            command = new control_domain_1.ControlModel();
+            command.setSafetyFieldRequest(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.safetyFieldControl(command);
+            resp = await this.slamnavOutput.safetyFieldControl(command);
             this.logger?.info(`[Control] setSafetyField Response : ${JSON.stringify(resp)}`);
-            command.statusChange('accept');
-            await this.databaseOutput.update(command);
+            await command.checkResult(resp.result, resp.message);
             return { ...resp, safetyField: request.safetyField };
         }
         catch (error) {
             this.logger?.error(`[Control] setSafetyField : ${(0, common_2.errorToJson)(error)}`);
+            if (command) {
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
+            }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('setSafetyField 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
     }
     async getSafetyField() {
         let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Control] getSafetyField `);
-            command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.getSafetyField });
+            command = new control_domain_1.ControlModel();
+            command.getSafetyFieldRequest();
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            const resp = await this.slamnavOutput.safetyFieldControl(command);
+            resp = await this.slamnavOutput.safetyFieldControl(command);
             this.logger?.info(`[Control] getSafetyField Response : ${JSON.stringify(resp)}`);
-            command.statusChange('success');
-            await this.databaseOutput.update(command);
+            await command.checkResult(resp.result, resp.message);
             return { ...resp, safetyField: resp.safetyField };
         }
         catch (error) {
             this.logger?.error(`[Control] getSafetyField : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
-                command.statusChange(control_domain_1.ControlStatus.fail);
-                await this.databaseOutput.update(command);
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('getSafetyField 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
         }
     }
 };
@@ -2475,14 +2576,51 @@ var ControlStatus;
 class ControlModel {
     constructor(param) {
         this.status = ControlStatus.pending;
+        this.command = param?.command;
+        this.onoff = param?.onoff;
+        this.frequency = param?.frequency;
+        this.color = this.parseColor(param?.color);
+        this.safetyField = param?.safetyField;
+        this.resetFlag = param?.resetFlag;
+        this.position = param?.position;
+        this.mcuDio = param?.mcuDio;
+        this.minX = param?.minX;
+        this.maxX = param?.maxX;
+        this.minY = param?.minY;
+        this.maxY = param?.maxY;
+        this.minZ = param?.minZ;
+        this.maxZ = param?.maxZ;
+        this.mapRange = param?.mapRange;
+    }
+    onOffControl(param) {
+        this.status = ControlStatus.pending;
         this.command = param.command;
         this.onoff = param.onoff;
         this.frequency = param.frequency;
+    }
+    ledControl(param) {
+        this.status = ControlStatus.pending;
+        this.command = param.command;
+        this.onoff = param.onoff;
         this.color = this.parseColor(param.color);
-        this.safetyField = param.safetyField;
-        this.resetFlag = param.resetFlag;
-        this.position = param.position;
-        this.mcuDio = param.mcuDio;
+    }
+    workControl(param) {
+        this.status = ControlStatus.pending;
+        this.command = param.command;
+    }
+    exAccessoryControl(param) {
+        this.status = ControlStatus.pending;
+        this.command = param.command;
+        this.position = param.pose;
+    }
+    safetyIoControl(param) {
+        this.status = ControlStatus.pending;
+        this.command = param.command;
+        this.mcuDio = param.mcuDio.map((e) => e.channel);
+    }
+    setObsBoxRequest(param) {
+        this.status = ControlStatus.pending;
+        this.command = control_type_1.ControlCommand.setObsBox;
         this.minX = param.minX;
         this.maxX = param.maxX;
         this.minY = param.minY;
@@ -2490,6 +2628,19 @@ class ControlModel {
         this.minZ = param.minZ;
         this.maxZ = param.maxZ;
         this.mapRange = param.mapRange;
+    }
+    getObsBoxRequest() {
+        this.status = ControlStatus.pending;
+        this.command = control_type_1.ControlCommand.getObsBox;
+    }
+    setSafetyFieldRequest(param) {
+        this.status = ControlStatus.pending;
+        this.command = control_type_1.ControlCommand.setSafetyField;
+        this.safetyField = param.safetyField;
+    }
+    getSafetyFieldRequest() {
+        this.status = ControlStatus.pending;
+        this.command = control_type_1.ControlCommand.getSafetyField;
     }
     assignId(id) {
         this.id = id;
@@ -2506,6 +2657,12 @@ class ControlModel {
             return value;
         }
         return ControlStatus.unknown;
+    }
+    async checkResult(result, message) {
+        this.statusChange(result);
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
+        }
     }
     parseColor(value) {
         if (Object.values(control_type_1.LEDColor).includes(value)) {
@@ -3090,24 +3247,21 @@ let ControlMqttController = class ControlMqttController {
         });
         this.pendingService.pendingResponses.clear();
     }
-    getMoveResponse(data) {
+    getControlResponse(data) {
         try {
             const { id } = data;
             const listener = this.pendingService.pendingResponses.get(id);
             if (listener) {
                 listener.received.push(data);
-                if (data.result === 'accept' || data.result === 'success') {
-                    listener.resolve(data);
-                }
-                else {
-                    listener.reject(data);
-                }
+                listener.resolve(data);
                 this.pendingService.pendingResponses.delete(id);
+            }
+            else {
                 this.controlService.updateResponse(data);
             }
         }
         catch (error) {
-            this.logger?.error(`[Control] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] getControlResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
 };
@@ -3130,7 +3284,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_d = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
-], ControlMqttController.prototype, "getMoveResponse", null);
+], ControlMqttController.prototype, "getControlResponse", null);
 exports.ControlMqttController = ControlMqttController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [typeof (_a = typeof control_service_1.ControlService !== "undefined" && control_service_1.ControlService) === "function" ? _a : Object, typeof (_b = typeof control_pending_service_1.ControlPendingService !== "undefined" && control_pending_service_1.ControlPendingService) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
@@ -4013,6 +4167,7 @@ exports.LocalizationService = void 0;
 const common_1 = __webpack_require__(32);
 const localization_database_output_port_1 = __webpack_require__(89);
 const localization_slamnav_output_port_1 = __webpack_require__(90);
+const common_2 = __webpack_require__(3);
 const localization_domain_1 = __webpack_require__(91);
 const constant_1 = __webpack_require__(68);
 const microservices_1 = __webpack_require__(2);
@@ -4030,28 +4185,37 @@ let LocalizationService = class LocalizationService {
         console.log('LocalizationService Constructed');
     }
     async Localization(initDto) {
-        this.logger?.info(`[Localization] Localization ================================`);
-        const command = new localization_domain_1.LocalizationModel(initDto);
-        this.logger?.info(`[Localization] Localization Command :  ${JSON.stringify(command)}`);
-        command.checkVariables();
-        const result = await this.databaseOutput.save(command);
-        this.logger?.info(`[Localization] Localization DB Save : ${result._id.toString()}`);
-        command.assignId(result._id.toString());
-        if (this.slamnav_connection) {
-            const resp = await this.slamnavOutput.localizationRequest(command);
+        let command = null;
+        let resp = null;
+        try {
+            this.logger?.info(`[Localization] Localization ================================`);
+            command = new localization_domain_1.LocalizationModel(initDto);
+            this.logger?.info(`[Localization] Localization Command :  ${JSON.stringify(command)}`);
+            command.checkVariables();
+            const result = await this.databaseOutput.save(command);
+            this.logger?.info(`[Localization] Localization DB Save : ${result._id.toString()}`);
+            command.assignId(result._id.toString());
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_2.GrpcCode.Aborted);
+            }
+            resp = await this.slamnavOutput.localizationRequest(command);
             this.logger?.info(`[Localization] Localization Response : ${JSON.stringify(resp)}`);
-            if (resp.result === 'success' || resp.result === 'accept') {
-                command.statusChange(resp.result);
-                const result = await this.databaseOutput.update(command);
-                this.logger?.info(`[Localization] Localization DB Update : ${result?._id.toString()}, ${command.status}`);
-                return resp;
-            }
-            else {
-                throw new rpc_code_exception_1.RpcCodeException(resp.message, constant_2.GrpcCode.Aborted);
-            }
+            await command.checkResult(resp.result, resp.message);
+            return resp;
         }
-        else {
-            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_2.GrpcCode.Aborted);
+        catch (error) {
+            this.logger?.error(`[Localization] Localization : ${(0, common_2.errorToJson)(error)}`);
+            if (command) {
+                command.statusChange(resp?.result ?? localization_domain_1.LocalizationStatus.fail);
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('Localization 명령을 수행할 수 없습니다', constant_2.GrpcCode.InternalError);
+        }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
         }
     }
     slamConnect() {
@@ -4063,13 +4227,15 @@ let LocalizationService = class LocalizationService {
     }
     async updateResponse(resp) {
         this.logger?.info(`[Localization] update Response : ${JSON.stringify(resp)}`);
-        const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
-        if (dbmodel) {
-            const model = new localization_domain_1.LocalizationModel(dbmodel);
-            model.assignId(dbmodel._id);
-            model.statusChange('accept');
-            this.databaseOutput.update(model);
-            this.logger?.info(`[Localization] update Response : ${model.id}, ${model.status}`);
+        if (resp.id) {
+            const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
+            if (dbmodel) {
+                const model = new localization_domain_1.LocalizationModel(dbmodel);
+                model.assignId(dbmodel._id);
+                model.statusChange(resp.result);
+                this.databaseOutput.update(model);
+                this.logger?.info(`[Localization] update Response : ${model.id}, ${model.status}`);
+            }
         }
     }
 };
@@ -4140,6 +4306,12 @@ class LocalizationModel {
         }
         const parsestatus = this.parseStatus(status);
         this.status = parsestatus;
+    }
+    async checkResult(result, message) {
+        this.statusChange(result);
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
+        }
     }
     checkVariables() {
         if (this.command === localization_type_1.LocalizationCommand.setInit) {
@@ -4423,6 +4595,8 @@ let LocalizationMqttInputController = class LocalizationMqttInputController {
                 listener.received.push(data);
                 listener.resolve(data);
                 this.pendingService.pendingResponses.delete(id);
+            }
+            else {
                 this.localizationService.updateResponse(data);
             }
         }
@@ -4799,30 +4973,45 @@ let MoveService = class MoveService {
         this.configService = this.configMicroservice.getService('ConfigGrpcService');
     }
     async Move(moveDto) {
+        let command = null;
+        let resp = null;
         try {
             this.logger?.info(`[Move] Move ================================`);
-            console.log('Move', moveDto);
-            const command = new move_domain_1.MoveModel(moveDto);
-            this.logger?.info(`[Move] Move Command : ${JSON.stringify(command)}`);
-            command.checkVariables();
+            this.logger?.info(`[Move] Move Command : ${JSON.stringify(moveDto)}`);
+            command = new move_domain_1.MoveModel(moveDto);
             const result = await this.databaseOutput.save(command);
-            this.logger?.info(`[Move] Move DB Save : ${result._id.toString()}`);
             command.assignId(result._id.toString());
-            if (this.slamnav_connection) {
-                const resp = await this.slamnavOutput.moveRequest(command);
-                this.logger?.info(`[Move] Move Response : ${JSON.stringify(resp)}`);
-                return resp;
-            }
-            else {
+            command.checkVariables();
+            if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
+            resp = await this.slamnavOutput.moveRequest(command);
+            this.logger?.info(`[Move] Move Response : ${JSON.stringify(resp)}`);
+            await command.checkResult(resp.result, resp.message);
+            return resp;
         }
         catch (error) {
+            this.logger?.error(`[Move] Move : ${error}`);
+            if (command) {
+                command.statusChange(resp?.result ?? move_domain_1.MoveStatus.fail);
+            }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger?.error(`[Move] Move : ${error}`);
             throw new rpc_code_exception_1.RpcCodeException('Move 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
+    }
+    MoveJog(moveDto) {
+        const command = new move_domain_1.MoveModel(moveDto);
+        command.checkVariables();
+        if (!this.slamnav_connection) {
+            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+        }
+        this.slamnavOutput.moveJogRequest(command);
     }
     slamConnect() {
         this.slamnav_connection = true;
@@ -4876,23 +5065,15 @@ let MoveService = class MoveService {
     }
     async updateResponse(resp) {
         this.logger?.info(`[Move] update Response : ${JSON.stringify(resp)}`);
-        const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
-        if (dbmodel) {
-            const model = new move_domain_1.MoveModel(dbmodel);
-            model.assignId(dbmodel._id);
-            model.statusChange(resp.result);
-            this.databaseOutput.update(model);
-            this.logger?.info(`[Move] update Response : ${model.id}, ${model.status}`);
-        }
-    }
-    MoveJog(moveDto) {
-        const command = new move_domain_1.MoveModel(moveDto);
-        command.checkVariables();
-        if (this.slamnav_connection) {
-            this.slamnavOutput.moveJogRequest(command);
-        }
-        else {
-            throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+        if (resp.id) {
+            const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
+            if (dbmodel) {
+                const model = new move_domain_1.MoveModel(dbmodel);
+                model.assignId(dbmodel._id);
+                model.statusChange(resp.result);
+                this.databaseOutput.update(model);
+                this.logger?.info(`[Move] update Response : ${model.id}, ${model.status}`);
+            }
         }
     }
     async moveLogLast(request) {
@@ -4981,6 +5162,12 @@ class MoveModel {
     }
     assignId(id) {
         this.id = id;
+    }
+    async checkResult(result, message) {
+        this.statusChange(result);
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
+        }
     }
     statusChange(status) {
         if (!this.id) {
@@ -5665,7 +5852,9 @@ let MoveMqttInputController = class MoveMqttInputController {
                 listener.resolve(data);
                 this.pendingService.pendingResponses.delete(id);
             }
-            this.moveService.updateResponse(data);
+            else {
+                this.moveService.updateResponse(data);
+            }
         }
         catch (error) {
             this.logger?.error(`[Move] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
@@ -6408,29 +6597,6 @@ __decorate([
 ], PaginationResponse.prototype, "list", void 0);
 
 
-/***/ }),
-/* 116 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(29), exports);
-
-
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -6542,7 +6708,6 @@ async function bootstrap() {
     const mqttClient = moveModule.get(constant_1.MQTT_BROKER);
     await mqttClient.connect();
     mqttClient.emit('get:socket:connection', {});
-    console.log('[Move] startup: get:socket:connection emit 완료');
 }
 bootstrap();
 

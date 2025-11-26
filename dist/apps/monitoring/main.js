@@ -27,8 +27,8 @@ exports.TsdbModule = void 0;
 const common_1 = __webpack_require__(3);
 const influxdb_client_1 = __webpack_require__(4);
 const tsdb_service_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(35);
-const tsdb_mqtt_controller_1 = __webpack_require__(36);
+const config_1 = __webpack_require__(58);
+const tsdb_mqtt_controller_1 = __webpack_require__(59);
 const log_module_1 = __webpack_require__(68);
 let TsdbModule = class TsdbModule {
     constructor(configService) {
@@ -101,7 +101,7 @@ const common_1 = __webpack_require__(6);
 const influxdb_client_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(3);
 const influxdb_client_apis_1 = __webpack_require__(34);
-const saveLog_service_1 = __webpack_require__(64);
+const saveLog_service_1 = __webpack_require__(35);
 let TsdbService = class TsdbService {
     constructor(db, saveLogService) {
         this.db = db;
@@ -1324,12 +1324,892 @@ module.exports = require("@influxdata/influxdb-client-apis");
 
 /***/ }),
 /* 35 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SaveLogService = void 0;
+const common_1 = __webpack_require__(3);
+const winston_1 = __webpack_require__(36);
+const DailyRotateFile = __webpack_require__(37);
+const util_1 = __webpack_require__(38);
+const chalk_1 = __webpack_require__(57);
+const fs_1 = __webpack_require__(44);
+const levelColorMap = {
+    error: chalk_1.default.red,
+    warn: chalk_1.default.magenta,
+    info: chalk_1.default.blue,
+    debug: chalk_1.default.white,
+};
+const levelTextMap = {
+    error: 'Error',
+    warn: 'Warn',
+    info: 'Info',
+    debug: 'Debug',
+};
+function formatLogMessage(message) {
+    try {
+        if (message.includes('items:')) {
+            return message;
+        }
+        const jsonRegex = /:\s*(\[[\s\S]*?\]|\{[\s\S]*?\})/g;
+        return message.replace(jsonRegex, (match, jsonStr) => {
+            try {
+                const data = JSON.parse(jsonStr);
+                const formatted = formatDataRecursive(data);
+                return `: ${formatted}`;
+            }
+            catch {
+                return match;
+            }
+        });
+    }
+    catch {
+        return message;
+    }
+}
+function formatDataRecursive(data) {
+    if (Array.isArray(data)) {
+        if (data.length <= 4) {
+            const items = data.map((item) => typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item)));
+            return `[${items.join(', ')}]`;
+        }
+        else {
+            const items = data
+                .slice(0, 4)
+                .map((item) => (typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item))));
+            return `[${data.length} items: [${items.join(', ')}]...]`;
+        }
+    }
+    if (typeof data === 'object' && data !== null) {
+        const formatted = { ...data };
+        for (const [key, value] of Object.entries(formatted)) {
+            if (Array.isArray(value)) {
+                formatted[key] = formatDataRecursive(value);
+            }
+            else if (typeof value === 'object' && value !== null) {
+                formatted[key] = formatDataRecursive(value);
+            }
+        }
+        return cleanJsonString(JSON.stringify(formatted));
+    }
+    return cleanJsonString(JSON.stringify(data));
+}
+function cleanJsonString(jsonStr) {
+    return jsonStr.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
+const customFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelColor = levelColorMap[level] || chalk_1.default.white;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
+        logtext = formatLogMessage(logtext);
+        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
+    }
+    return '';
+});
+const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
+    const pid = process.pid;
+    const levelText = levelTextMap[level] || level;
+    if (typeof message === 'string') {
+        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
+        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
+        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
+        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
+        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
+    }
+});
+let SaveLogService = class SaveLogService {
+    constructor() {
+        this.loggers = new Map();
+        this.rootPath = '/data/log';
+        this.logPath = this.rootPath;
+        chalk_1.default.level = 3;
+    }
+    get(service) {
+        let logger = this.loggers.get(service);
+        if (!logger) {
+            logger = this.createLogger(service);
+            this.loggers.set(service, logger);
+        }
+        return logger;
+    }
+    createLogger(service) {
+        this.logPath = `${this.rootPath}/${service}`;
+        if (!(0, fs_1.existsSync)(this.logPath)) {
+            (0, fs_1.mkdirSync)(this.logPath, { recursive: true });
+        }
+        try {
+            (0, fs_1.chownSync)(this.logPath, 1000, 1000);
+        }
+        catch (error) {
+            console.error('LoggerService chownSync Error : ', error);
+        }
+        return (0, winston_1.createLogger)({
+            level: 'debug',
+            transports: [
+                new DailyRotateFile({
+                    filename: `${this.logPath}/%DATE%.log`,
+                    datePattern: 'YYYY-MM-DD',
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
+                    zippedArchive: true,
+                    maxSize: '10m',
+                    maxFiles: '14d',
+                }),
+                new winston_1.transports.Console({
+                    level: 'debug',
+                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), customFormat),
+                }),
+            ],
+        });
+    }
+};
+exports.SaveLogService = SaveLogService;
+exports.SaveLogService = SaveLogService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], SaveLogService);
+
+
+/***/ }),
+/* 36 */
+/***/ ((module) => {
+
+module.exports = require("winston");
+
+/***/ }),
+/* 37 */
+/***/ ((module) => {
+
+module.exports = require("winston-daily-rotate-file");
+
+/***/ }),
+/* 38 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
+var url_util_1 = __webpack_require__(39);
+Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
+var date_util_1 = __webpack_require__(41);
+Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
+var file_util_1 = __webpack_require__(43);
+Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
+var parse_util_1 = __webpack_require__(54);
+Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
+var crypto_util_1 = __webpack_require__(55);
+Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
+var validation_util_1 = __webpack_require__(56);
+Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
+
+
+/***/ }),
+/* 39 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UrlUtil = void 0;
+const uuid_1 = __webpack_require__(40);
+class UrlUtil {
+    static generateUUID() {
+        return (0, uuid_1.v4)();
+    }
+}
+exports.UrlUtil = UrlUtil;
+
+
+/***/ }),
+/* 40 */
+/***/ ((module) => {
+
+module.exports = require("uuid");
+
+/***/ }),
+/* 41 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DateUtil = void 0;
+const date_fns_1 = __webpack_require__(42);
+class DateUtil {
+    static toDatetimeString(date) {
+        return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
+    }
+    static getTimeString() {
+        return new Date().getTime().toString();
+    }
+    static convertTargetsToDatetimeString(param, targets) {
+        const sParam = { ...param };
+        targets.forEach((target) => {
+            if (sParam[target]) {
+                sParam[target] = DateUtil.toDatetimeString(new Date(sParam[target]));
+            }
+        });
+        return sParam;
+    }
+    static formatDate(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return (`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
+    }
+    static formatDateKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}-${obj.month}-${obj.day} ${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}:${obj.minute}:${obj.second}`;
+    }
+    static formatTimeYearKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}`;
+    }
+    static formatTimeMonthKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.month}`;
+    }
+    static formatTimeDayKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.day}`;
+    }
+    static formatTimeHourKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.hour}`;
+    }
+    static formatTimeMinuteKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.minute}`;
+    }
+    static formatTimeSecondKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.second}`;
+    }
+}
+exports.DateUtil = DateUtil;
+
+
+/***/ }),
+/* 42 */
+/***/ ((module) => {
+
+module.exports = require("date-fns");
+
+/***/ }),
+/* 43 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FileUtil = void 0;
+const fs = __webpack_require__(44);
+const path = __webpack_require__(45);
+const unzipper = __webpack_require__(46);
+const il = __webpack_require__(47);
+const uuid_1 = __webpack_require__(40);
+const archiver_1 = __webpack_require__(48);
+const csv = __webpack_require__(49);
+const zlib_1 = __webpack_require__(50);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
+const microservices_1 = __webpack_require__(10);
+class FileUtil {
+    static checkBasePath() {
+        this.basePath = '';
+    }
+    static async getFile(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(this.basePath, filePath, filename);
+            if (!fs.existsSync(fileFullPath)) {
+                throw new Error(`File not found: ${fileFullPath}`);
+            }
+            return await fs.promises.readFile(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async getFileAt(filename, filePath) {
+        try {
+            this.checkBasePath();
+            const fileFullPath = path.join(filePath, filename);
+            return fs.existsSync(fileFullPath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async uploadFile(fileBuffer, filename) {
+        try {
+            this.checkBasePath();
+            const uniqueName = `${(0, uuid_1.v4)()}${path.extname(filename)}`;
+            const filePath = path.join(this.basePath, uniqueName);
+            fs.writeFileSync(filePath, fileBuffer);
+            return { filePath: filePath, fileName: uniqueName };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async downloadFile(filename, compress) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            const fileExtension = path.extname(filename);
+            if (!fs.existsSync(filePath)) {
+                throw new Error(`File not found: ${filePath}`);
+            }
+            if (compress && fileExtension.toUpperCase() !== '.ZIP') {
+                const outputPath = path.join(this.basePath, filename.substring(0, filename.lastIndexOf(fileExtension)));
+                await this.compressFile(filePath, outputPath);
+                const fileContent = await fs.promises.readFile(outputPath);
+                await fs.promises.unlink(outputPath);
+                return fileContent;
+            }
+            return await fs.promises.readFile(filePath);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async deleteFile(filename) {
+        try {
+            this.checkBasePath();
+            const filePath = path.join(this.basePath, filename);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async compressFile(filePath, outputPath, outputName) {
+        try {
+            this.checkBasePath();
+            const compressPath = outputName ? path.join(this.basePath, `${outputName}.zip`) : outputPath;
+            const output = fs.createWriteStream(compressPath);
+            const archive = (0, archiver_1.default)('zip', {
+                zlib: { level: 9 },
+            });
+            archive.pipe(output);
+            archive.directory(filePath, false);
+            await archive.finalize();
+            return compressPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async decompressFile(filePath, outputPath) {
+        try {
+            this.checkBasePath();
+            if (!outputPath) {
+                outputPath = filePath.substring(0, filePath.indexOf(path.extname(filePath)));
+            }
+            if (!fs.existsSync(outputPath)) {
+                await fs.promises.mkdir(outputPath, { recursive: true });
+            }
+            const directory = await unzipper.Open.file(filePath);
+            for (const entry of directory.files) {
+                const entryPath = entry.isUnicode ? entry.path : il.decode(entry.pathBuffer, 'euc-kr');
+                const fullPath = path.join(outputPath, entryPath);
+                if (entry.type === 'File') {
+                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+                    const readStream = entry.stream();
+                    const writeStream = fs.createWriteStream(fullPath);
+                    readStream.pipe(writeStream);
+                    await new Promise((resolve, reject) => {
+                        writeStream.on('finish', () => resolve);
+                        writeStream.on('error', reject);
+                    });
+                }
+                else {
+                    await fs.promises.mkdir(fullPath, { recursive: true });
+                }
+            }
+            return outputPath;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    static async readCSV(path) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!fs.existsSync(path)) {
+                    reject(new rpc_code_exception_1.RpcCodeException('파일이 존재하지 않습니다', constant_1.GrpcCode.NotFound));
+                }
+                fs.accessSync(path, fs.constants.R_OK);
+                const results = [];
+                fs.createReadStream(path)
+                    .pipe(csv.parse({
+                    skip_empty_lines: true,
+                    skip_records_with_error: true,
+                }))
+                    .on('data', (row) => {
+                    results.push(row);
+                })
+                    .on('error', (error) => {
+                    reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                })
+                    .on('end', () => {
+                    resolve(results);
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async readCSVPipe(path, res) {
+        return new Promise((resolve, reject) => {
+            try {
+                fs.open(path, 'r', (err) => {
+                    if (err) {
+                        reject(new rpc_code_exception_1.RpcCodeException('파일을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound));
+                    }
+                    else {
+                        res.setHeader('Content-Type', 'text/csv');
+                        res.setHeader('Content-Encoding', 'gzip');
+                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
+                        const fileStream = fs.createReadStream(path);
+                        const gzip = (0, zlib_1.createGzip)();
+                        fileStream
+                            .pipe(gzip)
+                            .pipe(res)
+                            .on('finish', () => {
+                            resolve();
+                        })
+                            .on('error', (error) => {
+                            reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+                        });
+                    }
+                });
+            }
+            catch (error) {
+                if (error instanceof microservices_1.RpcException)
+                    throw error;
+                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
+    static async saveCSV(path, data) {
+        try {
+            const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
+            if (data === undefined || data.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            fs.writeFileSync(path, csvData);
+            return;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJson(dir) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(dir, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${dir})`, constant_1.GrpcCode.NotFound);
+            }
+            const filecontent = fs.readFileSync(dir, 'utf-8');
+            return JSON.parse(filecontent);
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async readJSONPipe(path, res) {
+        try {
+            if (path === undefined || path === '') {
+                throw new rpc_code_exception_1.RpcCodeException('path 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (!fs.openSync(path, 'r')) {
+                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${path})`, constant_1.GrpcCode.NotFound);
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Encoding', 'gzip');
+            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
+            const fileStream = fs.createReadStream(path);
+            const gzip = (0, zlib_1.createGzip)();
+            fileStream.pipe(gzip).pipe(res);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    static async saveJson(dir, data) {
+        try {
+            if (dir === undefined || dir === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (data === undefined || data === '' || JSON.stringify(data) === '') {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            console.log('--------------------------------------');
+            console.log(dir);
+            if (!fs.existsSync(path.dirname(dir))) {
+                fs.mkdirSync(path.dirname(dir), { recursive: true });
+            }
+            if (fs.existsSync(dir)) {
+                fs.renameSync(dir, `${dir}.bak`);
+            }
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+            fs.writeFileSync(dir, JSON.stringify(data, null, 2));
+            return;
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+}
+exports.FileUtil = FileUtil;
+
+
+/***/ }),
+/* 44 */
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 45 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 46 */
+/***/ ((module) => {
+
+module.exports = require("unzipper");
+
+/***/ }),
+/* 47 */
+/***/ ((module) => {
+
+module.exports = require("iconv-lite");
+
+/***/ }),
+/* 48 */
+/***/ ((module) => {
+
+module.exports = require("archiver");
+
+/***/ }),
+/* 49 */
+/***/ ((module) => {
+
+module.exports = require("csv");
+
+/***/ }),
+/* 50 */
+/***/ ((module) => {
+
+module.exports = require("zlib");
+
+/***/ }),
+/* 51 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcCodeException = void 0;
+const microservices_1 = __webpack_require__(10);
+class RpcCodeException extends microservices_1.RpcException {
+    constructor(details, statusCode) {
+        super({ details: details, code: statusCode });
+        this.statusCode = statusCode;
+    }
+}
+exports.RpcCodeException = RpcCodeException;
+
+
+/***/ }),
+/* 52 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(53), exports);
+
+
+/***/ }),
+/* 53 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcCode = void 0;
+var GrpcCode;
+(function (GrpcCode) {
+    GrpcCode[GrpcCode["OK"] = 0] = "OK";
+    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
+    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
+    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
+    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
+    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
+    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
+    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
+    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
+    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
+    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
+    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
+    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
+    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
+    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
+    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
+    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
+    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
+})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
+
+
+/***/ }),
+/* 54 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ParseUtil = void 0;
+class ParseUtil {
+    static errorToJson(error) {
+        try {
+            if (error instanceof Error) {
+                const errorJson = {
+                    name: error.name,
+                    message: JSON.stringify(error.message),
+                };
+                if (error['error'] && error['error'].details) {
+                    errorJson['details'] = error['error'].details;
+                    errorJson['code'] = error['error'].code;
+                }
+                return JSON.stringify(errorJson);
+            }
+            else {
+                const json = JSON.parse(error);
+                return JSON.stringify(json);
+            }
+        }
+        catch (err) {
+            return JSON.stringify(err);
+        }
+    }
+    static stringToCamelCase(str) {
+        return str.toLowerCase().replace(/([-_][a-z])/gi, (group) => {
+            return group.toUpperCase().replace('-', '').replace('_', '');
+        });
+    }
+    static stringifyAllValues(obj) {
+        for (const key in obj) {
+            if (typeof obj[key] === 'object') {
+                this.stringifyAllValues(obj[key]);
+            }
+            else {
+                obj[key] = String(obj[key]);
+            }
+        }
+        return obj;
+    }
+}
+exports.ParseUtil = ParseUtil;
+
+
+/***/ }),
+/* 55 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CryptoUtil = void 0;
+class CryptoUtil {
+}
+exports.CryptoUtil = CryptoUtil;
+
+
+/***/ }),
+/* 56 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationUtil = void 0;
+class ValidationUtil {
+    static isEmpty(param) {
+        if (param === undefined || param === null) {
+            return true;
+        }
+        switch (true) {
+            case Array.isArray(param):
+                return param.length === 0 || param.every((item) => this.isEmpty(item));
+            case typeof param === 'object':
+                return Object.keys(param).length === 0;
+            case typeof param === 'string':
+                return param.trim().length === 0;
+            case typeof param === 'number':
+                return isNaN(param);
+            case typeof param === 'boolean':
+                return false;
+            default:
+                return true;
+        }
+    }
+    static isNotEmpty(param) {
+        return !this.isEmpty(param);
+    }
+}
+exports.ValidationUtil = ValidationUtil;
+
+
+/***/ }),
+/* 57 */
+/***/ ((module) => {
+
+module.exports = require("chalk");
+
+/***/ }),
+/* 58 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/config");
 
 /***/ }),
-/* 36 */
+/* 59 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1351,10 +2231,10 @@ exports.TsdbMqttInputController = void 0;
 const common_1 = __webpack_require__(3);
 const tsdb_service_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(10);
-const status_type_1 = __webpack_require__(37);
-const movestatus_type_1 = __webpack_require__(44);
-const exAccessory_dto_1 = __webpack_require__(62);
-const saveLog_service_1 = __webpack_require__(64);
+const status_type_1 = __webpack_require__(60);
+const movestatus_type_1 = __webpack_require__(65);
+const exAccessory_dto_1 = __webpack_require__(66);
+const saveLog_service_1 = __webpack_require__(35);
 let TsdbMqttInputController = class TsdbMqttInputController {
     constructor(tsdbService, saveLogService) {
         this.tsdbService = tsdbService;
@@ -1400,7 +2280,7 @@ exports.TsdbMqttInputController = TsdbMqttInputController = __decorate([
 
 
 /***/ }),
-/* 37 */
+/* 60 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1415,11 +2295,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = exports.StatusPowerDto = exports.StatusStateDto = exports.StatusConditionDto = exports.StatuMotorDto = exports.StatusLidarDto = exports.StatusIMUDto = void 0;
-const date_util_1 = __webpack_require__(38);
-const swagger_1 = __webpack_require__(40);
-const class_validator_1 = __webpack_require__(41);
-const state_type_1 = __webpack_require__(42);
-const class_transformer_1 = __webpack_require__(43);
+const date_util_1 = __webpack_require__(41);
+const swagger_1 = __webpack_require__(61);
+const class_validator_1 = __webpack_require__(62);
+const state_type_1 = __webpack_require__(63);
+const class_transformer_1 = __webpack_require__(64);
 var Description;
 (function (Description) {
     Description["IMU"] = "IMU, Gyro \uC13C\uC11C \uB370\uC774\uD130";
@@ -2083,178 +2963,19 @@ __decorate([
 
 
 /***/ }),
-/* 38 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(39);
-class DateUtil {
-    static toDatetimeString(date) {
-        return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
-    }
-    static getTimeString() {
-        return new Date().getTime().toString();
-    }
-    static convertTargetsToDatetimeString(param, targets) {
-        const sParam = { ...param };
-        targets.forEach((target) => {
-            if (sParam[target]) {
-                sParam[target] = DateUtil.toDatetimeString(new Date(sParam[target]));
-            }
-        });
-        return sParam;
-    }
-    static formatDate(date) {
-        const pad = (n) => n.toString().padStart(2, '0');
-        return (`${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
-    }
-    static formatDateKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.year}-${obj.month}-${obj.day} ${obj.hour}:${obj.minute}:${obj.second}`;
-    }
-    static formatTimeKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.hour}:${obj.minute}:${obj.second}`;
-    }
-    static formatTimeYearKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.year}`;
-    }
-    static formatTimeMonthKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.month}`;
-    }
-    static formatTimeDayKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.day}`;
-    }
-    static formatTimeHourKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.hour}`;
-    }
-    static formatTimeMinuteKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.minute}`;
-    }
-    static formatTimeSecondKST(date) {
-        const options = {
-            timeZone: 'Asia/Seoul',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
-        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${obj.second}`;
-    }
-}
-exports.DateUtil = DateUtil;
-
-
-/***/ }),
-/* 39 */
-/***/ ((module) => {
-
-module.exports = require("date-fns");
-
-/***/ }),
-/* 40 */
+/* 61 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 41 */
+/* 62 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 42 */
+/* 63 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2315,13 +3036,13 @@ var ChargeState;
 
 
 /***/ }),
-/* 43 */
+/* 64 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 44 */
+/* 65 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2336,11 +3057,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.VelocityStatusDto = exports.PoseStatusDto = exports.MoveStateDto = void 0;
-const swagger_1 = __webpack_require__(40);
-const class_validator_1 = __webpack_require__(41);
-const util_1 = __webpack_require__(45);
-const state_type_1 = __webpack_require__(42);
-const state_type_2 = __webpack_require__(42);
+const swagger_1 = __webpack_require__(61);
+const class_validator_1 = __webpack_require__(62);
+const util_1 = __webpack_require__(38);
+const state_type_1 = __webpack_require__(63);
+const state_type_2 = __webpack_require__(63);
 var Description;
 (function (Description) {
     Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
@@ -2652,547 +3373,7 @@ __decorate([
 
 
 /***/ }),
-/* 45 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(46);
-Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(38);
-Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(48);
-Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(59);
-Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(60);
-Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(61);
-Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
-
-
-/***/ }),
-/* 46 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(47);
-class UrlUtil {
-    static generateUUID() {
-        return (0, uuid_1.v4)();
-    }
-}
-exports.UrlUtil = UrlUtil;
-
-
-/***/ }),
-/* 47 */
-/***/ ((module) => {
-
-module.exports = require("uuid");
-
-/***/ }),
-/* 48 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.FileUtil = void 0;
-const fs = __webpack_require__(49);
-const path = __webpack_require__(50);
-const unzipper = __webpack_require__(51);
-const il = __webpack_require__(52);
-const uuid_1 = __webpack_require__(47);
-const archiver_1 = __webpack_require__(53);
-const csv = __webpack_require__(54);
-const zlib_1 = __webpack_require__(55);
-const rpc_code_exception_1 = __webpack_require__(56);
-const constant_1 = __webpack_require__(57);
-const microservices_1 = __webpack_require__(10);
-class FileUtil {
-    static checkBasePath() {
-        this.basePath = '';
-    }
-    static async getFile(filename, filePath) {
-        try {
-            this.checkBasePath();
-            const fileFullPath = path.join(this.basePath, filePath, filename);
-            if (!fs.existsSync(fileFullPath)) {
-                throw new Error(`File not found: ${fileFullPath}`);
-            }
-            return await fs.promises.readFile(fileFullPath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async getFileAt(filename, filePath) {
-        try {
-            this.checkBasePath();
-            const fileFullPath = path.join(filePath, filename);
-            return fs.existsSync(fileFullPath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async uploadFile(fileBuffer, filename) {
-        try {
-            this.checkBasePath();
-            const uniqueName = `${(0, uuid_1.v4)()}${path.extname(filename)}`;
-            const filePath = path.join(this.basePath, uniqueName);
-            fs.writeFileSync(filePath, fileBuffer);
-            return { filePath: filePath, fileName: uniqueName };
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async downloadFile(filename, compress) {
-        try {
-            this.checkBasePath();
-            const filePath = path.join(this.basePath, filename);
-            const fileExtension = path.extname(filename);
-            if (!fs.existsSync(filePath)) {
-                throw new Error(`File not found: ${filePath}`);
-            }
-            if (compress && fileExtension.toUpperCase() !== '.ZIP') {
-                const outputPath = path.join(this.basePath, filename.substring(0, filename.lastIndexOf(fileExtension)));
-                await this.compressFile(filePath, outputPath);
-                const fileContent = await fs.promises.readFile(outputPath);
-                await fs.promises.unlink(outputPath);
-                return fileContent;
-            }
-            return await fs.promises.readFile(filePath);
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async deleteFile(filename) {
-        try {
-            this.checkBasePath();
-            const filePath = path.join(this.basePath, filename);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async compressFile(filePath, outputPath, outputName) {
-        try {
-            this.checkBasePath();
-            const compressPath = outputName ? path.join(this.basePath, `${outputName}.zip`) : outputPath;
-            const output = fs.createWriteStream(compressPath);
-            const archive = (0, archiver_1.default)('zip', {
-                zlib: { level: 9 },
-            });
-            archive.pipe(output);
-            archive.directory(filePath, false);
-            await archive.finalize();
-            return compressPath;
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async decompressFile(filePath, outputPath) {
-        try {
-            this.checkBasePath();
-            if (!outputPath) {
-                outputPath = filePath.substring(0, filePath.indexOf(path.extname(filePath)));
-            }
-            if (!fs.existsSync(outputPath)) {
-                await fs.promises.mkdir(outputPath, { recursive: true });
-            }
-            const directory = await unzipper.Open.file(filePath);
-            for (const entry of directory.files) {
-                const entryPath = entry.isUnicode ? entry.path : il.decode(entry.pathBuffer, 'euc-kr');
-                const fullPath = path.join(outputPath, entryPath);
-                if (entry.type === 'File') {
-                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-                    const readStream = entry.stream();
-                    const writeStream = fs.createWriteStream(fullPath);
-                    readStream.pipe(writeStream);
-                    await new Promise((resolve, reject) => {
-                        writeStream.on('finish', () => resolve);
-                        writeStream.on('error', reject);
-                    });
-                }
-                else {
-                    await fs.promises.mkdir(fullPath, { recursive: true });
-                }
-            }
-            return outputPath;
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    static async readCSV(path) {
-        return new Promise((resolve, reject) => {
-            try {
-                if (!fs.existsSync(path)) {
-                    reject(new rpc_code_exception_1.RpcCodeException('파일이 존재하지 않습니다', constant_1.GrpcCode.NotFound));
-                }
-                fs.accessSync(path, fs.constants.R_OK);
-                const results = [];
-                fs.createReadStream(path)
-                    .pipe(csv.parse({
-                    skip_empty_lines: true,
-                    skip_records_with_error: true,
-                }))
-                    .on('data', (row) => {
-                    results.push(row);
-                })
-                    .on('error', (error) => {
-                    reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-                })
-                    .on('end', () => {
-                    resolve(results);
-                });
-            }
-            catch (error) {
-                if (error instanceof microservices_1.RpcException)
-                    throw error;
-                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-            }
-        });
-    }
-    static async readCSVPipe(path, res) {
-        return new Promise((resolve, reject) => {
-            try {
-                fs.open(path, 'r', (err) => {
-                    if (err) {
-                        reject(new rpc_code_exception_1.RpcCodeException('파일을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound));
-                    }
-                    else {
-                        res.setHeader('Content-Type', 'text/csv');
-                        res.setHeader('Content-Encoding', 'gzip');
-                        res.setHeader('Content-Disposition', 'attachment; filename="cloud.csv"');
-                        const fileStream = fs.createReadStream(path);
-                        const gzip = (0, zlib_1.createGzip)();
-                        fileStream
-                            .pipe(gzip)
-                            .pipe(res)
-                            .on('finish', () => {
-                            resolve();
-                        })
-                            .on('error', (error) => {
-                            reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-                        });
-                    }
-                });
-            }
-            catch (error) {
-                if (error instanceof microservices_1.RpcException)
-                    throw error;
-                reject(new rpc_code_exception_1.RpcCodeException('CSV 파일을 읽을 수 없습니다.', constant_1.GrpcCode.InternalError));
-            }
-        });
-    }
-    static async saveCSV(path, data) {
-        try {
-            const csvData = data.map((row) => (Array.isArray(row) ? row.join(',') : row)).join('\n');
-            if (data === undefined || data.length === 0) {
-                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            fs.writeFileSync(path, csvData);
-            return;
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async readJson(dir) {
-        try {
-            if (dir === undefined || dir === '') {
-                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (!fs.openSync(dir, 'r')) {
-                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${dir})`, constant_1.GrpcCode.NotFound);
-            }
-            const filecontent = fs.readFileSync(dir, 'utf-8');
-            return JSON.parse(filecontent);
-        }
-        catch (error) {
-            console.error(error);
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async readJSONPipe(path, res) {
-        try {
-            if (path === undefined || path === '') {
-                throw new rpc_code_exception_1.RpcCodeException('path 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (!fs.openSync(path, 'r')) {
-                throw new rpc_code_exception_1.RpcCodeException(`경로의 파일이 존재하지 않습니다. (${path})`, constant_1.GrpcCode.NotFound);
-            }
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Content-Disposition', 'attachment; filename="topo.json"');
-            const fileStream = fs.createReadStream(path);
-            const gzip = (0, zlib_1.createGzip)();
-            fileStream.pipe(gzip).pipe(res);
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 읽던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-    static async saveJson(dir, data) {
-        try {
-            if (dir === undefined || dir === '') {
-                throw new rpc_code_exception_1.RpcCodeException('dir 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (data === undefined || data === '' || JSON.stringify(data) === '') {
-                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-            }
-            console.log('--------------------------------------');
-            console.log(dir);
-            if (!fs.existsSync(path.dirname(dir))) {
-                fs.mkdirSync(path.dirname(dir), { recursive: true });
-            }
-            if (fs.existsSync(dir)) {
-                fs.renameSync(dir, `${dir}.bak`);
-            }
-            if (typeof data === 'string') {
-                data = JSON.parse(data);
-            }
-            fs.writeFileSync(dir, JSON.stringify(data, null, 2));
-            return;
-        }
-        catch (error) {
-            console.error(error);
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            throw new rpc_code_exception_1.RpcCodeException('JSON 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
-        }
-    }
-}
-exports.FileUtil = FileUtil;
-
-
-/***/ }),
-/* 49 */
-/***/ ((module) => {
-
-module.exports = require("fs");
-
-/***/ }),
-/* 50 */
-/***/ ((module) => {
-
-module.exports = require("path");
-
-/***/ }),
-/* 51 */
-/***/ ((module) => {
-
-module.exports = require("unzipper");
-
-/***/ }),
-/* 52 */
-/***/ ((module) => {
-
-module.exports = require("iconv-lite");
-
-/***/ }),
-/* 53 */
-/***/ ((module) => {
-
-module.exports = require("archiver");
-
-/***/ }),
-/* 54 */
-/***/ ((module) => {
-
-module.exports = require("csv");
-
-/***/ }),
-/* 55 */
-/***/ ((module) => {
-
-module.exports = require("zlib");
-
-/***/ }),
-/* 56 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RpcCodeException = void 0;
-const microservices_1 = __webpack_require__(10);
-class RpcCodeException extends microservices_1.RpcException {
-    constructor(details, statusCode) {
-        super({ details: details, code: statusCode });
-        this.statusCode = statusCode;
-    }
-}
-exports.RpcCodeException = RpcCodeException;
-
-
-/***/ }),
-/* 57 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(58), exports);
-
-
-/***/ }),
-/* 58 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcCode = void 0;
-var GrpcCode;
-(function (GrpcCode) {
-    GrpcCode[GrpcCode["OK"] = 0] = "OK";
-    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
-    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
-    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
-    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
-    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
-    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
-    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
-    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
-    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
-    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
-    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
-    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
-    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
-    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
-    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
-    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
-    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
-})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
-
-
-/***/ }),
-/* 59 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ParseUtil = void 0;
-class ParseUtil {
-    static errorToJson(error) {
-        try {
-            if (error instanceof Error) {
-                const errorJson = {
-                    name: error.name,
-                    message: JSON.stringify(error.message),
-                };
-                if (error['error'] && error['error'].details) {
-                    errorJson['details'] = error['error'].details;
-                    errorJson['code'] = error['error'].code;
-                }
-                return JSON.stringify(errorJson);
-            }
-            else {
-                const json = JSON.parse(error);
-                return JSON.stringify(json);
-            }
-        }
-        catch (err) {
-            return JSON.stringify(err);
-        }
-    }
-    static stringToCamelCase(str) {
-        return str.toLowerCase().replace(/([-_][a-z])/gi, (group) => {
-            return group.toUpperCase().replace('-', '').replace('_', '');
-        });
-    }
-    static stringifyAllValues(obj) {
-        for (const key in obj) {
-            if (typeof obj[key] === 'object') {
-                this.stringifyAllValues(obj[key]);
-            }
-            else {
-                obj[key] = String(obj[key]);
-            }
-        }
-        return obj;
-    }
-}
-exports.ParseUtil = ParseUtil;
-
-
-/***/ }),
-/* 60 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CryptoUtil = void 0;
-class CryptoUtil {
-}
-exports.CryptoUtil = CryptoUtil;
-
-
-/***/ }),
-/* 61 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationUtil = void 0;
-class ValidationUtil {
-    static isEmpty(param) {
-        if (param === undefined || param === null) {
-            return true;
-        }
-        switch (true) {
-            case Array.isArray(param):
-                return param.length === 0 || param.every((item) => this.isEmpty(item));
-            case typeof param === 'object':
-                return Object.keys(param).length === 0;
-            case typeof param === 'string':
-                return param.trim().length === 0;
-            case typeof param === 'number':
-                return isNaN(param);
-            case typeof param === 'boolean':
-                return false;
-            default:
-                return true;
-        }
-    }
-    static isNotEmpty(param) {
-        return !this.isEmpty(param);
-    }
-}
-exports.ValidationUtil = ValidationUtil;
-
-
-/***/ }),
-/* 62 */
+/* 66 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3207,9 +3388,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessoryStatusDto = exports.TemperatureSensorStatusDto = exports.FootStatusDto = exports.ExAccessoryResponseExAccessory = exports.ExAccessoryRequestExAccessory = exports.ExAccessoryResponseDto = exports.ExAccessoryRequestDto = void 0;
-const swagger_1 = __webpack_require__(40);
-const control_type_1 = __webpack_require__(63);
-const class_transformer_1 = __webpack_require__(43);
+const swagger_1 = __webpack_require__(61);
+const control_type_1 = __webpack_require__(67);
+const class_transformer_1 = __webpack_require__(64);
+const class_validator_1 = __webpack_require__(62);
 var FootStatus;
 (function (FootStatus) {
     FootStatus[FootStatus["idle"] = 0] = "idle";
@@ -3219,6 +3401,20 @@ var FootStatus;
     FootStatus[FootStatus["upDone"] = 4] = "upDone";
     FootStatus[FootStatus["downDone"] = 5] = "downDone";
 })(FootStatus || (FootStatus = {}));
+var Description;
+(function (Description) {
+    Description["COMMAND"] = "\uC2E4\uD589\uD560 \uCEE8\uD2B8\uB864 \uBA85\uB839";
+    Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
+    Description["RESULT"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC5D0 \uB300\uD55C \uACB0\uACFC\uC785\uB2C8\uB2E4. accept, reject, success, fail \uB4F1 \uBA85\uB839\uC5D0 \uB300\uD574 \uB2E4\uC591\uD55C \uAC12\uC774 \uC874\uC7AC\uD569\uB2C8\uB2E4.";
+    Description["MESSAGE"] = "result\uAC12\uC774 reject, fail \uC778 \uACBD\uC6B0 SLAMNAV\uC5D0\uC11C \uBCF4\uB0B4\uB294 \uBA54\uC2DC\uC9C0 \uC785\uB2C8\uB2E4.";
+    Description["ONOFF"] = "LED \uC218\uB3D9\uC81C\uC5B4\uAE30\uB2A5\uC744 \uCF1C\uACE0 \uB04C\uC9C0\uB97C \uACB0\uC815\uD569\uB2C8\uB2E4. \uAC12\uC774 true\uC77C \uB54C \uC694\uCCAD\uD558\uB294 color \uAC12\uC744 \uC0AC\uC6A9\uD558\uBA70, \uAC12\uC774 false\uC778 \uACBD\uC6B0\uC5D0\uB294 \uC218\uB3D9\uC81C\uC5B4\uAE30\uB2A5\uC744 \uB044\uACE0 color \uAC12\uB3C4 \uBB34\uC2DC\uD569\uB2C8\uB2E4. \uB85C\uBD07\uC758 \uC0C1\uD0DC\uC5D0 \uB530\uB77C \uC790\uB3D9\uC73C\uB85C LED \uC0C9\uC0C1\uC774 \uBCC0\uACBD\uB429\uB2C8\uB2E4.";
+    Description["LED"] = "LED \uC0C9\uC0C1\uC744 \uC785\uB825\uD569\uB2C8\uB2E4. onoff\uAC00 true\uC77C \uACBD\uC6B0\uC5D0\uB9CC \uC0AC\uC6A9\uB429\uB2C8\uB2E4.";
+    Description["FREQ"] = "\uAE30\uB2A5\uC5D0 \uB530\uB77C onoff\uAC00 true\uC77C \uC2DC, \uC804\uC1A1 \uC8FC\uAE30\uB97C \uC785\uB825\uD558\uC138\uC694. \uB2E8\uC704\uB294 Hz\uC774\uBA70 \uC608\uB85C lidarOnOff\uB97C on\uD558\uACE0 frequency\uB97C 10\uC73C\uB85C \uC785\uB825\uD558\uBA74 lidar \uB370\uC774\uD130\uB97C 10Hz\uB85C \uC1A1\uC2E0\uD569\uB2C8\uB2E4.";
+    Description["ROBOT_SERIAL"] = "\uB85C\uBD07 \uC2DC\uB9AC\uC5BC \uBC88\uD638";
+    Description["SAFETY_FIELD"] = "\uC548\uC804 \uD544\uB4DC \uC124\uC815. \uC0AC\uC804\uC5D0 \uC124\uC815\uB41C \uC548\uC804\uD544\uB4DC ID\uAC12\uC744 \uC785\uB825\uD558\uC138\uC694";
+    Description["MCU_DIO"] = "MCU DIO \uC81C\uC5B4. 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C \uC785\uB825\uD558\uC138\uC694. \uC608\uB85C [0,0,0,0,0,1,1,1] \uC740 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C 0,0,0,0,0,1,1,1 \uB85C \uC81C\uC5B4\uD569\uB2C8\uB2E4.";
+    Description["MCU_DIN"] = "MCU DIN \uC81C\uC5B4. 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C \uC785\uB825\uD558\uC138\uC694. \uC608\uB85C [0,0,0,0,0,1,1,1] \uC740 0\uBC88 \uD540\uBD80\uD130 7\uBC88 \uD540\uAE4C\uC9C0 \uC21C\uC11C\uB300\uB85C 0,0,0,0,0,1,1,1 \uB85C \uC81C\uC5B4\uD569\uB2C8\uB2E4.";
+})(Description || (Description = {}));
 class ExAccessoryRequestDto {
 }
 exports.ExAccessoryRequestDto = ExAccessoryRequestDto;
@@ -3255,6 +3451,25 @@ __decorate([
 class ExAccessoryResponseExAccessory extends ExAccessoryRequestExAccessory {
 }
 exports.ExAccessoryResponseExAccessory = ExAccessoryResponseExAccessory;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.RESULT,
+        example: 'accept',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ExAccessoryResponseExAccessory.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MESSAGE,
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], ExAccessoryResponseExAccessory.prototype, "message", void 0);
 class FootStatusDto {
 }
 exports.FootStatusDto = FootStatusDto;
@@ -3330,7 +3545,7 @@ __decorate([
 
 
 /***/ }),
-/* 63 */
+/* 67 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3376,187 +3591,6 @@ var LEDColor;
 
 
 /***/ }),
-/* 64 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SaveLogService = void 0;
-const common_1 = __webpack_require__(3);
-const winston_1 = __webpack_require__(65);
-const DailyRotateFile = __webpack_require__(66);
-const util_1 = __webpack_require__(45);
-const chalk_1 = __webpack_require__(67);
-const fs_1 = __webpack_require__(49);
-const levelColorMap = {
-    error: chalk_1.default.red,
-    warn: chalk_1.default.magenta,
-    info: chalk_1.default.blue,
-    debug: chalk_1.default.white,
-};
-const levelTextMap = {
-    error: 'Error',
-    warn: 'Warn',
-    info: 'Info',
-    debug: 'Debug',
-};
-function formatLogMessage(message) {
-    try {
-        if (message.includes('items:')) {
-            return message;
-        }
-        const jsonRegex = /:\s*(\[[\s\S]*?\]|\{[\s\S]*?\})/g;
-        return message.replace(jsonRegex, (match, jsonStr) => {
-            try {
-                const data = JSON.parse(jsonStr);
-                const formatted = formatDataRecursive(data);
-                return `: ${formatted}`;
-            }
-            catch {
-                return match;
-            }
-        });
-    }
-    catch {
-        return message;
-    }
-}
-function formatDataRecursive(data) {
-    if (Array.isArray(data)) {
-        if (data.length <= 4) {
-            const items = data.map((item) => typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item)));
-            return `[${items.join(', ')}]`;
-        }
-        else {
-            const items = data
-                .slice(0, 4)
-                .map((item) => (typeof item === 'object' && item !== null ? formatDataRecursive(item) : cleanJsonString(JSON.stringify(item))));
-            return `[${data.length} items: [${items.join(', ')}]...]`;
-        }
-    }
-    if (typeof data === 'object' && data !== null) {
-        const formatted = { ...data };
-        for (const [key, value] of Object.entries(formatted)) {
-            if (Array.isArray(value)) {
-                formatted[key] = formatDataRecursive(value);
-            }
-            else if (typeof value === 'object' && value !== null) {
-                formatted[key] = formatDataRecursive(value);
-            }
-        }
-        return cleanJsonString(JSON.stringify(formatted));
-    }
-    return cleanJsonString(JSON.stringify(data));
-}
-function cleanJsonString(jsonStr) {
-    return jsonStr.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-}
-const customFormat = winston_1.format.printf(({ timestamp, level, message }) => {
-    const pid = process.pid;
-    const levelColor = levelColorMap[level] || chalk_1.default.white;
-    const levelText = levelTextMap[level] || level;
-    if (typeof message === 'string') {
-        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
-        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
-        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
-        logtext = formatLogMessage(logtext);
-        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
-    }
-    return '';
-});
-const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
-    const pid = process.pid;
-    const levelText = levelTextMap[level] || level;
-    if (typeof message === 'string') {
-        const contextTag = message ? chalk_1.default.yellow(`[${message}]`) : '';
-        const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
-        const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
-        let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
-        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
-    }
-});
-let SaveLogService = class SaveLogService {
-    constructor() {
-        this.loggers = new Map();
-        this.rootPath = '/data/log';
-        this.logPath = this.rootPath;
-        chalk_1.default.level = 3;
-    }
-    get(service) {
-        let logger = this.loggers.get(service);
-        if (!logger) {
-            logger = this.createLogger(service);
-            this.loggers.set(service, logger);
-        }
-        return logger;
-    }
-    createLogger(service) {
-        this.logPath = `${this.rootPath}/${service}`;
-        if (!(0, fs_1.existsSync)(this.logPath)) {
-            (0, fs_1.mkdirSync)(this.logPath, { recursive: true });
-        }
-        try {
-            (0, fs_1.chownSync)(this.logPath, 1000, 1000);
-        }
-        catch (error) {
-            console.error('LoggerService chownSync Error : ', error);
-        }
-        return (0, winston_1.createLogger)({
-            level: 'debug',
-            transports: [
-                new DailyRotateFile({
-                    filename: `${this.logPath}/%DATE%.log`,
-                    datePattern: 'YYYY-MM-DD',
-                    level: 'debug',
-                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), fileFormat),
-                    zippedArchive: true,
-                    maxSize: '10m',
-                    maxFiles: '14d',
-                }),
-                new winston_1.transports.Console({
-                    level: 'debug',
-                    format: winston_1.format.combine(winston_1.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), customFormat),
-                }),
-            ],
-        });
-    }
-};
-exports.SaveLogService = SaveLogService;
-exports.SaveLogService = SaveLogService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
-], SaveLogService);
-
-
-/***/ }),
-/* 65 */
-/***/ ((module) => {
-
-module.exports = require("winston");
-
-/***/ }),
-/* 66 */
-/***/ ((module) => {
-
-module.exports = require("winston-daily-rotate-file");
-
-/***/ }),
-/* 67 */
-/***/ ((module) => {
-
-module.exports = require("chalk");
-
-/***/ }),
 /* 68 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -3570,7 +3604,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogModule = void 0;
 const common_1 = __webpack_require__(3);
-const saveLog_service_1 = __webpack_require__(64);
+const saveLog_service_1 = __webpack_require__(35);
 const cleanLog_service_1 = __webpack_require__(69);
 let LogModule = class LogModule {
 };
@@ -3603,8 +3637,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(3);
 const schedule_1 = __webpack_require__(70);
-const path = __webpack_require__(50);
-const fs_1 = __webpack_require__(49);
+const path = __webpack_require__(45);
+const fs_1 = __webpack_require__(44);
 let CleanLogService = class CleanLogService {
     constructor() {
         this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
@@ -3703,7 +3737,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemlogModule = void 0;
-const config_1 = __webpack_require__(35);
+const config_1 = __webpack_require__(58);
 const sem_log_service_1 = __webpack_require__(72);
 const common_1 = __webpack_require__(3);
 const sem_log_alarm_log_dto_1 = __webpack_require__(74);
@@ -3801,10 +3835,10 @@ exports.SemLogService = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
 const sem_log_database_output_port_1 = __webpack_require__(73);
-const rpc_code_exception_1 = __webpack_require__(56);
-const constant_1 = __webpack_require__(57);
-const date_util_1 = __webpack_require__(38);
-const saveLog_service_1 = __webpack_require__(64);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
+const date_util_1 = __webpack_require__(41);
+const saveLog_service_1 = __webpack_require__(35);
 let SemLogService = class SemLogService {
     constructor(databaseOutput, saveLogService) {
         this.databaseOutput = databaseOutput;
@@ -4249,8 +4283,8 @@ exports.SemLogGrpcController = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
 const sem_log_service_1 = __webpack_require__(72);
-const rpc_code_exception_1 = __webpack_require__(56);
-const constant_1 = __webpack_require__(57);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
 let SemLogGrpcController = class SemLogGrpcController {
     constructor(semlogService) {
         this.semlogService = semlogService;
@@ -4331,11 +4365,11 @@ const typeorm_1 = __webpack_require__(76);
 const sem_log_alarm_dto_1 = __webpack_require__(77);
 const sem_log_alarm_log_dto_1 = __webpack_require__(74);
 const typeorm_2 = __webpack_require__(75);
-const util_1 = __webpack_require__(45);
-const rpc_code_exception_1 = __webpack_require__(56);
-const constant_1 = __webpack_require__(57);
+const util_1 = __webpack_require__(38);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
 const pagination_1 = __webpack_require__(82);
-const saveLog_service_1 = __webpack_require__(64);
+const saveLog_service_1 = __webpack_require__(35);
 const common_1 = __webpack_require__(3);
 let SemLogPostgresAdapter = class SemLogPostgresAdapter {
     constructor(alarmListRepository, alarmLogRepository, saveLogService) {
@@ -4994,8 +5028,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationRequest = void 0;
 exports.getPaginationOffset = getPaginationOffset;
 exports.getPaginationLimit = getPaginationLimit;
-const class_validator_1 = __webpack_require__(41);
-const swagger_1 = __webpack_require__(40);
+const class_validator_1 = __webpack_require__(62);
+const swagger_1 = __webpack_require__(61);
 class PaginationRequest {
     getOffset() {
         if (this.pageNo === null || this.pageNo === undefined || this.pageNo < 1) {
@@ -5065,7 +5099,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationResponse = void 0;
-const swagger_1 = __webpack_require__(40);
+const swagger_1 = __webpack_require__(61);
 class PaginationResponse {
     constructor(list, pageSize, totalCount) {
         this.pageSize = pageSize;
@@ -5146,10 +5180,10 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const tsdb_module_1 = __webpack_require__(2);
-const config_1 = __webpack_require__(35);
+const config_1 = __webpack_require__(58);
 const microservices_1 = __webpack_require__(10);
 const semlog_module_1 = __webpack_require__(71);
-const path_1 = __webpack_require__(50);
+const path_1 = __webpack_require__(45);
 const proto_1 = __webpack_require__(8);
 async function bootstrap() {
     const tsdbModule = await core_1.NestFactory.create(tsdb_module_1.TsdbModule);
