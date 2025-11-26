@@ -94,19 +94,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TsdbService = void 0;
 const common_1 = __webpack_require__(6);
 const influxdb_client_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(3);
 const influxdb_client_apis_1 = __webpack_require__(34);
+const saveLog_service_1 = __webpack_require__(64);
 let TsdbService = class TsdbService {
-    constructor(db) {
+    constructor(db, saveLogService) {
         this.db = db;
+        this.saveLogService = saveLogService;
         this.orgName = 'rainbow';
         this.bucketName = 'slamnav';
         this.dbClient = db;
+        this.logger = this.saveLogService.get('monitoring');
     }
     async onModuleInit() {
         await this.initBuckets('slamnav');
@@ -130,7 +133,7 @@ let TsdbService = class TsdbService {
                 retentionRules: [{ type: 'expire', everySeconds: 60 * 60 * 24 * 30 }],
             },
         });
-        this.logger.info(`✅ Created bucket '${name}'`);
+        this.logger?.info(`✅ Created bucket '${name}'`);
     }
     writeStatus(status) {
         try {
@@ -285,7 +288,7 @@ let TsdbService = class TsdbService {
                 .writePoints([batteryPoint, timePoint, imuPoint, mapPoint, motor1Point, motor2Point, robotStatePoint, conditionPoint]);
         }
         catch (error) {
-            this.logger.error(`[Tsdb] writeStatus : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Tsdb] writeStatus : ${(0, common_1.errorToJson)(error)}`);
         }
     }
     writeMoveStatus(status) {
@@ -366,7 +369,7 @@ let TsdbService = class TsdbService {
                 .writePoints([curNodePoint, goalNodePoint, moveStatePoint, posePoint, velPoint]);
         }
         catch (error) {
-            this.logger.error(`[Tsdb] writeMoveStatus : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Tsdb] writeMoveStatus : ${(0, common_1.errorToJson)(error)}`);
         }
     }
     writeExternalStatus(status) {
@@ -394,14 +397,14 @@ let TsdbService = class TsdbService {
             this.dbClient.getWriteApi(this.orgName, 'externalAccessory', 'ns').writePoints([footPoint, temperatureSensorPoint]);
         }
         catch (error) {
-            this.logger.error(`[Tsdb] writeExternalStatus : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Tsdb] writeExternalStatus : ${(0, common_1.errorToJson)(error)}`);
         }
     }
 };
 exports.TsdbService = TsdbService;
 exports.TsdbService = TsdbService = __decorate([
     __param(0, (0, common_2.Inject)('INFLUXDB')),
-    __metadata("design:paramtypes", [typeof (_a = typeof influxdb_client_1.InfluxDB !== "undefined" && influxdb_client_1.InfluxDB) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof influxdb_client_1.InfluxDB !== "undefined" && influxdb_client_1.InfluxDB) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], TsdbService);
 
 
@@ -1356,7 +1359,7 @@ let TsdbMqttInputController = class TsdbMqttInputController {
     constructor(tsdbService, saveLogService) {
         this.tsdbService = tsdbService;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('monitoring');
+        this.logger = this.saveLogService.get('monitoring');
     }
     getCobotCommandResponse(data) {
         this.tsdbService.writeStatus(data);
@@ -3807,11 +3810,11 @@ let SemLogService = class SemLogService {
         this.databaseOutput = databaseOutput;
         this.saveLogService = saveLogService;
         this.AlarmActive = new Map();
-        this.logger = saveLogService.get('monitoring');
+        this.logger = this.saveLogService.get('monitoring');
     }
     async getSemAlarmDefine(request) {
         try {
-            this.logger.info(`[SEM] getSemAlarmDefine : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] getSemAlarmDefine : ${JSON.stringify(request)}`);
             return this.databaseOutput.getAlarmBySearch(request);
         }
         catch (error) {
@@ -3819,7 +3822,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] getSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] getSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -3849,7 +3852,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] postSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] postSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -3871,7 +3874,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] deleteSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] deleteSemAlarmDefine : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -3886,14 +3889,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] deleteSemAlarmDefineAll : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] deleteSemAlarmDefineAll : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async getSemAlarmActive(request) {
         try {
-            this.logger.info(`[SEM] getSemAlarmActive : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] getSemAlarmActive : ${JSON.stringify(request)}`);
             const data = [];
             this.AlarmActive.forEach(async (value, key) => {
                 data.push({
@@ -3910,14 +3913,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] getSemAlarmActive : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] getSemAlarmActive : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async semAlarm(request) {
         try {
-            this.logger.info(`[SEM] semAlarm : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] semAlarm : ${JSON.stringify(request)}`);
             if (request.code === undefined || request.code === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('code값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -3947,14 +3950,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] semAlarm : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] semAlarm : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async deleteSemAlarm(request) {
         try {
-            this.logger.info(`[SEM] deleteSemAlarm : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] deleteSemAlarm : ${JSON.stringify(request)}`);
             if (request.code === undefined || request.code === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('code값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -3969,14 +3972,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] deleteSemAlarm : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] deleteSemAlarm : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async deleteSemAlarmAll(request) {
         try {
-            this.logger.info(`[SEM] deleteSemAlarmAll : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] deleteSemAlarmAll : ${JSON.stringify(request)}`);
             await this.databaseOutput.deleteAlarmAll();
             return {};
         }
@@ -3985,14 +3988,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] deleteSemAlarmAll : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] deleteSemAlarmAll : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async getSemAlarmLog(request) {
         try {
-            this.logger.info(`[SEM] getSemAlarmLog : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] getSemAlarmLog : ${JSON.stringify(request)}`);
             return this.databaseOutput.getAlarmLogBySearch(request);
         }
         catch (error) {
@@ -4000,14 +4003,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] getSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] getSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람 로그를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async postSemAlarm(request) {
         try {
-            this.logger.info(`[SEM] postSemAlarm : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] postSemAlarm : ${JSON.stringify(request)}`);
             if (request.code === undefined || request.code === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('code값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
@@ -4029,14 +4032,14 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] postSemAlarm : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] postSemAlarm : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
     }
     async deleteSemAlarmLog(request) {
         try {
-            this.logger.info(`[SEM] deleteSemAlarmLog : ${JSON.stringify(request)}`);
+            this.logger?.info(`[SEM] deleteSemAlarmLog : ${JSON.stringify(request)}`);
             await this.databaseOutput.deleteAlarmLog(request);
             return {};
         }
@@ -4045,7 +4048,7 @@ let SemLogService = class SemLogService {
                 throw error;
             }
             else {
-                this.logger.error(`[SEM] deleteSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[SEM] deleteSemAlarmLog : ${(0, common_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('알람을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -4339,7 +4342,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
         this.alarmListRepository = alarmListRepository;
         this.alarmLogRepository = alarmLogRepository;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('monitoring');
+        this.logger = this.saveLogService.get('monitoring');
         this.generateAlarmDB();
     }
     async getAlarmAll() {
@@ -4347,7 +4350,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmListRepository.find();
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB getAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB getAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4356,11 +4359,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmListRepository.findOneBy({ code });
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB getAlarmbyId: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB getAlarmbyId: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.logger.debug(`[SEMLog] DB getAlarmbyId: ${JSON.stringify(code)}`);
+            this.logger?.debug(`[SEMLog] DB getAlarmbyId: ${JSON.stringify(code)}`);
         }
     }
     async saveAlarm(alarm) {
@@ -4368,11 +4371,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmListRepository.save(alarm);
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB saveAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB saveAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.logger.debug(`[SEMLog] DB saveAlarm: ${JSON.stringify(alarm)}`);
+            this.logger?.debug(`[SEMLog] DB saveAlarm: ${JSON.stringify(alarm)}`);
         }
     }
     async deleteAlarm(dto) {
@@ -4381,11 +4384,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return;
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB deleteAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB deleteAlarm: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.logger.debug(`[SEMLog] DB deleteAlarm: ${JSON.stringify(dto)}`);
+            this.logger?.debug(`[SEMLog] DB deleteAlarm: ${JSON.stringify(dto)}`);
         }
     }
     async deleteAlarmAll() {
@@ -4393,7 +4396,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             await this.alarmListRepository.clear();
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB deleteAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB deleteAlarmAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4461,7 +4464,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return result;
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB getAlarmBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB getAlarmBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4554,7 +4557,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return result;
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB getAlarmLogBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB getAlarmLogBySearch: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4567,7 +4570,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
               `);
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB getAlarmLogbyId: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB getAlarmLogbyId: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4576,7 +4579,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmLogRepository.find();
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB getAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB getAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4585,11 +4588,11 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             return await this.alarmLogRepository.save(alarmLog);
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB saveAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB saveAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
         finally {
-            this.logger.debug(`[SEMLog] DB saveAlarmLog: ${JSON.stringify(alarmLog)}`);
+            this.logger?.debug(`[SEMLog] DB saveAlarmLog: ${JSON.stringify(alarmLog)}`);
         }
     }
     async deleteAlarmLog(dto) {
@@ -4604,7 +4607,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
                 }
                 deleteResult = await this.alarmLogRepository.delete({ code: dto.code });
                 console.log('삭제 결과:', deleteResult);
-                this.logger.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
+                this.logger?.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
                 return;
             }
             const queryBuilder = this.alarmLogRepository.createQueryBuilder().delete().from(sem_log_alarm_log_dto_1.SemLogAlarmLog);
@@ -4648,7 +4651,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             console.log('쿼리 파라미터:', queryBuilder.getParameters());
             deleteResult = await queryBuilder.execute();
             console.log('복잡한 조건 삭제 결과:', deleteResult);
-            this.logger.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
+            this.logger?.info(`[SEMLog] DB deleteAlarmLog: ${deleteResult.affected}개 삭제됨`);
             return;
         }
         catch (error) {
@@ -4656,7 +4659,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
                 throw error;
             }
             else {
-                this.logger.error(`[SEMLog] DB deleteAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[SEMLog] DB deleteAlarmLog: ${util_1.ParseUtil.errorToJson(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -4666,7 +4669,7 @@ let SemLogPostgresAdapter = class SemLogPostgresAdapter {
             await this.alarmLogRepository.clear();
         }
         catch (error) {
-            this.logger.error(`[SEMLog] DB deleteAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SEMLog] DB deleteAlarmLogAll: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }

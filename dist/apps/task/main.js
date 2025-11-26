@@ -1189,26 +1189,26 @@ let TaskService = class TaskService {
         this.saveLogService = saveLogService;
         this.slamnav_connection = false;
         this.taskman_connection = false;
-        this.logger = saveLogService.get('task');
+        this.logger = this.saveLogService.get('task');
     }
     onModuleInit() {
-        this.logger.debug(`[Task] Module Init`);
+        this.logger?.debug(`[Task] Module Init`);
         this.taskmanOutput.checkSocketConnection();
     }
     slamConnect() {
-        this.logger.debug(`[Task] SLAMNAV Connnected`);
+        this.logger?.debug(`[Task] SLAMNAV Connnected`);
         this.slamnav_connection = true;
     }
     slamDisconnect() {
-        this.logger.debug(`[Task] SLAMNAV Disconnnected`);
+        this.logger?.debug(`[Task] SLAMNAV Disconnnected`);
         this.slamnav_connection = false;
     }
     taskConnect() {
-        this.logger.debug(`[Task] Taskman Connnected`);
+        this.logger?.debug(`[Task] Taskman Connnected`);
         this.taskman_connection = true;
     }
     taskDisconnect() {
-        this.logger.debug(`[Task] Taskman Disconnnected`);
+        this.logger?.debug(`[Task] Taskman Disconnnected`);
         this.taskman_connection = false;
     }
     async getState() {
@@ -1227,13 +1227,13 @@ let TaskService = class TaskService {
                 throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다.', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.taskmanOutput.stateSocketRequest();
-            this.logger.info(`[Task] State Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Task] State Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Task] stateRequest : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Task] stateRequest : ${(0, common_1.errorToJson)(error)}`);
             return this.getState();
         }
     }
@@ -1248,18 +1248,18 @@ let TaskService = class TaskService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Task] variablesRequest : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Task] variablesRequest : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('Variables 값을 가져올 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
     async taskRequest(request) {
         let command = null;
         try {
-            this.logger.info(`[Task] taskRequest : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Task] taskRequest : ${JSON.stringify(request)}`);
             command = new task_domain_1.TaskModel(request);
             command.checkVariables();
             const result = await this.databaseOutput.save(command);
-            this.logger.info(`[APP] Task DB Save : ${result._id.toString()}`);
+            this.logger?.info(`[APP] Task DB Save : ${result._id.toString()}`);
             command.assignId(result._id.toString());
             if (command.command === task_type_1.TaskCommand.taskLoad ||
                 command.command === task_type_1.TaskCommand.taskRun ||
@@ -1270,14 +1270,14 @@ let TaskService = class TaskService {
             }
             if (this.taskman_connection) {
                 const resp = await this.taskmanOutput.taskSocketRequest(command);
-                this.logger.info(`[APP] Task Response : ${JSON.stringify(resp)}`);
+                this.logger?.info(`[APP] Task Response : ${JSON.stringify(resp)}`);
                 command.statusChange('accept');
                 const result = await this.databaseOutput.update(command);
-                this.logger.info(`[APP] Task DB Update : ${result?._id.toString()}`);
+                this.logger?.info(`[APP] Task DB Update : ${result?._id.toString()}`);
                 return resp;
             }
             else {
-                this.logger.warn(`[APP] taskRequest : Taskman disconnected`);
+                this.logger?.warn(`[APP] taskRequest : Taskman disconnected`);
                 throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
         }
@@ -1293,13 +1293,13 @@ let TaskService = class TaskService {
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.warn(`[APP] taskRequest : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.warn(`[APP] taskRequest : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('Task 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
     async updateResponse(resp) {
         try {
-            this.logger.info(`[Task] updateResponse : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Task] updateResponse : ${JSON.stringify(resp)}`);
             const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
             if (dbmodel) {
                 const model = new task_domain_1.TaskModel(dbmodel);
@@ -1309,7 +1309,7 @@ let TaskService = class TaskService {
             }
         }
         catch (error) {
-            this.logger.error(`[Task] updateResponse : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Task] updateResponse : ${(0, common_1.errorToJson)(error)}`);
         }
     }
     async stateResponse(data) {
@@ -1317,7 +1317,7 @@ let TaskService = class TaskService {
             this.databaseOutput.saveState({ ...data });
         }
         catch (error) {
-            this.logger.error(`[Task] stateResponse : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Task] stateResponse : ${(0, common_1.errorToJson)(error)}`);
         }
     }
 };
@@ -2435,18 +2435,18 @@ const common_1 = __webpack_require__(5);
 let TaskParserService = class TaskParserService {
     constructor(saveLogService) {
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('task');
+        this.logger = this.saveLogService.get('task');
     }
     async getTaskList(request) {
         try {
-            this.logger.info(`[Parser] getTaskList : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Parser] getTaskList : ${JSON.stringify(request)}`);
             if (request.mapName === undefined || request.mapName === '') {
-                this.logger.error(`[Parser] getTask: mapName undefined`);
+                this.logger?.error(`[Parser] getTask: mapName undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
             }
             const mapPath = this.getMapPath(request.mapName);
             if (!fs.existsSync(mapPath)) {
-                this.logger.error(`[Parser] getTask: mapPath not found (${mapPath})`);
+                this.logger?.error(`[Parser] getTask: mapPath not found (${mapPath})`);
                 throw new rpc_code_exception_1.RpcCodeException(`경로의 맵 폴더가 없습니다 (${request.mapName})`, constant_1.GrpcCode.NotFound);
             }
             const files = await fs.promises.readdir(mapPath, { withFileTypes: true });
@@ -2463,19 +2463,19 @@ let TaskParserService = class TaskParserService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Parser] getTaskList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] getTaskList: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('리스트를 가져올 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
     async getTask(request) {
         try {
-            this.logger.info(`[Parser] getTask : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Parser] getTask : ${JSON.stringify(request)}`);
             if (request.mapName === undefined || request.mapName === '') {
-                this.logger.error(`[Parser] getTask : mapName undefined`);
+                this.logger?.error(`[Parser] getTask : mapName undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.taskName === undefined || request.taskName === '') {
-                this.logger.error(`[Parser] getTask : taskName undefined`);
+                this.logger?.error(`[Parser] getTask : taskName undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.taskName.split('.').length === 1) {
@@ -2483,7 +2483,7 @@ let TaskParserService = class TaskParserService {
             }
             const taskPath = this.getTaskPath(request.mapName, request.taskName);
             if (!fs.existsSync(taskPath)) {
-                this.logger.error(`[Parser] getTask : taskPath not found (${taskPath})`);
+                this.logger?.error(`[Parser] getTask : taskPath not found (${taskPath})`);
                 throw new rpc_code_exception_1.RpcCodeException('경로의 파일이 존재하지 않습니다.', constant_1.GrpcCode.NotFound);
             }
             const parseData = await this.parse(taskPath);
@@ -2492,23 +2492,23 @@ let TaskParserService = class TaskParserService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Parser] getTask: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] getTask: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('파일을 읽는 도중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async saveTask(request) {
         try {
-            this.logger.info(`[Parser] saveTask : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Parser] saveTask : ${JSON.stringify(request)}`);
             if (request.mapName == undefined || request.mapName == '') {
-                this.logger.error(`[Parser] saveTask: mapName undefined`);
+                this.logger?.error(`[Parser] saveTask: mapName undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('mapName 값이 존재하지 않습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.taskName == undefined || request.taskName == '') {
-                this.logger.error(`[Parser] saveTask: taskName undefined`);
+                this.logger?.error(`[Parser] saveTask: taskName undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('taskName 값이 존재하지 않습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.data == undefined || request.data.children.length == 0) {
-                this.logger.error(`[Parser] saveTask: data undefined`);
+                this.logger?.error(`[Parser] saveTask: data undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('저장할 데이터가 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const taskPath = this.getTaskPath(request.mapName, request.taskName);
@@ -2519,34 +2519,34 @@ let TaskParserService = class TaskParserService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Parser] saveTask: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] saveTask: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('파일을 읽는 도중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
     async deleteTask(request) {
         try {
-            this.logger.info(`[Parser] deleteTask : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Parser] deleteTask : ${JSON.stringify(request)}`);
             if (request.mapName == undefined || request.mapName == '') {
-                this.logger.error(`[Parser] saveTask: mapName undefined`);
+                this.logger?.error(`[Parser] saveTask: mapName undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('mapName 값이 존재하지 않습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             if (request.taskName == undefined || request.taskName == '') {
-                this.logger.error(`[Parser] saveTask: taskName undefined`);
+                this.logger?.error(`[Parser] saveTask: taskName undefined`);
                 throw new rpc_code_exception_1.RpcCodeException('taskName 값이 존재하지 않습니다.', constant_1.GrpcCode.InvalidArgument);
             }
             const taskPath = this.getTaskPath(request.mapName, request.taskName);
             if (!fs.existsSync(taskPath)) {
-                this.logger.error(`[Parser] getTask: ${taskPath} not found`);
+                this.logger?.error(`[Parser] getTask: ${taskPath} not found`);
                 throw new rpc_code_exception_1.RpcCodeException('경로의 파일이 존재하지 않습니다.', constant_1.GrpcCode.NotFound);
             }
             fs.unlinkSync(taskPath);
-            this.logger.info(`[Parser] deleteTask : ${taskPath} done`);
+            this.logger?.info(`[Parser] deleteTask : ${taskPath} done`);
             return { ...request };
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Parser] deleteTask: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] deleteTask: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('파일을 삭제하는 도중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -2738,17 +2738,17 @@ let TaskParserService = class TaskParserService {
             return root;
         }
         catch (error) {
-            this.logger.error(`[Parser] textToTreeData: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] textToTreeData: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new Error('Task 파일을 파싱 중 에러가 발생했습니다.');
         }
     }
     async parse(dir) {
         return new Promise(async (resolve, reject) => {
             try {
-                this.logger.info(`[Parser] parse : ${dir}`);
+                this.logger?.info(`[Parser] parse : ${dir}`);
                 fs.open(dir, 'r', async (err, fd) => {
                     if (err) {
-                        this.logger.error(`[Parser] parse: ${parse_util_1.ParseUtil.errorToJson(err)}`);
+                        this.logger?.error(`[Parser] parse: ${parse_util_1.ParseUtil.errorToJson(err)}`);
                         reject(new rpc_code_exception_1.RpcCodeException('파일을 파싱할 수 없습니다', constant_1.GrpcCode.InternalError));
                     }
                     else {
@@ -2759,7 +2759,7 @@ let TaskParserService = class TaskParserService {
                 });
             }
             catch (error) {
-                this.logger.error(`[Parser] parse: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Parser] parse: ${parse_util_1.ParseUtil.errorToJson(error)}`);
                 reject();
             }
         });
@@ -2866,7 +2866,7 @@ let TaskParserService = class TaskParserService {
             return text.trim();
         }
         catch (error) {
-            this.logger.error(`[Parser] treeToText : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] treeToText : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new Error('트리구조를 텍스트파일로 변환할 수 없습니다.');
         }
     }
@@ -2911,7 +2911,7 @@ let TaskParserService = class TaskParserService {
             return line.split('(')[1].split(')')[0];
         }
         catch (error) {
-            this.logger.error(`[Parser] findValue : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] findValue : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             return '';
         }
     }
@@ -2920,7 +2920,7 @@ let TaskParserService = class TaskParserService {
             return line.split(keyword)[1].replace(' ', '');
         }
         catch (error) {
-            this.logger.error(`[Parser] findValueSub : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] findValueSub : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             return '';
         }
     }
@@ -2929,7 +2929,7 @@ let TaskParserService = class TaskParserService {
             return line.split('{')[1].split('}')[0];
         }
         catch (error) {
-            this.logger.error(`[Parser] findSocketChildren : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Parser] findSocketChildren : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             return '';
         }
     }
@@ -2947,7 +2947,7 @@ let TaskParserService = class TaskParserService {
             return list;
         }
         catch (e) {
-            this.logger.error(`[TASK] list: ${dir}, ${parse_util_1.ParseUtil.errorToJson(e)}`);
+            this.logger?.error(`[TASK] list: ${dir}, ${parse_util_1.ParseUtil.errorToJson(e)}`);
             throw new rpc_code_exception_1.RpcCodeException('Task 파일 리스트를 가져오던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -2995,7 +2995,7 @@ let TaskMongoController = class TaskMongoController {
         this.Repository = Repository;
         this.StateRepository = StateRepository;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('task');
+        this.logger = this.saveLogService.get('task');
     }
     saveState(state) {
         this.StateRepository.create(state);
@@ -3013,7 +3013,7 @@ let TaskMongoController = class TaskMongoController {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Task] getStateLast : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Task] getStateLast : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('TaskState를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -3022,7 +3022,7 @@ let TaskMongoController = class TaskMongoController {
             return await this.Repository.findById(id);
         }
         catch (error) {
-            this.logger.error(`[Task] DB getNodebyId: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Task] DB getNodebyId: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new microservices_1.RpcException('데이터를 가져올 수 없습니다.');
         }
     }
@@ -3031,7 +3031,7 @@ let TaskMongoController = class TaskMongoController {
             return await this.Repository.create(move);
         }
         catch (error) {
-            this.logger.error(`[Task] DB save: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Task] DB save: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new microservices_1.RpcException('데이터를 저장할 수 없습니다.');
         }
     }
@@ -3577,52 +3577,52 @@ let TaskSocketioOutputController = class TaskSocketioOutputController {
         this.mqttMicroservice = mqttMicroservice;
         this.pendingService = pendingService;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('task');
+        this.logger = this.saveLogService.get('task');
     }
     checkSocketConnection() {
         this.mqttMicroservice.emit('getConnection', {});
     }
     async taskSocketRequest(data) {
         try {
-            this.logger.debug(`[Task] taskSocketRequest : ${JSON.stringify(data)}`);
+            this.logger?.debug(`[Task] taskSocketRequest : ${JSON.stringify(data)}`);
             const response = this.waitForResponse(data.id, 5000);
             this.mqttMicroservice.emit('taskman:taskRequest', data);
             const resp = await response;
-            this.logger.debug(`[Task] taskSocketRequest Response : ${JSON.stringify(resp)}`);
+            this.logger?.debug(`[Task] taskSocketRequest Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
-            this.logger.error(`[Task] taskSocketRequest : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Task] taskSocketRequest : ${(0, common_2.errorToJson)(error)}`);
             throw error;
         }
     }
     async stateSocketRequest() {
         try {
             const id = util_1.UrlUtil.generateUUID();
-            this.logger.debug(`[Task] stateSocketRequest : ${id}`);
+            this.logger?.debug(`[Task] stateSocketRequest : ${id}`);
             const response = this.waitForResponse(id, 5000);
             this.mqttMicroservice.emit('taskman:stateRequest', { id: id });
             const resp = await response;
-            this.logger.debug(`[Task] stateSocketRequest Response : ${JSON.stringify(resp)}`);
+            this.logger?.debug(`[Task] stateSocketRequest Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
-            this.logger.error(`[Task] stateSocketRequest : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Task] stateSocketRequest : ${(0, common_2.errorToJson)(error)}`);
             throw error;
         }
     }
     async variableSocketRequest() {
         try {
             const id = util_1.UrlUtil.generateUUID();
-            this.logger.debug(`[Task] variableSocketRequest : ${id}`);
+            this.logger?.debug(`[Task] variableSocketRequest : ${id}`);
             const response = this.waitForResponse(id, 5000);
             this.mqttMicroservice.emit('taskman:variableRequest', { id: id });
             const resp = await response;
-            this.logger.debug(`[Task] variableSocketRequest Response : ${JSON.stringify(resp)}`);
+            this.logger?.debug(`[Task] variableSocketRequest Response : ${JSON.stringify(resp)}`);
             return resp;
         }
         catch (error) {
-            this.logger.error(`[Task] variableSocketRequest : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Task] variableSocketRequest : ${(0, common_2.errorToJson)(error)}`);
             throw error;
         }
     }
@@ -3632,7 +3632,7 @@ let TaskSocketioOutputController = class TaskSocketioOutputController {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.logger.error(`[Task] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger?.error(`[Task] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }

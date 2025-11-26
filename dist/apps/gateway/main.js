@@ -179,7 +179,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -189,9 +189,12 @@ const error_response_dto_1 = __webpack_require__(32);
 const control_api_service_1 = __webpack_require__(33);
 const safety_io_dto_1 = __webpack_require__(46);
 const control_type_1 = __webpack_require__(12);
+const saveLog_service_1 = __webpack_require__(42);
 let ControlApiController = class ControlApiController {
-    constructor(controlService) {
+    constructor(controlService, saveLogService) {
         this.controlService = controlService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async OnOff(dto) {
         return this.controlService.OnOff(dto);
@@ -248,8 +251,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof control_dto_1.OnOffRequestDto !== "undefined" && control_dto_1.OnOffRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], ControlApiController.prototype, "OnOff", null);
 __decorate([
     (0, common_1.Post)('work'),
@@ -268,8 +271,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof control_dto_1.WorkRequestDto !== "undefined" && control_dto_1.WorkRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], ControlApiController.prototype, "Work", null);
 __decorate([
     (0, common_1.Post)('work/dock'),
@@ -288,7 +291,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], ControlApiController.prototype, "WorkDock", null);
 __decorate([
     (0, common_1.Post)('work/undock'),
@@ -307,7 +310,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], ControlApiController.prototype, "WorkUnDock", null);
 __decorate([
     (0, common_1.Get)('safetyField'),
@@ -326,7 +329,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], ControlApiController.prototype, "GetSafetyField", null);
 __decorate([
     (0, common_1.Post)('safetyField'),
@@ -345,8 +348,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:paramtypes", [typeof (_k = typeof control_dto_1.SafetyFieldRequestDto !== "undefined" && control_dto_1.SafetyFieldRequestDto) === "function" ? _k : Object]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], ControlApiController.prototype, "SetSafetyField", null);
 __decorate([
     (0, common_1.Post)('led'),
@@ -365,8 +368,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [typeof (_m = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _m : Object]),
+    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
 ], ControlApiController.prototype, "Led", null);
 __decorate([
     (0, common_1.Post)('safetyIo'),
@@ -380,8 +383,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_p = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
 ], ControlApiController.prototype, "SafetyIo", null);
 __decorate([
     (0, common_1.Get)('safetyIo'),
@@ -395,7 +398,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], ControlApiController.prototype, "GetSafetyIo", null);
 __decorate([
     (0, common_1.Get)('obsbox'),
@@ -415,13 +418,13 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _s : Object]),
     __metadata("design:returntype", Promise)
 ], ControlApiController.prototype, "setObsboxControl", null);
 exports.ControlApiController = ControlApiController = __decorate([
     (0, swagger_1.ApiTags)('SLAMNAV 컨트롤 API'),
     (0, common_1.Controller)('control'),
-    __metadata("design:paramtypes", [typeof (_a = typeof control_api_service_1.ControlApiService !== "undefined" && control_api_service_1.ControlApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof control_api_service_1.ControlApiService !== "undefined" && control_api_service_1.ControlApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], ControlApiController);
 
 
@@ -1739,7 +1742,7 @@ let ControlApiService = class ControlApiService {
         this.controlMicroservice = controlMicroservice;
         this.cobotMicroservice = cobotMicroservice;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('gateway-api');
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.controlService = this.controlMicroservice.getService('ControlGrpcService');
@@ -3382,38 +3385,38 @@ let LocalizationApiController = class LocalizationApiController {
     constructor(localizationService, saveLogService) {
         this.localizationService = localizationService;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('gateway-api');
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async Init(initDto) {
-        this.logger.debug(`[Localization] Init : ${JSON.stringify(initDto)}`);
+        this.logger?.debug(`[Localization] Init : ${JSON.stringify(initDto)}`);
         return this.localizationService.sendInit(initDto);
     }
     async RandomInit() {
-        this.logger.debug(`[Localization] RandomInit`);
+        this.logger?.debug(`[Localization] RandomInit`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.randomInit,
         });
     }
     async AutoInit() {
-        this.logger.debug(`[Localization] AutoInit`);
+        this.logger?.debug(`[Localization] AutoInit`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.autoInit,
         });
     }
     async SemiAutoInit() {
-        this.logger.debug(`[Localization] SemiAutoInit`);
+        this.logger?.debug(`[Localization] SemiAutoInit`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.semiAutoInit,
         });
     }
     async LocStart() {
-        this.logger.debug(`[Localization] LocStart`);
+        this.logger?.debug(`[Localization] LocStart`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.start,
         });
     }
     async LocStop() {
-        this.logger.debug(`[Localization] LocStop`);
+        this.logger?.debug(`[Localization] LocStop`);
         return this.localizationService.sendInit({
             command: localization_type_1.LocalizationCommand.stop,
         });
@@ -3578,7 +3581,7 @@ let LocalizationApiService = class LocalizationApiService {
     constructor(localizationMicroservice, saveLogService) {
         this.localizationMicroservice = localizationMicroservice;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('gateway-api');
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.localizationService =
@@ -3979,39 +3982,39 @@ let NetworkApiController = class NetworkApiController {
         this.logger = this.saveLogService.get('gateway-api');
     }
     async getNetwork() {
-        this.logger.debug(`[Network] getNetwork`);
+        this.logger?.debug(`[Network] getNetwork`);
         return this.networkService.getNetwork();
     }
     async getEthernetNetwork() {
-        this.logger.debug(`[Network] getEthernetNetwork`);
+        this.logger?.debug(`[Network] getEthernetNetwork`);
         return await this.networkService.getEthernet();
     }
     async getWifiNetwork() {
-        this.logger.debug(`[Network] getWifiNetwork`);
+        this.logger?.debug(`[Network] getWifiNetwork`);
         return await this.networkService.getWifi();
     }
     async getBluetoothNetwork() {
-        this.logger.debug(`[Network] getBluetoothNetwork`);
+        this.logger?.debug(`[Network] getBluetoothNetwork`);
         return await this.networkService.getBluetooth();
     }
     async getDeviceNetwork(device) {
-        this.logger.debug(`[Network] getDeviceNetwork : ${device}`);
+        this.logger?.debug(`[Network] getDeviceNetwork : ${device}`);
         return await this.networkService.getDevice({ device: device });
     }
     async getWifiList() {
-        this.logger.debug(`[Network] getWifiList`);
+        this.logger?.debug(`[Network] getWifiList`);
         return await this.networkService.getWifiList();
     }
     async getWifiScanList() {
-        this.logger.debug(`[Network] getWifiList`);
+        this.logger?.debug(`[Network] getWifiList`);
         return await this.networkService.scanWifi();
     }
     async updateNetwork(networkDto) {
-        this.logger.debug(`[Network] updateNetwork : ${networkDto.device} -> ${networkDto.dhcp}`);
+        this.logger?.debug(`[Network] updateNetwork : ${networkDto.device} -> ${networkDto.dhcp}`);
         return await this.networkService.setNetwork(networkDto);
     }
     async connectWifi(dto) {
-        this.logger.debug(`[Network] connectWifi : ${dto.ssid} -> ${dto.password}`);
+        this.logger?.debug(`[Network] connectWifi : ${dto.ssid} -> ${dto.password}`);
         return await this.networkService.connectWifi(dto);
     }
 };
@@ -4397,7 +4400,7 @@ let ConfigApiController = class ConfigApiController {
         return this.configService.setConfigs(dto);
     }
     async setConfig(dto) {
-        this.logger.info(`[API] setConfig : ${dto.key} -> ${dto.value}`);
+        this.logger?.info(`[API] setConfig : ${dto.key} -> ${dto.value}`);
         return this.configService.setConfig(dto);
     }
     async deleteConfig(dto) {
@@ -4413,6 +4416,34 @@ __decorate([
     (0, swagger_1.ApiOperation)({
         summary: '저장된 Config 전체 데이터 요청',
         description: 'Config 전체 데이터를 요청합니다.',
+    }),
+    (0, swagger_1.ApiOperation)({
+        summary: '저장된 파라미터 일괄 조회',
+        description: `
+DB에 저장된 로봇의 고유 파라미터를 모두 조회합니다.
+
+## 📌 기능 설명
+- DB 내 저장된 로봇의 파라미터를 조회합니다.
+- 저장된 데이터는 key, value의 값을 지니며 
+- 실제 실행(run)은 하지 않고, **실행 대기 상태로 로드만 수행**합니다.
+- 이미 다른 프로그램이 로드되어 있는 경우, 기존 로드는 해제되고 새 프로그램으로 교체됩니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| configs     | list  | 저장된 파라미터 {"key":"string", "value":"string"} | [{"key":"robotSerial", "value":"Name123"},...] |
+| programName | string  | 로드된 프로그램 이름          | 'program1' |
+| command     | string  | 협동로봇에 실제 전달된 명령어 | 'task load program1' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 요청한 명령이 지원하지 않는 명령일 때
+### **404** NOT_FOUND
+  - 요청한 \`cobotId\` 가 존재하지 않을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 협동로봇 컨트롤러와 통신 실패 등 알 수 없는 오류
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Config 전체 데이터 조회 성공',
@@ -4564,7 +4595,7 @@ let ConfigApiService = class ConfigApiService {
         this.configMicroservice = configMicroservice;
         this.codeMicroservice = codeMicroservice;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('gateway-api');
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async onModuleInit() {
         this.configService = this.configMicroservice.getService('ConfigGrpcService');
@@ -4827,7 +4858,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -4835,8 +4866,12 @@ const setting_api_service_1 = __webpack_require__(95);
 const swagger_1 = __webpack_require__(8);
 const error_response_dto_1 = __webpack_require__(32);
 const setting_dto_1 = __webpack_require__(96);
+const saveLog_service_1 = __webpack_require__(42);
 let SettingApiController = class SettingApiController {
-    constructor() { }
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
+    }
     async getType() {
         return this.settingService.getType();
     }
@@ -4868,7 +4903,7 @@ let SettingApiController = class SettingApiController {
 exports.SettingApiController = SettingApiController;
 __decorate([
     (0, common_1.Inject)(),
-    __metadata("design:type", typeof (_a = typeof setting_api_service_1.SettingApiService !== "undefined" && setting_api_service_1.SettingApiService) === "function" ? _a : Object)
+    __metadata("design:type", typeof (_b = typeof setting_api_service_1.SettingApiService !== "undefined" && setting_api_service_1.SettingApiService) === "function" ? _b : Object)
 ], SettingApiController.prototype, "settingService", void 0);
 __decorate([
     (0, common_1.Get)('type'),
@@ -4906,7 +4941,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof setting_dto_1.SettingGetSettingRequestDto !== "undefined" && setting_dto_1.SettingGetSettingRequestDto) === "function" ? _b : Object]),
+    __metadata("design:paramtypes", [typeof (_c = typeof setting_dto_1.SettingGetSettingRequestDto !== "undefined" && setting_dto_1.SettingGetSettingRequestDto) === "function" ? _c : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "getSetting", null);
 __decorate([
@@ -4926,7 +4961,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof setting_dto_1.SettingSaveSettingRequestDto !== "undefined" && setting_dto_1.SettingSaveSettingRequestDto) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof setting_dto_1.SettingSaveSettingRequestDto !== "undefined" && setting_dto_1.SettingSaveSettingRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "saveSetting", null);
 __decorate([
@@ -4946,7 +4981,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof setting_dto_1.SettingSaveSettingAllRequestDto !== "undefined" && setting_dto_1.SettingSaveSettingAllRequestDto) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof setting_dto_1.SettingSaveSettingAllRequestDto !== "undefined" && setting_dto_1.SettingSaveSettingAllRequestDto) === "function" ? _e : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "saveSettingAll", null);
 __decorate([
@@ -4966,7 +5001,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof setting_dto_1.SettingGetPresetListRequestDto !== "undefined" && setting_dto_1.SettingGetPresetListRequestDto) === "function" ? _e : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof setting_dto_1.SettingGetPresetListRequestDto !== "undefined" && setting_dto_1.SettingGetPresetListRequestDto) === "function" ? _f : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "getPresetList", null);
 __decorate([
@@ -4986,7 +5021,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof setting_dto_1.SettingGetPresetRequestDto !== "undefined" && setting_dto_1.SettingGetPresetRequestDto) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_g = typeof setting_dto_1.SettingGetPresetRequestDto !== "undefined" && setting_dto_1.SettingGetPresetRequestDto) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "getPreset", null);
 __decorate([
@@ -5006,7 +5041,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof setting_dto_1.SettingSavePresetRequestDto !== "undefined" && setting_dto_1.SettingSavePresetRequestDto) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof setting_dto_1.SettingSavePresetRequestDto !== "undefined" && setting_dto_1.SettingSavePresetRequestDto) === "function" ? _h : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "savePreset", null);
 __decorate([
@@ -5026,7 +5061,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof setting_dto_1.SettingDeletePresetRequestDto !== "undefined" && setting_dto_1.SettingDeletePresetRequestDto) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_j = typeof setting_dto_1.SettingDeletePresetRequestDto !== "undefined" && setting_dto_1.SettingDeletePresetRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "deletePreset", null);
 __decorate([
@@ -5046,13 +5081,13 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof setting_dto_1.SettingCreatePresetRequestDto !== "undefined" && setting_dto_1.SettingCreatePresetRequestDto) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof setting_dto_1.SettingCreatePresetRequestDto !== "undefined" && setting_dto_1.SettingCreatePresetRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "createPreset", null);
 exports.SettingApiController = SettingApiController = __decorate([
     (0, swagger_1.ApiTags)('세팅 관련 API (setting)'),
     (0, common_1.Controller)('setting'),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
 ], SettingApiController);
 
 
@@ -5544,7 +5579,7 @@ let MoveApiService = class MoveApiService {
     }
     sendMoveJogCommand(moveDto) {
         this.moveService.moveJog(moveDto).subscribe({
-            error: (err) => this.logger.error(`[MOVE] sendMoveGoalCommand : ${util_1.ParseUtil.errorToJson(err)}`),
+            error: (err) => this.logger?.error(`[MOVE] sendMoveGoalCommand : ${util_1.ParseUtil.errorToJson(err)}`),
         });
     }
     async getMoveLogLast(dto) {
@@ -5579,7 +5614,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -5589,40 +5624,43 @@ const move_dto_2 = __webpack_require__(100);
 const move_dto_3 = __webpack_require__(100);
 const error_response_dto_1 = __webpack_require__(32);
 const move_api_service_1 = __webpack_require__(98);
+const saveLog_service_1 = __webpack_require__(42);
 let MoveApiController = class MoveApiController {
-    constructor(moveService) {
+    constructor(moveService, saveLogService) {
         this.moveService = moveService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async sendMove(moveDto) {
-        this.logger.debug(`[Move] Move : ${JSON.stringify(moveDto)}`);
+        this.logger?.debug(`[Move] Move : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveCommand(moveDto);
     }
     async sendMoveTarget(moveDto) {
-        this.logger.debug(`[Move] MoveTarget : ${JSON.stringify(moveDto)}`);
+        this.logger?.debug(`[Move] MoveTarget : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveCommand(moveDto);
     }
     async sendMoveGoal(moveDto) {
-        this.logger.debug(`[Move] MoveGoal : ${JSON.stringify(moveDto)}`);
+        this.logger?.debug(`[Move] MoveGoal : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveCommand({ ...moveDto, command: 'goal' });
     }
     async sendMoveJog(moveDto) {
-        this.logger.debug(`[Move] MoveJog : ${JSON.stringify(moveDto)}`);
+        this.logger?.debug(`[Move] MoveJog : ${JSON.stringify(moveDto)}`);
         return this.moveService.sendMoveJogCommand(moveDto);
     }
     async sendMoveStop() {
-        this.logger.debug(`[Move] MoveStop`);
+        this.logger?.debug(`[Move] MoveStop`);
         return this.moveService.sendMoveCommand({ command: 'stop' });
     }
     async sendMovePause() {
-        this.logger.debug(`[Move] MovePause`);
+        this.logger?.debug(`[Move] MovePause`);
         return this.moveService.sendMoveCommand({ command: 'pause' });
     }
     async sendMoveResume() {
-        this.logger.debug(`[Move] MoveResume`);
+        this.logger?.debug(`[Move] MoveResume`);
         return this.moveService.sendMoveCommand({ command: 'resume' });
     }
     async moveProfile(dto) {
-        this.logger.info(`[MOVE] moveProfile: ${JSON.stringify(dto)}`);
+        this.logger?.info(`[MOVE] moveProfile: ${JSON.stringify(dto)}`);
         return this.moveService.sendMoveCommand(dto);
     }
     async getMoveLogLast(dto) {
@@ -5657,8 +5695,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], MoveApiController.prototype, "sendMove", null);
 __decorate([
     (0, common_1.Post)('target'),
@@ -5680,8 +5718,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], MoveApiController.prototype, "sendMoveTarget", null);
 __decorate([
     (0, common_1.Post)('goal'),
@@ -5703,8 +5741,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof move_dto_2.MoveGoalCommandDto !== "undefined" && move_dto_2.MoveGoalCommandDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_g = typeof move_dto_2.MoveGoalCommandDto !== "undefined" && move_dto_2.MoveGoalCommandDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], MoveApiController.prototype, "sendMoveGoal", null);
 __decorate([
     (0, common_1.Post)('jog'),
@@ -5723,7 +5761,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_j = typeof move_dto_1.MoveRequestDto !== "undefined" && move_dto_1.MoveRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], MoveApiController.prototype, "sendMoveJog", null);
 __decorate([
@@ -5743,7 +5781,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], MoveApiController.prototype, "sendMoveStop", null);
 __decorate([
     (0, common_1.Post)('pause'),
@@ -5762,7 +5800,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], MoveApiController.prototype, "sendMovePause", null);
 __decorate([
     (0, common_1.Post)('resume'),
@@ -5781,7 +5819,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], MoveApiController.prototype, "sendMoveResume", null);
 __decorate([
     (0, common_1.Post)('profile'),
@@ -5791,7 +5829,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof move_dto_1.MoveLinearRequestDto !== "undefined" && move_dto_1.MoveLinearRequestDto) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof move_dto_1.MoveLinearRequestDto !== "undefined" && move_dto_1.MoveLinearRequestDto) === "function" ? _o : Object]),
     __metadata("design:returntype", Promise)
 ], MoveApiController.prototype, "moveProfile", null);
 __decorate([
@@ -5805,8 +5843,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof move_dto_1.MoveLogLastRequestDto !== "undefined" && move_dto_1.MoveLogLastRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_p = typeof move_dto_1.MoveLogLastRequestDto !== "undefined" && move_dto_1.MoveLogLastRequestDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
 ], MoveApiController.prototype, "getMoveLogLast", null);
 __decorate([
     (0, common_1.Get)('log'),
@@ -5819,13 +5857,13 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof move_dto_1.MoveLogRequestDto !== "undefined" && move_dto_1.MoveLogRequestDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_r = typeof move_dto_1.MoveLogRequestDto !== "undefined" && move_dto_1.MoveLogRequestDto) === "function" ? _r : Object]),
+    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
 ], MoveApiController.prototype, "getMoveLog", null);
 exports.MoveApiController = MoveApiController = __decorate([
     (0, swagger_1.ApiTags)('주행 API'),
     (0, common_1.Controller)('move'),
-    __metadata("design:paramtypes", [typeof (_a = typeof move_api_service_1.MoveApiService !== "undefined" && move_api_service_1.MoveApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof move_api_service_1.MoveApiService !== "undefined" && move_api_service_1.MoveApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], MoveApiController);
 
 
@@ -6617,7 +6655,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -6628,9 +6666,12 @@ const task_type_1 = __webpack_require__(110);
 const task_dto_2 = __webpack_require__(109);
 const error_response_dto_1 = __webpack_require__(32);
 const task_type_2 = __webpack_require__(110);
+const saveLog_service_1 = __webpack_require__(42);
 let TaskApiController = class TaskApiController {
-    constructor(taskService) {
+    constructor(taskService, saveLogService) {
         this.taskService = taskService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async getTaskState() {
         return this.taskService.getTaskState();
@@ -6719,8 +6760,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], TaskApiController.prototype, "taskRequest", null);
 __decorate([
     (0, common_1.Post)('run'),
@@ -6739,8 +6780,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], TaskApiController.prototype, "runTask", null);
 __decorate([
     (0, common_1.Post)('stop'),
@@ -6759,7 +6800,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], TaskApiController.prototype, "loadTaskPost", null);
 __decorate([
     (0, common_1.Get)('list/:mapName'),
@@ -6821,7 +6862,7 @@ __decorate([
     __param(1, (0, common_1.Param)('taskName')),
     __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, typeof (_g = typeof task_type_1.TaskTreeNode !== "undefined" && task_type_1.TaskTreeNode) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [String, String, typeof (_h = typeof task_type_1.TaskTreeNode !== "undefined" && task_type_1.TaskTreeNode) === "function" ? _h : Object]),
     __metadata("design:returntype", Promise)
 ], TaskApiController.prototype, "saveTask", null);
 __decorate([
@@ -6848,7 +6889,7 @@ __decorate([
 exports.TaskApiController = TaskApiController = __decorate([
     (0, swagger_1.ApiTags)('태스크 API'),
     (0, common_1.Controller)('task'),
-    __metadata("design:paramtypes", [typeof (_a = typeof task_api_service_1.TaskApiService !== "undefined" && task_api_service_1.TaskApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof task_api_service_1.TaskApiService !== "undefined" && task_api_service_1.TaskApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], TaskApiController);
 
 
@@ -7192,7 +7233,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiController = void 0;
 const common_1 = __webpack_require__(48);
@@ -7215,9 +7256,12 @@ const map_dto_2 = __webpack_require__(121);
 const map_dto_3 = __webpack_require__(121);
 const zlib = __webpack_require__(25);
 const fs = __webpack_require__(19);
+const saveLog_service_1 = __webpack_require__(42);
 let MapApiController = class MapApiController {
-    constructor(mapService) {
+    constructor(mapService, saveLogService) {
         this.mapService = mapService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async MapList() {
         return this.mapService.getMapList();
@@ -7238,18 +7282,18 @@ let MapApiController = class MapApiController {
         res.setHeader('Content-Encoding', 'gzip');
         stream_1.Readable.from([JSON.stringify(data)])
             .pipe(gzip)
-            .on('end', () => this.logger.info(`[Map] getCloud : gzip end`))
+            .on('end', () => this.logger?.info(`[Map] getCloud : gzip end`))
             .pipe(res)
-            .on('finish', () => this.logger.info(`[Map] getCloud : send finish`));
+            .on('finish', () => this.logger?.info(`[Map] getCloud : send finish`));
     }
     async getCloudPipe(dto, res) {
         try {
-            this.logger.debug(`[Map] getCloudPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
+            this.logger?.debug(`[Map] getCloudPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
             await util_1.FileUtil.readCSVPipe((0, path_1.join)('/data/maps', dto.mapName, dto.fileName), res);
         }
         catch (error) {
             console.error(error);
-            this.logger.error(`[Map] getCloudPipe: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] getCloudPipe: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new common_2.HttpException(error, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7279,7 +7323,7 @@ let MapApiController = class MapApiController {
             };
         }
         catch (error) {
-            this.logger.error(`[Map] uploadCloudGzip: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] uploadCloudGzip: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new common_2.HttpException('gzip 파일 처리 중 오류가 발생했습니다.', common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7304,12 +7348,12 @@ let MapApiController = class MapApiController {
     }
     async getTopologyPipe(dto, res) {
         try {
-            this.logger.debug(`[Map] getTopologyPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
+            this.logger?.debug(`[Map] getTopologyPipe : ${(0, path_1.join)('/data/maps', dto.mapName, dto.fileName)}`);
             await util_1.FileUtil.readJSONPipe((0, path_1.join)('/data/maps', dto.mapName, dto.fileName), res);
         }
         catch (error) {
             console.error(error);
-            this.logger.error(`[Map] getTopologyPipe: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Map] getTopologyPipe: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new common_2.HttpException(error, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7346,7 +7390,7 @@ let MapApiController = class MapApiController {
                 (0, fs_1.unlinkSync)(file.path);
                 throw new common_2.HttpException('동일한 이름의 맵이 이미 존재합니다', common_2.HttpStatus.BAD_REQUEST);
             }
-            this.logger.info(`[Map] pulishMap : ${newMapname}, ${file.filename}`);
+            this.logger?.info(`[Map] pulishMap : ${newMapname}, ${file.filename}`);
             (0, fs_1.renameSync)(file.path, newPath);
             return {
                 originalName: file.originalname,
@@ -7367,7 +7411,7 @@ let MapApiController = class MapApiController {
             else if (error instanceof common_2.HttpException) {
                 throw error;
             }
-            this.logger.error(`[Map] pulishMap : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Map] pulishMap : ${(0, common_1.errorToJson)(error)}`);
             throw new common_2.HttpException('맵을 저장하던 중 에러가 발생했습니다.', common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -7420,7 +7464,7 @@ __decorate([
     __param(0, (0, common_2.Param)('name')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], MapApiController.prototype, "loadMap", null);
 __decorate([
     (0, common_2.Get)('cloud'),
@@ -7440,7 +7484,7 @@ __decorate([
     __param(0, (0, common_2.Query)()),
     __param(1, (0, common_2.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _c : Object, typeof (_d = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _d : Object, typeof (_e = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _e : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getCloud", null);
 __decorate([
@@ -7461,7 +7505,7 @@ __decorate([
     __param(0, (0, common_2.Query)()),
     __param(1, (0, common_2.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _e : Object, typeof (_f = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof map_dto_1.GetCloudRequestDto !== "undefined" && map_dto_1.GetCloudRequestDto) === "function" ? _f : Object, typeof (_g = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getCloudPipe", null);
 __decorate([
@@ -7482,7 +7526,7 @@ __decorate([
     __param(0, (0, common_2.Req)()),
     __param(1, (0, common_2.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _g : Object, typeof (_h = typeof map_dto_1.SaveCloudRequestDto !== "undefined" && map_dto_1.SaveCloudRequestDto) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _h : Object, typeof (_j = typeof map_dto_1.SaveCloudRequestDto !== "undefined" && map_dto_1.SaveCloudRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "saveCloud", null);
 __decorate([
@@ -7504,8 +7548,8 @@ __decorate([
     __param(0, (0, common_2.Body)()),
     __param(1, (0, common_2.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof map_dto_1.SaveCloudPipeRequestDto !== "undefined" && map_dto_1.SaveCloudPipeRequestDto) === "function" ? _j : Object, typeof (_l = typeof Express !== "undefined" && (_k = Express.Multer) !== void 0 && _k.File) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [typeof (_k = typeof map_dto_1.SaveCloudPipeRequestDto !== "undefined" && map_dto_1.SaveCloudPipeRequestDto) === "function" ? _k : Object, typeof (_m = typeof Express !== "undefined" && (_l = Express.Multer) !== void 0 && _l.File) === "function" ? _m : Object]),
+    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
 ], MapApiController.prototype, "uploadCloudGzip", null);
 __decorate([
     (0, common_2.Get)('tiles/:mapName'),
@@ -7565,8 +7609,8 @@ __decorate([
     }),
     __param(0, (0, common_2.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_p = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
 ], MapApiController.prototype, "getTopology", null);
 __decorate([
     (0, common_2.Get)('topology'),
@@ -7585,7 +7629,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _q : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof map_dto_2.GetTopologyRequestDto !== "undefined" && map_dto_2.GetTopologyRequestDto) === "function" ? _r : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTopologyPagination", null);
 __decorate([
@@ -7606,7 +7650,7 @@ __decorate([
     __param(0, (0, common_2.Query)()),
     __param(1, (0, common_2.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof map_dto_2.GetTopologyPipeRequestDto !== "undefined" && map_dto_2.GetTopologyPipeRequestDto) === "function" ? _r : Object, typeof (_s = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof map_dto_2.GetTopologyPipeRequestDto !== "undefined" && map_dto_2.GetTopologyPipeRequestDto) === "function" ? _s : Object, typeof (_t = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _t : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "getTopologyPipe", null);
 __decorate([
@@ -7626,7 +7670,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof map_dto_1.SaveTopologyRequestDto !== "undefined" && map_dto_1.SaveTopologyRequestDto) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_u = typeof map_dto_1.SaveTopologyRequestDto !== "undefined" && map_dto_1.SaveTopologyRequestDto) === "function" ? _u : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "saveTopology", null);
 __decorate([
@@ -7684,7 +7728,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _v : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingSave", null);
 __decorate([
@@ -7723,7 +7767,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof map_dto_2.UploadMapRequestDto !== "undefined" && map_dto_2.UploadMapRequestDto) === "function" ? _v : Object]),
+    __metadata("design:paramtypes", [typeof (_w = typeof map_dto_2.UploadMapRequestDto !== "undefined" && map_dto_2.UploadMapRequestDto) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "uploadMap", null);
 __decorate([
@@ -7743,7 +7787,7 @@ __decorate([
     }),
     __param(0, (0, common_2.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_w = typeof map_dto_3.DownloadMapRequestDto !== "undefined" && map_dto_3.DownloadMapRequestDto) === "function" ? _w : Object]),
+    __metadata("design:paramtypes", [typeof (_x = typeof map_dto_3.DownloadMapRequestDto !== "undefined" && map_dto_3.DownloadMapRequestDto) === "function" ? _x : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "downloadMap", null);
 __decorate([
@@ -7802,13 +7846,13 @@ __decorate([
     __param(2, (0, common_2.Body)('name')),
     __param(3, (0, common_2.Body)('isForce')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_y = typeof Express !== "undefined" && (_x = Express.Multer) !== void 0 && _x.File) === "function" ? _y : Object, typeof (_z = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _z : Object, String, Boolean]),
+    __metadata("design:paramtypes", [typeof (_z = typeof Express !== "undefined" && (_y = Express.Multer) !== void 0 && _y.File) === "function" ? _z : Object, typeof (_0 = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _0 : Object, String, Boolean]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "pulishMap", null);
 exports.MapApiController = MapApiController = __decorate([
     (0, swagger_1.ApiTags)('맵 API'),
     (0, common_2.Controller)('map'),
-    __metadata("design:paramtypes", [typeof (_a = typeof map_api_service_1.MapApiService !== "undefined" && map_api_service_1.MapApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof map_api_service_1.MapApiService !== "undefined" && map_api_service_1.MapApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], MapApiController);
 
 
@@ -9092,23 +9136,23 @@ let SoundApiController = class SoundApiController {
         this.logger = this.saveLogService.get('sound');
     }
     async getPlayingStatus(req) {
-        this.logger.debug(`[SOUND] getPlayingStatus (${req.socket.remoteAddress})`);
+        this.logger?.debug(`[SOUND] getPlayingStatus (${req.socket.remoteAddress})`);
         return this.soundService.getPlayingStatus();
     }
     async playSound(req, dto) {
-        this.logger.debug(`[SOUND] playSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
+        this.logger?.debug(`[SOUND] playSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
         return this.soundService.playSound(dto);
     }
     async stopSound(req) {
-        this.logger.debug(`[SOUND] stopSound (${req.socket.remoteAddress})`);
+        this.logger?.debug(`[SOUND] stopSound (${req.socket.remoteAddress})`);
         return this.soundService.stopSound();
     }
     async getList(req) {
-        this.logger.debug(`[SOUND] getList (${req.socket.remoteAddress})`);
+        this.logger?.debug(`[SOUND] getList (${req.socket.remoteAddress})`);
         return this.soundService.getSoundList();
     }
     async deleteSound(req, dto) {
-        this.logger.debug(`[SOUND] deleteSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
+        this.logger?.debug(`[SOUND] deleteSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
         return this.soundService.deleteSound(dto);
     }
     async addSoundFile(file, req, name) {
@@ -9122,7 +9166,7 @@ let SoundApiController = class SoundApiController {
                 (0, fs_1.unlinkSync)(file.path);
                 throw new common_1.HttpException('동일한 이름의 파일이 이미 존재합니다', common_1.HttpStatus.BAD_REQUEST);
             }
-            this.logger.info(`[SOUND] addSoundFile : ${newFilename}`);
+            this.logger?.info(`[SOUND] addSoundFile : ${newFilename}`);
             (0, fs_1.renameSync)(file.path, newPath);
             return {
                 originalName: file.originalname,
@@ -9142,7 +9186,7 @@ let SoundApiController = class SoundApiController {
             else if (error instanceof common_1.HttpException) {
                 throw error;
             }
-            this.logger.error(`[SOUND] addSoundFile : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[SOUND] addSoundFile : ${(0, common_2.errorToJson)(error)}`);
             (0, fs_1.unlinkSync)(file.path);
             throw new common_1.HttpException('파일을 저장하던 중 에러가 발생했습니다.', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -9526,7 +9570,7 @@ let LogApiService = class LogApiService {
     constructor(logMicroservice, saveLogService) {
         this.logMicroservice = logMicroservice;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('gateway-api');
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.logService = this.logMicroservice.getService('SEMLogGrpcService');
@@ -10271,7 +10315,7 @@ let UpdateApiService = class UpdateApiService {
         const updateScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/rrs-server`, 'rrs-update.sh');
         const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
         if (!fs.existsSync(updateScript)) {
-            this.logger.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
+            this.logger?.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
             throw new common_1.NotFoundException({
                 message: `~/rainbow-deploy-kit/rrs-server/rrs-update.sh 파일을 찾을 수 없습니다.`,
             });
@@ -10370,7 +10414,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -10381,9 +10425,12 @@ const etc_dto_1 = __webpack_require__(138);
 const version_dto_1 = __webpack_require__(139);
 const pagination_response_1 = __webpack_require__(105);
 const version_dto_2 = __webpack_require__(139);
+const saveLog_service_1 = __webpack_require__(42);
 let UpdateApiController = class UpdateApiController {
-    constructor(updateService) {
+    constructor(updateService, saveLogService) {
         this.updateService = updateService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     pingSendToTarget({ target }) {
         return this.updateService.pingSendToTarget(target);
@@ -10426,8 +10473,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof etc_dto_1.PingSendToTargetDto !== "undefined" && etc_dto_1.PingSendToTargetDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof etc_dto_1.PingSendToTargetDto !== "undefined" && etc_dto_1.PingSendToTargetDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], UpdateApiController.prototype, "pingSendToTarget", null);
 __decorate([
     (0, common_1.Get)('new-version'),
@@ -10450,8 +10497,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof version_dto_2.GetNewVersionRequestDto !== "undefined" && version_dto_2.GetNewVersionRequestDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof version_dto_2.GetNewVersionRequestDto !== "undefined" && version_dto_2.GetNewVersionRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], UpdateApiController.prototype, "getNewVersion", null);
 __decorate([
     (0, common_1.Get)('current-version'),
@@ -10465,8 +10512,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof version_dto_1.GetCurrentVersionRequestDto !== "undefined" && version_dto_1.GetCurrentVersionRequestDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_g = typeof version_dto_1.GetCurrentVersionRequestDto !== "undefined" && version_dto_1.GetCurrentVersionRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], UpdateApiController.prototype, "getCurrentVersion", null);
 __decorate([
     (0, common_1.Get)('release-apps/branches'),
@@ -10480,8 +10527,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof update_dto_1.GetReleaseAppsBranchesRequestDto !== "undefined" && update_dto_1.GetReleaseAppsBranchesRequestDto) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [typeof (_j = typeof update_dto_1.GetReleaseAppsBranchesRequestDto !== "undefined" && update_dto_1.GetReleaseAppsBranchesRequestDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], UpdateApiController.prototype, "getReleaseAppsBranches", null);
 __decorate([
     (0, common_1.Get)('release-apps/version-list'),
@@ -10496,7 +10543,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof update_dto_1.GetReleaseAppsVersionListRequestDto !== "undefined" && update_dto_1.GetReleaseAppsVersionListRequestDto) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_l = typeof update_dto_1.GetReleaseAppsVersionListRequestDto !== "undefined" && update_dto_1.GetReleaseAppsVersionListRequestDto) === "function" ? _l : Object]),
     __metadata("design:returntype", void 0)
 ], UpdateApiController.prototype, "getReleaseAppsVersionList", null);
 __decorate([
@@ -10517,8 +10564,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof update_dto_1.WebUIAppAddDto !== "undefined" && update_dto_1.WebUIAppAddDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [typeof (_m = typeof update_dto_1.WebUIAppAddDto !== "undefined" && update_dto_1.WebUIAppAddDto) === "function" ? _m : Object]),
+    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
 ], UpdateApiController.prototype, "webUIAppAdd", null);
 __decorate([
     (0, common_1.Post)(),
@@ -10528,7 +10575,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof update_dto_1.UpdateRequestDto !== "undefined" && update_dto_1.UpdateRequestDto) === "function" ? _o : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof update_dto_1.UpdateRequestDto !== "undefined" && update_dto_1.UpdateRequestDto) === "function" ? _p : Object]),
     __metadata("design:returntype", void 0)
 ], UpdateApiController.prototype, "updateSoftware", null);
 __decorate([
@@ -10552,13 +10599,13 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof update_dto_1.WebUIAppDeleteDto !== "undefined" && update_dto_1.WebUIAppDeleteDto) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_q = typeof update_dto_1.WebUIAppDeleteDto !== "undefined" && update_dto_1.WebUIAppDeleteDto) === "function" ? _q : Object]),
     __metadata("design:returntype", void 0)
 ], UpdateApiController.prototype, "webUIAppDelete", null);
 exports.UpdateApiController = UpdateApiController = __decorate([
     (0, swagger_1.ApiTags)('업데이트 관련 API (update)'),
     (0, common_1.Controller)('update'),
-    __metadata("design:paramtypes", [typeof (_a = typeof update_api_service_1.UpdateApiService !== "undefined" && update_api_service_1.UpdateApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof update_api_service_1.UpdateApiService !== "undefined" && update_api_service_1.UpdateApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], UpdateApiController);
 
 
@@ -11231,7 +11278,7 @@ let CobotApiService = class CobotApiService {
     constructor(cobotMicroservice, saveLogService) {
         this.cobotMicroservice = cobotMicroservice;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('gateway-api');
+        this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.cobotService = this.cobotMicroservice.getService('CobotGrpcService');
@@ -11308,7 +11355,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -11319,9 +11366,12 @@ const cobot_dto_1 = __webpack_require__(143);
 const cobot_dto_2 = __webpack_require__(143);
 const cobot_dto_3 = __webpack_require__(143);
 const cobot_dto_4 = __webpack_require__(143);
+const saveLog_service_1 = __webpack_require__(42);
 let CobotApiController = class CobotApiController {
-    constructor(cobotApiService) {
+    constructor(cobotApiService, saveLogService) {
         this.cobotApiService = cobotApiService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async CobotProgramLoad(dto) {
         return this.cobotApiService.CobotProgram({
@@ -11427,8 +11477,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:paramtypes", [typeof (_c = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], CobotApiController.prototype, "CobotProgramLoad", null);
 __decorate([
     (0, common_1.Post)('task/run'),
@@ -11465,8 +11515,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], CobotApiController.prototype, "CobotProgramRun", null);
 __decorate([
     (0, common_1.Post)('task/play'),
@@ -11504,8 +11554,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_g = typeof cobot_dto_1.CobotProgramRequestDto !== "undefined" && cobot_dto_1.CobotProgramRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], CobotApiController.prototype, "CobotProgramLoadandRun", null);
 __decorate([
     (0, common_1.Post)('task/pause'),
@@ -11541,8 +11591,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [typeof (_j = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], CobotApiController.prototype, "CobotProgramPause", null);
 __decorate([
     (0, common_1.Post)('task/resume/a'),
@@ -11579,8 +11629,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [typeof (_l = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], CobotApiController.prototype, "CobotProgramResumeA", null);
 __decorate([
     (0, common_1.Post)('task/resume/b'),
@@ -11617,8 +11667,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], CobotApiController.prototype, "CobotProgramResumeB", null);
 __decorate([
     (0, common_1.Post)('task/stop'),
@@ -11655,8 +11705,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], CobotApiController.prototype, "CobotProgramStop", null);
 __decorate([
     (0, common_1.Post)('mode'),
@@ -11695,8 +11745,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof cobot_dto_1.CobotModeRequestDto !== "undefined" && cobot_dto_1.CobotModeRequestDto) === "function" ? _r : Object]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+    __metadata("design:paramtypes", [typeof (_s = typeof cobot_dto_1.CobotModeRequestDto !== "undefined" && cobot_dto_1.CobotModeRequestDto) === "function" ? _s : Object]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], CobotApiController.prototype, "CobotMode", null);
 __decorate([
     (0, common_1.Post)('init'),
@@ -11731,8 +11781,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+    __metadata("design:paramtypes", [typeof (_u = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _u : Object]),
+    __metadata("design:returntype", typeof (_v = typeof Promise !== "undefined" && Promise) === "function" ? _v : Object)
 ], CobotApiController.prototype, "CobotInit", null);
 __decorate([
     (0, common_1.Post)('command'),
@@ -11771,8 +11821,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof cobot_dto_1.CobotCommandRequestDto !== "undefined" && cobot_dto_1.CobotCommandRequestDto) === "function" ? _v : Object]),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
+    __metadata("design:paramtypes", [typeof (_w = typeof cobot_dto_1.CobotCommandRequestDto !== "undefined" && cobot_dto_1.CobotCommandRequestDto) === "function" ? _w : Object]),
+    __metadata("design:returntype", typeof (_x = typeof Promise !== "undefined" && Promise) === "function" ? _x : Object)
 ], CobotApiController.prototype, "CobotCommand", null);
 __decorate([
     (0, common_1.Get)('data'),
@@ -11817,8 +11867,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _x : Object]),
-    __metadata("design:returntype", typeof (_y = typeof Promise !== "undefined" && Promise) === "function" ? _y : Object)
+    __metadata("design:paramtypes", [typeof (_y = typeof cobot_dto_1.CobotRequestDto !== "undefined" && cobot_dto_1.CobotRequestDto) === "function" ? _y : Object]),
+    __metadata("design:returntype", typeof (_z = typeof Promise !== "undefined" && Promise) === "function" ? _z : Object)
 ], CobotApiController.prototype, "CobotData", null);
 __decorate([
     (0, common_1.Post)('move'),
@@ -11890,8 +11940,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_z = typeof cobot_dto_1.CobotMoveRequestDto !== "undefined" && cobot_dto_1.CobotMoveRequestDto) === "function" ? _z : Object]),
-    __metadata("design:returntype", typeof (_0 = typeof Promise !== "undefined" && Promise) === "function" ? _0 : Object)
+    __metadata("design:paramtypes", [typeof (_0 = typeof cobot_dto_1.CobotMoveRequestDto !== "undefined" && cobot_dto_1.CobotMoveRequestDto) === "function" ? _0 : Object]),
+    __metadata("design:returntype", typeof (_1 = typeof Promise !== "undefined" && Promise) === "function" ? _1 : Object)
 ], CobotApiController.prototype, "CobotMove", null);
 __decorate([
     (0, common_1.Post)('speed'),
@@ -11932,8 +11982,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_1 = typeof cobot_dto_1.CobotSpeedRequestDto !== "undefined" && cobot_dto_1.CobotSpeedRequestDto) === "function" ? _1 : Object]),
-    __metadata("design:returntype", typeof (_2 = typeof Promise !== "undefined" && Promise) === "function" ? _2 : Object)
+    __metadata("design:paramtypes", [typeof (_2 = typeof cobot_dto_1.CobotSpeedRequestDto !== "undefined" && cobot_dto_1.CobotSpeedRequestDto) === "function" ? _2 : Object]),
+    __metadata("design:returntype", typeof (_3 = typeof Promise !== "undefined" && Promise) === "function" ? _3 : Object)
 ], CobotApiController.prototype, "CobotSpeed", null);
 __decorate([
     (0, common_1.Post)('connect'),
@@ -11974,8 +12024,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_3 = typeof cobot_dto_2.CobotConnectRequestDto !== "undefined" && cobot_dto_2.CobotConnectRequestDto) === "function" ? _3 : Object]),
-    __metadata("design:returntype", typeof (_4 = typeof Promise !== "undefined" && Promise) === "function" ? _4 : Object)
+    __metadata("design:paramtypes", [typeof (_4 = typeof cobot_dto_2.CobotConnectRequestDto !== "undefined" && cobot_dto_2.CobotConnectRequestDto) === "function" ? _4 : Object]),
+    __metadata("design:returntype", typeof (_5 = typeof Promise !== "undefined" && Promise) === "function" ? _5 : Object)
 ], CobotApiController.prototype, "CobotConnect", null);
 __decorate([
     (0, common_1.Post)('connect/command'),
@@ -12018,8 +12068,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_5 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _5 : Object]),
-    __metadata("design:returntype", typeof (_6 = typeof Promise !== "undefined" && Promise) === "function" ? _6 : Object)
+    __metadata("design:paramtypes", [typeof (_6 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _6 : Object]),
+    __metadata("design:returntype", typeof (_7 = typeof Promise !== "undefined" && Promise) === "function" ? _7 : Object)
 ], CobotApiController.prototype, "CobotConnectCommand", null);
 __decorate([
     (0, common_1.Post)('connect/data'),
@@ -12058,8 +12108,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_7 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _7 : Object]),
-    __metadata("design:returntype", typeof (_8 = typeof Promise !== "undefined" && Promise) === "function" ? _8 : Object)
+    __metadata("design:paramtypes", [typeof (_8 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _8 : Object]),
+    __metadata("design:returntype", typeof (_9 = typeof Promise !== "undefined" && Promise) === "function" ? _9 : Object)
 ], CobotApiController.prototype, "CobotConnectData", null);
 __decorate([
     (0, common_1.Post)('disconnect/command'),
@@ -12098,8 +12148,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_9 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _9 : Object]),
-    __metadata("design:returntype", typeof (_10 = typeof Promise !== "undefined" && Promise) === "function" ? _10 : Object)
+    __metadata("design:paramtypes", [typeof (_10 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _10 : Object]),
+    __metadata("design:returntype", typeof (_11 = typeof Promise !== "undefined" && Promise) === "function" ? _11 : Object)
 ], CobotApiController.prototype, "CobotDisconnectCommand", null);
 __decorate([
     (0, common_1.Post)('disconnect/data'),
@@ -12138,8 +12188,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_11 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _11 : Object]),
-    __metadata("design:returntype", typeof (_12 = typeof Promise !== "undefined" && Promise) === "function" ? _12 : Object)
+    __metadata("design:paramtypes", [typeof (_12 = typeof cobot_dto_3.CobotConnectServerRequestDto !== "undefined" && cobot_dto_3.CobotConnectServerRequestDto) === "function" ? _12 : Object]),
+    __metadata("design:returntype", typeof (_13 = typeof Promise !== "undefined" && Promise) === "function" ? _13 : Object)
 ], CobotApiController.prototype, "CobotDisconnectData", null);
 __decorate([
     (0, common_1.Get)('connect'),
@@ -12180,13 +12230,13 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_13 = typeof cobot_dto_4.GetConnectStateRequestDto !== "undefined" && cobot_dto_4.GetConnectStateRequestDto) === "function" ? _13 : Object]),
-    __metadata("design:returntype", typeof (_14 = typeof Promise !== "undefined" && Promise) === "function" ? _14 : Object)
+    __metadata("design:paramtypes", [typeof (_14 = typeof cobot_dto_4.GetConnectStateRequestDto !== "undefined" && cobot_dto_4.GetConnectStateRequestDto) === "function" ? _14 : Object]),
+    __metadata("design:returntype", typeof (_15 = typeof Promise !== "undefined" && Promise) === "function" ? _15 : Object)
 ], CobotApiController.prototype, "GetCobotConnectState", null);
 exports.CobotApiController = CobotApiController = __decorate([
     (0, swagger_1.ApiTags)('협동로봇(Cobot) 컨트롤 API'),
     (0, common_1.Controller)('cobot'),
-    __metadata("design:paramtypes", [typeof (_a = typeof cobot_api_service_1.CobotApiService !== "undefined" && cobot_api_service_1.CobotApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof cobot_api_service_1.CobotApiService !== "undefined" && cobot_api_service_1.CobotApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], CobotApiController);
 
 
@@ -12756,16 +12806,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const tcp_api_service_1 = __webpack_require__(145);
 const cobot_dto_1 = __webpack_require__(143);
+const saveLog_service_1 = __webpack_require__(42);
 let TcpApiController = class TcpApiController {
-    constructor(tcpApiService) {
+    constructor(tcpApiService, saveLogService) {
         this.tcpApiService = tcpApiService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
     }
     async GetCobotTcpServer() {
         return this.tcpApiService.GetCobotTcpServer();
@@ -12790,7 +12843,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], TcpApiController.prototype, "GetCobotTcpServer", null);
 __decorate([
     (0, common_1.Post)(),
@@ -12803,8 +12856,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof cobot_dto_1.CreateTcpServerRequestDto !== "undefined" && cobot_dto_1.CreateTcpServerRequestDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:paramtypes", [typeof (_d = typeof cobot_dto_1.CreateTcpServerRequestDto !== "undefined" && cobot_dto_1.CreateTcpServerRequestDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], TcpApiController.prototype, "createTcpServer", null);
 __decorate([
     (0, common_1.Delete)(),
@@ -12817,13 +12870,13 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof cobot_dto_1.CloseTcpServerRequestDto !== "undefined" && cobot_dto_1.CloseTcpServerRequestDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:paramtypes", [typeof (_f = typeof cobot_dto_1.CloseTcpServerRequestDto !== "undefined" && cobot_dto_1.CloseTcpServerRequestDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], TcpApiController.prototype, "closeTcpServer", null);
 exports.TcpApiController = TcpApiController = __decorate([
     (0, swagger_1.ApiTags)('TCP 서버 API'),
     (0, common_1.Controller)('tcp'),
-    __metadata("design:paramtypes", [typeof (_a = typeof tcp_api_service_1.TcpApiService !== "undefined" && tcp_api_service_1.TcpApiService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof tcp_api_service_1.TcpApiService !== "undefined" && tcp_api_service_1.TcpApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], TcpApiController);
 
 
@@ -12894,14 +12947,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const socket_api_service_1 = __webpack_require__(149);
+const saveLog_service_1 = __webpack_require__(42);
 let SocketApiController = class SocketApiController {
-    constructor() { }
+    constructor(saveLogService) {
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
+    }
     async getStatus() {
         return this.socketService.getStatus();
     }
@@ -12912,7 +12969,7 @@ let SocketApiController = class SocketApiController {
 exports.SocketApiController = SocketApiController;
 __decorate([
     (0, common_1.Inject)(),
-    __metadata("design:type", typeof (_a = typeof socket_api_service_1.SocketApiService !== "undefined" && socket_api_service_1.SocketApiService) === "function" ? _a : Object)
+    __metadata("design:type", typeof (_b = typeof socket_api_service_1.SocketApiService !== "undefined" && socket_api_service_1.SocketApiService) === "function" ? _b : Object)
 ], SocketApiController.prototype, "socketService", void 0);
 __decorate([
     (0, common_1.Get)('status'),
@@ -12922,7 +12979,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], SocketApiController.prototype, "getStatus", null);
 __decorate([
     (0, common_1.Get)('moveStatus'),
@@ -12932,12 +12989,12 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], SocketApiController.prototype, "getMoveStatus", null);
 exports.SocketApiController = SocketApiController = __decorate([
     (0, swagger_1.ApiTags)('소켓 관련 API (socket)'),
     (0, common_1.Controller)('socket'),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
 ], SocketApiController);
 
 
@@ -14503,11 +14560,11 @@ let ClientSocketService = class ClientSocketService {
                 throw new websockets_1.WsException('topic값이 없습니다.');
             }
             client.join(dto.topic);
-            this.logger.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
+            this.logger?.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
             return;
         }
         catch (error) {
-            this.logger.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
@@ -14522,18 +14579,18 @@ let ClientSocketService = class ClientSocketService {
                 for (const room of client.rooms) {
                     if (room !== client.id) {
                         client.leave(room);
-                        this.logger.info(`[Client] ${client.id} : ${room} (room count = ${client.rooms.size - 1})`);
+                        this.logger?.info(`[Client] ${client.id} : ${room} (room count = ${client.rooms.size - 1})`);
                     }
                 }
             }
             else {
                 client.leave(dto.topic);
-                this.logger.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
+                this.logger?.info(`[Client] ${client.id} : ${dto.topic} (room count = ${client.rooms.size - 1})`);
             }
             return;
         }
         catch (error) {
-            this.logger.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             throw new websockets_1.WsException('구독요청을 처리하던 중 에러가 발생했습니다.');
@@ -14541,7 +14598,7 @@ let ClientSocketService = class ClientSocketService {
     }
     moveRequest(dto) {
         this.moveService.moveCommand(dto).subscribe({
-            error: (err) => this.logger.error(`[Client] moveRequest : ${parse_util_1.ParseUtil.errorToJson(err)}`),
+            error: (err) => this.logger?.error(`[Client] moveRequest : ${parse_util_1.ParseUtil.errorToJson(err)}`),
         });
     }
     moveJog(dto) {
@@ -14561,7 +14618,7 @@ let ClientSocketService = class ClientSocketService {
             this.mqttMicroservice.emit('moveJog', dto);
         }
         catch (error) {
-            this.logger.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Client] ${(0, common_2.errorToJson)(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             throw new websockets_1.WsException('Move명령을 처리하던 중 에러가 발생했습니다.');
@@ -14573,7 +14630,7 @@ let ClientSocketService = class ClientSocketService {
             this.localizationService.init(dto).subscribe();
         }
         catch (error) {
-            this.logger.error(`[Client] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Client] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             if (error instanceof websockets_1.WsException)
                 throw error;
             if (error instanceof rpc_code_exception_1.RpcCodeException)
@@ -14637,7 +14694,7 @@ let ClientSocketService = class ClientSocketService {
             this.mqttMicroservice.emit('pathResponse', { ...dto, time: Date.now().toString() });
         }
         catch (error) {
-            this.logger.error(`[Client] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Client] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new websockets_1.WsException('pathResponse 전송 중 에러가 발생했습니다.');
         }
     }
@@ -14745,10 +14802,10 @@ let ClientSocketGateway = class ClientSocketGateway {
         this.clientService.setServer(server);
     }
     handleConnection(client) {
-        this.logger.info(`[ClientGateway] Connect Client : ${client.id}`);
+        this.logger?.info(`[ClientGateway] Connect Client : ${client.id}`);
     }
     handleDisconnect(client) {
-        this.logger.info(`[ClientGateway] Disconnect Client : ${client.id}`);
+        this.logger?.info(`[ClientGateway] Disconnect Client : ${client.id}`);
     }
     async handelSubscribe(dto, client) {
         return this.clientService.subscribe(dto, client);
@@ -15931,95 +15988,95 @@ let SlamnavService = class SlamnavService {
         }
     }
     moveRequest(data) {
-        this.logger.debug(`[SLAMNAV] moveRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] moveRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('moveRequest', data);
     }
     moveJog(data) {
         this.slamnav?.emit('moveRequest', data);
     }
     localizationRequest(data) {
-        this.logger.debug(`[SLAMNAV] localizationRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] localizationRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('localizationRequest', data);
     }
     mappingRequest(data) {
-        this.logger.debug(`[SLAMNAV] mappingRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] mappingRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('mappingRequest', data);
     }
     controlRequest(data) {
-        this.logger.debug(`[SLAMNAV] controlRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] controlRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('controlRequest', data);
     }
     loadRequest(data) {
-        this.logger.debug(`[SLAMNAV] loadRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] loadRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('loadRequest', data);
     }
     settingRequest(data) {
-        this.logger.debug(`[SLAMNAV] settingRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] settingRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('settingRequest', data);
     }
     pathResponse(data) {
-        this.logger.debug(`[SLAMNAV] pathResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] pathResponse : ${JSON.stringify(data)}`);
         this.slamnav?.emit('pathResponse', data);
     }
     swVersionInfo(data) {
-        this.logger.debug(`[SLAMNAV] swVersionInfo : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] swVersionInfo : ${JSON.stringify(data)}`);
         this.slamnav?.emit('swVersionInfo', data);
     }
     moveResponse(data) {
         const json = JSON.parse(JSON.stringify(data));
         if (data.id == undefined) {
-            this.logger.warn(`[SLAMNAV] moveResponse : id undefined`);
+            this.logger?.warn(`[SLAMNAV] moveResponse : id undefined`);
         }
-        this.logger.debug(`[SLAMNAV] moveResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] moveResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('moveResponse', data);
     }
     loadResponse(data) {
         if (data.id == undefined) {
-            this.logger.warn(`[SLAMNAV] loadResponse : id undefined`);
+            this.logger?.warn(`[SLAMNAV] loadResponse : id undefined`);
         }
-        this.logger.debug(`[SLAMNAV] loadResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] loadResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('loadResponse', data);
     }
     localizationResponse(data) {
         if (data.id == undefined) {
-            this.logger.warn(`[SLAMNAV] localizationResponse : id undefined`);
+            this.logger?.warn(`[SLAMNAV] localizationResponse : id undefined`);
         }
-        this.logger.debug(`[SLAMNAV] localizationResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] localizationResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('localizationResponse', data);
     }
     mappingResponse(data) {
         if (data.id == undefined) {
-            this.logger.warn(`[SLAMNAV] mappingResponse : id undefined`);
+            this.logger?.warn(`[SLAMNAV] mappingResponse : id undefined`);
         }
-        this.logger.debug(`[SLAMNAV] mappingResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] mappingResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('mappingResponse', data);
     }
     controlResponse(data) {
         if (data.id == undefined) {
-            this.logger.warn(`[SLAMNAV] controlResponse : id undefined`);
+            this.logger?.warn(`[SLAMNAV] controlResponse : id undefined`);
         }
-        this.logger.debug(`[SLAMNAV] controlResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] controlResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('controlResponse', data);
     }
     settingResponse(data) {
         if (data.id == undefined) {
-            this.logger.warn(`[SLAMNAV] settingResponse : id undefined`);
+            this.logger?.warn(`[SLAMNAV] settingResponse : id undefined`);
         }
-        this.logger.debug(`[SLAMNAV] settingResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] settingResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('settingResponse', data);
     }
     swVersionInfoResponse(data) {
         if (data.id == undefined) {
-            this.logger.warn(`[SLAMNAV] swVersionInfoResponse : id undefined`);
+            this.logger?.warn(`[SLAMNAV] swVersionInfoResponse : id undefined`);
         }
         console.log('swVersionInfoResponse emit', data);
-        this.logger.debug(`[SLAMNAV] swVersionInfoResponse : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[SLAMNAV] swVersionInfoResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('swVersionInfoResponse', data);
     }
     status(data) {
         try {
             if (data == null || data == undefined) {
-                this.logger.warn(`[SLAMNAV] status: NULL`);
+                this.logger?.warn(`[SLAMNAV] status: NULL`);
                 return;
             }
             const time = data.time;
@@ -16035,14 +16092,14 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('status', { ...data, time });
         }
         catch (error) {
-            this.logger.error(`[SLAMNAV] status: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SLAMNAV] status: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     moveStatus(data) {
         try {
             if (data == null || data == undefined) {
-                this.logger.warn(`[SLAMNAV] moveStatus: NULL`);
+                this.logger?.warn(`[SLAMNAV] moveStatus: NULL`);
                 return;
             }
             const time = data.time;
@@ -16058,25 +16115,25 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('moveStatus', { ...data, time });
         }
         catch (error) {
-            this.logger.error(`[SLAMNAV] moveStatus: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SLAMNAV] moveStatus: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     localPath(data) {
         try {
             if (data === undefined || data === null) {
-                this.logger.warn(`[SLAMNAV] localPath : data undefined`);
+                this.logger?.warn(`[SLAMNAV] localPath : data undefined`);
                 return;
             }
             if (data.path === undefined || data.path === null || data.path.length === 0) {
-                this.logger.warn(`[SLAMNAV] localPath : data.path empty`);
+                this.logger?.warn(`[SLAMNAV] localPath : data.path empty`);
                 return;
             }
             const time = data.time;
             if (data.time) {
                 const delayTime = Date.now() - parseInt(data.time);
                 if (delayTime > this.warningTime) {
-                    this.logger.warn(`[SLAMNAV] localPath: ${delayTime}ms`);
+                    this.logger?.warn(`[SLAMNAV] localPath: ${delayTime}ms`);
                 }
             }
             if ((0, lodash_1.isEqual)(data, this.lastLocalPath)) {
@@ -16086,25 +16143,25 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('localPath', { ...data, time });
         }
         catch (error) {
-            this.logger.error(`[SLAMNAV] localPath: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SLAMNAV] localPath: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     globalPath(data) {
         try {
             if (data === undefined || data === null) {
-                this.logger.warn(`[SLAMNAV] globalPath : data undefined`);
+                this.logger?.warn(`[SLAMNAV] globalPath : data undefined`);
                 return;
             }
             if (data.path === undefined || data.path === null || data.path.length === 0) {
-                this.logger.warn(`[SLAMNAV] globalPath : data.path empty`);
+                this.logger?.warn(`[SLAMNAV] globalPath : data.path empty`);
                 return;
             }
             const time = data.time;
             if (data.time) {
                 const delayTime = Date.now() - parseInt(data.time);
                 if (delayTime > this.warningTime) {
-                    this.logger.warn(`[SLAMNAV] globalPath: ${delayTime}ms`);
+                    this.logger?.warn(`[SLAMNAV] globalPath: ${delayTime}ms`);
                 }
             }
             if ((0, lodash_1.isEqual)(data, this.lastGlobalPath)) {
@@ -16114,14 +16171,14 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('globalPath', { ...data, time });
         }
         catch (error) {
-            this.logger.error(`[SLAMNAV] globalPath: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SLAMNAV] globalPath: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     lidarCloud(data) {
         try {
             if (data.data == null || data.data == undefined || data.data.length == 0) {
-                this.logger.warn(`[SLAMNAV] lidarCloud: NULL`);
+                this.logger?.warn(`[SLAMNAV] lidarCloud: NULL`);
                 return;
             }
             if (data.time) {
@@ -16136,28 +16193,28 @@ let SlamnavService = class SlamnavService {
             this.mqttMicroservice.emit('lidarCloud', data);
         }
         catch (error) {
-            this.logger.error(`[SLAMNAV] lidarCloud: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SLAMNAV] lidarCloud: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
     mappingCloud(data) {
         try {
             if (data.data == null || data.data == undefined || data.data.length == 0) {
-                this.logger.warn(`[SLAMNAV] mappingCloud: NULL`);
+                this.logger?.warn(`[SLAMNAV] mappingCloud: NULL`);
                 return;
             }
             const time = data.time;
             if (data.time) {
                 const delayTime = Date.now() - parseInt(data.time);
                 if (delayTime > this.warningTime) {
-                    this.logger.warn(`[SLAMNAV] mappingCloud: ${delayTime}ms`);
+                    this.logger?.warn(`[SLAMNAV] mappingCloud: ${delayTime}ms`);
                 }
                 delete data.time;
             }
             this.mqttMicroservice.emit('mappingCloud', { ...data, time });
         }
         catch (error) {
-            this.logger.error(`[SLAMNAV] mappingCloud: ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[SLAMNAV] mappingCloud: ${(0, common_1.errorToJson)(error)}`);
             throw error();
         }
     }
@@ -17032,9 +17089,9 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
         this.mqttMicroservice.emit('discon:slamnav', {});
     }
     handleConnection(client) {
-        this.logger.info(`[SLAMNAV] Connect Slamnav : ${client.id}`);
+        this.logger?.info(`[SLAMNAV] Connect Slamnav : ${client.id}`);
         if (this.slamnav) {
-            this.logger.warn(`[SLAMNAV] Slamnav already connected : slamnav(${this.slamnav.id}), new(${client.id})`);
+            this.logger?.warn(`[SLAMNAV] Slamnav already connected : slamnav(${this.slamnav.id}), new(${client.id})`);
         }
         else {
             this.slamnav = client;
@@ -17044,13 +17101,13 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
     }
     handleDisconnect(client) {
         if (this.slamnav?.id == client.id) {
-            this.logger.info(`[SLAMNAV] Disconnect Slamnav : ${client.id}`);
+            this.logger?.info(`[SLAMNAV] Disconnect Slamnav : ${client.id}`);
             this.slamnav.disconnect();
             this.slamnav = null;
             this.mqttMicroservice.emit('discon:slamnav', {});
         }
         else {
-            this.logger.warn(`[SLAMNAV] Disconnect unknown client : slamnav(${this.slamnav?.id}), client(${client.id})`);
+            this.logger?.warn(`[SLAMNAV] Disconnect unknown client : slamnav(${this.slamnav?.id}), client(${client.id})`);
         }
     }
     async handleMoveResponse(data, client) {
@@ -17058,7 +17115,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.moveResponse(data);
         }
         else {
-            this.logger.warn(`[SLAMNAV] handleMoveResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger?.warn(`[SLAMNAV] handleMoveResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleLocalizationResponse(data, client) {
@@ -17066,7 +17123,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.localizationResponse(data);
         }
         else {
-            this.logger.warn(`[SLAMNAV] handleLocalizationResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger?.warn(`[SLAMNAV] handleLocalizationResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleLoadResponse(data, client) {
@@ -17074,7 +17131,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.loadResponse(data);
         }
         else {
-            this.logger.warn(`[SLAMNAV] handleLoadResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger?.warn(`[SLAMNAV] handleLoadResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleMappingResponse(data, client) {
@@ -17082,7 +17139,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.mappingResponse(data);
         }
         else {
-            this.logger.warn(`[SLAMNAV] handleMappingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger?.warn(`[SLAMNAV] handleMappingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleControlResponse(data, client) {
@@ -17090,7 +17147,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.controlResponse(data);
         }
         else {
-            this.logger.warn(`[SLAMNAV] handleControlResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger?.warn(`[SLAMNAV] handleControlResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleSettingResponse(data, client) {
@@ -17098,7 +17155,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.settingResponse(data);
         }
         else {
-            this.logger.warn(`[SLAMNAV] handleSettingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger?.warn(`[SLAMNAV] handleSettingResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleVersionResponse(data, client) {
@@ -17106,7 +17163,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
             this.slamnavService.swVersionInfoResponse(data);
         }
         else {
-            this.logger.warn(`[SLAMNAV] handleVersionResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+            this.logger?.warn(`[SLAMNAV] handleVersionResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleStatus(data, client) {
@@ -17419,9 +17476,9 @@ let TaskmanSocketGateway = class TaskmanSocketGateway {
         this.mqttMicroservice.emit('discon:taskman', {});
     }
     handleConnection(client) {
-        this.logger.info(`[Gateway] Connect taskman : ${client.id}`);
+        this.logger?.info(`[Gateway] Connect taskman : ${client.id}`);
         if (this.taskman) {
-            this.logger.warn(`[Gateway] taskman already connected : taskman(${this.taskman.id}), new(${client.id})`);
+            this.logger?.warn(`[Gateway] taskman already connected : taskman(${this.taskman.id}), new(${client.id})`);
         }
         else {
             this.taskman = client;
@@ -17431,13 +17488,13 @@ let TaskmanSocketGateway = class TaskmanSocketGateway {
     }
     handleDisconnect(client) {
         if (this.taskman?.id == client.id) {
-            this.logger.info(`[Gateway] Disconnect taskman : ${client.id}`);
+            this.logger?.info(`[Gateway] Disconnect taskman : ${client.id}`);
             this.taskman.disconnect();
             this.taskman = null;
             this.mqttMicroservice.emit('discon:taskman', {});
         }
         else {
-            this.logger.warn(`[Gateway] Disconnect unknown client : taskman(${this.taskman?.id}), client(${client.id})`);
+            this.logger?.warn(`[Gateway] Disconnect unknown client : taskman(${this.taskman?.id}), client(${client.id})`);
         }
     }
     async handleTaskResponse(data) {
@@ -17718,9 +17775,9 @@ let ExAccessorySocketGateway = class ExAccessorySocketGateway {
         this.controlService = this.controlMicroservice.getService('ControlGrpcService');
     }
     handleConnection(client) {
-        this.logger.info(`[Gateway] Connect exAccessory : ${client.id}`);
+        this.logger?.info(`[Gateway] Connect exAccessory : ${client.id}`);
         if (this.exAccessory) {
-            this.logger.warn(`[Gateway] exAccessory already connected : exAccessory(${this.exAccessory.id}), new(${client.id})`);
+            this.logger?.warn(`[Gateway] exAccessory already connected : exAccessory(${this.exAccessory.id}), new(${client.id})`);
         }
         else {
             this.exAccessory = client;
@@ -17729,34 +17786,34 @@ let ExAccessorySocketGateway = class ExAccessorySocketGateway {
         }
     }
     handleDisconnect(client) {
-        this.logger.info(`[Gateway] Disconnected exAccessory : ${client.id}`);
+        this.logger?.info(`[Gateway] Disconnected exAccessory : ${client.id}`);
         if (this.exAccessory?.id == client.id) {
             this.exAccessory.disconnect();
             this.exAccessory = null;
             this.mqttMicroservice.emit('discon:exAccessory', {});
         }
         else {
-            this.logger.warn(`[Gateway] Disconnect unknown client : exAccessory(${this.exAccessory?.id}), client(${client.id})`);
+            this.logger?.warn(`[Gateway] Disconnect unknown client : exAccessory(${this.exAccessory?.id}), client(${client.id})`);
         }
     }
     onModuleDestroy() {
-        this.logger.info(`[Gateway] Destroyed exAccessory`);
+        this.logger?.info(`[Gateway] Destroyed exAccessory`);
     }
     async footStatus(data, client) {
         if (client.id == this.exAccessory?.id) {
-            this.logger.debug(`[Gateway] exAccessoryStatus : ${JSON.stringify(data)}`);
+            this.logger?.debug(`[Gateway] exAccessoryStatus : ${JSON.stringify(data)}`);
             this.exAccessoryService.exAccessoryStatus(data);
         }
     }
     async controlRequest(data, client) {
         if (client.id == this.exAccessory?.id) {
-            this.logger.debug(`[ExAccessory] controlRequest : ${JSON.stringify(data)}`);
+            this.logger?.debug(`[ExAccessory] controlRequest : ${JSON.stringify(data)}`);
             this.exAccessoryService.controlRequest(data);
         }
     }
     async footResponse(data, client) {
         if (client.id == this.exAccessory?.id) {
-            this.logger.debug(`[Gateway] exAccessoryResponse : ${JSON.stringify(data)}`);
+            this.logger?.debug(`[Gateway] exAccessoryResponse : ${JSON.stringify(data)}`);
             this.exAccessoryService.exAccessoryResponse(data);
         }
     }
@@ -18040,14 +18097,14 @@ let FRSSocketClient = class FRSSocketClient {
         this.logger = this.saveLogService.get('gateway-frs');
     }
     onModuleInit() {
-        this.logger.info(`[FRS] onModuleInit`);
+        this.logger?.info(`[FRS] onModuleInit`);
         this.connectFRSWithRetry();
     }
     async connectFRSWithRetry(retryCount = 0) {
         try {
             await this.setRobotSerial();
             if (this.robotSerial) {
-                this.logger.info(`[FRS] Initialization successful with robotSerial: ${this.robotSerial}`);
+                this.logger?.info(`[FRS] Initialization successful with robotSerial: ${this.robotSerial}`);
                 await this.connectFRS();
             }
             else {
@@ -18058,13 +18115,13 @@ let FRSSocketClient = class FRSSocketClient {
             const maxRetries = 3;
             const retryDelay = 10000;
             if (retryCount < maxRetries) {
-                this.logger.warn(`[FRS] Initialization failed (attempt ${retryCount + 1}/${maxRetries}): ${parse_util_1.ParseUtil.errorToJson(error)}. Retrying in ${retryDelay / 1000}s...`);
+                this.logger?.warn(`[FRS] Initialization failed (attempt ${retryCount + 1}/${maxRetries}): ${parse_util_1.ParseUtil.errorToJson(error)}. Retrying in ${retryDelay / 1000}s...`);
                 setTimeout(() => {
                     this.connectFRSWithRetry(retryCount + 1);
                 }, retryDelay);
             }
             else {
-                this.logger.error(`[FRS] Initialization failed after ${maxRetries} attempts. Giving up.`);
+                this.logger?.error(`[FRS] Initialization failed after ${maxRetries} attempts. Giving up.`);
             }
         }
     }
@@ -18076,7 +18133,7 @@ let FRSSocketClient = class FRSSocketClient {
             }
         }
         catch (error) {
-            this.logger.error(`[FRS] setRobotSerial : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[FRS] setRobotSerial : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     sendFRSData(key, data = '') {
@@ -18085,7 +18142,7 @@ let FRSSocketClient = class FRSSocketClient {
                 robotSerial: this.robotSerial,
                 data: data,
             };
-            this.logger.debug(`[FRS] sendFRSData : ${key}, ${JSON.stringify(sendData)}`);
+            this.logger?.debug(`[FRS] sendFRSData : ${key}, ${JSON.stringify(sendData)}`);
             this.socket?.emit(key, JSON.stringify(sendData));
         }
         else {
@@ -18093,11 +18150,11 @@ let FRSSocketClient = class FRSSocketClient {
         }
     }
     connectSlamanv() {
-        this.logger.info('[FRS] Connect Slamnav');
+        this.logger?.info('[FRS] Connect Slamnav');
         this.sendFRSData('slamRegist');
     }
     disconnectSlamanv() {
-        this.logger.info('[FRS] Disconnect Slamnav');
+        this.logger?.info('[FRS] Disconnect Slamnav');
         this.sendFRSData('slamUnregist');
     }
     sendStatus(data) {
@@ -18129,7 +18186,7 @@ let FRSSocketClient = class FRSSocketClient {
         this.frsSocketUrl = await this.frsService.getConfig('frsSocketUrl');
         this.robotSerial = await this.frsService.getConfig('robotSerial');
         const useFMSMove = await this.frsService.getConfig('useFMSMove');
-        this.logger.debug(`[Frs] connectFRS : ${this.frsSocketUrl}, ${this.robotSerial}, ${useFMSMove}`);
+        this.logger?.debug(`[Frs] connectFRS : ${this.frsSocketUrl}, ${this.robotSerial}, ${useFMSMove}`);
         if (this.frsSocketUrl === undefined || this.frsSocketUrl === '' || this.robotSerial === undefined || this.robotSerial === '') {
             throw new rpc_code_exception_1.RpcCodeException(`url(${this.frsSocketUrl}) or robotSerial(${this.robotSerial}) is undefined`, constant_2.GrpcCode.FailedPrecondition);
         }
@@ -18138,7 +18195,7 @@ let FRSSocketClient = class FRSSocketClient {
     }
     cleanup() {
         if (this.socket) {
-            this.logger.info(`[FRS] cleanup`);
+            this.logger?.info(`[FRS] cleanup`);
             this.socket.off();
             this.socket.close();
             this.socket = null;
@@ -18153,26 +18210,26 @@ let FRSSocketClient = class FRSSocketClient {
     }
     registerEventHandlers() {
         if (!this.socket) {
-            this.logger.error(`[Frs] registerEventHandlers : socket is null`);
+            this.logger?.error(`[Frs] registerEventHandlers : socket is null`);
             return;
         }
         this.socket.on('connect', async () => {
             try {
                 const sendData = { robotSerial: this.robotSerial };
                 this.mqttMicroservice.emit('con:frs', sendData);
-                this.logger.info(`[Frs] FRS Connect and init : ${JSON.stringify(sendData)}`);
+                this.logger?.info(`[Frs] FRS Connect and init : ${JSON.stringify(sendData)}`);
                 this.socket.emit('initRequest', sendData);
             }
             catch (error) {
-                this.logger.error(`[Frs] FRS connect : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Frs] FRS connect : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('disconnect', (reason) => {
-            this.logger.error(`[Frs] FRS Disconnected : ${parse_util_1.ParseUtil.errorToJson(reason)}`);
+            this.logger?.error(`[Frs] FRS Disconnected : ${parse_util_1.ParseUtil.errorToJson(reason)}`);
             this.mqttMicroservice.emit('discon:frs', reason);
         });
         this.socket.on('error', (error) => {
-            this.logger.error(`[Frs] FRS Socket Error ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Frs] FRS Socket Error ${parse_util_1.ParseUtil.errorToJson(error)}`);
         });
         this.socket.on('initResponse', (data) => {
             this.frsService.parseInit(data);
@@ -18195,79 +18252,79 @@ let FRSSocketClient = class FRSSocketClient {
         this.socket.on('pathResponse', (data) => {
             try {
                 if (data == null || data == undefined || data == '') {
-                    this.logger.warn(`[Frs] pathResponse : data null`);
+                    this.logger?.warn(`[Frs] pathResponse : data null`);
                     return;
                 }
                 const json = JSON.parse(data);
                 if (!(0, class_validator_1.IsArray)(json)) {
-                    this.logger.warn(`[Frs] pathResponse : data not array`);
+                    this.logger?.warn(`[Frs] pathResponse : data not array`);
                     return;
                 }
                 if (json.length == 0) {
-                    this.logger.warn(`[Frs] pathResponse : data array size 0`);
+                    this.logger?.warn(`[Frs] pathResponse : data array size 0`);
                     return;
                 }
                 if ((0, lodash_1.isEqual)(json, this.lastPath)) {
-                    this.logger.warn(`[Frs] pathResponse : data equal last in`);
+                    this.logger?.warn(`[Frs] pathResponse : data equal last in`);
                     return;
                 }
                 this.lastPath = json;
                 this.mqttMicroservice.emit('pathResponse', json);
             }
             catch (error) {
-                this.logger.error(`[Frs] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Frs] pathResponse : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('vobsRobots', (data) => {
             try {
                 if (data == null || data == undefined || data == '') {
-                    this.logger.warn(`[Frs] vobsRobots : data null`);
+                    this.logger?.warn(`[Frs] vobsRobots : data null`);
                     return;
                 }
                 const json = JSON.parse(data);
                 if (!(0, class_validator_1.IsArray)(json)) {
-                    this.logger.warn(`[Frs] vobsRobots : data not array`);
+                    this.logger?.warn(`[Frs] vobsRobots : data not array`);
                     return;
                 }
                 if (json.length == 0) {
-                    this.logger.warn(`[Frs] vobsRobots : data array size 0`);
+                    this.logger?.warn(`[Frs] vobsRobots : data array size 0`);
                     return;
                 }
                 if ((0, lodash_1.isEqual)(json, this.lastVobsRobots)) {
-                    this.logger.warn(`[Frs] vobsRobots : data equal last in`);
+                    this.logger?.warn(`[Frs] vobsRobots : data equal last in`);
                     return;
                 }
                 this.lastVobsRobots = json;
                 this.mqttMicroservice.emit('vobsRobots', json);
             }
             catch (error) {
-                this.logger.error(`[Frs] vobsRobots : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Frs] vobsRobots : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('vobsClosures', (data) => {
             try {
                 if (data == null || data == undefined || data == '') {
-                    this.logger.warn(`[Frs] vobsClosures : data null`);
+                    this.logger?.warn(`[Frs] vobsClosures : data null`);
                     return;
                 }
                 const json = JSON.parse(data);
                 if (!(0, class_validator_1.IsArray)(json)) {
-                    this.logger.warn(`[Frs] vobsClosures : data not array`);
+                    this.logger?.warn(`[Frs] vobsClosures : data not array`);
                     return;
                 }
                 if (json.length == 0) {
-                    this.logger.warn(`[Frs] vobsClosures : data array size 0`);
+                    this.logger?.warn(`[Frs] vobsClosures : data array size 0`);
                     return;
                 }
                 if ((0, lodash_1.isEqual)(json, this.lastVobsClosures)) {
-                    this.logger.warn(`[Frs] vobsClosures : data equal last in`);
+                    this.logger?.warn(`[Frs] vobsClosures : data equal last in`);
                     return;
                 }
                 this.lastVobsClosures = json;
                 this.mqttMicroservice.emit('vobsClosures', json);
             }
             catch (error) {
-                this.logger.error(`[Frs] vobsClosures : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+                this.logger?.error(`[Frs] vobsClosures : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             }
         });
         this.socket.on('workRequest', (data) => {
@@ -18341,17 +18398,17 @@ let FRSSocketService = class FRSSocketService {
     async moveRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.logger.warn(`[GATEWAY] moveRequest : data null`);
+                this.logger?.warn(`[GATEWAY] moveRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.logger.warn(`[GATEWAY] moveRequest : command null`);
+                this.logger?.warn(`[GATEWAY] moveRequest : command null`);
                 return;
             }
             this.moveService.moveCommand(data);
         }
         catch (error) {
-            this.logger.error(`[GATEWAY] moveRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[GATEWAY] moveRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async movePauseRequest() {
@@ -18359,7 +18416,7 @@ let FRSSocketService = class FRSSocketService {
             this.moveService.movePause({});
         }
         catch (error) {
-            this.logger.error(`[Frs] movePauseRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Frs] movePauseRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async moveResumeRequest() {
@@ -18367,70 +18424,70 @@ let FRSSocketService = class FRSSocketService {
             this.moveService.moveLastGoal({});
         }
         catch (error) {
-            this.logger.error(`[Frs] moveResumeRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Frs] moveResumeRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async loadRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.logger.warn(`[GATEWAY] loadRequest : data null`);
+                this.logger?.warn(`[GATEWAY] loadRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.logger.warn(`[GATEWAY] loadRequest : command null`);
+                this.logger?.warn(`[GATEWAY] loadRequest : command null`);
                 return;
             }
             this.mapService.load(data);
         }
         catch (error) {
-            this.logger.error(`[GATEWAY] loadRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[GATEWAY] loadRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async localizationRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.logger.warn(`[GATEWAY] localizationRequest : data null`);
+                this.logger?.warn(`[GATEWAY] localizationRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.logger.warn(`[GATEWAY] localizationRequest : command null`);
+                this.logger?.warn(`[GATEWAY] localizationRequest : command null`);
                 return;
             }
             this.localizationService.init(data);
         }
         catch (error) {
-            this.logger.error(`[GATEWAY] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[GATEWAY] localizationRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async mappingRequest(data) {
         try {
             if (data == null || data == undefined) {
-                this.logger.warn(`[GATEWAY] mappingRequest : data null`);
+                this.logger?.warn(`[GATEWAY] mappingRequest : data null`);
                 return;
             }
             if (data.command == null || data.command == undefined || data.command == '') {
-                this.logger.warn(`[GATEWAY] mappingRequest : command null`);
+                this.logger?.warn(`[GATEWAY] mappingRequest : command null`);
                 return;
             }
             this.mapService.mapping(data);
         }
         catch (error) {
-            this.logger.error(`[GATEWAY] mappingRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[GATEWAY] mappingRequest : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async parseInit(data) {
         try {
             if (data == null || data == undefined) {
-                this.logger.warn(`[GATEWAY] FRS Init : data null`);
+                this.logger?.warn(`[GATEWAY] FRS Init : data null`);
                 return;
             }
             const robotSerial = await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'robot_serial' }));
             if (!robotSerial.value || robotSerial.value == '') {
-                this.logger.warn(`[GATEWAY] FRS Init : Config robotSerial null`);
+                this.logger?.warn(`[GATEWAY] FRS Init : Config robotSerial null`);
                 return;
             }
             if (robotSerial.value === data.robotSerial) {
-                this.logger.info(`[GATEWAY] FRS Init : ${data}`);
+                this.logger?.info(`[GATEWAY] FRS Init : ${data}`);
                 (0, rxjs_1.lastValueFrom)(this.configService.setConfig({
                     key: 'robot_name',
                     value: data.robotName,
@@ -18438,7 +18495,7 @@ let FRSSocketService = class FRSSocketService {
             }
         }
         catch (error) {
-            this.logger.error(`[GATEWAY] FRS Init : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[GATEWAY] FRS Init : ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getConfig(key) {
@@ -18451,7 +18508,7 @@ let FRSSocketService = class FRSSocketService {
     }
     async InitFRS() {
         try {
-            this.logger.info(`[SERVICE] InitFRS`);
+            this.logger?.info(`[SERVICE] InitFRS`);
             const robotSerial = this.getConfig('robot_serial');
             if (robotSerial == null || robotSerial == undefined) {
                 const sendData = {
@@ -18460,12 +18517,12 @@ let FRSSocketService = class FRSSocketService {
                 return sendData;
             }
             else {
-                this.logger.warn(`[SERVICE] InitFRS : robot_serial null`);
+                this.logger?.warn(`[SERVICE] InitFRS : robot_serial null`);
                 throw new rpc_code_exception_1.RpcCodeException('robot_serial null', constant_2.GrpcCode.FailedPrecondition);
             }
         }
         catch (error) {
-            this.logger.error(`[SERVICE] InitFRS : ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[SERVICE] InitFRS : ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(error.message, constant_2.GrpcCode.FailedPrecondition);
         }
     }
@@ -19071,7 +19128,7 @@ let TcpService = class TcpService {
         this.tcpMainServer = tcpMainServer;
         this.tcpCustomServerGateway = tcpCustomServerGateway;
         this.saveLogService = saveLogService;
-        this.logger = saveLogService.get('gateway-tcp');
+        this.logger = this.saveLogService.get('gateway-tcp');
     }
     onModuleInit() {
         this.tcpMainServer.startMainServer();
@@ -19098,7 +19155,7 @@ let TcpService = class TcpService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[TCP] getServerState error: ${error.message}`);
+            this.logger?.error(`[TCP] getServerState error: ${error.message}`);
             throw new rpc_code_exception_1.RpcCodeException('서버 상태를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
@@ -19160,12 +19217,12 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
     constructor(saveLogService) {
         this.saveLogService = saveLogService;
         this.servers = [];
-        this.logger = saveLogService.get('gateway-tcp');
+        this.logger = this.saveLogService.get('gateway-tcp');
     }
     async startServer(port, host) {
         return new Promise((resolve, reject) => {
             try {
-                this.logger.info(`[TCP] startServer ${port} ===========================`);
+                this.logger?.info(`[TCP] startServer ${port} ===========================`);
                 const server = {
                     port: port,
                     host: host,
@@ -19174,9 +19231,9 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                     clients: new Map(),
                     buffers: new Map(),
                 };
-                this.logger.info(`[TCP] startServer ${server.host}, ${server.port}`);
+                this.logger?.info(`[TCP] startServer ${server.host}, ${server.port}`);
                 server.server.listen(server.port, server.host, () => {
-                    this.logger.info(`[TCP] startServer : listening on ${server.host}, ${server.port}`);
+                    this.logger?.info(`[TCP] startServer : listening on ${server.host}, ${server.port}`);
                     this.servers.push(server);
                     resolve({
                         port: server.port,
@@ -19184,7 +19241,7 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                     });
                 });
                 server.server.on('error', (err) => {
-                    this.logger.error(`[TCP] CustomServer(${server.port}) Error : ${(0, common_2.errorToJson)(err)}`);
+                    this.logger?.error(`[TCP] CustomServer(${server.port}) Error : ${(0, common_2.errorToJson)(err)}`);
                     if (err.message.includes('EADDRINUSE')) {
                         reject(new rpc_code_exception_1.RpcCodeException('중복된 포트 번호입니다.', constant_1.GrpcCode.AlreadyExists));
                     }
@@ -19194,16 +19251,16 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                 });
             }
             catch (error) {
-                this.logger.error(`[TCP] startServer Error : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[TCP] startServer Error : ${(0, common_2.errorToJson)(error)}`);
             }
         });
     }
     async stopServer(port) {
         try {
-            this.logger.info(`[TCP] stopServer ${port} ===========================`);
+            this.logger?.info(`[TCP] stopServer ${port} ===========================`);
             const server = this.servers.find((server) => server.port === port);
             if (server) {
-                this.logger.info(`[TCP] stopServer : ${server.host}, ${server.port}`);
+                this.logger?.info(`[TCP] stopServer : ${server.host}, ${server.port}`);
                 server.server?.close();
                 this.servers = this.servers.filter((server) => server.port !== port);
                 return {
@@ -19212,12 +19269,12 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                 };
             }
             else {
-                this.logger.error(`[TCP] stopServer : ${port} 포트를 사용하는 서버를 찾을 수 없습니다.`);
+                this.logger?.error(`[TCP] stopServer : ${port} 포트를 사용하는 서버를 찾을 수 없습니다.`);
                 throw new rpc_code_exception_1.RpcCodeException(`${port} 포트를 사용하는 서버를 찾을 수 없습니다.`, constant_1.GrpcCode.NotFound);
             }
         }
         catch (error) {
-            this.logger.error(`[TCP] stopServer Error : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] stopServer Error : ${(0, common_2.errorToJson)(error)}`);
         }
     }
     getServers() {
@@ -19225,7 +19282,7 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
     }
     onModuleDestroy() {
         try {
-            this.logger.info('[TCP] Shutting down TCP Gateway ===========================');
+            this.logger?.info('[TCP] Shutting down TCP Gateway ===========================');
             for (const server of this.servers) {
                 server.server?.close();
                 for (const [id, sock] of server.clients) {
@@ -19238,28 +19295,28 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
             }
         }
         catch (error) {
-            this.logger.error(`[TCP] Shutting down TCP Gateway Error : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] Shutting down TCP Gateway Error : ${(0, common_2.errorToJson)(error)}`);
         }
     }
     handleConnection(server, socket) {
         try {
             const id = `${socket.remoteAddress}:${socket.remotePort}`;
-            this.logger.info(`[TCP] CustomServer(${server.port}) : Client connected (${id})`);
+            this.logger?.info(`[TCP] CustomServer(${server.port}) : Client connected (${id})`);
             server.clients.set(id, socket);
             server.buffers.set(id, '');
             socket.setKeepAlive(true, 20_000);
             socket.on('data', (chunk) => this.handleData(server, id, chunk));
             socket.on('error', (err) => {
-                this.logger.warn(`[TCP] CustomServer(${server.port}) : Client ${id} error (${err.message})`);
+                this.logger?.warn(`[TCP] CustomServer(${server.port}) : Client ${id} error (${err.message})`);
             });
             socket.on('close', () => {
-                this.logger.info(`[TCP] CustomServer(${server.port}) : Client disconnected (${id})`);
+                this.logger?.info(`[TCP] CustomServer(${server.port}) : Client disconnected (${id})`);
                 server.clients.delete(id);
                 server.buffers.delete(id);
             });
         }
         catch (error) {
-            this.logger.error(`[TCP] CustomServer(${server.port}) : Client connection error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] CustomServer(${server.port}) : Client connection error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     handleData(server, id, chunk) {
@@ -19267,11 +19324,11 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
             if (server.clients.get(id) === undefined) {
                 return;
             }
-            this.logger.debug(`[TCP] Message In (${server.port},${id}) : ${chunk.toString('utf8')}`);
+            this.logger?.debug(`[TCP] Message In (${server.port},${id}) : ${chunk.toString('utf8')}`);
             this.broadcastMsg(server, chunk, id);
         }
         catch (error) {
-            this.logger.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     broadcastMsg(server, message, excludeId) {
@@ -19334,7 +19391,7 @@ let TcpGateway = class TcpGateway {
         this.clients = new Map();
         this.buffers = new Map();
         this.messages$ = new rxjs_1.Subject();
-        this.logger = saveLogService.get('gateway-tcp');
+        this.logger = this.saveLogService.get('gateway-tcp');
     }
     getCreateAt() {
         return util_1.DateUtil.formatDateKST(this.createAt);
@@ -19350,24 +19407,24 @@ let TcpGateway = class TcpGateway {
     }
     startMainServer() {
         try {
-            this.logger.info('[TCP] startMainServer ===========================');
+            this.logger?.info('[TCP] startMainServer ===========================');
             this.createAt = new Date();
             this.port = this.configService.getOrThrow('TCP_PORT');
             this.host = this.configService.getOrThrow('TCP_HOST');
-            this.logger.info(`[TCP] startMainServer : ${this.host}, ${this.port}`);
+            this.logger?.info(`[TCP] startMainServer : ${this.host}, ${this.port}`);
             this.server = (0, net_1.createServer)((socket) => this.handleConnection(socket));
             this.server.listen(this.port, this.host, () => {
-                this.logger.info(`[TCP] MainServer listening on ${this.host}, ${this.port}`);
+                this.logger?.info(`[TCP] MainServer listening on ${this.host}, ${this.port}`);
             });
             this.server.on('error', (socket, err) => this.handleError(socket, err));
         }
         catch (error) {
-            this.logger.error(`[TCP] startMainServer Error : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] startMainServer Error : ${(0, common_2.errorToJson)(error)}`);
             this.server?.close();
         }
     }
     onModuleDestroy() {
-        this.logger.info('[TCP] MainServer Shutting down ===========================');
+        this.logger?.info('[TCP] MainServer Shutting down ===========================');
         for (const [id, sock] of this.clients) {
             try {
                 sock.socket.destroy();
@@ -19382,26 +19439,26 @@ let TcpGateway = class TcpGateway {
     handleConnection(socket) {
         try {
             const id = `${socket.remoteAddress}:${socket.remotePort}`;
-            this.logger.info(`[TCP] MainServer : Client connected (${id})`);
+            this.logger?.info(`[TCP] MainServer : Client connected (${id})`);
             this.clients.set(id, { id, socket, createAt: new Date() });
             this.buffers.set(id, '');
             socket.setKeepAlive(true, 20_000);
             socket.on('data', (chunk) => this.handleData(id, chunk));
             socket.on('error', (err) => {
-                this.logger.warn(`[TCP] MainServer : Client ${id} error: ${err.message}`);
+                this.logger?.warn(`[TCP] MainServer : Client ${id} error: ${err.message}`);
             });
             socket.on('close', () => {
-                this.logger.info(`[TCP] MainServer : Client disconnected (${id})`);
+                this.logger?.info(`[TCP] MainServer : Client disconnected (${id})`);
                 this.clients.delete(id);
                 this.buffers.delete(id);
             });
         }
         catch (error) {
-            this.logger.error(`[TCP] MainServer : Client connection error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] MainServer : Client connection error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     handleError(socket, error) {
-        this.logger.error(`[TCP] MainServer : Client ${socket.remoteAddress}:${socket.remotePort} error: ${error.message}`);
+        this.logger?.error(`[TCP] MainServer : Client ${socket.remoteAddress}:${socket.remotePort} error: ${error.message}`);
     }
     handleData(id, chunk) {
         try {
@@ -19469,7 +19526,7 @@ let TcpGateway = class TcpGateway {
             }
         }
         catch (error) {
-            this.logger.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] Client ${id} error: ${(0, common_2.errorToJson)(error)}`);
         }
     }
     sendStatusTo(id) {
@@ -19505,12 +19562,12 @@ let TcpGateway = class TcpGateway {
                 });
             }
             else {
-                this.logger.error(`[TCP] Invalid Move Parameter: ${param}`);
+                this.logger?.error(`[TCP] Invalid Move Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Move Parameter');
             }
         }
         catch (error) {
-            this.logger.error(`[TCP] Move Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] Move Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Move Parameter');
         }
     }
@@ -19524,12 +19581,12 @@ let TcpGateway = class TcpGateway {
                 this.tcpControlService.controlRequest({ command: control_type_1.ControlCommand.undockStart });
             }
             else {
-                this.logger.error(`[TCP] Invalid Control Parameter: ${param}`);
+                this.logger?.error(`[TCP] Invalid Control Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Control Parameter');
             }
         }
         catch (error) {
-            this.logger.error(`[TCP] Control Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] Control Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Control Parameter');
         }
     }
@@ -19559,12 +19616,12 @@ let TcpGateway = class TcpGateway {
                 });
             }
             else {
-                this.logger.error(`[TCP] Invalid Localization Parameter: ${param}`);
+                this.logger?.error(`[TCP] Invalid Localization Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Localization Parameter');
             }
         }
         catch (error) {
-            this.logger.error(`[TCP] Localization Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] Localization Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Localization Parameter');
         }
     }
@@ -19576,12 +19633,12 @@ let TcpGateway = class TcpGateway {
                 this.tcpControlService.loadRequest({ command: load_dto_1.MapCommand.loadMap, mapName: mapName });
             }
             else {
-                this.logger.error(`[TCP] Invalid Load Parameter: ${param}`);
+                this.logger?.error(`[TCP] Invalid Load Parameter: ${param}`);
                 this.sendMsgTo(id, 'Invalid Load Parameter');
             }
         }
         catch (error) {
-            this.logger.error(`[TCP] Load Error: ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[TCP] Load Error: ${(0, common_2.errorToJson)(error)}`);
             this.sendMsgTo(id, 'Invalid Load Parameter');
         }
     }
@@ -19812,21 +19869,21 @@ let CobotTcpClientAdapter = class CobotTcpClientAdapter {
         this.logger = this.saveLogService.get('tcp-cobot');
     }
     sendCommand(model, command) {
-        this.logger.debug(`[Client] sendCommand : ${model.cobotId} -> ${command.sendCommand}`);
+        this.logger?.debug(`[Client] sendCommand : ${model.cobotId} -> ${command.sendCommand}`);
         this.commandSocket.get(model.cobotId).write(command.sendCommand);
     }
     requestData(model) {
-        this.logger.debug(`[Client] requestData : ${model.cobotId}`);
+        this.logger?.debug(`[Client] requestData : ${model.cobotId}`);
         this.dataSocket.get(model.cobotId).write(cobot_dto_1.CobotCommand.requestData);
     }
     disconnect(model) {
-        this.logger.debug(`[Client] disconnect : ${model.cobotId}`);
+        this.logger?.debug(`[Client] disconnect : ${model.cobotId}`);
         this.disconnectCommand(model);
         this.disconnectData(model);
     }
     async disconnectCommand(model) {
         if (this.commandSocket.get(model.cobotId)) {
-            this.logger.debug(`[Client] disconnectCommand : ${model.cobotId}`);
+            this.logger?.debug(`[Client] disconnectCommand : ${model.cobotId}`);
             this.commandSocket.get(model.cobotId).end();
             this.commandSocket.get(model.cobotId).destroy();
             this.commandSocket.delete(model.cobotId);
@@ -19834,7 +19891,7 @@ let CobotTcpClientAdapter = class CobotTcpClientAdapter {
     }
     async disconnectData(model) {
         if (this.dataSocket.get(model.cobotId)) {
-            this.logger.debug(`[Client] disconnectData : ${model.cobotId}`);
+            this.logger?.debug(`[Client] disconnectData : ${model.cobotId}`);
             this.dataSocket.get(model.cobotId).end();
             this.dataSocket.get(model.cobotId).destroy();
             this.dataSocket.delete(model.cobotId);
@@ -19842,7 +19899,7 @@ let CobotTcpClientAdapter = class CobotTcpClientAdapter {
     }
     async connectCommand(model) {
         return new Promise(async (resolve) => {
-            this.logger.debug(`[Client] connectCommand : ${model.cobotId}`);
+            this.logger?.debug(`[Client] connectCommand : ${model.cobotId}`);
             await this.disconnectCommand(model);
             const socket = new net_1.Socket();
             socket.setNoDelay(true);
@@ -19880,7 +19937,7 @@ let CobotTcpClientAdapter = class CobotTcpClientAdapter {
     }
     async connectData(model) {
         return new Promise(async (resolve) => {
-            this.logger.debug(`[Client] connectData : ${model.cobotId}`);
+            this.logger?.debug(`[Client] connectData : ${model.cobotId}`);
             await this.disconnectData(model);
             const socket = new net_1.Socket();
             socket.setNoDelay(true);
@@ -20120,7 +20177,7 @@ let CobotService = class CobotService {
             cobotId: cobotId,
             error: (0, common_2.errorToJson)(error),
         });
-        this.logger.error(`[Cobot] handleCobotCommandError : ${(0, common_2.errorToJson)(error)}`);
+        this.logger?.error(`[Cobot] handleCobotCommandError : ${(0, common_2.errorToJson)(error)}`);
     }
     handleCobotCommandClose(cobotId) {
         this.mqttMicroservice.emit('close:cobotCommand', {
@@ -20133,7 +20190,7 @@ let CobotService = class CobotService {
             cobotId: cobotId,
             data: data,
         });
-        this.logger.info(`[Cobot] handleCobotCommandDataReceived : ${data}`);
+        this.logger?.info(`[Cobot] handleCobotCommandDataReceived : ${data}`);
     }
     handleCobotDataConnect(cobotId) {
         this.mqttMicroservice.emit('con:cobotData', {
@@ -20152,7 +20209,7 @@ let CobotService = class CobotService {
             cobotId: cobotId,
             error: (0, common_2.errorToJson)(error),
         });
-        this.logger.error(`[Cobot] handleCobotDataError : ${(0, common_2.errorToJson)(error)}`);
+        this.logger?.error(`[Cobot] handleCobotDataError : ${(0, common_2.errorToJson)(error)}`);
     }
     handleCobotDataClose(cobotId) {
         this.mqttMicroservice.emit('close:cobotData', {
@@ -20170,7 +20227,7 @@ let CobotService = class CobotService {
                 model.checkCobotMode();
                 const cobotModel = this.cobotModels.get(request.cobotId);
                 if (!cobotModel) {
-                    this.logger.error(`[Cobot] connectCobotCommand : ${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`);
+                    this.logger?.error(`[Cobot] connectCobotCommand : ${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`);
                     throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId}값을 가진 모델을 찾을 수 없습니다.`, constant_2.GrpcCode.NotFound);
                 }
                 if (request.mode === 'real') {
@@ -20180,7 +20237,7 @@ let CobotService = class CobotService {
                     model.sendCommand = cobot_dto_1.CobotCommand.programModeSimulation;
                 }
                 else {
-                    this.logger.error(`[Cobot] cobotModeChange : mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`);
+                    this.logger?.error(`[Cobot] cobotModeChange : mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`);
                     throw new rpc_code_exception_1.RpcCodeException(`mode 값이 올바르지 않습니다. real 또는 simulation 중 하나를 입력해주세요. (${request.mode})`, constant_2.GrpcCode.InvalidArgument);
                 }
                 this.tcpClientPort.sendCommand(cobotModel, model);
@@ -20196,7 +20253,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] cobotModeChange : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] cobotModeChange : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 모드 변경에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20287,7 +20344,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] cobotMove : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] cobotMove : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 이동에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20318,7 +20375,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] cobotSpeed : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] cobotSpeed : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 속도 변경에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20348,7 +20405,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] cobotInit : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] cobotInit : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 초기화에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20396,7 +20453,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] cobotConnect : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] cobotConnect : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20417,7 +20474,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] getConnectState : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] getConnectState : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 상태 조회에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20447,7 +20504,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     throw error;
                 }
-                this.logger.error(`[Cobot] connectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] connectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException(`${request.cobotId} Command 서버에 접속할 수 없습니다.`, constant_2.GrpcCode.InternalError);
             }
         });
@@ -20477,7 +20534,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] connectCobotData : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] connectCobotData : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20507,7 +20564,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] cobotDisconnect : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] cobotDisconnect : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20536,7 +20593,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] disconnectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] disconnectCobotCommand : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20565,7 +20622,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] disconnectCobotData : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] disconnectCobotData : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 연결 해제에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20595,7 +20652,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] sendCobotCommand : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] sendCobotCommand : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 명령 전송에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20634,7 +20691,7 @@ let CobotService = class CobotService {
                     model.sendCommand = request.command;
                 }
                 else {
-                    this.logger.error(`[Cobot] sendCobotProgram : ${request.command} 명령은 지원하지 않습니다.`);
+                    this.logger?.error(`[Cobot] sendCobotProgram : ${request.command} 명령은 지원하지 않습니다.`);
                     throw new rpc_code_exception_1.RpcCodeException(`${request.command} 명령은 지원하지 않습니다.`, constant_2.GrpcCode.InvalidArgument);
                 }
                 this.tcpClientPort.sendCommand(cobotModel, model);
@@ -20650,7 +20707,7 @@ let CobotService = class CobotService {
                 if (error instanceof microservices_1.RpcException) {
                     reject(error);
                 }
-                this.logger.error(`[Cobot] sendCobotProgram : ${(0, common_2.errorToJson)(error)}`);
+                this.logger?.error(`[Cobot] sendCobotProgram : ${(0, common_2.errorToJson)(error)}`);
                 reject(new rpc_code_exception_1.RpcCodeException(`Cobot 프로그램 전송에 실패했습니다.`, constant_2.GrpcCode.InternalError));
             }
         });
@@ -20668,7 +20725,7 @@ let CobotService = class CobotService {
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
-            this.logger.error(`[Cobot] requestCobotData : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Cobot] requestCobotData : ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`Cobot 데이터 요청에 실패했습니다.`, constant_2.GrpcCode.InternalError);
         }
     }
@@ -20729,29 +20786,29 @@ class CobotCommandHandler {
         return this.isConnected;
     }
     onClientConnect() {
-        this.logger.info(`[Command] ${this.id} connected`);
+        this.logger?.info(`[Command] ${this.id} connected`);
         this.isConnected = true;
         this.onCobotCommandConnect?.(this.id);
     }
     onClientDisconnect() {
-        this.logger.info(`[Command] ${this.id} disconnected`);
+        this.logger?.info(`[Command] ${this.id} disconnected`);
         this.isConnected = false;
         this.onCobotCommandDisconnect?.(this.id);
     }
     onDataEnd() {
-        this.logger.info(`[Command] ${this.id} data end`);
+        this.logger?.info(`[Command] ${this.id} data end`);
     }
     onError(error) {
-        this.logger.error(`[Command] ${this.id} Error : ${(0, common_1.errorToJson)(error)}`);
+        this.logger?.error(`[Command] ${this.id} Error : ${(0, common_1.errorToJson)(error)}`);
         this.onCobotCommandError?.(this.id, error);
     }
     onClose() {
-        this.logger.info(`[Command] ${this.id} closed`);
+        this.logger?.info(`[Command] ${this.id} closed`);
         this.isConnected = false;
         this.onCobotCommandClose?.(this.id);
     }
     onDataReceived(data) {
-        this.logger.info(`[Command] ${this.id} data received: ${data}`);
+        this.logger?.info(`[Command] ${this.id} data received: ${data}`);
         this.onCobotCommandDataReceived?.(this.id, data);
     }
 }
@@ -20777,29 +20834,29 @@ class CobotDataHandler {
         return this.isConnected;
     }
     onClientConnect() {
-        this.logger.info(`[Data] ${this.id} onClientConnect`);
+        this.logger?.info(`[Data] ${this.id} onClientConnect`);
         this.isConnected = true;
         this.onCobotDataConnect?.(this.id);
     }
     onClientDisconnect() {
-        this.logger.info(`[Data] ${this.id} onClientDisconnect`);
+        this.logger?.info(`[Data] ${this.id} onClientDisconnect`);
         this.isConnected = false;
         this.onCobotDataDisconnect?.(this.id);
     }
     onDataEnd() {
-        this.logger.info(`[Data] ${this.id} onDataEnd`);
+        this.logger?.info(`[Data] ${this.id} onDataEnd`);
     }
     onError(error) {
-        this.logger.error(`[Data] ${this.id} onError ${error}`);
+        this.logger?.error(`[Data] ${this.id} onError ${error}`);
         this.onCobotDataError?.(this.id, error);
     }
     onClose() {
-        this.logger.info(`[Data] ${this.id} onClose`);
+        this.logger?.info(`[Data] ${this.id} onClose`);
         this.isConnected = false;
         this.onCobotDataClose?.(this.id);
     }
     onDataReceived(data) {
-        this.logger.info(`[Data] ${this.id} onDataReceived ${data}`);
+        this.logger?.info(`[Data] ${this.id} onDataReceived ${data}`);
         this.buffer = Buffer.concat([this.buffer, data]);
         console.log('buffer length : ', this.buffer.length);
         while (this.buffer.length >= 580) {
@@ -21265,24 +21322,24 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             await this.CommandRepository.collection.dropIndex('createdAt_1');
         }
         catch (error) {
-            this.logger.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
         try {
             await this.ConnectionRepository.collection.dropIndex('createdAt_1');
         }
         catch (error) {
-            this.logger.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
         try {
             if (configService.get('DB_TTL_ENABLE') === 'true') {
                 const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
                 this.CommandRepository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
                 this.ConnectionRepository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
-                this.logger.info(`[Cobot] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+                this.logger?.info(`[Cobot] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
             }
         }
         catch (error) {
-            this.logger.error(`[Network] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getConnectionbyId(id) {
@@ -21290,7 +21347,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.ConnectionRepository.findById(id);
         }
         catch (error) {
-            this.logger.error(`[Cobot] DB getConnectionbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Cobot] DB getConnectionbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -21299,7 +21356,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.CommandRepository.findById(id);
         }
         catch (error) {
-            this.logger.error(`[Cobot] DB getCommandbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Cobot] DB getCommandbyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -21308,7 +21365,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.ConnectionRepository.create(move);
         }
         catch (error) {
-            this.logger.error(`[Cobot] DB saveConnection : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Cobot] DB saveConnection : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -21318,7 +21375,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.CommandRepository.create({ ...model, _id });
         }
         catch (error) {
-            this.logger.error(`[Cobot] DB saveCommand : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Cobot] DB saveCommand : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -21327,7 +21384,7 @@ let CobotMongoAdapter = class CobotMongoAdapter {
             return await this.CommandRepository.findByIdAndUpdate(move.id, move);
         }
         catch (error) {
-            this.logger.error(`[Cobot] DB updateCommand : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Cobot] DB updateCommand : ${JSON.stringify(move)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 업데이트할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }

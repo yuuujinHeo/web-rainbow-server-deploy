@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo chmod +x *.sh
+
 echo "=========== 1) PM2에 등록된 서비스 종료 (없으면 에러남 정상)"
 pm2 delete start_docker
 pm2 delete start_host
@@ -8,7 +10,11 @@ pm2 delete mediamtx
 
 echo "=========== 2) 도커 완전히 내리기 "
 cd ~/web-rainbow-server-deploy
-docker compose -f rrs-compose.yml down
+if ! docker compose -f rrs-compose.yml down; then
+  echo "❌ docker compose 실패! 이후 작업을 중단합니다."
+  echo "   install.sh 파일을 먼저 실행해주세요"
+  exit 1
+fi
 
 echo "=========== 3) 혹시 모르니 재설치 (git pull + pnpm install)"
 git pull
@@ -16,7 +22,7 @@ git pull
 # 👉 pnpm install 실패 시 바로 종료
 if ! pnpm install; then
   echo "❌ pnpm install 실패! 이후 작업을 중단합니다."
-  echo "   로그를 확인해서 원인을 해결한 뒤, 스크립트를 다시 실행해 주세요."
+  echo "   install.sh 파일을 먼저 실행해주세요"
   exit 1
 fi
 

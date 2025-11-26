@@ -1054,17 +1054,17 @@ let ControlMongoAdapter = class ControlMongoAdapter {
             await this.Repository.collection.dropIndex('createdAt_1');
         }
         catch (error) {
-            this.logger.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
         try {
             if (configService.get('DB_TTL_ENABLE') === 'true') {
                 const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
                 this.Repository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
-                this.logger.info(`[Control] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+                this.logger?.info(`[Control] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
             }
         }
         catch (error) {
-            this.logger.error(`[Network] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getNodebyId(id) {
@@ -1072,7 +1072,7 @@ let ControlMongoAdapter = class ControlMongoAdapter {
             return await this.Repository.findById(id);
         }
         catch (error) {
-            this.logger.error(`[Control] DB getNodebyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Control] DB getNodebyId : ${id} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -1081,7 +1081,7 @@ let ControlMongoAdapter = class ControlMongoAdapter {
             return await this.Repository.create(model);
         }
         catch (error) {
-            this.logger.error(`[Control] DB save : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Control] DB save : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -1090,7 +1090,7 @@ let ControlMongoAdapter = class ControlMongoAdapter {
             return await this.Repository.findByIdAndUpdate(model.id, model);
         }
         catch (error) {
-            this.logger.error(`[Control] DB update : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Control] DB update : ${JSON.stringify(model)} => ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 업데이트할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -2145,13 +2145,13 @@ let ControlService = class ControlService {
         this.logger = this.saveLogService.get('control');
     }
     onModuleInit() {
-        this.logger.debug(`[Control] Module Init`);
+        this.logger?.debug(`[Control] Module Init`);
         this.slamnavOutput.checkSocketConnection();
     }
     async OnOffControl(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] OnOffControl : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Control] OnOffControl : ${JSON.stringify(request)}`);
             command = new control_domain_1.ControlModel(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
@@ -2160,13 +2160,13 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.onoffControl(command);
-            this.logger.info(`[Control] OnOffControl Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] OnOffControl Response : ${JSON.stringify(resp)}`);
             command.statusChange('accept');
             await this.databaseOutput.update(command);
             return { ...resp, command: request.command, onoff: request.onoff };
         }
         catch (error) {
-            this.logger.error(`[Control] OnOffControl : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] OnOffControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2179,7 +2179,7 @@ let ControlService = class ControlService {
     async LEDControl(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] LEDControl : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Control] LEDControl : ${JSON.stringify(request)}`);
             command = new control_domain_1.ControlModel(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
@@ -2188,13 +2188,13 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.onoffControl(command);
-            this.logger.info(`[Control] LEDControl Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] LEDControl Response : ${JSON.stringify(resp)}`);
             command.statusChange('accept');
             await this.databaseOutput.update(command);
             return { ...resp, command: request.command, onoff: request.onoff };
         }
         catch (error) {
-            this.logger.error(`[Control] LEDControl : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] LEDControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2207,7 +2207,7 @@ let ControlService = class ControlService {
     async WorkControl(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] WorkControl : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Control] WorkControl : ${JSON.stringify(request)}`);
             command = new control_domain_1.ControlModel(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
@@ -2216,7 +2216,7 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.workControl(command);
-            this.logger.info(`[Control] WorkControl Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] WorkControl Response : ${JSON.stringify(resp)}`);
             if (resp.result === 'success' || resp.result === 'accept') {
                 command.statusChange(resp.result);
                 await this.databaseOutput.update(command);
@@ -2227,7 +2227,7 @@ let ControlService = class ControlService {
             return resp;
         }
         catch (error) {
-            this.logger.error(`[Control] WorkControl : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] WorkControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2240,7 +2240,7 @@ let ControlService = class ControlService {
     async ExAccessoryControl(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] ExAccessoryControl : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Control] ExAccessoryControl : ${JSON.stringify(request)}`);
             command = new control_domain_1.ControlModel(request);
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
@@ -2249,13 +2249,13 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('ExAccessory가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.exAccessoryOutput.exAccessoryControl(command);
-            this.logger.info(`[Control] ExAccessoryControl Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] ExAccessoryControl Response : ${JSON.stringify(resp)}`);
             command.statusChange('accept');
             await this.databaseOutput.update(command);
             return resp;
         }
         catch (error) {
-            this.logger.error(`[Control] ExAccessoryControl : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] ExAccessoryControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2268,7 +2268,7 @@ let ControlService = class ControlService {
     async setObsBox(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] setObsBox : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Control] setObsBox : ${JSON.stringify(request)}`);
             command = new control_domain_1.ControlModel({
                 command: control_type_1.ControlCommand.setObsBox,
                 minX: request.minX,
@@ -2286,7 +2286,7 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.obsBoxControl(command);
-            this.logger.info(`[Control] setObsBox Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] setObsBox Response : ${JSON.stringify(resp)}`);
             command.statusChange('accept');
             await this.databaseOutput.update(command);
             return {
@@ -2301,7 +2301,7 @@ let ControlService = class ControlService {
             };
         }
         catch (error) {
-            this.logger.error(`[Control] setObsBox : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] setObsBox : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2314,7 +2314,7 @@ let ControlService = class ControlService {
     async getObsBox(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] getObsBox`);
+            this.logger?.info(`[Control] getObsBox`);
             command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.getObsBox });
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
@@ -2323,13 +2323,13 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.obsBoxControl(command);
-            this.logger.info(`[Control] getObsBox Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] getObsBox Response : ${JSON.stringify(resp)}`);
             command.statusChange('accept');
             await this.databaseOutput.update(command);
             return { ...resp };
         }
         catch (error) {
-            this.logger.error(`[Control] getObsBox : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] getObsBox : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2347,24 +2347,24 @@ let ControlService = class ControlService {
     }
     async updateResponse(resp) {
         try {
-            this.logger.info(`[Control] updateResponse : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] updateResponse : ${JSON.stringify(resp)}`);
             const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
             if (dbmodel) {
                 const model = new control_domain_1.ControlModel(dbmodel);
                 model.assignId(dbmodel._id);
                 model.statusChange('accept');
                 this.databaseOutput.update(model);
-                this.logger.info(`[Control] update Response : ${model.id}, ${model.status}`);
+                this.logger?.info(`[Control] update Response : ${model.id}, ${model.status}`);
             }
         }
         catch (error) {
-            this.logger.error(`[Control] updateResponse : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] updateResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
     async SafetyIoControl(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] SafetyIoControl : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Control] SafetyIoControl : ${JSON.stringify(request)}`);
             const req = {
                 command: request.command,
                 mcuDio: request.mcuDio ? request.mcuDio.map((e) => e.channel) : undefined,
@@ -2378,7 +2378,7 @@ let ControlService = class ControlService {
             }
             const resp = await this.slamnavOutput.safetyIoControl(command);
             if (resp.result == 'success' || resp.result == 'accept') {
-                this.logger.info(`[Control] SafetyIoControl Response : ${JSON.stringify(resp)}`);
+                this.logger?.info(`[Control] SafetyIoControl Response : ${JSON.stringify(resp)}`);
                 command.statusChange(resp.result);
                 await this.databaseOutput.update(command);
                 return { ...resp, mcuDio: resp.mcuDio?.map((e) => ({ channel: e })), mcuDin: resp.mcuDin?.map((e) => ({ channel: e })) };
@@ -2388,7 +2388,7 @@ let ControlService = class ControlService {
             }
         }
         catch (error) {
-            this.logger.error(`[Control] SafetyIoControl : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] SafetyIoControl : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2401,7 +2401,7 @@ let ControlService = class ControlService {
     async setSafetyField(request) {
         let command = null;
         try {
-            this.logger.info(`[Control] setSafetyField : ${JSON.stringify(request)}`);
+            this.logger?.info(`[Control] setSafetyField : ${JSON.stringify(request)}`);
             command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.setSafetyField, safetyField: request.safetyField });
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
@@ -2410,13 +2410,13 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.safetyFieldControl(command);
-            this.logger.info(`[Control] setSafetyField Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] setSafetyField Response : ${JSON.stringify(resp)}`);
             command.statusChange('accept');
             await this.databaseOutput.update(command);
             return { ...resp, safetyField: request.safetyField };
         }
         catch (error) {
-            this.logger.error(`[Control] setSafetyField : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] setSafetyField : ${(0, common_2.errorToJson)(error)}`);
             if (error instanceof microservices_1.RpcException)
                 throw error;
             throw new rpc_code_exception_1.RpcCodeException('setSafetyField 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
@@ -2425,7 +2425,7 @@ let ControlService = class ControlService {
     async getSafetyField() {
         let command = null;
         try {
-            this.logger.info(`[Control] getSafetyField `);
+            this.logger?.info(`[Control] getSafetyField `);
             command = new control_domain_1.ControlModel({ command: control_type_1.ControlCommand.getSafetyField });
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
@@ -2434,13 +2434,13 @@ let ControlService = class ControlService {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
             const resp = await this.slamnavOutput.safetyFieldControl(command);
-            this.logger.info(`[Control] getSafetyField Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Control] getSafetyField Response : ${JSON.stringify(resp)}`);
             command.statusChange('success');
             await this.databaseOutput.update(command);
             return { ...resp, safetyField: resp.safetyField };
         }
         catch (error) {
-            this.logger.error(`[Control] getSafetyField : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] getSafetyField : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(control_domain_1.ControlStatus.fail);
                 await this.databaseOutput.update(command);
@@ -2724,23 +2724,23 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
         this.logger = this.saveLogService.get('control');
     }
     async obsBoxControl(data) {
-        this.logger.debug(`[Control] Socket obsBoxControl : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Control] Socket obsBoxControl : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
-        this.logger.debug(`[Control] Socket obsBoxControl : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket obsBoxControl : ${JSON.stringify(resp)}`);
         return resp;
     }
     async exAccessoryControl(data) {
-        this.logger.debug(`[Control] Socket externalControl : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Control] Socket externalControl : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('exAccessoryRequest', data);
         const resp = await response;
-        this.logger.debug(`[Control] Socket externalControl : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket externalControl : ${JSON.stringify(resp)}`);
         return resp;
     }
     async safetyIoControl(data) {
-        this.logger.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', {
             id: data.id,
@@ -2749,42 +2749,42 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
             time: util_1.DateUtil.getTimeString(),
         });
         const resp = await response;
-        this.logger.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket safetyIoControl : ${JSON.stringify(resp)}`);
         return resp;
     }
     checkSocketConnection() {
         this.mqttMicroservice.emit('getConnection', {});
     }
     async onoffControl(data) {
-        this.logger.debug(`[Control] Socket onoffControl : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Control] Socket onoffControl : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
-        this.logger.debug(`[Control] Socket onoffControl : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket onoffControl : ${JSON.stringify(resp)}`);
         return resp;
     }
     async workControl(data) {
-        this.logger.debug(`[Control] Socket workControl : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Control] Socket workControl : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
-        this.logger.debug(`[Control] Socket workControl : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket workControl : ${JSON.stringify(resp)}`);
         return resp;
     }
     async ledControl(data) {
-        this.logger.debug(`[Control] Socket ledControl : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Control] Socket ledControl : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
-        this.logger.debug(`[Control] Socket ledControl : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket ledControl : ${JSON.stringify(resp)}`);
         return resp;
     }
     async safetyFieldControl(data) {
-        this.logger.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
-        this.logger.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(resp)}`);
         return resp;
     }
     async waitForResponse(id, timeoutMs) {
@@ -2793,7 +2793,7 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.logger.error(`[Control] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger?.error(`[Control] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -3103,11 +3103,11 @@ let ControlMqttController = class ControlMqttController {
         this.logger = this.saveLogService.get('control');
     }
     getConnect() {
-        this.logger.info(`[Control] Slamnav Connected`);
+        this.logger?.info(`[Control] Slamnav Connected`);
         this.controlService.slamConnect();
     }
     getDisconnect() {
-        this.logger.warn(`[Control] Slamnav Disconnected`);
+        this.logger?.warn(`[Control] Slamnav Disconnected`);
         this.controlService.slamDisconnect();
         this.pendingService.pendingResponses.forEach((resp) => {
             resp.reject(new rpc_code_exception_1.RpcCodeException('SLAMNAV 연결이 끊어졌습니다', constant_1.GrpcCode.InternalError));
@@ -3131,7 +3131,7 @@ let ControlMqttController = class ControlMqttController {
             }
         }
         catch (error) {
-            this.logger.error(`[Control] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
 };
@@ -4035,20 +4035,20 @@ let LocalizationService = class LocalizationService {
         this.mqttMicroservice.emit('getConnection', {});
     }
     async Localization(initDto) {
-        this.logger.info(`[Localization] Localization ================================`);
+        this.logger?.info(`[Localization] Localization ================================`);
         const command = new localization_domain_1.LocalizationModel(initDto);
-        this.logger.info(`[Localization] Localization Command :  ${JSON.stringify(command)}`);
+        this.logger?.info(`[Localization] Localization Command :  ${JSON.stringify(command)}`);
         command.checkVariables();
         const result = await this.databaseOutput.save(command);
-        this.logger.info(`[Localization] Localization DB Save : ${result._id.toString()}`);
+        this.logger?.info(`[Localization] Localization DB Save : ${result._id.toString()}`);
         command.assignId(result._id.toString());
         if (this.slamnav_connection) {
             const resp = await this.slamnavOutput.localizationRequest(command);
-            this.logger.info(`[Localization] Localization Response : ${JSON.stringify(resp)}`);
+            this.logger?.info(`[Localization] Localization Response : ${JSON.stringify(resp)}`);
             if (resp.result === 'success' || resp.result === 'accept') {
                 command.statusChange(resp.result);
                 const result = await this.databaseOutput.update(command);
-                this.logger.info(`[Localization] Localization DB Update : ${result?._id.toString()}, ${command.status}`);
+                this.logger?.info(`[Localization] Localization DB Update : ${result?._id.toString()}, ${command.status}`);
                 return resp;
             }
             else {
@@ -4063,18 +4063,18 @@ let LocalizationService = class LocalizationService {
         this.slamnav_connection = true;
     }
     slamDisconnect() {
-        this.logger.warn(`[Localization] slam Disconnected`);
+        this.logger?.warn(`[Localization] slam Disconnected`);
         this.slamnav_connection = false;
     }
     async updateResponse(resp) {
-        this.logger.info(`[Localization] update Response : ${JSON.stringify(resp)}`);
+        this.logger?.info(`[Localization] update Response : ${JSON.stringify(resp)}`);
         const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
         if (dbmodel) {
             const model = new localization_domain_1.LocalizationModel(dbmodel);
             model.assignId(dbmodel._id);
             model.statusChange('accept');
             this.databaseOutput.update(model);
-            this.logger.info(`[Localization] update Response : ${model.id}, ${model.status}`);
+            this.logger?.info(`[Localization] update Response : ${model.id}, ${model.status}`);
         }
     }
 };
@@ -4226,17 +4226,17 @@ let LocalizationMongoAdapter = class LocalizationMongoAdapter {
             await this.Repository.collection.dropIndex('createdAt_1');
         }
         catch (error) {
-            this.logger.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.warn(`[Network] DB dropIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
         try {
             if (configService.get('DB_TTL_ENABLE') === 'true') {
                 const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
                 this.Repository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
-                this.logger.info(`[Localization] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+                this.logger?.info(`[Localization] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
             }
         }
         catch (error) {
-            this.logger.error(`[Network] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB createIndex: ${util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getNodebyId(id) {
@@ -4244,7 +4244,7 @@ let LocalizationMongoAdapter = class LocalizationMongoAdapter {
             return await this.Repository.findById(id).lean();
         }
         catch (error) {
-            this.logger.error(`[Localization] DB getNodebyId: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Localization] DB getNodebyId: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -4255,7 +4255,7 @@ let LocalizationMongoAdapter = class LocalizationMongoAdapter {
         }
         catch (error) {
             console.error(error);
-            this.logger.error(`[Localization] DB save: ${util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Localization] DB save: ${util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -4306,11 +4306,11 @@ let LocalizationSocketIOAdapter = class LocalizationSocketIOAdapter {
         this.logger = this.saveLogService.get('localization');
     }
     async localizationRequest(data) {
-        this.logger.debug(`[Localization] localizationRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Localization] localizationRequest : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttService.emit('localizationRequest', data);
         const resp = await response;
-        this.logger.debug(`[Localization] localizationResponse : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Localization] localizationResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
     async waitForResponse(id, timeoutMs) {
@@ -4319,7 +4319,7 @@ let LocalizationSocketIOAdapter = class LocalizationSocketIOAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.logger.error(`[Localization] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger?.error(`[Localization] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -4409,11 +4409,11 @@ let LocalizationMqttInputController = class LocalizationMqttInputController {
         this.logger = this.saveLogService.get('localization');
     }
     getConnect() {
-        this.logger.info(`[Localization] slam Connected`);
+        this.logger?.info(`[Localization] slam Connected`);
         this.localizationService.slamConnect();
     }
     getDisconnect() {
-        this.logger.warn(`[Localization] slam Disconnected`);
+        this.logger?.warn(`[Localization] slam Disconnected`);
         this.localizationService.slamDisconnect();
         this.pendingService.pendingResponses.forEach((resp) => {
             resp.reject(new rpc_code_exception_1.RpcCodeException('SLAMNAV 연결이 끊어졌습니다', constant_1.GrpcCode.InternalError));
@@ -4432,7 +4432,7 @@ let LocalizationMqttInputController = class LocalizationMqttInputController {
             }
         }
         catch (error) {
-            this.logger.error(`[Localization] getLocalizationResponse : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Localization] getLocalizationResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
 };
@@ -4805,20 +4805,20 @@ let MoveService = class MoveService {
     }
     async Move(moveDto) {
         try {
-            this.logger.info(`[Move] Move ================================`);
+            this.logger?.info(`[Move] Move ================================`);
             console.log('Move', moveDto);
             const command = new move_domain_1.MoveModel(moveDto);
-            this.logger.info(`[Move] Move Command : ${JSON.stringify(command)}`);
+            this.logger?.info(`[Move] Move Command : ${JSON.stringify(command)}`);
             command.checkVariables();
             const result = await this.databaseOutput.save(command);
-            this.logger.info(`[Move] Move DB Save : ${result._id.toString()}`);
+            this.logger?.info(`[Move] Move DB Save : ${result._id.toString()}`);
             command.assignId(result._id.toString());
             if (this.slamnav_connection) {
                 const resp = await this.slamnavOutput.moveRequest(command);
-                this.logger.info(`[Move] Move Response : ${JSON.stringify(resp)}`);
+                this.logger?.info(`[Move] Move Response : ${JSON.stringify(resp)}`);
                 command.statusChange('accept');
                 const result = await this.databaseOutput.update(command);
-                this.logger.info(`[Move] Move DB Update : ${result?._id.toString()}`);
+                this.logger?.info(`[Move] Move DB Update : ${result?._id.toString()}`);
                 return resp;
             }
             else {
@@ -4828,7 +4828,7 @@ let MoveService = class MoveService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[Move] Move : ${error}`);
+            this.logger?.error(`[Move] Move : ${error}`);
             throw new rpc_code_exception_1.RpcCodeException('Move 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4836,7 +4836,7 @@ let MoveService = class MoveService {
         this.slamnav_connection = true;
     }
     slamDisconnect() {
-        this.logger.warn(`[Move] slam Disconnected`);
+        this.logger?.warn(`[Move] slam Disconnected`);
         this.slamnav_connection = false;
     }
     async frsConnect() {
@@ -4844,53 +4844,53 @@ let MoveService = class MoveService {
             this.frs_connection = true;
             const useFMSMove = await (0, rxjs_1.lastValueFrom)(this.configService.getConfig({ key: 'useFMSMove' }));
             if (useFMSMove.value === 'true') {
-                this.logger.info(`[Move] frs Connect : useFMSMove is true`);
+                this.logger?.info(`[Move] frs Connect : useFMSMove is true`);
             }
             else {
-                this.logger.info(`[Move] frs Connect : useFMSMove is false`);
+                this.logger?.info(`[Move] frs Connect : useFMSMove is false`);
                 return;
             }
             this.moveLastGoal();
         }
         catch (error) {
-            this.logger.error(`[Move] frs Connect : ${error}`);
+            this.logger?.error(`[Move] frs Connect : ${error}`);
         }
     }
     async moveLastGoal() {
         try {
             const lastMove = await this.databaseOutput.getLast();
             if (lastMove && (lastMove.command === move_type_1.MoveCommand.moveGoal || lastMove.command === move_type_1.MoveCommand.moveTarget)) {
-                this.logger.info(`[Move] moveLastGoal : lastMove is not null`);
+                this.logger?.info(`[Move] moveLastGoal : lastMove is not null`);
                 this.Move(lastMove);
-                this.logger.info(`[Move] moveLastGoal : lastMove update`);
+                this.logger?.info(`[Move] moveLastGoal : lastMove update`);
             }
             else {
-                this.logger.info(`[Move] moveLastGoal : lastMove is null`);
+                this.logger?.info(`[Move] moveLastGoal : lastMove is null`);
             }
         }
         catch (error) {
-            this.logger.error(`[Move] moveLastGoal : ${error}`);
+            this.logger?.error(`[Move] moveLastGoal : ${error}`);
         }
     }
     async frsDisconnect() {
         try {
-            this.logger.warn(`[Move] frs Disconnected`);
+            this.logger?.warn(`[Move] frs Disconnected`);
             this.frs_connection = false;
             this.Move({ command: move_type_1.MoveCommand.moveStop });
         }
         catch (error) {
-            this.logger.error(`[Move] frs Disconnect : ${error}`);
+            this.logger?.error(`[Move] frs Disconnect : ${error}`);
         }
     }
     async updateResponse(resp) {
-        this.logger.info(`[Move] update Response : ${JSON.stringify(resp)}`);
+        this.logger?.info(`[Move] update Response : ${JSON.stringify(resp)}`);
         const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
         if (dbmodel) {
             const model = new move_domain_1.MoveModel(dbmodel);
             model.assignId(dbmodel._id);
             model.statusChange(resp.result);
             this.databaseOutput.update(model);
-            this.logger.info(`[Move] update Response : ${model.id}, ${model.status}`);
+            this.logger?.info(`[Move] update Response : ${model.id}, ${model.status}`);
         }
     }
     MoveJog(moveDto) {
@@ -4914,7 +4914,7 @@ let MoveService = class MoveService {
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
-            this.logger.error(`[Move] moveLogLast : ${error}`);
+            this.logger?.error(`[Move] moveLogLast : ${error}`);
             throw new rpc_code_exception_1.RpcCodeException('moveLogLast 오류', constant_1.GrpcCode.InternalError);
         }
     }
@@ -4926,7 +4926,7 @@ let MoveService = class MoveService {
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
-            this.logger.error(`[Move] moveLogLast : ${error}`);
+            this.logger?.error(`[Move] moveLogLast : ${error}`);
             throw new rpc_code_exception_1.RpcCodeException('moveLogLast 오류', constant_1.GrpcCode.InternalError);
         }
     }
@@ -5154,17 +5154,17 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             await this.Repository.collection.dropIndex('createdAt_1');
         }
         catch (error) {
-            this.logger.warn(`[Network] DB dropIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.warn(`[Network] DB dropIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
         try {
             if (configService.get('DB_TTL_ENABLE') === 'true') {
                 const TTL_DAYS = Number(configService.get('DB_TTL_DAYS') ?? '100');
-                this.logger.info(`[Move] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
+                this.logger?.info(`[Move] setIndex EnabledTTL_DAYS: ${TTL_DAYS}`);
                 this.Repository.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: TTL_DAYS * 24 * 60 * 60 });
             }
         }
         catch (error) {
-            this.logger.error(`[Network] DB createIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Network] DB createIndex: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
     async getNodebyId(id) {
@@ -5172,7 +5172,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             return await this.Repository.findById(id).lean();
         }
         catch (error) {
-            this.logger.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB getNodebyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -5181,7 +5181,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             return await this.Repository.findOne().sort({ createdAt: -1 }).lean();
         }
         catch (error) {
-            this.logger.error(`[Move] DB getLast: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB getLast: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -5217,7 +5217,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
-            this.logger.error(`[Move] DB getLast: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB getLast: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -5225,7 +5225,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
         try {
             const query = {};
             const { pageNo = 1, pageSize = 10, searchText, searchType, sortOption = 'createdAt', sortDirection = 'desc', dateFrom, dateTo, } = request;
-            this.logger.debug(`[Move] getLog request: ${JSON.stringify(request)}`);
+            this.logger?.debug(`[Move] getLog request: ${JSON.stringify(request)}`);
             if (searchText && searchText.trim() !== '') {
                 if (searchType && searchType !== '') {
                     switch (searchType) {
@@ -5300,7 +5300,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             if (error instanceof microservices_1.RpcException) {
                 throw error;
             }
-            this.logger.error(`[Move] DB getLog: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB getLog: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -5310,7 +5310,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             return await this.Repository.create({ ...model, _id });
         }
         catch (error) {
-            this.logger.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB save: ${parse_util_1.ParseUtil.errorToJson(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('데이터를 저장할 수 없습니다.', constant_1.GrpcCode.DBError);
         }
     }
@@ -5319,7 +5319,7 @@ let MoveMongoAdapter = class MoveMongoAdapter {
             return await this.Repository.findByIdAndUpdate(move.id, move).lean();
         }
         catch (error) {
-            this.logger.error(`[Move] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            this.logger?.error(`[Move] DB update: ${parse_util_1.ParseUtil.errorToJson(error)}`);
         }
     }
 };
@@ -5537,15 +5537,15 @@ let MoveSocketIOAdapter = class MoveSocketIOAdapter {
         this.logger = this.saveLogService.get('move');
     }
     async moveRequest(data) {
-        this.logger.debug(`[Move] moveRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Move] moveRequest : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
         this.mqttService.emit('moveRequest', data);
         const resp = await response;
-        this.logger.debug(`[Move] moveResponse : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Move] moveResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
     moveJogRequest(data) {
-        this.logger.debug(`[Move] moveJogRequest : ${JSON.stringify(data)}`);
+        this.logger?.debug(`[Move] moveJogRequest : ${JSON.stringify(data)}`);
         this.mqttService.emit('moveRequest', data);
         return;
     }
@@ -5555,7 +5555,7 @@ let MoveSocketIOAdapter = class MoveSocketIOAdapter {
             if (timeoutMs) {
                 timeout = setTimeout(() => {
                     this.pendingService.pendingResponses.delete(id);
-                    this.logger.error(`[Move] waitForResponse Timeout : ${id} , ${timeoutMs}`);
+                    this.logger?.error(`[Move] waitForResponse Timeout : ${id} , ${timeoutMs}`);
                     reject(new rpc_code_exception_1.RpcCodeException(`데이터 수신에 실패했습니다.`, constant_2.GrpcCode.DeadlineExceeded));
                 }, timeoutMs);
             }
@@ -5645,11 +5645,11 @@ let MoveMqttInputController = class MoveMqttInputController {
         this.logger = this.saveLogService.get('move');
     }
     getConnect() {
-        this.logger.info(`[Move] slam Connected`);
+        this.logger?.info(`[Move] slam Connected`);
         this.moveService.slamConnect();
     }
     getDisconnect() {
-        this.logger.warn(`[Move] slam Disconnected`);
+        this.logger?.warn(`[Move] slam Disconnected`);
         this.moveService.slamDisconnect();
         this.pendingService.pendingResponses.forEach((resp) => {
             resp.reject(new rpc_code_exception_1.RpcCodeException('SLAMNAV 연결이 끊어졌습니다', constant_1.GrpcCode.InternalError));
@@ -5657,11 +5657,11 @@ let MoveMqttInputController = class MoveMqttInputController {
         this.pendingService.pendingResponses.clear();
     }
     getConnectFRS(data) {
-        this.logger.info(`[Move] frs Connected`);
+        this.logger?.info(`[Move] frs Connected`);
         this.moveService.frsConnect();
     }
     getDisconnectFRS(data) {
-        this.logger.warn(`[Move] frs Disconnected`);
+        this.logger?.warn(`[Move] frs Disconnected`);
         this.moveService.frsDisconnect();
     }
     getMoveResponse(data) {
@@ -5676,7 +5676,7 @@ let MoveMqttInputController = class MoveMqttInputController {
             }
         }
         catch (error) {
-            this.logger.error(`[Move] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Move] getMoveResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
 };

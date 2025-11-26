@@ -15,7 +15,7 @@ export class GrpcToHttpFilter implements ExceptionFilter {
         if ('code' in exception && 'details' in exception) {
           const statusCode = mapGrpcToHttpStatus(exception.code as number);
 
-          // this.logger.info(`[Grpc] RpcException : ${exception.details} ${statusCode}(${exception.code})`);
+          // this.logger?.info(`[Grpc] RpcException : ${exception.details} ${statusCode}(${exception.code})`);
 
           return response.status(statusCode).json({
             statusCode,
@@ -25,11 +25,11 @@ export class GrpcToHttpFilter implements ExceptionFilter {
           const statusCode = exception.getStatus();
           const message = exception.message;
 
-          // this.logger.info(`[Grpc] caught HttpException : ${statusCode}, ${message}`);
+          // this.logger?.info(`[Grpc] caught HttpException : ${statusCode}, ${message}`);
 
           return response.status(statusCode).json({ statusCode, message });
         } else {
-          // this.logger.info(`[Grpc] caught Error : ${exception.message}`);
+          // this.logger?.info(`[Grpc] caught Error : ${exception.message}`);
 
           return response.status(500).json({
             statusCode: 500,
@@ -37,14 +37,14 @@ export class GrpcToHttpFilter implements ExceptionFilter {
           });
         }
       } else {
-        // this.logger.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
+        // this.logger?.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
         return response.status(500).json({
           statusCode: 500,
           message: 'Internal server error',
         });
       }
     } catch (error) {
-      // this.logger.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
+      // this.logger?.info(`[Grpc] caught unknown Error : ${errorToJson(exception)}`);
       return response.status(500).json({
         statusCode: 500,
         message: 'Internal server error',

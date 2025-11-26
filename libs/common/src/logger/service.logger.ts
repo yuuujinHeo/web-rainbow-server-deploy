@@ -178,16 +178,16 @@ export class LoggerService {
   }
 
   error(str: string) {
-    this.logger.error(str);
+    this.logger?.error(str);
   }
   warn(str: string) {
-    this.logger.warn(str);
+    this.logger?.warn(str);
   }
   info(str: string) {
-    this.logger.info(str);
+    this.logger?.info(str);
   }
   debug(str: string) {
-    this.logger.debug(str);
+    this.logger?.debug(str);
   }
 
   cleanLogFiles() {}

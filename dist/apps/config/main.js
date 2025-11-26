@@ -2179,7 +2179,7 @@ let ConfigDBService = class ConfigDBService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[DB] getConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[DB] getConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
         }
     }
@@ -2191,7 +2191,7 @@ let ConfigDBService = class ConfigDBService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[DB] getConfigAll : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[DB] getConfigAll : ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
         }
     }
@@ -2208,13 +2208,13 @@ let ConfigDBService = class ConfigDBService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[DB] setConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[DB] setConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
         }
     }
     async setConfig(request) {
         try {
-            this.logger.debug(`[DB] setConfig : ${JSON.stringify(request)}`);
+            this.logger?.debug(`[DB] setConfig : ${JSON.stringify(request)}`);
             if (request.key === undefined || request.key === '') {
                 throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
             }
@@ -2222,19 +2222,19 @@ let ConfigDBService = class ConfigDBService {
                 throw new rpc_code_exception_1.RpcCodeException(`value 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
             }
             const resp = await this.configRepository.save(request);
-            this.logger.info(`[DB] setConfig : ${JSON.stringify(resp)} done`);
+            this.logger?.info(`[DB] setConfig : ${JSON.stringify(resp)} done`);
             return { ...request, result: resp ? 'success' : 'fail' };
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[DB] setConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[DB] setConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
         }
     }
     async deleteConfig(key) {
         try {
-            this.logger.debug(`[DB] deleteConfig : ${key}`);
+            this.logger?.debug(`[DB] deleteConfig : ${key}`);
             if (key === undefined || key === '') {
                 throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
             }
@@ -2247,7 +2247,7 @@ let ConfigDBService = class ConfigDBService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[DB] deleteConfig : ${key} -> ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[DB] deleteConfig : ${key} -> ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
         }
     }
@@ -2264,7 +2264,7 @@ let ConfigDBService = class ConfigDBService {
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            this.logger.error(`[DB] deleteConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[DB] deleteConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
         }
     }

@@ -21,9 +21,9 @@ export class APILogInterceptor implements NestInterceptor {
     // }
 
     if (body) {
-      // this.logger.debug(`[${method}] ${url} (${ip}) : ${JSON.stringify(body).substring(0, 100)}`);
+      // this.logger?.debug(`[${method}] ${url} (${ip}) : ${JSON.stringify(body).substring(0, 100)}`);
     } else {
-      // this.logger.debug(`[${method}] ${url} (${ip})`);
+      // this.logger?.debug(`[${method}] ${url} (${ip})`);
     }
 
     return next.handle().pipe(
@@ -33,9 +33,9 @@ export class APILogInterceptor implements NestInterceptor {
 
         // 응답 이후 처리할 로그가 있다면 여기에 추가
         if (data) {
-          // this.logger.debug(`[${method} RESPONSE] ${url} (${ip}) : ${JSON.stringify(data).substring(0, 100)} -> ${responseTime}`);
+          // this.logger?.debug(`[${method} RESPONSE] ${url} (${ip}) : ${JSON.stringify(data).substring(0, 100)} -> ${responseTime}`);
         } else {
-          // this.logger.debug(`[${method} RESPONSE] ${url} (${ip}) -> ${responseTime}`);
+          // this.logger?.debug(`[${method} RESPONSE] ${url} (${ip}) -> ${responseTime}`);
         }
       }),
     );
