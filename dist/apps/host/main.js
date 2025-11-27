@@ -2190,6 +2190,7 @@ let MapService = class MapService {
             await util_1.FileUtil.saveJson(command.path, jsonData);
             command.statusChange(map_command_domain_1.CommandStatus.success);
             await this.databaseOutput.update(command);
+            await this.slamnavOutput.reloadTopology();
             return request;
         }
         catch (error) {
@@ -3016,6 +3017,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapSocketIOAdapter = void 0;
 const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
+const map_command_domain_1 = __webpack_require__(60);
 const constant_1 = __webpack_require__(67);
 const map_pending_service_1 = __webpack_require__(74);
 const rpc_code_exception_1 = __webpack_require__(50);
@@ -3043,6 +3045,9 @@ let MapSocketIOAdapter = class MapSocketIOAdapter {
         const resp = await response;
         this.logger?.debug(`[Map] loadResponse : ${JSON.stringify(resp)}`);
         return resp;
+    }
+    async reloadTopology() {
+        this.mqttService.emit('loadRequest', { command: map_command_domain_1.MapCommand.loadTopo });
     }
     async waitForResponse(id, timeoutMs) {
         return new Promise((resolve, reject) => {
