@@ -16,6 +16,16 @@ export enum Description {
   TOPO = '저장할 토폴로지 형식을 맞춰 입력하세요.',
 }
 
+export class SaveMappingRequestDto {
+  @ApiProperty({
+    description: Description.MAPNAME,
+    example: 'Test',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  mapName: string;
+}
 export class MappingRequestDto {
   @ApiProperty({
     description: Description.COMMAND,

@@ -3,7 +3,7 @@ syntax = "proto3";
 package setting;
 
 service SettingGrpcService {
-    rpc GetType(Empty) returns (SettingResponse);
+    rpc GetType(Empty) returns (GetTypeResponse);
     rpc GetSetting(SettingRequest) returns (SettingResponse);
     rpc SaveSetting(SaveSettingRequest) returns (SaveSettingResponse);
     rpc SaveSettingAll(SettingRequest) returns (SettingResponse);
@@ -19,6 +19,10 @@ message Empty {
 
 }
 
+message GetTypeResponse {
+    string model = 1;
+    string type = 2;
+}
 message SettingRequest {
     string type = 1;
     optional string data = 2;

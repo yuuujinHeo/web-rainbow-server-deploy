@@ -14,6 +14,11 @@ export const protobufPackage = "setting";
 export interface Empty {
 }
 
+export interface GetTypeResponse {
+  model: string;
+  type: string;
+}
+
 export interface SettingRequest {
   type: string;
   data?: string | undefined;
@@ -60,7 +65,7 @@ export interface PresetResponse {
 export const SETTING_PACKAGE_NAME = "setting";
 
 export interface SettingGrpcServiceClient {
-  getType(request: Empty, metadata?: Metadata): Observable<SettingResponse>;
+  getType(request: Empty, metadata?: Metadata): Observable<GetTypeResponse>;
 
   getSetting(request: SettingRequest, metadata?: Metadata): Observable<SettingResponse>;
 
@@ -85,7 +90,7 @@ export interface SettingGrpcServiceController {
   getType(
     request: Empty,
     metadata?: Metadata,
-  ): Promise<SettingResponse> | Observable<SettingResponse> | SettingResponse;
+  ): Promise<GetTypeResponse> | Observable<GetTypeResponse> | GetTypeResponse;
 
   getSetting(
     request: SettingRequest,

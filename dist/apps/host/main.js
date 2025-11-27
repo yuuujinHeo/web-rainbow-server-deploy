@@ -3466,7 +3466,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingRequestSlamnav = exports.MappingResponseDto = exports.MappingRequestDto = exports.Description = void 0;
+exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingRequestSlamnav = exports.MappingResponseDto = exports.MappingRequestDto = exports.SaveMappingRequestDto = exports.Description = void 0;
 const swagger_1 = __webpack_require__(78);
 const class_validator_1 = __webpack_require__(79);
 const class_transformer_1 = __webpack_require__(80);
@@ -3485,6 +3485,19 @@ var Description;
     Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
     Description["TOPO"] = "\uC800\uC7A5\uD560 \uD1A0\uD3F4\uB85C\uC9C0 \uD615\uC2DD\uC744 \uB9DE\uCDB0 \uC785\uB825\uD558\uC138\uC694.";
 })(Description || (exports.Description = Description = {}));
+class SaveMappingRequestDto {
+}
+exports.SaveMappingRequestDto = SaveMappingRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MAPNAME,
+        example: 'Test',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], SaveMappingRequestDto.prototype, "mapName", void 0);
 class MappingRequestDto {
 }
 exports.MappingRequestDto = MappingRequestDto;
@@ -5102,6 +5115,9 @@ let SettingFileService = class SettingFileService {
         this.saveLogService = saveLogService;
         this.logger = this.saveLogService.get('host');
     }
+    getCommonConfigPath() {
+        return Path.join(process.env.HOME, 'slamnav2', 'config', 'common.json');
+    }
     getDiretoryPath(type) {
         return Path.join(process.env.HOME, 'slamnav2', 'config', type);
     }
@@ -5116,6 +5132,23 @@ let SettingFileService = class SettingFileService {
             name = 'preset_' + name;
         }
         return Path.join(process.env.HOME, 'slamnav2', 'config', type, name);
+    }
+    async getType() {
+        try {
+            const path = this.getCommonConfigPath();
+            if (!fs.existsSync(path)) {
+                this.logger?.error(`[SETTING] getType : common.json 파일이 없습니다.`);
+                throw new rpc_code_exception_1.RpcCodeException(`common.json 파일이 없습니다.`, constant_1.GrpcCode.NotFound);
+            }
+            const data = await file_util_1.FileUtil.readJson(path);
+            return { model: data.ROBOT_MODEL, type: data.ROBOT_TYPE };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[SETTING] getType : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('세팅을 불러오던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
+        }
     }
     async getSetting(request) {
         try {
@@ -5531,7 +5564,7 @@ let SettingGrpcInputController = class SettingGrpcInputController {
         this.settingService = settingService;
     }
     getType(request, metadata) {
-        throw new Error('Method not implemented.');
+        return this.settingService.getType();
     }
     getSetting(request, metadata) {
         return this.settingService.getSetting(request);

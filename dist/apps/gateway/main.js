@@ -5426,8 +5426,30 @@ __decorate([
 __decorate([
     (0, common_1.Get)('type'),
     (0, swagger_1.ApiOperation)({
-        summary: '로봇 타입 요청',
-        description: '로봇 타입을 요청합니다.',
+        summary: '로봇 세팅 타입 요청',
+        description: `
+로봇 세팅 타입을 요청합니다. 
+
+## 📌 기능 설명
+- 로봇 세팅 타입을 요청합니다.
+- SLAMNAV에서 사용하는 세팅 정보를 읽어 반환합니다. (추후 변경 가능)
+- 세팅 파일 조회를 위해서는 type 값이 필요합니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| model | string | 로봇 모델 | 'SRV' |
+| type | string | 로봇 타입 | 'SRV' |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 세팅 파일이 없을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 파일관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 세팅 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '로봇 타입 요청 성공',
@@ -5445,8 +5467,32 @@ __decorate([
 __decorate([
     (0, common_1.Get)('config'),
     (0, swagger_1.ApiOperation)({
-        summary: '세팅 파일 요청',
-        description: '타입에 해당하는 세팅 파일을 요청합니다.',
+        summary: '로봇 세팅 파일 요청',
+        description: `
+타입에 맞는 세팅 파일을 요청합니다.
+
+## 📌 기능 설명
+- 타입에 맞는 세팅 파일을 요청합니다.
+- SLAMNAV에서 사용하는 세팅 정보를 읽어 반환합니다. (추후 변경 가능)
+- 세팅 파일 조회를 위해서는 type 값이 필요합니다.
+- 응답 바디는 json 형식으로 반환되며 내용은 ***버전에 따라 상이합니다***
+- 세팅 파일은 주행에 있어 매우 민감한 내용이므로 수정을 권장하지 않으며 관련 내용은 외부적으로 공개하지 않습니다.
+
+## 📌 요청 쿼리
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| type | string | ✅ | - | 타입 | 'SRV' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있거나 잘못된 값일 때
+### **404** NOT_FOUND
+  - 세팅 파일이 없을 때
+### **500** INTERNAL_SERVER_ERROR
+  - 파일관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 세팅 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 파일 요청 성공',
@@ -5645,7 +5691,7 @@ let SettingApiService = class SettingApiService {
     }
     async getType() {
         const resp = await (0, rxjs_1.lastValueFrom)(this.settingService.getType({}));
-        return { type: resp.type };
+        return { ...resp };
     }
     async getSetting(dto) {
         const resp = await (0, rxjs_1.lastValueFrom)(this.settingService.getSetting({ type: dto.type }));
@@ -8377,7 +8423,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof mapping_dto_1.MappingRequestDto !== "undefined" && mapping_dto_1.MappingRequestDto) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof mapping_dto_1.SaveMappingRequestDto !== "undefined" && mapping_dto_1.SaveMappingRequestDto) === "function" ? _s : Object]),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingSave", null);
 __decorate([
@@ -8831,7 +8877,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingRequestSlamnav = exports.MappingResponseDto = exports.MappingRequestDto = exports.Description = void 0;
+exports.MappingResponseFrs = exports.MappingResponseSlamnav = exports.MappingRequestSlamnav = exports.MappingResponseDto = exports.MappingRequestDto = exports.SaveMappingRequestDto = exports.Description = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const class_transformer_1 = __webpack_require__(10);
@@ -8850,6 +8896,19 @@ var Description;
     Description["TIME"] = "\uBA54\uC2DC\uC9C0 \uBC1C\uC1A1 \uC2DC\uAC04. ms \uB2E8\uC704";
     Description["TOPO"] = "\uC800\uC7A5\uD560 \uD1A0\uD3F4\uB85C\uC9C0 \uD615\uC2DD\uC744 \uB9DE\uCDB0 \uC785\uB825\uD558\uC138\uC694.";
 })(Description || (exports.Description = Description = {}));
+class SaveMappingRequestDto {
+}
+exports.SaveMappingRequestDto = SaveMappingRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MAPNAME,
+        example: 'Test',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], SaveMappingRequestDto.prototype, "mapName", void 0);
 class MappingRequestDto {
 }
 exports.MappingRequestDto = MappingRequestDto;
