@@ -2634,7 +2634,7 @@ class ControlModel {
     safetyIoControl(param) {
         this.status = ControlStatus.pending;
         this.command = param.command;
-        this.mcuDio = param.mcuDio.map((e) => e.channel);
+        this.mcuDio = param.mcuDio?.map((e) => e.channel);
     }
     setObsBoxRequest(param) {
         this.status = ControlStatus.pending;
