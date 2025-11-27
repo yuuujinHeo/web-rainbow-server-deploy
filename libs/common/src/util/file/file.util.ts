@@ -11,6 +11,7 @@ import { Response } from 'express';
 import { RpcCodeException } from '../../exception/rpc-code.exception';
 import { GrpcCode } from '../../grpc/constant';
 import { RpcException } from '@nestjs/microservices';
+import { dirname } from 'path';
 
 export class FileUtil {
   private static basePath: string;
@@ -256,13 +257,16 @@ export class FileUtil {
         throw new RpcCodeException('data 값이 없습니다.', GrpcCode.InvalidArgument);
       }
 
+      console.log('path : ', path);
+      console.log('dirname(path) : ', dirname(path));
+      fs.mkdirSync(dirname(path), { recursive: true });
       /// 3) 데이터를 파일로 저장
       fs.writeFileSync(path, csvData);
       //LoggerService.get('util').debug(`[File] saveCSV : done (path : ${path})`);
       return;
     } catch (error) {
       if (error instanceof RpcException) throw error;
-      //LoggerService.get('util').error(`[File] saveCSV : ${errorToJson(error)}`);
+      console.error(`[File] saveCSV : ${errorToJson(error)}`);
       throw new RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', GrpcCode.InternalError);
     }
   }

@@ -2003,9 +2003,11 @@ const uuid_1 = __webpack_require__(52);
 const archiver_1 = __webpack_require__(58);
 const csv = __webpack_require__(59);
 const zlib_1 = __webpack_require__(60);
+const common_1 = __webpack_require__(9);
 const rpc_code_exception_1 = __webpack_require__(43);
 const constant_1 = __webpack_require__(44);
 const microservices_1 = __webpack_require__(2);
+const path_1 = __webpack_require__(3);
 class FileUtil {
     static checkBasePath() {
         this.basePath = '';
@@ -2196,12 +2198,16 @@ class FileUtil {
             if (data === undefined || data.length === 0) {
                 throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
             }
+            console.log('path : ', path);
+            console.log('dirname(path) : ', (0, path_1.dirname)(path));
+            fs.mkdirSync((0, path_1.dirname)(path), { recursive: true });
             fs.writeFileSync(path, csvData);
             return;
         }
         catch (error) {
             if (error instanceof microservices_1.RpcException)
                 throw error;
+            console.error(`[File] saveCSV : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('CSV 파일을 저장하던 중 에러가 발생했습니다.', constant_1.GrpcCode.InternalError);
         }
     }
