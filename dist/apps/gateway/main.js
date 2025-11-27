@@ -13560,7 +13560,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -13578,6 +13578,9 @@ let SocketApiController = class SocketApiController {
     async getMoveStatus() {
         return this.socketService.getMoveStatus();
     }
+    async getProgramStatus() {
+        return this.socketService.getProgramStatus();
+    }
 };
 exports.SocketApiController = SocketApiController;
 __decorate([
@@ -13587,8 +13590,139 @@ __decorate([
 __decorate([
     (0, common_1.Get)('status'),
     (0, swagger_1.ApiOperation)({
-        summary: '상태 요청',
-        description: '가장 최신의 SLAMNAV 상태를 요청합니다. 현재 상태는 현재 로봇의 상태를 반환합니다.',
+        summary: 'SLAMNAV 상태 조회 (status)',
+        description: `
+가장 최신의 SLAMNAV 상태를 요청합니다. 현재 상태는 현재 로봇의 상태를 반환합니다.<br>
+***실제 응답형식은 아래 작성된 문서와 차이가 있을 수 있습니다.***
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| condition | StatusConditionDto | 로봇 위치추정 상태 | 아래 참고 |
+| imu | StatusIMUDto | IMU 센서 데이터 | 아래 참고 |
+| map | StatusMapDto | 로봇 맵 상태 | 아래 참고 |
+| motor | StatusMotorDto[] | 모터 데이터 | 아래 참고 |
+| power | StatusPowerDto | 로봇 전원 상태 | 아래 참고 |
+| robot_safety_io_state | SafetyIoDto | 로봇 안전장치 상태 | 아래 참고 |
+| robot_state | RobotStateDto | 로봇 상태 | 아래 참고 |
+| setting | StatusSettingDto | 로봇 세팅 값 | 아래 참고 |
+| time | number | 메시지 발송 시간. ms 단위 | 1764204003906 |
+
+## 📌 StatusConditionDto(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| inlier_ratio | number | 위치추정 정확도 [0~1] | 0.95 |
+| inlier_error | number | 위치추정 에러율 [0~1] | 0.05 |
+| mapping_ratio | number | 매핑 정확도 [0~1] | 0.95 |
+| mapping_error | number | 매핑 에러율 [0~1] | 0.05 |
+
+## 📌 StatusIMUDto(JSON)
+- imu 및 gyro는 지원하는 모델만 값이 유의미합니다.
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| imu_rx | number | IMU 각속도 [deg/s] | 10.0 |
+| imu_ry | number | IMU 각속도 [deg/s] | 10.0 |
+| imu_rz | number | IMU 각속도 [deg/s] | 10.0 |
+| acc_x | number | IMU 가속도 [m/s^2] | 10.0 |
+| acc_y | number | IMU 가속도 [m/s^2] | 10.0 |
+| acc_z | number | IMU 가속도 [m/s^2] | 10.0 |
+| gyr_x | number | Gyro 각속도 [deg/s] | 10.0 |
+| gyr_y | number | Gyro 각속도 [deg/s] | 10.0 |
+| gyr_z | number | Gyro 각속도 [deg/s] | 10.0 |
+
+## 📌 StatusMapDto(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| map_name | string | 로봇 맵 이름 | 'Test' |
+| map_status | string | 로봇 맵 로딩 상태 | 'none', 'loading', 'loaded' |
+
+## 📌 StatusMotorDto(JSON)
+- status는 모터 상태 8가지를 8bit 형태로 쪼개어 각 비트자리수가 0 혹은 1일때에 따라 값 지정됨
+- 낮은비트 순서로 READY, MODE ERROR, JAM ERROR, CURRENT ERROR, BIG ERROR, INPUT ERROR, POSITION ERROR, COLLISTION ERROR
+- status 값이 0일때는 Motor Not ready, 1일때는 Motor Ready, 16일때는 Motor Big Error, 20일때는 Motor Big Error + Motor Jam Error
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| connection | boolean | 모터 연결 상태 | true, false |
+| current | number | 모터 전류 [A] | 10.0 |
+| status | number | 모터 상태 | 1 |
+| temp | number | 모터 온도 [℃] | 10.0 |
+
+## 📌 StatusPowerDto(JSON)
+- 타보스관련 값은 타보스 배터리를 지원하는 모델만 값이 존재합니다.
+- 타보스 지원 모델의 경우 배터리 잔량[%]은 tabos_soc 값을 사용합니다.
+- 타보스 지원 모델이 아닌 경우 배터리 잔량[%]은 battery_percent 값을 사용합니다.
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| battery_current | number | 배터리 전류 [A] | 10.0 |
+| battery_in | number | 배터리 입력전원 [V] | 10.0 |
+| battery_out | number | 배터리 출력전원 [V] | 10.0 |
+| battery_percent | number | 배터리 출력전원 [%] | 100.0 |
+| charge_current | number | 충전 전류 [A] | 10.0 |
+| contact_voltage | number | 충전 전압 [V] | 10.0 |
+| power | number | 전력 [W] | 10.0 |
+| total_power | number | 누적 전력 [Wh] | 10.0 |
+| tabos_ae | number | 타보스 AE 상태 | 0, 1 |
+| tabos_current | number | 타보스 전류 [A] | 10.0 |
+| tabos_rc | number | 타보스 RC 상태 | 0, 1 |
+| tabos_soc | number | 타보스 SOC [%] | 100.0 |
+| tabos_soh | number | 타보스 SOH [%] | 100.0 |
+| tabos_status | number | 타보스 상태 | 0, 1 |
+| tabos_temp | number | 타보스 온도 [℃] | 10.0 |
+| tabos_tte | number | 타보스 TTE [s] | 10.0 |
+| tabos_ttf | number | 타보스 TTF [s] | 10.0 |
+| tabos_voltage | number | 타보스 전압 [V] | 10.0 |
+
+
+## 📌 SafetyIoDto(JSON)
+- safetyIo 기능을 지원하는 모델에서만 값이 존재합니다.
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| mcu0_din | number[] | MCU0 DIN 상태 | [0, 0, 0, 0, 1, 0, 0, 0] |
+| mcu0_dio | number[] | MCU0 DIO 상태 | [0, 1, 0, 1, 0, 0, 0, 0] |
+| mcu1_din | number[] | MCU1 DIN 상태 | [0, 0, 0, 0, 0, 0, 0, 0] |
+| mcu1_dio | number[] | MCU1 DIO 상태 | [0, 0, 0, 0, 0, 0, 0, 0] |
+
+
+## 📌 RobotStateDto(JSON)
+- 안전장치 관련 값은 지원하는 모델만 값이 존재합니다.
+- charge 상태는 충전 상태를 나타내며 도킹스테이션을 지원하는 경우에는 'none', 'ready', 'battery_on', 'charging', 'finish', 'fail' 상태를 가질 수 있습니다.
+- 도킹스테이션을 지원하지 않는 직결충전 모델의 경우 'none', 'ready' 값을 가지며 ready 값일때 충전중입니다.
+- emo 상태는 비상전원스위치 상태를 나타내며 비상전원스위치가 눌린경우 true, 눌리지 않은 경우 false 값을 가집니다.
+- localization 상태는 위치초기화 상태를 나타내며 초기화가 되지 않은 상태에서는 'none', 초기화가 성공적으로 되었을 경우 'good', 초기화에 실패하거나 도중에 위치를 잃어버렸을 경우 'fail' 값을 가집니다.
+- power 상태는 로봇 전원 상태를 나타내며 전원이 인가되는 상태인 경우 true, 전원이 인가되지 않은 상태인 경우 false 값을 가집니다.
+- sss_recovery 상태는 안전장치 상태를 나타내며 안전장치(범퍼, EMO 등)가 모두 해제되어 로봇(AMR, Cobot)이 초기화 가능한 상태일때 true, 이미 로봇이 초기화 상태이거나 안전장치가 작동된 상태면 false 값을 가집니다.
+- sw_reset 상태는 Reset 버튼의 눌림 상태를 나타내며 눌린경우 true, 눌리지 않은 경우 false 값을 가집니다.
+- sw_stop 상태는 Stop 버튼의 눌림 상태를 나타내며 눌린경우 true, 눌리지 않은 경우 false 값을 가집니다.
+- sw_start 상태는 Start 버튼의 눌림 상태를 나타내며 눌린경우 true, 눌리지 않은 경우 false 값을 가집니다.
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| charge | string | 충전 상태 | 'none', 'ready', 'battery_on', 'charging', 'finish', 'fail' |
+| dock | boolean | 도킹 상태 | true, false |
+| emo | boolean | 비상전원스위치 상태 | true, false |
+| localization | string | 위치초기화 상태 | 'none', 'good', 'fail' |
+| power | boolean | 전원 상태 | true, false |
+| sss_recovery | boolean | 안전장치 상태 | true, false |
+| sw_reset | boolean | Reset 버튼 상태 | true, false |
+| sw_stop | boolean | Stop 버튼 상태 | true, false |
+| sw_start | boolean | Start 버튼 상태 | true, false |
+
+
+## 📌 StatusSettingDto(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| platform_name | string | 로봇 이름 | '' |
+| platform_type | string | 로봇 타입 | 'SRV', 'D400' |
+
+    `,
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -13597,6 +13731,67 @@ __decorate([
 __decorate([
     (0, common_1.Get)('moveStatus'),
     (0, swagger_1.ApiOperation)({
+        summary: 'SLAMNAV 상태 조회 (moveStatus)',
+        description: `
+가장 최신의 SLAMNAV 이동 상태를 요청합니다. 현재 상태는 현재 로봇의 이동 상태를 반환합니다.<br>
+***실제 응답형식은 아래 작성된 문서와 차이가 있을 수 있습니다.***
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| cur_node | NodeDto | 로봇의 현재 노드 | 아래 참고 |
+| goal_node | NodeDto | 로봇의 목표 노드 | 아래 참고 |
+| move_state | MoveStateDto | 로봇의 이동 상태 | 아래 참고 |
+| pose | PoseStatusDto | 로봇의 위치 상태 | 아래 참고 |
+| vel | VelocityStatusDto | 로봇의 속도 상태 | 아래 참고 |
+| time | number | 메시지 발송 시간. ms 단위 | 1764204003906 |
+
+## 📌 NodeDto(JSON)
+- 노드 정보를 나타내며 노드 ID, 노드 이름, 노드 이동 상태, 노드 X 좌표, 노드 Y 좌표, 노드 회전 각도를 가집니다.
+- 노드 이동 상태는 goal_node 에서만 사용되며 goal_node로 이동하는 중의 로봇의 상태값을 나타냅니다.
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| id | string | 노드 ID | 'node_1' |
+| name | string | 노드 이름 | 'node_1' |
+| state | string | 노드 이동 상태 | 'none', 'not_ready', 'move', 'stop', 'pause', 'error', 'vir' |
+| x | number | 노드 X 좌표 | 0.0 |
+| y | number | 노드 Y 좌표 | 0.0 |
+| rz | number | 노드 회전 각도 | 0.0 |
+
+## 📌 MoveStateDto(JSON)
+- auto_move는 현재 자율주행 이동 상태를 나타냅니다. 
+- dock_move와 jog_move는 현재 지원되지 않습니다.
+- obs는 주행 중 장애물 인식상태를 나타내며 장애물이 없을 때는 'none', 장애물이 있을 때는 'far', 'near', 'vir' 상태를 가질 수 있습니다.
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| auto_move | string | 자율주행 이동 상태 | 'stop', 'not_ready', 'move', 'pause', 'error', 'vir' |
+| dock_move | string | 도킹 이동 상태 | 'stop'|
+| jog_move | string | 조이스틱 이동 상태 | 'none' |
+| obs | string | 주행 중 장애물 상태 | 'none', 'far', 'near', 'vir' |
+| path | string | 주행 경로요청 상태 | 'none', 'req_path', 'recv_path' |
+
+## 📌 PoseStatusDto(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| x | number | 로봇 X 좌표 | 0.0 |
+| y | number | 로봇 Y 좌표 | 0.0 |
+| rz | number | 로봇 회전 각도 | 0.0 |
+
+## 📌 VelocityStatusDto(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| vx | number | 로봇 X 속도 | 0.0 |
+| vy | number | 로봇 Y 속도 | 0.0 |
+| wz | number | 로봇 회전 속도 | 0.0 |
+
+    `,
+    }),
+    (0, swagger_1.ApiOperation)({
         summary: '이동 상태 요청',
         description: '가장 최신의 SLAMNAV 이동 상태를 요청합니다. 현재 이동 상태는 현재 로봇의 이동 상태를 반환합니다.',
     }),
@@ -13604,6 +13799,30 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], SocketApiController.prototype, "getMoveStatus", null);
+__decorate([
+    (0, common_1.Get)('programStatus'),
+    (0, swagger_1.ApiOperation)({
+        summary: '프로그램 상태 조회 (programStatus)',
+        description: `
+가장 최신의 프로그램 상태를 요청합니다. 현재 상태는 현재 로봇의 프로그램 상태를 반환합니다.<br>
+***실제 응답형식은 아래 작성된 문서와 차이가 있을 수 있습니다.***
+
+## 📌 응답 바디(JSON)
+
+| 필드명 | 타입 | 설명 | 예시 |
+|-|-|-|-|
+| slam | ProgramDto | 슬램네비 연결 상태 | { connection: true } |
+| taskman | ProgramDto | 태스크매니저 연결 상태 | { connection: false } |
+| frs | ProgramDto | FRS 연결 상태 | { connection: false } |
+| exAccessory | ProgramDto | 외부 악세사리 연결 상태 | { connection: false } |
+| time | number | 메시지 발송 시간. ms 단위 | 1764204003906 |
+
+    `,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], SocketApiController.prototype, "getProgramStatus", null);
 exports.SocketApiController = SocketApiController = __decorate([
     (0, swagger_1.ApiTags)('소켓 관련 API (socket)'),
     (0, common_1.Controller)('socket'),
@@ -13642,11 +13861,20 @@ let SocketApiService = class SocketApiService {
     async getMoveStatus() {
         return this.lastMoveStatus;
     }
+    async getProgramStatus() {
+        return this.lastProgramStatus;
+    }
     async status(data) {
         this.lastStatus = data;
     }
     async moveStatus(data) {
         this.lastMoveStatus = data;
+    }
+    async exAccessoryStatus(data) {
+        this.lastExAccessoryStatus = data;
+    }
+    async programStatus(data) {
+        this.lastProgramStatus = data;
     }
 };
 exports.SocketApiService = SocketApiService;
@@ -13673,7 +13901,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
@@ -13684,6 +13912,8 @@ const websockets_1 = __webpack_require__(148);
 const movestatus_type_1 = __webpack_require__(149);
 const microservices_1 = __webpack_require__(3);
 const saveLog_service_1 = __webpack_require__(42);
+const exAccessory_dto_1 = __webpack_require__(160);
+const programStatus_dto_1 = __webpack_require__(212);
 let SocketMqttController = class SocketMqttController {
     constructor(configService, saveLogService) {
         this.configService = configService;
@@ -13691,10 +13921,16 @@ let SocketMqttController = class SocketMqttController {
         this.logger = this.saveLogService.get('gateway-api');
     }
     async handleStatus(data) {
-        return this.socketService.status(data);
+        this.socketService.status(data);
     }
     async handleMoveStatus(data) {
-        return this.socketService.moveStatus(data);
+        this.socketService.moveStatus(data);
+    }
+    async handleExAccessoryStatus(data) {
+        this.socketService.exAccessoryStatus(data);
+    }
+    async handleProgramStatus(data) {
+        this.socketService.programStatus(data);
     }
 };
 exports.SocketMqttController = SocketMqttController;
@@ -13716,6 +13952,20 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_e = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _e : Object]),
     __metadata("design:returntype", Promise)
 ], SocketMqttController.prototype, "handleMoveStatus", null);
+__decorate([
+    (0, microservices_1.EventPattern)('exAccessoryStatus'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", Promise)
+], SocketMqttController.prototype, "handleExAccessoryStatus", null);
+__decorate([
+    (0, microservices_1.EventPattern)('programStatus'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof programStatus_dto_1.ProgramStatusDto !== "undefined" && programStatus_dto_1.ProgramStatusDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", Promise)
+], SocketMqttController.prototype, "handleProgramStatus", null);
 exports.SocketMqttController = SocketMqttController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
@@ -15184,6 +15434,7 @@ let ClientSocketService = class ClientSocketService {
                 time: Date.now().toString(),
             },
         };
+        this.mqttMicroservice.emit('programStatus', statusData.data);
         this.server.to(['programStatus', 'all', 'allStatus']).emit('programStatus', statusData.data);
     }
     onApplicationShutdown() {
@@ -22576,6 +22827,74 @@ exports.CobotConnectionSchema = mongoose_1.SchemaFactory.createForClass(CobotCon
 exports.CobotConnectionSchema.set('timestamps', true);
 
 
+/***/ }),
+/* 212 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProgramStatusDto = void 0;
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+class ProgramDto {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '프로그램 연결 상태',
+        example: true,
+        required: true,
+    }),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], ProgramDto.prototype, "connection", void 0);
+class ProgramStatusDto {
+}
+exports.ProgramStatusDto = ProgramStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '슬램네비 연결 상태',
+        type: ProgramDto,
+    }),
+    __metadata("design:type", ProgramDto)
+], ProgramStatusDto.prototype, "slam", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '태스크매니저 연결 상태',
+        type: ProgramDto,
+    }),
+    __metadata("design:type", ProgramDto)
+], ProgramStatusDto.prototype, "taskman", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'FRS 연결 상태',
+        type: ProgramDto,
+    }),
+    __metadata("design:type", ProgramDto)
+], ProgramStatusDto.prototype, "frs", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '외부 악세사리 연결 상태',
+        type: ProgramDto,
+    }),
+    __metadata("design:type", ProgramDto)
+], ProgramStatusDto.prototype, "exAccessory", void 0);
+
+
+/***/ }),
+/* 213 */
+/***/ ((module) => {
+
+module.exports = require("body-parser");
+
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -22625,6 +22944,7 @@ const tcp_socket_module_1 = __webpack_require__(187);
 const cobot_socket_module_1 = __webpack_require__(196);
 const common_2 = __webpack_require__(48);
 const path_1 = __webpack_require__(20);
+const bodyParser = __webpack_require__(213);
 async function bootstrap() {
     const apiModule = await core_1.NestFactory.create(api_module_1.RRSApiModule);
     apiModule.enableCors({
@@ -22636,6 +22956,8 @@ async function bootstrap() {
     apiModule.useGlobalPipes(new common_1.ValidationPipe({ transform: true }));
     apiModule.useGlobalFilters(new grpc_to_http_filter_1.GrpcToHttpFilter());
     apiModule.useGlobalInterceptors(new api_interceptor_1.APILogInterceptor());
+    apiModule.use(bodyParser.json({ limit: '100mb' }));
+    apiModule.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
     console.log('----------------->', process.env.RELEASE_REPO_URL);
     console.log('----------------->', process.env.CONTROL_GRPC_URL);
     const swaggerConfig = new swagger_1.DocumentBuilder().setTitle('WEB RRS API').setDescription('WEB (RRS) APIs').setVersion('1.0').build();
