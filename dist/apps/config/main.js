@@ -298,33 +298,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(2);
-exports.protobufPackage = 'control';
-exports.CONTROL_PACKAGE_NAME = 'control';
+exports.protobufPackage = "control";
+exports.CONTROL_PACKAGE_NAME = "control";
 function ControlGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
-            'onOffControl',
-            'workControl',
-            'ledControl',
-            'setSafetyField',
-            'getSafetyField',
-            'exAccessoryControl',
-            'safetyIoControl',
-            'setObsBox',
-            'getObsBox',
+            "onOffControl",
+            "workControl",
+            "ledControl",
+            "setSafetyField",
+            "getSafetyField",
+            "exAccessoryControl",
+            "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
         const grpcStreamMethods = [];
         for (const method of grpcStreamMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
     };
 }
-exports.CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
+exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
 
 
 /***/ }),

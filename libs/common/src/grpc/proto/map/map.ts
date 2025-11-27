@@ -75,6 +75,8 @@ export interface ReadMapListResponse {
 
 export interface GetMapListResponse {
   list: MapInfo[];
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface GetCurrentMapResponse {
@@ -98,6 +100,8 @@ export interface GetCloudResponse {
   mapName: string;
   fileName: string;
   cloud: CloudPoint[];
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface SaveCloudRequest {
@@ -110,6 +114,8 @@ export interface SaveCloudResponse {
   mapName: string;
   fileName: string;
   cloud: CloudPoint[];
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 /** --Topology */
@@ -124,6 +130,8 @@ export interface GetTopologyResponse {
   fileName: string;
   type?: string | undefined;
   data: Node[];
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface SaveTopologyRequest {
@@ -136,6 +144,8 @@ export interface SaveTopologyResponse {
   mapName: string;
   fileName: string;
   data: Node[];
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface GetTopologyNewRequest {
@@ -164,6 +174,8 @@ export interface MappingRequest {
 export interface MappingResponse {
   command: string;
   mapName?: string | undefined;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface UploadMapRequest {
@@ -174,6 +186,8 @@ export interface UploadMapRequest {
 export interface UploadMapResponse {
   mapName: string;
   newMapName: string;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface DownloadMapRequest {
@@ -186,6 +200,8 @@ export interface DownloadMapResponse {
   fileName: string;
   newMapName: string;
   isForce: boolean;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface PublishMapRequest {
@@ -198,10 +214,14 @@ export interface PublishMapResponse {
   fileName: string;
   newMapName: string;
   isForce: boolean;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface GetMapTilesExistResponse {
   exist: boolean;
+  result?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface GetMapTileRequest {

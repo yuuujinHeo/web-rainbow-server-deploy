@@ -298,33 +298,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(2);
-exports.protobufPackage = 'control';
-exports.CONTROL_PACKAGE_NAME = 'control';
+exports.protobufPackage = "control";
+exports.CONTROL_PACKAGE_NAME = "control";
 function ControlGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
-            'onOffControl',
-            'workControl',
-            'ledControl',
-            'setSafetyField',
-            'getSafetyField',
-            'exAccessoryControl',
-            'safetyIoControl',
-            'setObsBox',
-            'getObsBox',
+            "onOffControl",
+            "workControl",
+            "ledControl",
+            "setSafetyField",
+            "getSafetyField",
+            "exAccessoryControl",
+            "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
         const grpcStreamMethods = [];
         for (const method of grpcStreamMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
     };
 }
-exports.CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
+exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
 
 
 /***/ }),
@@ -5161,6 +5161,7 @@ const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
 const move_type_1 = __webpack_require__(102);
 const util_1 = __webpack_require__(43);
+const websockets_1 = __webpack_require__(116);
 var MoveStatus;
 (function (MoveStatus) {
     MoveStatus["pending"] = "pending";
@@ -5242,6 +5243,15 @@ class MoveModel {
         else if (this.command === move_type_1.MoveCommand.moveJog) {
             if (this.vx === undefined || this.vy === undefined || this.wz === undefined) {
                 throw new rpc_code_exception_1.RpcCodeException('vel 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.vx === undefined || typeof this.vx !== 'number' || this.vx < -10 || this.vx > 10) {
+                throw new rpc_code_exception_1.RpcCodeException('vx값이 범위를 벗어납니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.vy === undefined || typeof this.vy !== 'number' || this.vy < -10 || this.vy > 10) {
+                throw new websockets_1.WsException('vy값이 범위를 벗어납니다.');
+            }
+            if (this.wz === undefined || typeof this.wz !== 'number' || this.wz < -100 || this.wz > 100) {
+                throw new websockets_1.WsException('wz값이 범위를 벗어납니다.');
             }
         }
         else if (this.command === move_type_1.MoveCommand.moveStop) {
@@ -6644,6 +6654,12 @@ __decorate([
     __metadata("design:type", Array)
 ], PaginationResponse.prototype, "list", void 0);
 
+
+/***/ }),
+/* 116 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/websockets");
 
 /***/ })
 /******/ 	]);

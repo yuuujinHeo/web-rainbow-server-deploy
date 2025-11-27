@@ -304,33 +304,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = 'control';
-exports.CONTROL_PACKAGE_NAME = 'control';
+exports.protobufPackage = "control";
+exports.CONTROL_PACKAGE_NAME = "control";
 function ControlGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
-            'onOffControl',
-            'workControl',
-            'ledControl',
-            'setSafetyField',
-            'getSafetyField',
-            'exAccessoryControl',
-            'safetyIoControl',
-            'setObsBox',
-            'getObsBox',
+            "onOffControl",
+            "workControl",
+            "ledControl",
+            "setSafetyField",
+            "getSafetyField",
+            "exAccessoryControl",
+            "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
         const grpcStreamMethods = [];
         for (const method of grpcStreamMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
     };
 }
-exports.CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
+exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
 
 
 /***/ }),
@@ -2044,7 +2044,6 @@ const util_1 = __webpack_require__(38);
 const FormData = __webpack_require__(61);
 const zip_util_1 = __webpack_require__(62);
 const axios_1 = __webpack_require__(64);
-const fs_2 = __webpack_require__(44);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const map_file_output_port_1 = __webpack_require__(65);
@@ -2128,10 +2127,6 @@ let MapService = class MapService {
             const result = await this.databaseOutput.save(command);
             command.assignId(result.id.toString());
             command.checkVariables();
-            console.log('command.path : ', command.path);
-            if (!(0, fs_1.existsSync)((0, path_1.dirname)(command.path))) {
-                await fs_2.promises.mkdir((0, path_1.dirname)(command.path), { recursive: true });
-            }
             const list = request.cloud.map((row) => row.row);
             await util_1.FileUtil.saveCSV(command.path, list.map((row) => row.map((e) => e.toString())));
             command.statusChange(map_command_domain_1.CommandStatus.success);

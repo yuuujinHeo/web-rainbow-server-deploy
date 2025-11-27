@@ -45,8 +45,6 @@ const setting_api_module_1 = __webpack_require__(93);
 const move_api_module_1 = __webpack_require__(97);
 const map_api_module_1 = __webpack_require__(106);
 const sound_api_module_1 = __webpack_require__(117);
-const log_api_module_1 = __webpack_require__(123);
-const update_api_module_1 = __webpack_require__(127);
 const cobot_api_module_1 = __webpack_require__(135);
 const tcp_api_module_1 = __webpack_require__(139);
 const socket_api_module_1 = __webpack_require__(142);
@@ -76,8 +74,6 @@ exports.RRSApiModule = RRSApiModule = __decorate([
             map_api_module_1.MapApiModule,
             cobot_api_module_1.CobotApiModule,
             sound_api_module_1.SoundApiModule,
-            log_api_module_1.LogApiModule,
-            update_api_module_1.UpdateApiModule,
             tcp_api_module_1.TcpApiModule,
             socket_api_module_1.SocketApiModule,
         ],
@@ -2921,33 +2917,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CONTROL_GRPC_SERVICE_NAME = exports.CONTROL_PACKAGE_NAME = exports.protobufPackage = void 0;
 exports.ControlGrpcServiceControllerMethods = ControlGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = 'control';
-exports.CONTROL_PACKAGE_NAME = 'control';
+exports.protobufPackage = "control";
+exports.CONTROL_PACKAGE_NAME = "control";
 function ControlGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
-            'onOffControl',
-            'workControl',
-            'ledControl',
-            'setSafetyField',
-            'getSafetyField',
-            'exAccessoryControl',
-            'safetyIoControl',
-            'setObsBox',
-            'getObsBox',
+            "onOffControl",
+            "workControl",
+            "ledControl",
+            "setSafetyField",
+            "getSafetyField",
+            "exAccessoryControl",
+            "safetyIoControl",
+            "setObsBox",
+            "getObsBox",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
         const grpcStreamMethods = [];
         for (const method of grpcStreamMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)('ControlGrpcService', method)(constructor.prototype[method], method, descriptor);
+            (0, microservices_1.GrpcStreamMethod)("ControlGrpcService", method)(constructor.prototype[method], method, descriptor);
         }
     };
 }
-exports.CONTROL_GRPC_SERVICE_NAME = 'ControlGrpcService';
+exports.CONTROL_GRPC_SERVICE_NAME = "ControlGrpcService";
 
 
 /***/ }),
@@ -4872,18 +4868,6 @@ exports.ConfigApiModule = ConfigApiModule = __decorate([
                         },
                     }),
                 },
-                {
-                    name: constant_1.CODE_SERVICE,
-                    inject: [config_1.ConfigService],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.GRPC,
-                        options: {
-                            package: common_2.CodeMicroservice.protobufPackage,
-                            protoPath: (0, path_1.join)(process.cwd(), 'proto/code.proto'),
-                            url: configService.get('CODE_GRPC_URL'),
-                        },
-                    }),
-                },
             ]),
         ],
         controllers: [config_api_controller_1.ConfigApiController],
@@ -5119,7 +5103,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigApiService = void 0;
 const common_1 = __webpack_require__(5);
@@ -5128,15 +5112,13 @@ const rxjs_1 = __webpack_require__(41);
 const constant_1 = __webpack_require__(34);
 const saveLog_service_1 = __webpack_require__(42);
 let ConfigApiService = class ConfigApiService {
-    constructor(configMicroservice, codeMicroservice, saveLogService) {
+    constructor(configMicroservice, saveLogService) {
         this.configMicroservice = configMicroservice;
-        this.codeMicroservice = codeMicroservice;
         this.saveLogService = saveLogService;
         this.logger = this.saveLogService.get('gateway-api');
     }
     async onModuleInit() {
         this.configService = this.configMicroservice.getService('ConfigGrpcService');
-        this.codeService = this.codeMicroservice.getService('CodeGrpcService');
     }
     async getConfig(request) {
         return await (0, rxjs_1.lastValueFrom)(this.configService.getConfig(request));
@@ -5176,8 +5158,7 @@ exports.ConfigApiService = ConfigApiService;
 exports.ConfigApiService = ConfigApiService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
-    __param(1, (0, common_1.Inject)(constant_1.CODE_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], ConfigApiService);
 
 
@@ -9807,8 +9788,31 @@ __decorate([
 __decorate([
     (0, common_1.Get)('Play'),
     (0, swagger_1.ApiOperation)({
-        summary: '상태 요청',
-        description: '현재 사운드 플레이 상태를 요청합니다. 플레이 중이 아니면 result 값이 idle 이며 플레이 중일때는 working으로 바뀝니다. 플레이 중일때는 현재 플레이중인 fileName, volume 등이 포함됩니다.',
+        summary: '사운드 플레이 상태 요청',
+        description: `
+사운드 플레이 상태를 요청합니다. 사운드 기능은 지원하는 모델에만 작동합니다.<br>
+지원하는 모델인데 플레이가 안될 시, mplayer 설치 여부를 확인한 후, 서버를 재가동해주세요.
+
+## 📌 기능 설명
+- 사운드 플레이 상태를 요청합니다.
+- 플레이 중이 아니면 result 값이 idle 이며 플레이 중일때는 working으로 바뀝니다. 
+- 플레이 중일때는 현재 플레이중인 fileName, volume 등이 포함됩니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| fileName | string | 플레이 중인 파일명 | 'test.mp3' |
+| volume | number | 플레이 볼륨 [%] | 50 |
+| repeatCount | number | 플레이 반복 횟수 | 1 |
+| isWaitUntilDone | boolean | 플레이 완료 대기 여부 | true |
+ 
+## ⚠️ 에러 케이스
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 사운드 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '사운드 플레이 상태 요청 성공',
@@ -9826,6 +9830,35 @@ __decorate([
 ], SoundApiController.prototype, "getPlayingStatus", null);
 __decorate([
     (0, common_1.Post)('play'),
+    (0, swagger_1.ApiOperation)({
+        summary: '사운드 플레이 요청',
+        description: `
+사운드 플레이를 요청합니다. 사운드 기능은 지원하는 모델에만 작동합니다.<br>
+지원하는 모델인데 플레이가 안될 시, mplayer 설치 여부를 확인한 후, 서버를 재가동해주세요.
+
+## 📌 기능 설명
+- 사운드 플레이를 요청합니다.
+- 플레이 중이 아니면 result 값이 idle 이며 플레이 중일때는 working으로 바뀝니다. 
+- 플레이 중일때는 현재 플레이중인 fileName, volume 등이 포함됩니다.
+
+## 📌 요청 바디(JSON)
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| fileName | string | 플레이 중인 파일명 | 'test.mp3' |
+| volume | number | 플레이 볼륨 [%] | 50 |
+| repeatCount | number | 플레이 반복 횟수 | 1 |
+| isWaitUntilDone | boolean | 플레이 완료 대기 여부 | true |
+ 
+## ⚠️ 에러 케이스
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 사운드 서비스와 연결되지 않았을 때
+    `,
+    }),
     (0, swagger_1.ApiOperation)({
         summary: '사운드 플레이',
         description: 'mp3 파일을 플레이 합니다. 파일의 경로는 실행경로의 sound 폴더 내부입니다.',
@@ -10111,1578 +10144,17 @@ __decorate([
 
 
 /***/ }),
-/* 123 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogApiModule = void 0;
-const common_1 = __webpack_require__(5);
-const log_api_service_1 = __webpack_require__(124);
-const log_api_controller_1 = __webpack_require__(125);
-const microservices_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(20);
-const config_1 = __webpack_require__(47);
-const constant_1 = __webpack_require__(34);
-const log_module_1 = __webpack_require__(74);
-let LogApiModule = class LogApiModule {
-};
-exports.LogApiModule = LogApiModule;
-exports.LogApiModule = LogApiModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            log_module_1.LogModule,
-            microservices_1.ClientsModule.registerAsync([
-                {
-                    name: constant_1.SEMLOG_SERVICE,
-                    inject: [config_1.ConfigService],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.GRPC,
-                        options: {
-                            package: 'log',
-                            protoPath: (0, path_1.join)(process.cwd(), 'proto', 'log.proto'),
-                            url: configService.get('LOG_URL'),
-                        },
-                    }),
-                },
-            ]),
-        ],
-        controllers: [log_api_controller_1.LogApiController],
-        providers: [log_api_service_1.LogApiService],
-        exports: [],
-    })
-], LogApiModule);
-
-
-/***/ }),
-/* 124 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogApiService = void 0;
-const constant_1 = __webpack_require__(34);
-const saveLog_service_1 = __webpack_require__(42);
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(41);
-let LogApiService = class LogApiService {
-    constructor(logMicroservice, saveLogService) {
-        this.logMicroservice = logMicroservice;
-        this.saveLogService = saveLogService;
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    onModuleInit() {
-        this.logService = this.logMicroservice.getService('SEMLogGrpcService');
-    }
-    async getAlarmDefinedList(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmDefine(dto));
-    }
-    async postAlarmDefine(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.postSemAlarmDefine(dto));
-    }
-    async deleteAlarmDefine(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmDefine(dto));
-    }
-    async deleteAlarmDefineAll() {
-        await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmDefineAll({}));
-        return;
-    }
-    async getActiveAlarmList() {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmActive({}));
-    }
-    async postActiveAlarm(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.semAlarm(dto));
-    }
-    async deleteActiveAlarm(dto) {
-        const resp = await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarm(dto));
-        return;
-    }
-    async deleteActiveAlarmAll() {
-        await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmAll({}));
-        return;
-    }
-    async getAlarmLogList(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmLog(dto));
-    }
-    async postAlarmLog(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.postSemAlarmLog(dto));
-    }
-    async deleteAlarmLog(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmLog(dto));
-    }
-};
-exports.LogApiService = LogApiService;
-exports.LogApiService = LogApiService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constant_1.SEMLOG_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], LogApiService);
-
-
-/***/ }),
-/* 125 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogApiController = void 0;
-const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(8);
-const log_api_service_1 = __webpack_require__(124);
-const semlog_dto_1 = __webpack_require__(126);
-const search_request_1 = __webpack_require__(102);
-const saveLog_service_1 = __webpack_require__(42);
-let LogApiController = class LogApiController {
-    constructor(logService, saveLogService) {
-        this.logService = logService;
-        this.saveLogService = saveLogService;
-        this.logger = this.saveLogService.get('log');
-    }
-    async getAlarmList(dto) {
-        return this.logService.getAlarmDefinedList(dto);
-    }
-    async postAlarmDefine(dto) {
-        console.log('postAlarmDefine', dto);
-        return this.logService.postAlarmDefine(dto);
-    }
-    async deleteAlarmDefine(dto) {
-        return this.logService.deleteAlarmDefine(dto);
-    }
-    async deleteAlarmDefineAll() {
-        return this.logService.deleteAlarmDefineAll();
-    }
-    async getActiveAlarmList() {
-        return this.logService.getActiveAlarmList();
-    }
-    async postActiveAlarm(dto) {
-        return this.logService.postActiveAlarm(dto);
-    }
-    async deleteActiveAlarm(dto) {
-        return this.logService.deleteActiveAlarm(dto);
-    }
-    async deleteActiveAlarmAll() {
-        return this.logService.deleteActiveAlarmAll();
-    }
-    async getAlarmLogList(dto) {
-        return this.logService.getAlarmLogList(dto);
-    }
-    async postAlarmLog(dto) {
-        return this.logService.postAlarmLog(dto);
-    }
-    async deleteAlarmLog(dto) {
-        return this.logService.deleteAlarmLog(dto);
-    }
-};
-exports.LogApiController = LogApiController;
-__decorate([
-    (0, common_1.Get)('sem/alarm-define'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 리스트 요청',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람 리스트를 요청합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 리스트 요청 성공',
-        type: semlog_dto_1.SEMAlarmListResponseDto,
-        example: {
-            list: [
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                },
-            ],
-            totalCount: 1,
-            pageSize: 10,
-            totalPage: 1,
-        },
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], LogApiController.prototype, "getAlarmList", null);
-__decorate([
-    (0, common_1.Post)('sem/alarm-define'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 추가(테스트)',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 추가합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 추가 요청 성공',
-        type: semlog_dto_1.SEMAlarm,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof semlog_dto_1.SEMAlarm !== "undefined" && semlog_dto_1.SEMAlarm) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], LogApiController.prototype, "postAlarmDefine", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-define'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 삭제',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 삭제 요청 성공',
-        type: semlog_dto_1.SEMAlarm,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof semlog_dto_1.DeleteAlarmDefineRequestDto !== "undefined" && semlog_dto_1.DeleteAlarmDefineRequestDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
-], LogApiController.prototype, "deleteAlarmDefine", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-define/all'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 전부 삭제',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 전부 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 전부 삭제 요청 성공',
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
-], LogApiController.prototype, "deleteAlarmDefineAll", null);
-__decorate([
-    (0, common_1.Get)('sem/alarm-active'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 리스트 요청',
-        description: 'SEM프로젝트 전용. 활성화된 알람 리스트를 요청합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 리스트 요청 성공',
-        type: semlog_dto_1.SEMAlarmActiveResponseDto,
-        example: {
-            list: [
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                },
-            ],
-        },
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
-], LogApiController.prototype, "getActiveAlarmList", null);
-__decorate([
-    (0, common_1.Post)('sem/alarm-active'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 추가',
-        description: 'SEM프로젝트 전용. 활성화된 알람을 추가합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 추가 성공',
-        type: semlog_dto_1.SEMAlarm,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof semlog_dto_1.PostSEMAlarmRequestDto !== "undefined" && semlog_dto_1.PostSEMAlarmRequestDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
-], LogApiController.prototype, "postActiveAlarm", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-active'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 삭제',
-        description: 'SEM프로젝트 전용. 활성화된 알람을 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 삭제 성공',
-        example: {},
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
-], LogApiController.prototype, "deleteActiveAlarm", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-active/all'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 전부 삭제',
-        description: 'SEM프로젝트 전용. 활성화된 알람을 전부 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 전부 삭제 성공',
-        example: {},
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
-], LogApiController.prototype, "deleteActiveAlarmAll", null);
-__decorate([
-    (0, common_1.Get)('sem/alarm'),
-    (0, swagger_1.ApiOperation)({
-        summary: '알람 로그 리스트 요청',
-        description: 'SEM프로젝트 전용. 알람 로그 리스트를 요청합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 로그 리스트 요청 성공',
-        type: semlog_dto_1.SEMAlarmLogResponseDto,
-        example: {
-            list: [
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                    state: 'START',
-                    createAt: '2025-01-01 00:00:00',
-                },
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                    state: 'END',
-                    createAt: '2025-01-01 00:00:10',
-                },
-            ],
-            totalCount: 1,
-            pageSize: 10,
-            totalPage: 1,
-        },
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _r : Object]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
-], LogApiController.prototype, "getAlarmLogList", null);
-__decorate([
-    (0, common_1.Post)('sem/alarm'),
-    (0, swagger_1.ApiOperation)({
-        summary: '알람 로그 저장',
-        description: 'SEM프로젝트 전용. 알람 로그를 저장합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 로그 저장 성공',
-        type: semlog_dto_1.SaveSEMAlarmLogResponseDto,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof semlog_dto_1.SaveSEMAlarmLogRequestDto !== "undefined" && semlog_dto_1.SaveSEMAlarmLogRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
-], LogApiController.prototype, "postAlarmLog", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm'),
-    (0, swagger_1.ApiOperation)({
-        summary: '알람 로그 삭제',
-        description: 'SEM프로젝트 전용. 알람 로그를 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 로그 삭제 성공',
-        example: {},
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _v : Object]),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
-], LogApiController.prototype, "deleteAlarmLog", null);
-exports.LogApiController = LogApiController = __decorate([
-    (0, swagger_1.ApiTags)('로그 API'),
-    (0, common_1.Controller)('log'),
-    __metadata("design:paramtypes", [typeof (_a = typeof log_api_service_1.LogApiService !== "undefined" && log_api_service_1.LogApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], LogApiController);
-
-
-/***/ }),
-/* 126 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SEMGeneralLogRequestDto = exports.SaveSEMAlarmLogResponseDto = exports.SaveSEMAlarmLogRequestDto = exports.DeleteSEMAlarmRequestDto = exports.SEMAlarmActiveResponseDto = exports.SEMAlarmLogResponseDto = exports.SEMAlarmLogListRequestDto = exports.PostSEMAlarmRequestDto = exports.DeleteAlarmDefineRequestDto = exports.SEMAlarmListResponseDto = exports.SEMAlamrListRequestDto = exports.SEMAlarmLog = exports.SEMAlarm = exports.SEMAlarmActive = void 0;
-const pagination_1 = __webpack_require__(104);
-const swagger_1 = __webpack_require__(8);
-const class_validator_1 = __webpack_require__(11);
-const class_validator_2 = __webpack_require__(11);
-const class_transformer_1 = __webpack_require__(10);
-var Description;
-(function (Description) {
-    Description["ALARM_CODE"] = "\uC54C\uB78C \uCF54\uB4DC";
-    Description["ALARM_DETAIL"] = "\uC54C\uB78C \uC0C1\uC138";
-    Description["OPERATION_NAME"] = "\uC791\uC5C5 \uC774\uB984";
-    Description["DESCRIPTION"] = "\uC124\uBA85";
-    Description["LIST"] = "\uC54C\uB78C \uB9AC\uC2A4\uD2B8";
-    Description["ALARM_STATE"] = "\uC54C\uB78C \uC0C1\uD0DC. \uB2E8\uBC1C\uC801\uC778 \uC54C\uB78C\uC758 \uACBD\uC6B0 SET \uAC12\uC744, \uC54C\uB78C \uBC1C\uC0DD/\uD574\uC81C\uAC00 \uC874\uC7AC\uD558\uB294 \uACBD\uC6B0 START/END \uAC12\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694.";
-    Description["ALARM_TIME"] = "\uC54C\uB78C \uBC1C\uC0DD \uC2DC\uAC04";
-    Description["DATE_FROM"] = "\uC54C\uB78C \uC2DC\uC791 \uB0A0\uC9DC. \uD615\uC2DD\uC740 yyyy-mm-dd hh:mm:ss\uD615\uC2DD\uC73C\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694.";
-    Description["DATE_TO"] = "\uC54C\uB78C \uC885\uB8CC \uB0A0\uC9DC. \uD615\uC2DD\uC740 yyyy-mm-dd hh:mm:ss\uD615\uC2DD\uC73C\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694.";
-})(Description || (Description = {}));
-class SEMAlarmActive {
-}
-exports.SEMAlarmActive = SEMAlarmActive;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], SEMAlarmActive.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'SET',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMAlarmActive.prototype, "state", void 0);
-class SEMAlarm {
-}
-exports.SEMAlarm = SEMAlarm;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], SEMAlarm.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_DETAIL,
-        example: '',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], SEMAlarm.prototype, "detail", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.OPERATION_NAME,
-        example: 'PROGRAM_START_FAIL',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMAlarm.prototype, "operationName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.DESCRIPTION,
-        example: '프로그램 시작을 실패했습니다.',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], SEMAlarm.prototype, "description", void 0);
-class SEMAlarmLog extends SEMAlarm {
-}
-exports.SEMAlarmLog = SEMAlarmLog;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'SET',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SEMAlarmLog.prototype, "state", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_TIME,
-        example: '2021-01-01 00:00:00',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMAlarmLog.prototype, "createAt", void 0);
-class SEMAlamrListRequestDto extends pagination_1.PaginationRequest {
-}
-exports.SEMAlamrListRequestDto = SEMAlamrListRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], SEMAlamrListRequestDto.prototype, "code", void 0);
-class SEMAlarmListResponseDto extends pagination_1.PaginationResponse {
-}
-exports.SEMAlarmListResponseDto = SEMAlarmListResponseDto;
-class DeleteAlarmDefineRequestDto {
-}
-exports.DeleteAlarmDefineRequestDto = DeleteAlarmDefineRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], DeleteAlarmDefineRequestDto.prototype, "code", void 0);
-class PostSEMAlarmRequestDto {
-}
-exports.PostSEMAlarmRequestDto = PostSEMAlarmRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PostSEMAlarmRequestDto.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'START',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], PostSEMAlarmRequestDto.prototype, "state", void 0);
-class SEMAlarmLogListRequestDto extends pagination_1.PaginationRequest {
-}
-exports.SEMAlarmLogListRequestDto = SEMAlarmLogListRequestDto;
-class SEMAlarmLogResponseDto extends pagination_1.PaginationResponse {
-}
-exports.SEMAlarmLogResponseDto = SEMAlarmLogResponseDto;
-class SEMAlarmActiveResponseDto {
-}
-exports.SEMAlarmActiveResponseDto = SEMAlarmActiveResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.LIST,
-        example: [
-            {
-                code: '2000',
-                state: 'START',
-            },
-        ],
-        required: true,
-    }),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], SEMAlarmActiveResponseDto.prototype, "list", void 0);
-class DeleteSEMAlarmRequestDto {
-}
-exports.DeleteSEMAlarmRequestDto = DeleteSEMAlarmRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], DeleteSEMAlarmRequestDto.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.DATE_FROM,
-        example: '2025-01-01 00:00:00',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], DeleteSEMAlarmRequestDto.prototype, "dateFrom", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.DATE_TO,
-        example: '2025-12-31 23:59:59',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], DeleteSEMAlarmRequestDto.prototype, "dateTo", void 0);
-class SaveSEMAlarmLogRequestDto {
-}
-exports.SaveSEMAlarmLogRequestDto = SaveSEMAlarmLogRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], SaveSEMAlarmLogRequestDto.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'SET',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SaveSEMAlarmLogRequestDto.prototype, "state", void 0);
-class SaveSEMAlarmLogResponseDto extends SaveSEMAlarmLogRequestDto {
-}
-exports.SaveSEMAlarmLogResponseDto = SaveSEMAlarmLogResponseDto;
-class SEMGeneralLogRequestDto {
-}
-exports.SEMGeneralLogRequestDto = SEMGeneralLogRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '일반LOG를 읽어올 시작 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
-        example: '2025-01-01 00:00:00',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMGeneralLogRequestDto.prototype, "dateTo", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '일반LOG를 읽어올 종료 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
-        example: '2025-12-31 23:59:59',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMGeneralLogRequestDto.prototype, "dateFrom", void 0);
-
-
-/***/ }),
-/* 127 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateApiModule = void 0;
-const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(128);
-const update_api_controller_1 = __webpack_require__(131);
-const config_1 = __webpack_require__(47);
-const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(48);
-const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(34);
-const log_module_1 = __webpack_require__(74);
-let UpdateApiModule = class UpdateApiModule {
-};
-exports.UpdateApiModule = UpdateApiModule;
-exports.UpdateApiModule = UpdateApiModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '.env',
-            }),
-            microservices_1.ClientsModule.registerAsync([
-                {
-                    name: constant_1.UPDATE_SERVICE,
-                    inject: [config_1.ConfigService],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.GRPC,
-                        options: {
-                            package: common_2.UpdateMicroservice.protobufPackage,
-                            protoPath: (0, path_1.join)(process.cwd(), 'proto/update.proto'),
-                            url: configService.get('UPDATE_GRPC_URL'),
-                        },
-                    }),
-                },
-            ]),
-            log_module_1.LogModule,
-        ],
-        controllers: [update_api_controller_1.UpdateApiController],
-        providers: [update_api_service_1.UpdateApiService],
-    })
-], UpdateApiModule);
-
-
-/***/ }),
-/* 128 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateApiService = void 0;
-const common_1 = __webpack_require__(5);
-const path = __webpack_require__(20);
-const os_1 = __webpack_require__(129);
-const fs = __webpack_require__(19);
-const child_process_1 = __webpack_require__(130);
-const config_1 = __webpack_require__(47);
-const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(34);
-const rxjs_1 = __webpack_require__(41);
-const saveLog_service_1 = __webpack_require__(42);
-let UpdateApiService = class UpdateApiService {
-    constructor(configService, saveLogService, updateMicroservice) {
-        this.configService = configService;
-        this.saveLogService = saveLogService;
-        this.updateMicroservice = updateMicroservice;
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    onModuleInit() {
-        console.log(this.configService.get('RELEASE_REPO_URL'));
-        this.updateService = this.updateMicroservice.getService('UpdateGrpcService');
-    }
-    async pingSendToTarget(target) {
-        const data = await (0, rxjs_1.lastValueFrom)(this.updateService.testPing({ target }));
-        console.log(data);
-        return data;
-    }
-    async getNewVersion(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getNewVersion(dto));
-    }
-    async getCurrentVersion(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getCurrentVersion(dto));
-    }
-    async getReleaseAppsBranches(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getReleaseBranch({ token: dto.token, pageNo: dto.pageNo, pageSize: dto.pageSize }));
-    }
-    async getReleaseAppsVersionList(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getReleaseVersion({ software: dto.software, token: dto.token, branch: dto.branch }));
-    }
-    async updateSoftware(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.updateProgram(dto));
-    }
-    rrsUpdate({ branch, version } = {}) {
-        const updateScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/rrs-server`, 'rrs-update.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(updateScript)) {
-            this.logger?.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/rrs-server/rrs-update.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        (0, child_process_1.execSync)('git pull', {
-            cwd: rainbowDeployKitDir,
-            stdio: 'pipe',
-        });
-        (0, child_process_1.exec)(`nohup bash ${updateScript} --mode=${branch || 'main'} --version=${version} > /tmp/rrs-update.log 2>&1 &`);
-        return { applyReqUpdate: true, version: version || '', rejectReason: '' };
-    }
-    otherSwUpdate({ branch, version } = {}) {
-        return new Promise((resolve, reject) => {
-            reject(new common_1.GatewayTimeoutException('프로그램이 연결되지 않았습니다'));
-        });
-    }
-    async webUIAppAdd({ appNames, branch, fo }) {
-        const appAddScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-add-app.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(appAddScript)) {
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/web-ui/fe-add-app.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        try {
-            (0, child_process_1.execSync)('git pull', {
-                cwd: rainbowDeployKitDir,
-                stdio: 'pipe',
-            });
-            (0, child_process_1.execSync)(`bash ${appAddScript}${branch ? ` --mode=${branch}` : ''}${fo ? ` --fo=${fo}` : ''} ${appNames.join(' ')}`);
-            return { appNames, branch, fo };
-        }
-        catch (error) {
-            throw new common_1.BadRequestException({
-                message: error.message,
-            });
-        }
-    }
-    async webUIAppDelete({ appNames }) {
-        const appDeleteScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-delete-app.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(appDeleteScript)) {
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/web-ui/fe-delete-app.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        try {
-            (0, child_process_1.execSync)('git pull', {
-                cwd: rainbowDeployKitDir,
-                stdio: 'pipe',
-            });
-            (0, child_process_1.execSync)(`bash ${appDeleteScript} ${appNames.join(' ')}`);
-            return { appNames };
-        }
-        catch (error) {
-            throw new common_1.BadRequestException({
-                message: error.message,
-            });
-        }
-    }
-};
-exports.UpdateApiService = UpdateApiService;
-exports.UpdateApiService = UpdateApiService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(2, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object])
-], UpdateApiService);
-
-
-/***/ }),
-/* 129 */
-/***/ ((module) => {
-
-module.exports = require("os");
-
-/***/ }),
-/* 130 */
-/***/ ((module) => {
-
-module.exports = require("child_process");
-
-/***/ }),
-/* 131 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateApiController = void 0;
-const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(128);
-const swagger_1 = __webpack_require__(8);
-const update_dto_1 = __webpack_require__(132);
-const etc_dto_1 = __webpack_require__(133);
-const version_dto_1 = __webpack_require__(134);
-const pagination_response_1 = __webpack_require__(105);
-const version_dto_2 = __webpack_require__(134);
-const saveLog_service_1 = __webpack_require__(42);
-let UpdateApiController = class UpdateApiController {
-    constructor(updateService, saveLogService) {
-        this.updateService = updateService;
-        this.saveLogService = saveLogService;
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    pingSendToTarget({ target }) {
-        return this.updateService.pingSendToTarget(target);
-    }
-    getNewVersion(dto) {
-        return this.updateService.getNewVersion(dto);
-    }
-    getCurrentVersion(dto) {
-        return this.updateService.getCurrentVersion(dto);
-    }
-    getReleaseAppsBranches(params) {
-        return this.updateService.getReleaseAppsBranches(params);
-    }
-    getReleaseAppsVersionList(dto) {
-        return this.updateService.getReleaseAppsVersionList(dto);
-    }
-    webUIAppAdd(webUIAppAddDto) {
-        return this.updateService.webUIAppAdd(webUIAppAddDto);
-    }
-    updateSoftware(reqUpdateSoftwareDto) {
-        return this.updateService.updateSoftware(reqUpdateSoftwareDto);
-    }
-    webUIAppDelete(webUIAppDeleteDto) {
-        return this.updateService.webUIAppDelete(webUIAppDeleteDto);
-    }
-};
-exports.UpdateApiController = UpdateApiController;
-__decorate([
-    (0, common_1.Get)('ping'),
-    (0, swagger_1.ApiOperation)({
-        summary: '핑 테스트',
-        description: '핑 테스트를 요청합니다. 타겟 호스트에 ping을 1회 전송합니다. ',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '핑 테스트 성공',
-        type: etc_dto_1.PingSendToTargetResponseDto,
-    }),
-    (0, swagger_1.ApiBadGatewayResponse)({
-        description: '외부망에 접근할 수 없습니다.',
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof etc_dto_1.PingSendToTargetDto !== "undefined" && etc_dto_1.PingSendToTargetDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], UpdateApiController.prototype, "pingSendToTarget", null);
-__decorate([
-    (0, common_1.Get)('new-version'),
-    (0, swagger_1.ApiOperation)({
-        summary: '소프트웨어 새로운 버전 조회',
-        description: '소프트웨어 새로운 버전을 조회합니다. 위부망 접속이 안될 환경시 400 에러가 발생합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '소프트웨어 새로운 버전 조회 성공',
-        type: version_dto_1.GetNewVersionResponseDto,
-    }),
-    (0, swagger_1.ApiNotFoundResponse)({
-        description: '입력한 소프트웨어 또는 브랜치가 존재하지 않습니다.',
-    }),
-    (0, swagger_1.ApiBadGatewayResponse)({
-        description: '외부망에 접근할 수 없습니다.',
-    }),
-    (0, swagger_1.ApiBadRequestResponse)({
-        description: '소프트웨어 또는 브랜치 값이 입력되지 않았습니다.',
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof version_dto_2.GetNewVersionRequestDto !== "undefined" && version_dto_2.GetNewVersionRequestDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], UpdateApiController.prototype, "getNewVersion", null);
-__decorate([
-    (0, common_1.Get)('current-version'),
-    (0, swagger_1.ApiOperation)({
-        summary: '소프트웨어 현재 버전 조회',
-        description: '소프트웨어 현재 버전을 조회합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '소프트웨어 현재 버전 조회 성공',
-        type: version_dto_1.GetCurrentVersionResponseDto,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof version_dto_1.GetCurrentVersionRequestDto !== "undefined" && version_dto_1.GetCurrentVersionRequestDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
-], UpdateApiController.prototype, "getCurrentVersion", null);
-__decorate([
-    (0, common_1.Get)('release-apps/branches'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'rainbow-release-apps 레포지토리의 브랜치 조회',
-        description: 'rainbow-release-apps 레포지토리의 브랜치를 조회합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: 'rainbow-release-apps 레포지토리의 브랜치 조회 성공',
-        type: (pagination_response_1.PaginationResponse),
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof update_dto_1.GetReleaseAppsBranchesRequestDto !== "undefined" && update_dto_1.GetReleaseAppsBranchesRequestDto) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
-], UpdateApiController.prototype, "getReleaseAppsBranches", null);
-__decorate([
-    (0, common_1.Get)('release-apps/version-list'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'rainbow-release-apps 레포지토리의 버전 조회',
-        description: 'rainbow-release-apps 레포지토리의 버전을 조회합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'rainbow-release-apps 레포지토리의 버전 조회 성공',
-        type: [update_dto_1.ResponseReleaseVersionInfoDto],
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof update_dto_1.GetReleaseAppsVersionListRequestDto !== "undefined" && update_dto_1.GetReleaseAppsVersionListRequestDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", void 0)
-], UpdateApiController.prototype, "getReleaseAppsVersionList", null);
-__decorate([
-    (0, common_1.Post)('web-ui/app/add'),
-    (0, swagger_1.ApiOperation)({
-        summary: '웹 UI 앱 추가',
-        description: '웹 UI 앱을 추가합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '웹 UI 앱 추가 성공',
-        type: update_dto_1.ResponseWebUIAppAddDto,
-    }),
-    (0, swagger_1.ApiBadRequestResponse)({
-        description: '웹 UI 앱 추가 실패',
-    }),
-    (0, swagger_1.ApiNotFoundResponse)({
-        description: '웹 UI 앱 추가 스크립트 파일을 찾을 수 없습니다.',
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof update_dto_1.WebUIAppAddDto !== "undefined" && update_dto_1.WebUIAppAddDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
-], UpdateApiController.prototype, "webUIAppAdd", null);
-__decorate([
-    (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({
-        summary: '소프트웨어 업데이트',
-        description: '소프트웨어 업데이트를 요청합니다.',
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof update_dto_1.UpdateRequestDto !== "undefined" && update_dto_1.UpdateRequestDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", void 0)
-], UpdateApiController.prototype, "updateSoftware", null);
-__decorate([
-    (0, common_1.Delete)('web-ui/app/delete'),
-    (0, swagger_1.ApiOperation)({
-        summary: '웹 UI 앱 삭제',
-        description: '웹 UI 앱을 삭제합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '웹 UI 앱 삭제 성공',
-        type: update_dto_1.ResponseWebUIAppDeleteDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '웹 UI 앱 삭제 실패',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 404,
-        description: '웹 UI 앱 삭제 스크립트 파일을 찾을 수 없습니다.',
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof update_dto_1.WebUIAppDeleteDto !== "undefined" && update_dto_1.WebUIAppDeleteDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", void 0)
-], UpdateApiController.prototype, "webUIAppDelete", null);
-exports.UpdateApiController = UpdateApiController = __decorate([
-    (0, swagger_1.ApiTags)('업데이트 관련 API (update)'),
-    (0, common_1.Controller)('update'),
-    __metadata("design:paramtypes", [typeof (_a = typeof update_api_service_1.UpdateApiService !== "undefined" && update_api_service_1.UpdateApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], UpdateApiController);
-
-
-/***/ }),
-/* 132 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ResponseWebUIAppDeleteDto = exports.ResponseWebUIAppAddDto = exports.WebUIAppDeleteDto = exports.WebUIAppAddDto = exports.UpdateResponseSocketDto = exports.UpdateRequestSocketDto = exports.UpdateRequestDto = exports.ResponseReleaseVersionInfoDto = exports.GetReleaseAppsVersionListRequestDto = exports.GetReleaseAppBranchesResponseDto = exports.ResponseReleaseAppsBranches = exports.GetReleaseAppsBranchesRequestDto = exports.CommitDto = exports.GetSoftwareParamDto = void 0;
-const pagination_1 = __webpack_require__(104);
-const util_1 = __webpack_require__(13);
-const swagger_1 = __webpack_require__(8);
-const class_validator_1 = __webpack_require__(11);
-var Description;
-(function (Description) {
-    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
-    Description["BRANCH"] = "\uBE0C\uB79C\uCE58 \uC774\uB984";
-    Description["TOKEN"] = "\uC554\uD638\uD654\uB41C token";
-    Description["ID"] = "\uC694\uCCAD\uC5D0 \uB300\uD55C ID \uAC12. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uC751\uB2F5\uC5D0 \uB3D9\uC77C\uD55C ID \uAC12 \uBC18\uD658 \uD544\uC694.";
-    Description["VERSION"] = "version \uC815\uBCF4";
-    Description["RESULT"] = "\uC5C5\uB370\uC774\uD2B8 \uACB0\uACFC";
-    Description["MESSAGE"] = "\uC5C5\uB370\uC774\uD2B8 \uBA54\uC2DC\uC9C0";
-})(Description || (Description = {}));
-class GetSoftwareParamDto {
-}
-exports.GetSoftwareParamDto = GetSoftwareParamDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        description: '소프트웨어 종류 (예: rrs, slamnav2)',
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], GetSoftwareParamDto.prototype, "software", void 0);
-class CommitDto {
-}
-exports.CommitDto = CommitDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit sha',
-        example: 'ae601391564b381ee8d2271e9b4b79a632894016',
-    }),
-    __metadata("design:type", String)
-], CommitDto.prototype, "sha", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit url',
-        example: 'https://github.com/rainbow-mobile/rainbow-release-apps/commit/ae601391564b381ee8d2271e9b4b79a632894016',
-    }),
-    __metadata("design:type", String)
-], CommitDto.prototype, "url", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit name',
-    }),
-    __metadata("design:type", String)
-], CommitDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit protected',
-    }),
-    __metadata("design:type", Boolean)
-], CommitDto.prototype, "protected", void 0);
-class GetReleaseAppsBranchesRequestDto extends pagination_1.PaginationRequest {
-}
-exports.GetReleaseAppsBranchesRequestDto = GetReleaseAppsBranchesRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.TOKEN,
-        default: '3bJyXEJA/FvAYWnbAIsj6T96+217WeqR4HpdmuNTGcG/dzYaOLjjWkz3bjR1NGYQqj8nMS8A6N91bnaCTveF0Q==',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsBranchesRequestDto.prototype, "token", void 0);
-class ResponseReleaseAppsBranches {
-}
-exports.ResponseReleaseAppsBranches = ResponseReleaseAppsBranches;
-__decorate([
-    (0, class_validator_1.IsObject)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit',
-        type: CommitDto,
-    }),
-    __metadata("design:type", CommitDto)
-], ResponseReleaseAppsBranches.prototype, "commit", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseAppsBranches.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-    }),
-    __metadata("design:type", Boolean)
-], ResponseReleaseAppsBranches.prototype, "protected", void 0);
-class GetReleaseAppBranchesResponseDto extends pagination_1.PaginationResponse {
-}
-exports.GetReleaseAppBranchesResponseDto = GetReleaseAppBranchesResponseDto;
-class GetReleaseAppsVersionListRequestDto {
-}
-exports.GetReleaseAppsVersionListRequestDto = GetReleaseAppsVersionListRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.TOKEN,
-        default: '3bJyXEJA/FvAYWnbAIsj6T96+217WeqR4HpdmuNTGcG/dzYaOLjjWkz3bjR1NGYQqj8nMS8A6N91bnaCTveF0Q==',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsVersionListRequestDto.prototype, "token", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-        example: 'main',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsVersionListRequestDto.prototype, "branch", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.SOFTWARE,
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsVersionListRequestDto.prototype, "software", void 0);
-class ResponseReleaseVersionInfoDto {
-}
-exports.ResponseReleaseVersionInfoDto = ResponseReleaseVersionInfoDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version path',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "path", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version sha',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "sha", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version size',
-    }),
-    __metadata("design:type", Number)
-], ResponseReleaseVersionInfoDto.prototype, "size", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version url',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "url", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version download url',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "download_url", void 0);
-__decorate([
-    (0, class_validator_1.IsObject)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version links',
-    }),
-    __metadata("design:type", Object)
-], ResponseReleaseVersionInfoDto.prototype, "_links", void 0);
-class UpdateRequestDto {
-}
-exports.UpdateRequestDto = UpdateRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.SOFTWARE,
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], UpdateRequestDto.prototype, "software", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-        example: 'main',
-    }),
-    __metadata("design:type", String)
-], UpdateRequestDto.prototype, "branch", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.VERSION,
-        example: '1.0.0',
-    }),
-    __metadata("design:type", String)
-], UpdateRequestDto.prototype, "version", void 0);
-class UpdateRequestSocketDto extends UpdateRequestDto {
-}
-exports.UpdateRequestSocketDto = UpdateRequestSocketDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.ID,
-        example: util_1.UrlUtil.generateUUID(),
-    }),
-    __metadata("design:type", String)
-], UpdateRequestSocketDto.prototype, "id", void 0);
-class UpdateResponseSocketDto extends UpdateRequestSocketDto {
-}
-exports.UpdateResponseSocketDto = UpdateResponseSocketDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.RESULT,
-        example: 'true',
-    }),
-    __metadata("design:type", String)
-], UpdateResponseSocketDto.prototype, "result", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.MESSAGE,
-        example: '업데이트 완료',
-    }),
-    __metadata("design:type", String)
-], UpdateResponseSocketDto.prototype, "message", void 0);
-class WebUIAppAddDto {
-}
-exports.WebUIAppAddDto = WebUIAppAddDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], WebUIAppAddDto.prototype, "appNames", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '브랜치 이름',
-        example: 'main',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], WebUIAppAddDto.prototype, "branch", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '로봇 UI에 노출할 첫페이지 URL',
-        example: '/S100',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], WebUIAppAddDto.prototype, "fo", void 0);
-class WebUIAppDeleteDto {
-}
-exports.WebUIAppDeleteDto = WebUIAppDeleteDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], WebUIAppDeleteDto.prototype, "appNames", void 0);
-class ResponseWebUIAppAddDto {
-}
-exports.ResponseWebUIAppAddDto = ResponseWebUIAppAddDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '추가한 앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], ResponseWebUIAppAddDto.prototype, "appNames", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '브랜치 이름',
-        example: 'main',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ResponseWebUIAppAddDto.prototype, "branch", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '로봇 UI에 노출할 첫페이지 URL',
-        example: '/S100',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ResponseWebUIAppAddDto.prototype, "fo", void 0);
-class ResponseWebUIAppDeleteDto {
-}
-exports.ResponseWebUIAppDeleteDto = ResponseWebUIAppDeleteDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '삭제한 앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], ResponseWebUIAppDeleteDto.prototype, "appNames", void 0);
-
-
-/***/ }),
-/* 133 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CurVersionDto = exports.NewVersionGitDto = exports.PingSendToTargetResponseDto = exports.PingSendToTargetDto = void 0;
-const class_validator_1 = __webpack_require__(11);
-const swagger_1 = __webpack_require__(8);
-var Description;
-(function (Description) {
-    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
-})(Description || (Description = {}));
-class PingSendToTargetDto {
-}
-exports.PingSendToTargetDto = PingSendToTargetDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '타겟 호스트',
-        default: '192.168.1.1',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetDto.prototype, "target", void 0);
-class PingSendToTargetResponseDto extends PingSendToTargetDto {
-}
-exports.PingSendToTargetResponseDto = PingSendToTargetResponseDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '타겟 호스트에 5번 ping 전송 결과',
-        default: '요청에 성공했습니다.',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetResponseDto.prototype, "message", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'ping 결과 stdout',
-        default: 'PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.\n64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.87 ms\n\n--- 192.168.1.1 ping statistics ---\n1 packets transmitted, 1 received, 0% packet loss, time 0ms\nrtt min/avg/max/mdev = 1.874/1.874/1.874/0.000 ms\n',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetResponseDto.prototype, "stdout", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'ping 결과 stderr',
-        default: '',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetResponseDto.prototype, "stderr", void 0);
-class NewVersionGitDto {
-}
-exports.NewVersionGitDto = NewVersionGitDto;
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '핫픽스 여부',
-        default: false,
-    }),
-    __metadata("design:type", Boolean)
-], NewVersionGitDto.prototype, "hotfix", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '최신 버전',
-        default: 'rrs-20250812125004',
-    }),
-    __metadata("design:type", String)
-], NewVersionGitDto.prototype, "new_version", void 0);
-class CurVersionDto {
-}
-exports.CurVersionDto = CurVersionDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '현재 버전',
-        default: 'rrs-20250812125004',
-    }),
-    __metadata("design:type", String)
-], CurVersionDto.prototype, "current", void 0);
-
-
-/***/ }),
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */,
+/* 131 */,
+/* 132 */,
+/* 133 */,
 /* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -17659,6 +16131,7 @@ const rpc_code_exception_1 = __webpack_require__(26);
 const constant_1 = __webpack_require__(27);
 const move_type_1 = __webpack_require__(101);
 const util_1 = __webpack_require__(13);
+const websockets_1 = __webpack_require__(148);
 var MoveStatus;
 (function (MoveStatus) {
     MoveStatus["pending"] = "pending";
@@ -17740,6 +16213,15 @@ class MoveModel {
         else if (this.command === move_type_1.MoveCommand.moveJog) {
             if (this.vx === undefined || this.vy === undefined || this.wz === undefined) {
                 throw new rpc_code_exception_1.RpcCodeException('vel 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.vx === undefined || typeof this.vx !== 'number' || this.vx < -10 || this.vx > 10) {
+                throw new rpc_code_exception_1.RpcCodeException('vx값이 범위를 벗어납니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.vy === undefined || typeof this.vy !== 'number' || this.vy < -10 || this.vy > 10) {
+                throw new websockets_1.WsException('vy값이 범위를 벗어납니다.');
+            }
+            if (this.wz === undefined || typeof this.wz !== 'number' || this.wz < -100 || this.wz > 100) {
+                throw new websockets_1.WsException('wz값이 범위를 벗어납니다.');
             }
         }
         else if (this.command === move_type_1.MoveCommand.moveStop) {
@@ -19273,18 +17755,6 @@ exports.FrsSocketModule = FrsSocketModule = __decorate([
             }),
             microservices_1.ClientsModule.registerAsync({
                 clients: [
-                    {
-                        inject: [config_1.ConfigService],
-                        name: constant_1.USER_SERVICE,
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.GRPC,
-                            options: {
-                                package: common_2.UserMicroservice.protobufPackage,
-                                protoPath: (0, path_1.join)(process.cwd(), 'proto/user.proto'),
-                                url: configService.get('USER_GRPC_URL'),
-                            },
-                        }),
-                    },
                     {
                         inject: [config_1.ConfigService],
                         name: constant_1.MOVE_SERVICE,
