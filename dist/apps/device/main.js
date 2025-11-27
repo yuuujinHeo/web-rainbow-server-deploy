@@ -5161,7 +5161,6 @@ const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
 const move_type_1 = __webpack_require__(102);
 const util_1 = __webpack_require__(43);
-const websockets_1 = __webpack_require__(116);
 var MoveStatus;
 (function (MoveStatus) {
     MoveStatus["pending"] = "pending";
@@ -5242,16 +5241,16 @@ class MoveModel {
         }
         else if (this.command === move_type_1.MoveCommand.moveJog) {
             if (this.vx === undefined || this.vy === undefined || this.wz === undefined) {
-                throw new rpc_code_exception_1.RpcCodeException('vel 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                throw new rpc_code_exception_1.RpcCodeException('v값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
             if (this.vx === undefined || typeof this.vx !== 'number' || this.vx < -10 || this.vx > 10) {
-                throw new rpc_code_exception_1.RpcCodeException('vx값이 범위를 벗어납니다.', constant_1.GrpcCode.InvalidArgument);
+                throw new rpc_code_exception_1.RpcCodeException(`vx값 (${this.vx})이 범위를 벗어납니다.`, constant_1.GrpcCode.InvalidArgument);
             }
             if (this.vy === undefined || typeof this.vy !== 'number' || this.vy < -10 || this.vy > 10) {
-                throw new websockets_1.WsException('vy값이 범위를 벗어납니다.');
+                throw new rpc_code_exception_1.RpcCodeException(`vy값 (${this.vy})이 범위를 벗어납니다.`, constant_1.GrpcCode.InvalidArgument);
             }
             if (this.wz === undefined || typeof this.wz !== 'number' || this.wz < -100 || this.wz > 100) {
-                throw new websockets_1.WsException('wz값이 범위를 벗어납니다.');
+                throw new rpc_code_exception_1.RpcCodeException(`wz값 (${this.wz})이 범위를 벗어납니다.`, constant_1.GrpcCode.InvalidArgument);
             }
         }
         else if (this.command === move_type_1.MoveCommand.moveStop) {
@@ -6654,12 +6653,6 @@ __decorate([
     __metadata("design:type", Array)
 ], PaginationResponse.prototype, "list", void 0);
 
-
-/***/ }),
-/* 116 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/websockets");
 
 /***/ })
 /******/ 	]);

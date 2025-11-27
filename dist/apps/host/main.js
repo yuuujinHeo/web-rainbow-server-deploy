@@ -5559,6 +5559,8 @@ exports.SettingGrpcInputController = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(33);
 const setting_file_service_1 = __webpack_require__(95);
+const constant_1 = __webpack_require__(51);
+const rpc_code_exception_1 = __webpack_require__(50);
 let SettingGrpcInputController = class SettingGrpcInputController {
     constructor(settingService) {
         this.settingService = settingService;
@@ -5570,7 +5572,7 @@ let SettingGrpcInputController = class SettingGrpcInputController {
         return this.settingService.getSetting(request);
     }
     saveSetting(request, metadata) {
-        throw new Error('Method not implemented.');
+        throw new rpc_code_exception_1.RpcCodeException('지원하지 않는 기능입니다', constant_1.GrpcCode.Unimplemented);
     }
     saveSettingAll(request, metadata) {
         return this.settingService.saveSetting(request);

@@ -14067,13 +14067,13 @@ let ClientSocketService = class ClientSocketService {
                 throw new websockets_1.WsException(`command값이 잘못되었습니다. ${dto.command}`);
             }
             if (dto.vx === undefined || typeof dto.vx !== 'number' || dto.vx < -10 || dto.vx > 10) {
-                throw new websockets_1.WsException('vx값이 범위를 벗어납니다.');
+                throw new websockets_1.WsException(`vx값 (${dto.vx})이 범위를 벗어납니다.`);
             }
             if (dto.vy === undefined || typeof dto.vy !== 'number' || dto.vy < -10 || dto.vy > 10) {
-                throw new websockets_1.WsException('vy값이 범위를 벗어납니다.');
+                throw new websockets_1.WsException(`vy값 (${dto.vy})이 범위를 벗어납니다.`);
             }
             if (dto.wz === undefined || typeof dto.wz !== 'number' || dto.wz < -100 || dto.wz > 100) {
-                throw new websockets_1.WsException('wz값이 범위를 벗어납니다.');
+                throw new websockets_1.WsException(`wz값 (${dto.wz})이 범위를 벗어납니다.`);
             }
             this.mqttMicroservice.emit('moveJog', dto);
         }
@@ -16190,7 +16190,6 @@ const rpc_code_exception_1 = __webpack_require__(26);
 const constant_1 = __webpack_require__(27);
 const move_type_1 = __webpack_require__(101);
 const util_1 = __webpack_require__(13);
-const websockets_1 = __webpack_require__(148);
 var MoveStatus;
 (function (MoveStatus) {
     MoveStatus["pending"] = "pending";
@@ -16271,16 +16270,16 @@ class MoveModel {
         }
         else if (this.command === move_type_1.MoveCommand.moveJog) {
             if (this.vx === undefined || this.vy === undefined || this.wz === undefined) {
-                throw new rpc_code_exception_1.RpcCodeException('vel 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                throw new rpc_code_exception_1.RpcCodeException('v값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
             }
             if (this.vx === undefined || typeof this.vx !== 'number' || this.vx < -10 || this.vx > 10) {
-                throw new rpc_code_exception_1.RpcCodeException('vx값이 범위를 벗어납니다.', constant_1.GrpcCode.InvalidArgument);
+                throw new rpc_code_exception_1.RpcCodeException(`vx값 (${this.vx})이 범위를 벗어납니다.`, constant_1.GrpcCode.InvalidArgument);
             }
             if (this.vy === undefined || typeof this.vy !== 'number' || this.vy < -10 || this.vy > 10) {
-                throw new websockets_1.WsException('vy값이 범위를 벗어납니다.');
+                throw new rpc_code_exception_1.RpcCodeException(`vy값 (${this.vy})이 범위를 벗어납니다.`, constant_1.GrpcCode.InvalidArgument);
             }
             if (this.wz === undefined || typeof this.wz !== 'number' || this.wz < -100 || this.wz > 100) {
-                throw new websockets_1.WsException('wz값이 범위를 벗어납니다.');
+                throw new rpc_code_exception_1.RpcCodeException(`wz값 (${this.wz})이 범위를 벗어납니다.`, constant_1.GrpcCode.InvalidArgument);
             }
         }
         else if (this.command === move_type_1.MoveCommand.moveStop) {
@@ -17957,7 +17956,7 @@ let FRSSocketClient = class FRSSocketClient {
                 await this.connectFRS();
             }
             else {
-                throw new Error('robotSerial is empty');
+                throw new rpc_code_exception_1.RpcCodeException('robotSerial 값이 없습니다', constant_2.GrpcCode.InvalidArgument);
             }
         }
         catch (error) {
