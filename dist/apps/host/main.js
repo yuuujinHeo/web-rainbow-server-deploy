@@ -2575,13 +2575,15 @@ let MapService = class MapService {
     }
     async loadResponse(response) {
         this.logger?.info(`[Map] loadResponse : ${JSON.stringify(response)}`);
-        const dbmodel = await this.databaseOutput.getNodebyId(response.id);
-        if (dbmodel) {
-            const model = new map_command_domain_1.MapCommandModel(dbmodel);
-            model.assignId(dbmodel.id);
-            model.statusChange(response.result);
-            await this.databaseOutput.update(model);
-            this.logger?.info(`[Map] loadResponse : ${model.id}, ${model.status}`);
+        if (response.id) {
+            const dbmodel = await this.databaseOutput.getNodebyId(response.id);
+            if (dbmodel) {
+                const model = new map_command_domain_1.MapCommandModel(dbmodel);
+                model.assignId(dbmodel.id);
+                model.statusChange(response.result);
+                await this.databaseOutput.update(model);
+                this.logger?.info(`[Map] loadResponse : ${model.id}, ${model.status}`);
+            }
         }
     }
     async mappingResponse(response) {
