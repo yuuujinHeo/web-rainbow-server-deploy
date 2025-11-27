@@ -44,7 +44,7 @@ const config_api_module_1 = __webpack_require__(87);
 const setting_api_module_1 = __webpack_require__(93);
 const move_api_module_1 = __webpack_require__(97);
 const map_api_module_1 = __webpack_require__(106);
-const sound_api_module_1 = __webpack_require__(119);
+const sound_api_module_1 = __webpack_require__(117);
 const log_api_module_1 = __webpack_require__(123);
 const update_api_module_1 = __webpack_require__(127);
 const cobot_api_module_1 = __webpack_require__(135);
@@ -7523,9 +7523,9 @@ const express_1 = __webpack_require__(111);
 const mapping_dto_1 = __webpack_require__(112);
 const util_1 = __webpack_require__(13);
 const error_response_dto_1 = __webpack_require__(32);
-const map_dto_1 = __webpack_require__(116);
+const map_dto_1 = __webpack_require__(114);
 const load_dto_1 = __webpack_require__(113);
-const map_dto_2 = __webpack_require__(116);
+const map_dto_2 = __webpack_require__(114);
 const saveLog_service_1 = __webpack_require__(42);
 let MapApiController = class MapApiController {
     constructor(mapService, saveLogService) {
@@ -9158,18 +9158,6 @@ __decorate([
 
 /***/ }),
 /* 114 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/platform-express");
-
-/***/ }),
-/* 115 */
-/***/ ((module) => {
-
-module.exports = require("multer");
-
-/***/ }),
-/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9189,9 +9177,9 @@ const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
-const map_type_1 = __webpack_require__(117);
+const map_type_1 = __webpack_require__(115);
 const pagination_1 = __webpack_require__(104);
-const topo_type_1 = __webpack_require__(118);
+const topo_type_1 = __webpack_require__(116);
 var Description;
 (function (Description) {
     Description["MAPNAME"] = "\uB9F5 \uC774\uB984";
@@ -9412,7 +9400,7 @@ __decorate([
 
 
 /***/ }),
-/* 117 */
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9464,7 +9452,7 @@ __decorate([
 
 
 /***/ }),
-/* 118 */
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9655,7 +9643,7 @@ __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9673,8 +9661,8 @@ const common_2 = __webpack_require__(5);
 const config_1 = __webpack_require__(47);
 const microservices_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(20);
-const sound_api_controller_1 = __webpack_require__(120);
-const sound_api_service_1 = __webpack_require__(121);
+const sound_api_controller_1 = __webpack_require__(118);
+const sound_api_service_1 = __webpack_require__(119);
 const log_module_1 = __webpack_require__(74);
 let SoundApiModule = class SoundApiModule {
 };
@@ -9709,7 +9697,7 @@ exports.SoundApiModule = SoundApiModule = __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9730,11 +9718,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const sound_api_service_1 = __webpack_require__(121);
+const sound_api_service_1 = __webpack_require__(119);
 const common_2 = __webpack_require__(48);
-const platform_express_1 = __webpack_require__(114);
+const platform_express_1 = __webpack_require__(120);
 const express_1 = __webpack_require__(111);
-const multer_1 = __webpack_require__(115);
+const multer_1 = __webpack_require__(121);
 const path_1 = __webpack_require__(20);
 const fs_1 = __webpack_require__(19);
 const config_1 = __webpack_require__(47);
@@ -9958,7 +9946,7 @@ exports.SoundApiController = SoundApiController = __decorate([
 
 
 /***/ }),
-/* 121 */
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10014,6 +10002,18 @@ exports.SoundApiService = SoundApiService = __decorate([
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], SoundApiService);
 
+
+/***/ }),
+/* 120 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/platform-express");
+
+/***/ }),
+/* 121 */
+/***/ ((module) => {
+
+module.exports = require("multer");
 
 /***/ }),
 /* 122 */
@@ -18254,6 +18254,7 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
         }
     }
     async handleMappingCloud(data, client) {
+        console.log('mappingCloud in');
         if (client.id == this.slamnav?.id) {
             this.slamnavService.mappingCloud(data);
         }
