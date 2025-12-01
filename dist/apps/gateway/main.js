@@ -67,19 +67,19 @@ exports.RRSApiModule = RRSApiModule = __decorate([
         imports: [
             schedule_1.ScheduleModule.forRoot(),
             log_module_1.LogModule,
+            move_api_module_1.MoveApiModule,
             control_api_module_1.ControlApiModule,
-            setting_api_module_1.SettingApiModule,
             localization_api_module_1.LocalizationApiModule,
+            socket_api_module_1.SocketApiModule,
+            map_api_module_1.MapApiModule,
+            sound_api_module_1.SoundApiModule,
+            setting_api_module_1.SettingApiModule,
             config_api_module_1.ConfigApiModule,
             network_api_module_1.NetworkApiModule,
-            move_api_module_1.MoveApiModule,
-            map_api_module_1.MapApiModule,
             cobot_api_module_1.CobotApiModule,
-            sound_api_module_1.SoundApiModule,
+            tcp_api_module_1.TcpApiModule,
             log_api_module_1.LogApiModule,
             update_api_module_1.UpdateApiModule,
-            tcp_api_module_1.TcpApiModule,
-            socket_api_module_1.SocketApiModule,
         ],
         controllers: [],
         providers: [],
@@ -2480,7 +2480,7 @@ exports.protobufPackage = "sound";
 exports.SOUND_PACKAGE_NAME = "sound";
 function SoundGrpcServiceControllerMethods() {
     return function (constructor) {
-        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying"];
+        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying", "add"];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
             (0, microservices_1.GrpcMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
@@ -6269,6 +6269,8 @@ __decorate([
 SLAMNAV로 주행 명령을 전달합니다.
 
 ## 📌 기능 설명
+- 로봇의 주행에 있어 사전 조건이 필요합니다.
+  - ㅇㅇ
 - **goal** : **목표 노드 지정**. 지도 상의 특정 노드를 목표로 주행합니다.
 - **target** : **타겟 위치 지정**. 지도 상의 특정 위치(x,y,z,rz)를 목표로 주행합니다.
 - **jog** : **조이스틱 이동 명령**. 로봇의 속도(vx, vy, wz)를 입력으로 받아 이동합니다. 주기적으로 계속해서 요청을 주지 않으면 주행이 중단됩니다. 응답 없이 일방적으로 송신합니다.
@@ -9791,12 +9793,9 @@ exports.SoundApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const sound_api_service_1 = __webpack_require__(119);
-const common_2 = __webpack_require__(26);
 const platform_express_1 = __webpack_require__(120);
 const express_1 = __webpack_require__(111);
 const multer_1 = __webpack_require__(121);
-const path_1 = __webpack_require__(20);
-const fs_1 = __webpack_require__(19);
 const config_1 = __webpack_require__(73);
 const error_response_dto_1 = __webpack_require__(59);
 const sound_dto_1 = __webpack_require__(122);
@@ -9824,45 +9823,13 @@ let SoundApiController = class SoundApiController {
         this.logger?.debug(`[SOUND] getList (${req.socket.remoteAddress})`);
         return this.soundService.getSoundList();
     }
-    async deleteSound(req, dto) {
-        this.logger?.debug(`[SOUND] deleteSound : ${JSON.stringify(dto)} (${req.socket.remoteAddress})`);
+    async deleteSound(dto) {
+        this.logger?.debug(`[SOUND] deleteSound : ${JSON.stringify(dto)}`);
         return this.soundService.deleteSound(dto);
     }
-    async addSoundFile(file, req, name) {
-        try {
-            if (name === undefined || name === '') {
-                name = file.originalname;
-            }
-            const newFilename = `${name.split('.')[0]}${(0, path_1.extname)(file.originalname)}`;
-            const newPath = (0, path_1.join)(process.env.SOUND_DIR, newFilename);
-            if ((0, fs_1.existsSync)(newPath)) {
-                (0, fs_1.unlinkSync)(file.path);
-                throw new common_1.HttpException('동일한 이름의 파일이 이미 존재합니다', common_1.HttpStatus.BAD_REQUEST);
-            }
-            this.logger?.info(`[SOUND] addSoundFile : ${newFilename}`);
-            (0, fs_1.renameSync)(file.path, newPath);
-            return {
-                originalName: file.originalname,
-                savedName: newFilename,
-                path: file.path,
-            };
-        }
-        catch (error) {
-            if (error instanceof TypeError) {
-                if (file) {
-                    throw new common_1.HttpException('파일을 저장할 수 없습니다.', common_1.HttpStatus.BAD_REQUEST);
-                }
-                else {
-                    throw new common_1.HttpException('파일을 저장할 수 없습니다. (빈 파일)', common_1.HttpStatus.BAD_REQUEST);
-                }
-            }
-            else if (error instanceof common_1.HttpException) {
-                throw error;
-            }
-            this.logger?.error(`[SOUND] addSoundFile : ${(0, common_2.errorToJson)(error)}`);
-            (0, fs_1.unlinkSync)(file.path);
-            throw new common_1.HttpException('파일을 저장하던 중 에러가 발생했습니다.', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    async addSoundFile(file, dto) {
+        this.logger?.debug(`[SOUND] addSoundFile : ${JSON.stringify(dto)}`);
+        return this.soundService.addSoundFile(dto, file);
     }
 };
 exports.SoundApiController = SoundApiController;
@@ -9893,6 +9860,8 @@ __decorate([
 | isWaitUntilDone | boolean | 플레이 완료 대기 여부 | true |
  
 ## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라미터가 비어있거나 잘못된 값일 때
 ### **500** INTERNAL_SERVER_ERROR
   - DB관련 에러 등 서버 내부적인 에러
 ### **503** SERVICE_UNAVAILABLE
@@ -9923,10 +9892,16 @@ __decorate([
 
 ## 📌 기능 설명
 - 사운드 플레이를 요청합니다.
-- 플레이 중이 아니면 result 값이 idle 이며 플레이 중일때는 working으로 바뀝니다. 
-- 플레이 중일때는 현재 플레이중인 fileName, volume 등이 포함됩니다.
+- 리스트에서 조회가능한 파일만 플레이 가능합니다.
 
 ## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| fileName | string | ✅ | - | 플레이 중인 파일명 | 'test.mp3' |
+| volume | number | ✅ | 0-100% | 플레이 볼륨 [%] | 50 |
+| repeatCount | number | ✅ | 횟수 | 플레이 반복 횟수 | 10 |
+| isWaitUntilDone | bool | ✅ | - | 플레이종료 후 응답 여부. false값일때는 플레이 시작과 함께 응답 | false |
 
 ## 📌 응답 바디(JSON)
 
@@ -9938,15 +9913,17 @@ __decorate([
 | isWaitUntilDone | boolean | 플레이 완료 대기 여부 | true |
  
 ## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 호스트가 리눅스 환경이 아닐 때
+  - 파라미터가 비어있거나 잘못된 값일 때
+### **404** NOT_FOUND
+  - 파일을 찾을 수 없을 때
 ### **500** INTERNAL_SERVER_ERROR
   - DB관련 에러 등 서버 내부적인 에러
+  - 플레이가 중지되었을 때
 ### **503** SERVICE_UNAVAILABLE
   - 사운드 서비스와 연결되지 않았을 때
     `,
-    }),
-    (0, swagger_1.ApiOperation)({
-        summary: '사운드 플레이',
-        description: 'mp3 파일을 플레이 합니다. 파일의 경로는 실행경로의 sound 폴더 내부입니다.',
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '사운드 플레이 성공',
@@ -9966,8 +9943,31 @@ __decorate([
 __decorate([
     (0, common_1.Post)('stop'),
     (0, swagger_1.ApiOperation)({
-        summary: '사운드 플레이 종료',
-        description: '플레이를 종료합니다.',
+        summary: '사운드 플레이 종료 요청',
+        description: `
+플레이중인 사운드 종료를 요청합니다. 사운드 기능은 지원하는 모델에만 작동합니다.<br>
+지원하는 모델인데 플레이가 안될 시, mplayer 설치 여부를 확인한 후, 서버를 재가동해주세요.
+
+## 📌 기능 설명
+- 사운드 플레이를 종료합니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| fileName | string | 플레이 중인 파일명 | 'test.mp3' |
+| volume | number | 플레이 볼륨 [%] | 50 |
+| repeatCount | number | 플레이 반복 횟수 | 1 |
+| isWaitUntilDone | boolean | 플레이 완료 대기 여부 | true |
+ 
+## ⚠️ 에러 케이스
+### **404** NOT_FOUND
+  - 플레이중인 사운드가 없을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 사운드 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '사운드 플레이 종료 성공',
@@ -9985,8 +9985,22 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
-        summary: '사운드 리스트 요청',
-        description: '경로 내 플레이가능한 사운드 목록을 반환합니다.',
+        summary: '사운드 파일목록 요청',
+        description: `
+경로 내 사운드 파일목록을 반환합니다.
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| list | string[] | 경로 상 사운드 파일목록 | ['test.mp3', 'test2.mp3'] |
+ 
+## ⚠️ 에러 케이스
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 사운드 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '사운드 리스트 요청 성공',
@@ -10006,7 +10020,31 @@ __decorate([
     (0, common_1.Delete)(),
     (0, swagger_1.ApiOperation)({
         summary: '사운드 파일 삭제 요청',
-        description: '경로 내 사운드 파일을 삭제합니다. 삭제된 파일은 복구가 안되므로 주의하시기 바랍니다.',
+        description: `
+경로 내 사운드 파일을 삭제합니다. 삭제된 파일은 복구가 안되므로 주의하시기 바랍니다.
+
+## 📌 요청 바디(JSON)
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| fileName | string | ✅ | - | 삭제할 사운드 파일명 | 'test.mp3' |
+
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| fileName | string | 삭제할 사운드 파일명 | 'test.mp3' |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라미터가 비어있거나 잘못된 값일 때
+### **404** NOT_FOUND
+  - 파일을 찾을 수 없을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 사운드 서비스와 연결되지 않았을 때
+    `,
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '사운드 파일 삭제 성공',
@@ -10017,50 +10055,68 @@ __decorate([
         description: '서버 에러',
         type: error_response_dto_1.ErrorResponseDto,
     }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Query)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _o : Object, typeof (_p = typeof sound_dto_2.DeleteSoundRequestDto !== "undefined" && sound_dto_2.DeleteSoundRequestDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof sound_dto_2.DeleteSoundRequestDto !== "undefined" && sound_dto_2.DeleteSoundRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], SoundApiController.prototype, "deleteSound", null);
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({
-        summary: '사운드 파일 추가 요청',
-        description: '경로 내 첨부된 사운드 파일을 추가합니다. mp3 파일만 인식합니다. name값이 비어있는 경우 본래 파일이름으로, name값이 있으면 name값으로 파일을 저장합니다.',
+        summary: '사운드 추가 요청',
+        description: `
+경로 내 첨부된 사운드 파일을 추가합니다. mp3 파일만 인식합니다.<br>
+fileName값으로 저장될 사운드 파일의 이름을 지정할 수 있습니다. 없다면 본래 파일명으로 저장됩니다.
+
+## 📌 요청 바디(form-data)
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| file | file | ✅ | - | 사운드 파일 | 'test.mp3' |
+| fileName | string | ✅ | - | 저장할 사운드 파일명 | 'test.mp3' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| list | string[] | 경로 상 사운드 파일목록 | ['test.mp3', 'test2.mp3'] |
+ 
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라미터가 비어있거나 잘못된 값일 때
+### **409** CONFLICT
+  - 동일한 이름의 파일이 이미 존재할 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 사운드 서비스와 연결되지 않았을 때
+    `,
     }),
-    (0, swagger_1.ApiConsumes)('multipart/form-data'),
-    (0, swagger_1.ApiBody)({
-        schema: {
-            type: 'object',
-            properties: {
-                file: {
-                    type: 'string',
-                    format: 'binary',
-                },
-                name: {
-                    type: 'string',
-                },
-            },
-        },
+    (0, swagger_1.ApiOkResponse)({
+        description: '사운드 파일 추가 성공',
+        type: sound_dto_1.SoundListResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 에러',
+        type: error_response_dto_1.ErrorResponseDto,
     }),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
-        storage: (0, multer_1.diskStorage)({
-            destination: process.env.SOUND_DIR,
-            filename: (req, file, callback) => {
-                console.log('[UPLOAD]', file);
-                const ext = (0, path_1.extname)(file.originalname);
-                const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}${ext}`;
-                callback(null, filename);
-            },
-        }),
+        storage: (0, multer_1.memoryStorage)(),
+        limits: {
+            fileSize: 100 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype !== 'audio/mpeg' && !file.originalname.endsWith('.mp3')) {
+                return cb(new common_1.HttpException('MP3 파일만 추가할 수 있습니다.', common_1.HttpStatus.BAD_REQUEST), false);
+            }
+            cb(null, true);
+        },
     })),
     __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Body)('name')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof Express !== "undefined" && (_r = Express.Multer) !== void 0 && _r.File) === "function" ? _s : Object, typeof (_t = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _t : Object, String]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [typeof (_r = typeof Express !== "undefined" && (_q = Express.Multer) !== void 0 && _q.File) === "function" ? _r : Object, typeof (_s = typeof sound_dto_1.AddSoundRequestDto !== "undefined" && sound_dto_1.AddSoundRequestDto) === "function" ? _s : Object]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], SoundApiController.prototype, "addSoundFile", null);
 exports.SoundApiController = SoundApiController = __decorate([
     (0, swagger_1.ApiTags)('사운드 재생 관련 API (sound)'),
@@ -10118,6 +10174,12 @@ let SoundApiService = class SoundApiService {
     async deleteSound(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.soundService.delete(dto));
     }
+    async addSoundFile(dto, file) {
+        if (dto.fileName === undefined || dto.fileName === '') {
+            dto.fileName = file.originalname;
+        }
+        return await (0, rxjs_1.lastValueFrom)(this.soundService.add({ fileName: dto.fileName, data: file.buffer }));
+    }
 };
 exports.SoundApiService = SoundApiService;
 exports.SoundApiService = SoundApiService = __decorate([
@@ -10154,7 +10216,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SoundListResponseDto = exports.DeleteSoundResponseDto = exports.DeleteSoundRequestDto = exports.StopSoundResponseDto = exports.PlaySoundResponseDto = exports.PlaySoundRequestDto = exports.SoundDto = void 0;
+exports.SoundListResponseDto = exports.AddSoundRequestDto = exports.DeleteSoundResponseDto = exports.DeleteSoundRequestDto = exports.StopSoundResponseDto = exports.PlaySoundResponseDto = exports.PlaySoundRequestDto = exports.SoundDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 var Description;
@@ -10215,6 +10277,9 @@ exports.DeleteSoundRequestDto = DeleteSoundRequestDto;
 class DeleteSoundResponseDto extends DeleteSoundRequestDto {
 }
 exports.DeleteSoundResponseDto = DeleteSoundResponseDto;
+class AddSoundRequestDto extends SoundDto {
+}
+exports.AddSoundRequestDto = AddSoundRequestDto;
 class SoundListResponseDto {
 }
 exports.SoundListResponseDto = SoundListResponseDto;

@@ -40,24 +40,31 @@ export interface DeleteResponse {
   fileName: string;
 }
 
+export interface AddRequest {
+  fileName: string;
+  data: Uint8Array;
+}
+
 export const SOUND_PACKAGE_NAME = "sound";
 
 export interface SoundGrpcServiceClient {
   play(request: PlayRequest, metadata?: Metadata): Observable<PlayResponse>;
 
-  stop(request: Empty, metadata?: Metadata): Observable<Empty>;
+  stop(request: Empty, metadata?: Metadata): Observable<PlayResponse>;
 
   list(request: Empty, metadata?: Metadata): Observable<ListResponse>;
 
   delete(request: DeleteRequest, metadata?: Metadata): Observable<DeleteResponse>;
 
   getPlaying(request: Empty, metadata?: Metadata): Observable<PlayResponse>;
+
+  add(request: AddRequest, metadata?: Metadata): Observable<ListResponse>;
 }
 
 export interface SoundGrpcServiceController {
   play(request: PlayRequest, metadata?: Metadata): Promise<PlayResponse> | Observable<PlayResponse> | PlayResponse;
 
-  stop(request: Empty, metadata?: Metadata): Promise<Empty> | Observable<Empty> | Empty;
+  stop(request: Empty, metadata?: Metadata): Promise<PlayResponse> | Observable<PlayResponse> | PlayResponse;
 
   list(request: Empty, metadata?: Metadata): Promise<ListResponse> | Observable<ListResponse> | ListResponse;
 
@@ -67,11 +74,13 @@ export interface SoundGrpcServiceController {
   ): Promise<DeleteResponse> | Observable<DeleteResponse> | DeleteResponse;
 
   getPlaying(request: Empty, metadata?: Metadata): Promise<PlayResponse> | Observable<PlayResponse> | PlayResponse;
+
+  add(request: AddRequest, metadata?: Metadata): Promise<ListResponse> | Observable<ListResponse> | ListResponse;
 }
 
 export function SoundGrpcServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["play", "stop", "list", "delete", "getPlaying"];
+    const grpcMethods: string[] = ["play", "stop", "list", "delete", "getPlaying", "add"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);

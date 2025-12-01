@@ -4,10 +4,11 @@ package sound;
 
 service SoundGrpcService {
     rpc Play(PlayRequest) returns (PlayResponse);
-    rpc Stop(Empty) returns (Empty);
+    rpc Stop(Empty) returns (PlayResponse);
     rpc List(Empty) returns (ListResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
     rpc GetPlaying(Empty) returns (PlayResponse);
+    rpc Add(AddRequest) returns (ListResponse);
 }
 
 message Empty {}
@@ -35,4 +36,9 @@ message DeleteRequest {
 
 message DeleteResponse {
     string fileName = 1;
+}
+
+message AddRequest {
+    string fileName = 1;
+    bytes data = 2;
 }

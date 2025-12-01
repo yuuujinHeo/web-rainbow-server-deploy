@@ -51,6 +51,7 @@ export class DeleteSoundRequestDto extends SoundDto {}
 
 export class DeleteSoundResponseDto extends DeleteSoundRequestDto {}
 
+export class AddSoundRequestDto extends SoundDto {}
 export class SoundListResponseDto {
   @IsArray()
   @ApiProperty({

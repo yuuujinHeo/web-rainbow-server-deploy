@@ -617,7 +617,7 @@ exports.protobufPackage = "sound";
 exports.SOUND_PACKAGE_NAME = "sound";
 function SoundGrpcServiceControllerMethods() {
     return function (constructor) {
-        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying"];
+        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying", "add"];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
             (0, microservices_1.GrpcMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);

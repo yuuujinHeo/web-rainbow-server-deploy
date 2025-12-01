@@ -623,7 +623,7 @@ exports.protobufPackage = "sound";
 exports.SOUND_PACKAGE_NAME = "sound";
 function SoundGrpcServiceControllerMethods() {
     return function (constructor) {
-        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying"];
+        const grpcMethods = ["play", "stop", "list", "delete", "getPlaying", "add"];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
             (0, microservices_1.GrpcMethod)("SoundGrpcService", method)(constructor.prototype[method], method, descriptor);
@@ -5846,6 +5846,9 @@ let SoundGrpcController = class SoundGrpcController {
     delete(request, metadata) {
         return this.soundService.deleteSoundFile(request);
     }
+    add(request, metadata) {
+        return this.soundService.addSoundFile(request);
+    }
 };
 exports.SoundGrpcController = SoundGrpcController;
 exports.SoundGrpcController = SoundGrpcController = __decorate([
@@ -5894,6 +5897,31 @@ let SoundService = class SoundService {
     getPlaying() {
         return this.soundOutput.getPlaying();
     }
+    async addSoundFile(request) {
+        try {
+            if (process.env.HOST_OS !== 'linux') {
+                throw new rpc_code_exception_1.RpcCodeException('Linux Host 환경에서만 작동합니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.fileName === undefined || request.fileName === '') {
+                throw new rpc_code_exception_1.RpcCodeException('fileName 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.data === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const filePath = (0, path_1.join)(process.cwd(), 'public', 'sound', request.fileName);
+            if ((0, fs_1.existsSync)(filePath)) {
+                throw new rpc_code_exception_1.RpcCodeException('파일이 이미 존재합니다.', constant_1.GrpcCode.AlreadyExists);
+            }
+            (0, fs_1.writeFileSync)(filePath, request.data);
+            return this.getSoundList();
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Sound] addSoundFile : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('파일을 추가할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
     async playSound(request) {
         try {
             if (process.env.HOST_OS !== 'linux') {
@@ -5929,7 +5957,8 @@ let SoundService = class SoundService {
         if (process.env.HOST_OS !== 'linux') {
             throw new rpc_code_exception_1.RpcCodeException('Linux Host 환경에서만 작동합니다.', constant_1.GrpcCode.InvalidArgument);
         }
-        return this.soundOutput.stop();
+        await this.soundOutput.stop();
+        return this.soundOutput.getPlaying();
     }
     async getSoundList() {
         try {
