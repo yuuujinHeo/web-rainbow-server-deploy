@@ -45,11 +45,11 @@ const setting_api_module_1 = __webpack_require__(93);
 const move_api_module_1 = __webpack_require__(97);
 const map_api_module_1 = __webpack_require__(106);
 const sound_api_module_1 = __webpack_require__(117);
-const log_api_module_1 = __webpack_require__(203);
-const update_api_module_1 = __webpack_require__(207);
-const cobot_api_module_1 = __webpack_require__(123);
-const tcp_api_module_1 = __webpack_require__(127);
-const socket_api_module_1 = __webpack_require__(130);
+const log_api_module_1 = __webpack_require__(123);
+const update_api_module_1 = __webpack_require__(127);
+const cobot_api_module_1 = __webpack_require__(135);
+const tcp_api_module_1 = __webpack_require__(139);
+const socket_api_module_1 = __webpack_require__(142);
 const schedule_1 = __webpack_require__(76);
 const log_module_1 = __webpack_require__(74);
 const saveLog_service_1 = __webpack_require__(68);
@@ -6270,7 +6270,8 @@ SLAMNAV로 주행 명령을 전달합니다.
 
 ## 📌 기능 설명
 - 로봇의 주행에 있어 사전 조건이 필요합니다.
-  - ㅇㅇ
+  - **모터 초기화** : 모터 초기화가 완료되어 있어야 하며 명령은 POST /control/onoff 의 motorOnOff를 참고, 상태는 GET /socket/status 응답의 motor status 값을 참고(1이 아니면 모터초기화 필요)
+  - **맵 로드** : 맵이 로드되어 있어야 하며
 - **goal** : **목표 노드 지정**. 지도 상의 특정 노드를 목표로 주행합니다.
 - **target** : **타겟 위치 지정**. 지도 상의 특정 위치(x,y,z,rz)를 목표로 주행합니다.
 - **jog** : **조이스틱 이동 명령**. 로봇의 속도(vx, vy, wz)를 입력으로 받아 이동합니다. 주기적으로 계속해서 요청을 주지 않으면 주행이 중단됩니다. 응답 없이 일방적으로 송신합니다.
@@ -10305,10 +10306,1719 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogApiModule = void 0;
+const common_1 = __webpack_require__(5);
+const log_api_service_1 = __webpack_require__(124);
+const log_api_controller_1 = __webpack_require__(125);
+const microservices_1 = __webpack_require__(3);
+const path_1 = __webpack_require__(20);
+const config_1 = __webpack_require__(73);
+const constant_1 = __webpack_require__(61);
+const log_module_1 = __webpack_require__(74);
+let LogApiModule = class LogApiModule {
+};
+exports.LogApiModule = LogApiModule;
+exports.LogApiModule = LogApiModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            log_module_1.LogModule,
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: constant_1.SEMLOG_SERVICE,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.GRPC,
+                        options: {
+                            package: 'log',
+                            protoPath: (0, path_1.join)(process.cwd(), 'proto', 'log.proto'),
+                            url: configService.get('LOG_URL'),
+                        },
+                    }),
+                },
+            ]),
+        ],
+        controllers: [log_api_controller_1.LogApiController],
+        providers: [log_api_service_1.LogApiService],
+        exports: [],
+    })
+], LogApiModule);
+
+
+/***/ }),
+/* 124 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogApiService = void 0;
+const constant_1 = __webpack_require__(61);
+const saveLog_service_1 = __webpack_require__(68);
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const rxjs_1 = __webpack_require__(50);
+let LogApiService = class LogApiService {
+    constructor(logMicroservice, saveLogService) {
+        this.logMicroservice = logMicroservice;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
+    }
+    onModuleInit() {
+        this.logService = this.logMicroservice.getService('SEMLogGrpcService');
+    }
+    async getAlarmDefinedList(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmDefine(dto));
+    }
+    async postAlarmDefine(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.postSemAlarmDefine(dto));
+    }
+    async deleteAlarmDefine(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmDefine(dto));
+    }
+    async deleteAlarmDefineAll() {
+        await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmDefineAll({}));
+        return;
+    }
+    async getActiveAlarmList() {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmActive({}));
+    }
+    async postActiveAlarm(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.semAlarm(dto));
+    }
+    async deleteActiveAlarm(dto) {
+        const resp = await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarm(dto));
+        return;
+    }
+    async deleteActiveAlarmAll() {
+        await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmAll({}));
+        return;
+    }
+    async getAlarmLogList(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmLog(dto));
+    }
+    async postAlarmLog(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.postSemAlarmLog(dto));
+    }
+    async deleteAlarmLog(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmLog(dto));
+    }
+};
+exports.LogApiService = LogApiService;
+exports.LogApiService = LogApiService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.SEMLOG_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], LogApiService);
+
+
+/***/ }),
+/* 125 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogApiController = void 0;
+const common_1 = __webpack_require__(5);
+const swagger_1 = __webpack_require__(8);
+const log_api_service_1 = __webpack_require__(124);
+const semlog_dto_1 = __webpack_require__(126);
+const search_request_1 = __webpack_require__(102);
+const saveLog_service_1 = __webpack_require__(68);
+let LogApiController = class LogApiController {
+    constructor(logService, saveLogService) {
+        this.logService = logService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('log');
+    }
+    async getAlarmList(dto) {
+        return this.logService.getAlarmDefinedList(dto);
+    }
+    async postAlarmDefine(dto) {
+        console.log('postAlarmDefine', dto);
+        return this.logService.postAlarmDefine(dto);
+    }
+    async deleteAlarmDefine(dto) {
+        return this.logService.deleteAlarmDefine(dto);
+    }
+    async deleteAlarmDefineAll() {
+        return this.logService.deleteAlarmDefineAll();
+    }
+    async getActiveAlarmList() {
+        return this.logService.getActiveAlarmList();
+    }
+    async postActiveAlarm(dto) {
+        return this.logService.postActiveAlarm(dto);
+    }
+    async deleteActiveAlarm(dto) {
+        return this.logService.deleteActiveAlarm(dto);
+    }
+    async deleteActiveAlarmAll() {
+        return this.logService.deleteActiveAlarmAll();
+    }
+    async getAlarmLogList(dto) {
+        return this.logService.getAlarmLogList(dto);
+    }
+    async postAlarmLog(dto) {
+        return this.logService.postAlarmLog(dto);
+    }
+    async deleteAlarmLog(dto) {
+        return this.logService.deleteAlarmLog(dto);
+    }
+};
+exports.LogApiController = LogApiController;
+__decorate([
+    (0, common_1.Get)('sem/alarm-define'),
+    (0, swagger_1.ApiOperation)({
+        summary: '정의된 알람 리스트 요청',
+        description: 'SEM프로젝트 전용. 정의되어 있는 알람 리스트를 요청합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '알람 리스트 요청 성공',
+        type: semlog_dto_1.SEMAlarmListResponseDto,
+        example: {
+            list: [
+                {
+                    code: '2000',
+                    detail: '',
+                    operationName: 'PROGRAM_START_FAIL',
+                    description: '프로그램 시작을 실패했습니다.',
+                },
+            ],
+            totalCount: 1,
+            pageSize: 10,
+            totalPage: 1,
+        },
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], LogApiController.prototype, "getAlarmList", null);
+__decorate([
+    (0, common_1.Post)('sem/alarm-define'),
+    (0, swagger_1.ApiOperation)({
+        summary: '정의된 알람 추가(테스트)',
+        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 추가합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '알람 추가 요청 성공',
+        type: semlog_dto_1.SEMAlarm,
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof semlog_dto_1.SEMAlarm !== "undefined" && semlog_dto_1.SEMAlarm) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], LogApiController.prototype, "postAlarmDefine", null);
+__decorate([
+    (0, common_1.Delete)('sem/alarm-define'),
+    (0, swagger_1.ApiOperation)({
+        summary: '정의된 알람 삭제',
+        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 삭제합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '알람 삭제 요청 성공',
+        type: semlog_dto_1.SEMAlarm,
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof semlog_dto_1.DeleteAlarmDefineRequestDto !== "undefined" && semlog_dto_1.DeleteAlarmDefineRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], LogApiController.prototype, "deleteAlarmDefine", null);
+__decorate([
+    (0, common_1.Delete)('sem/alarm-define/all'),
+    (0, swagger_1.ApiOperation)({
+        summary: '정의된 알람 전부 삭제',
+        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 전부 삭제합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '알람 전부 삭제 요청 성공',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+], LogApiController.prototype, "deleteAlarmDefineAll", null);
+__decorate([
+    (0, common_1.Get)('sem/alarm-active'),
+    (0, swagger_1.ApiOperation)({
+        summary: '활성화된 알람 리스트 요청',
+        description: 'SEM프로젝트 전용. 활성화된 알람 리스트를 요청합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '활성화된 알람 리스트 요청 성공',
+        type: semlog_dto_1.SEMAlarmActiveResponseDto,
+        example: {
+            list: [
+                {
+                    code: '2000',
+                    detail: '',
+                    operationName: 'PROGRAM_START_FAIL',
+                    description: '프로그램 시작을 실패했습니다.',
+                },
+            ],
+        },
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+], LogApiController.prototype, "getActiveAlarmList", null);
+__decorate([
+    (0, common_1.Post)('sem/alarm-active'),
+    (0, swagger_1.ApiOperation)({
+        summary: '활성화된 알람 추가',
+        description: 'SEM프로젝트 전용. 활성화된 알람을 추가합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '활성화된 알람 추가 성공',
+        type: semlog_dto_1.SEMAlarm,
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof semlog_dto_1.PostSEMAlarmRequestDto !== "undefined" && semlog_dto_1.PostSEMAlarmRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+], LogApiController.prototype, "postActiveAlarm", null);
+__decorate([
+    (0, common_1.Delete)('sem/alarm-active'),
+    (0, swagger_1.ApiOperation)({
+        summary: '활성화된 알람 삭제',
+        description: 'SEM프로젝트 전용. 활성화된 알람을 삭제합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '활성화된 알람 삭제 성공',
+        example: {},
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_o = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+], LogApiController.prototype, "deleteActiveAlarm", null);
+__decorate([
+    (0, common_1.Delete)('sem/alarm-active/all'),
+    (0, swagger_1.ApiOperation)({
+        summary: '활성화된 알람 전부 삭제',
+        description: 'SEM프로젝트 전용. 활성화된 알람을 전부 삭제합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '활성화된 알람 전부 삭제 성공',
+        example: {},
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+], LogApiController.prototype, "deleteActiveAlarmAll", null);
+__decorate([
+    (0, common_1.Get)('sem/alarm'),
+    (0, swagger_1.ApiOperation)({
+        summary: '알람 로그 리스트 요청',
+        description: 'SEM프로젝트 전용. 알람 로그 리스트를 요청합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '알람 로그 리스트 요청 성공',
+        type: semlog_dto_1.SEMAlarmLogResponseDto,
+        example: {
+            list: [
+                {
+                    code: '2000',
+                    detail: '',
+                    operationName: 'PROGRAM_START_FAIL',
+                    description: '프로그램 시작을 실패했습니다.',
+                    state: 'START',
+                    createAt: '2025-01-01 00:00:00',
+                },
+                {
+                    code: '2000',
+                    detail: '',
+                    operationName: 'PROGRAM_START_FAIL',
+                    description: '프로그램 시작을 실패했습니다.',
+                    state: 'END',
+                    createAt: '2025-01-01 00:00:10',
+                },
+            ],
+            totalCount: 1,
+            pageSize: 10,
+            totalPage: 1,
+        },
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_r = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _r : Object]),
+    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+], LogApiController.prototype, "getAlarmLogList", null);
+__decorate([
+    (0, common_1.Post)('sem/alarm'),
+    (0, swagger_1.ApiOperation)({
+        summary: '알람 로그 저장',
+        description: 'SEM프로젝트 전용. 알람 로그를 저장합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '알람 로그 저장 성공',
+        type: semlog_dto_1.SaveSEMAlarmLogResponseDto,
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_t = typeof semlog_dto_1.SaveSEMAlarmLogRequestDto !== "undefined" && semlog_dto_1.SaveSEMAlarmLogRequestDto) === "function" ? _t : Object]),
+    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+], LogApiController.prototype, "postAlarmLog", null);
+__decorate([
+    (0, common_1.Delete)('sem/alarm'),
+    (0, swagger_1.ApiOperation)({
+        summary: '알람 로그 삭제',
+        description: 'SEM프로젝트 전용. 알람 로그를 삭제합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '알람 로그 삭제 성공',
+        example: {},
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_v = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _v : Object]),
+    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
+], LogApiController.prototype, "deleteAlarmLog", null);
+exports.LogApiController = LogApiController = __decorate([
+    (0, swagger_1.ApiTags)('로그 API'),
+    (0, common_1.Controller)('log'),
+    __metadata("design:paramtypes", [typeof (_a = typeof log_api_service_1.LogApiService !== "undefined" && log_api_service_1.LogApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], LogApiController);
+
+
+/***/ }),
+/* 126 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SEMGeneralLogRequestDto = exports.SaveSEMAlarmLogResponseDto = exports.SaveSEMAlarmLogRequestDto = exports.DeleteSEMAlarmRequestDto = exports.SEMAlarmActiveResponseDto = exports.SEMAlarmLogResponseDto = exports.SEMAlarmLogListRequestDto = exports.PostSEMAlarmRequestDto = exports.DeleteAlarmDefineRequestDto = exports.SEMAlarmListResponseDto = exports.SEMAlamrListRequestDto = exports.SEMAlarmLog = exports.SEMAlarm = exports.SEMAlarmActive = void 0;
+const pagination_1 = __webpack_require__(104);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_validator_2 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+var Description;
+(function (Description) {
+    Description["ALARM_CODE"] = "\uC54C\uB78C \uCF54\uB4DC";
+    Description["ALARM_DETAIL"] = "\uC54C\uB78C \uC0C1\uC138";
+    Description["OPERATION_NAME"] = "\uC791\uC5C5 \uC774\uB984";
+    Description["DESCRIPTION"] = "\uC124\uBA85";
+    Description["LIST"] = "\uC54C\uB78C \uB9AC\uC2A4\uD2B8";
+    Description["ALARM_STATE"] = "\uC54C\uB78C \uC0C1\uD0DC. \uB2E8\uBC1C\uC801\uC778 \uC54C\uB78C\uC758 \uACBD\uC6B0 SET \uAC12\uC744, \uC54C\uB78C \uBC1C\uC0DD/\uD574\uC81C\uAC00 \uC874\uC7AC\uD558\uB294 \uACBD\uC6B0 START/END \uAC12\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694.";
+    Description["ALARM_TIME"] = "\uC54C\uB78C \uBC1C\uC0DD \uC2DC\uAC04";
+    Description["DATE_FROM"] = "\uC54C\uB78C \uC2DC\uC791 \uB0A0\uC9DC. \uD615\uC2DD\uC740 yyyy-mm-dd hh:mm:ss\uD615\uC2DD\uC73C\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694.";
+    Description["DATE_TO"] = "\uC54C\uB78C \uC885\uB8CC \uB0A0\uC9DC. \uD615\uC2DD\uC740 yyyy-mm-dd hh:mm:ss\uD615\uC2DD\uC73C\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694.";
+})(Description || (Description = {}));
+class SEMAlarmActive {
+}
+exports.SEMAlarmActive = SEMAlarmActive;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_CODE,
+        example: 2000,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], SEMAlarmActive.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_STATE,
+        example: 'SET',
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], SEMAlarmActive.prototype, "state", void 0);
+class SEMAlarm {
+}
+exports.SEMAlarm = SEMAlarm;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_CODE,
+        example: 2000,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], SEMAlarm.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_DETAIL,
+        example: '',
+        required: false,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SEMAlarm.prototype, "detail", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.OPERATION_NAME,
+        example: 'PROGRAM_START_FAIL',
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], SEMAlarm.prototype, "operationName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DESCRIPTION,
+        example: '프로그램 시작을 실패했습니다.',
+        required: false,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SEMAlarm.prototype, "description", void 0);
+class SEMAlarmLog extends SEMAlarm {
+}
+exports.SEMAlarmLog = SEMAlarmLog;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_STATE,
+        example: 'SET',
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SEMAlarmLog.prototype, "state", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_TIME,
+        example: '2021-01-01 00:00:00',
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], SEMAlarmLog.prototype, "createAt", void 0);
+class SEMAlamrListRequestDto extends pagination_1.PaginationRequest {
+}
+exports.SEMAlamrListRequestDto = SEMAlamrListRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_CODE,
+        example: 2000,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], SEMAlamrListRequestDto.prototype, "code", void 0);
+class SEMAlarmListResponseDto extends pagination_1.PaginationResponse {
+}
+exports.SEMAlarmListResponseDto = SEMAlarmListResponseDto;
+class DeleteAlarmDefineRequestDto {
+}
+exports.DeleteAlarmDefineRequestDto = DeleteAlarmDefineRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_CODE,
+        example: 2000,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DeleteAlarmDefineRequestDto.prototype, "code", void 0);
+class PostSEMAlarmRequestDto {
+}
+exports.PostSEMAlarmRequestDto = PostSEMAlarmRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_CODE,
+        example: 2000,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PostSEMAlarmRequestDto.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_STATE,
+        example: 'START',
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], PostSEMAlarmRequestDto.prototype, "state", void 0);
+class SEMAlarmLogListRequestDto extends pagination_1.PaginationRequest {
+}
+exports.SEMAlarmLogListRequestDto = SEMAlarmLogListRequestDto;
+class SEMAlarmLogResponseDto extends pagination_1.PaginationResponse {
+}
+exports.SEMAlarmLogResponseDto = SEMAlarmLogResponseDto;
+class SEMAlarmActiveResponseDto {
+}
+exports.SEMAlarmActiveResponseDto = SEMAlarmActiveResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.LIST,
+        example: [
+            {
+                code: '2000',
+                state: 'START',
+            },
+        ],
+        required: true,
+    }),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], SEMAlarmActiveResponseDto.prototype, "list", void 0);
+class DeleteSEMAlarmRequestDto {
+}
+exports.DeleteSEMAlarmRequestDto = DeleteSEMAlarmRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_CODE,
+        example: 2000,
+        required: false,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], DeleteSEMAlarmRequestDto.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DATE_FROM,
+        example: '2025-01-01 00:00:00',
+        required: false,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], DeleteSEMAlarmRequestDto.prototype, "dateFrom", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DATE_TO,
+        example: '2025-12-31 23:59:59',
+        required: false,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], DeleteSEMAlarmRequestDto.prototype, "dateTo", void 0);
+class SaveSEMAlarmLogRequestDto {
+}
+exports.SaveSEMAlarmLogRequestDto = SaveSEMAlarmLogRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_CODE,
+        example: 2000,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], SaveSEMAlarmLogRequestDto.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ALARM_STATE,
+        example: 'SET',
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => String),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], SaveSEMAlarmLogRequestDto.prototype, "state", void 0);
+class SaveSEMAlarmLogResponseDto extends SaveSEMAlarmLogRequestDto {
+}
+exports.SaveSEMAlarmLogResponseDto = SaveSEMAlarmLogResponseDto;
+class SEMGeneralLogRequestDto {
+}
+exports.SEMGeneralLogRequestDto = SEMGeneralLogRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '일반LOG를 읽어올 시작 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
+        example: '2025-01-01 00:00:00',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], SEMGeneralLogRequestDto.prototype, "dateTo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '일반LOG를 읽어올 종료 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
+        example: '2025-12-31 23:59:59',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_2.Length)(1, 50),
+    __metadata("design:type", String)
+], SEMGeneralLogRequestDto.prototype, "dateFrom", void 0);
+
+
+/***/ }),
+/* 127 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateApiModule = void 0;
+const common_1 = __webpack_require__(5);
+const update_api_service_1 = __webpack_require__(128);
+const update_api_controller_1 = __webpack_require__(131);
+const config_1 = __webpack_require__(73);
+const microservices_1 = __webpack_require__(3);
+const common_2 = __webpack_require__(26);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(61);
+const log_module_1 = __webpack_require__(74);
+let UpdateApiModule = class UpdateApiModule {
+};
+exports.UpdateApiModule = UpdateApiModule;
+exports.UpdateApiModule = UpdateApiModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: constant_1.UPDATE_SERVICE,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.GRPC,
+                        options: {
+                            package: common_2.UpdateMicroservice.protobufPackage,
+                            protoPath: (0, path_1.join)(process.cwd(), 'proto/update.proto'),
+                            url: configService.get('UPDATE_GRPC_URL'),
+                        },
+                    }),
+                },
+            ]),
+            log_module_1.LogModule,
+        ],
+        controllers: [update_api_controller_1.UpdateApiController],
+        providers: [update_api_service_1.UpdateApiService],
+    })
+], UpdateApiModule);
+
+
+/***/ }),
+/* 128 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateApiService = void 0;
+const common_1 = __webpack_require__(5);
+const path = __webpack_require__(20);
+const os_1 = __webpack_require__(129);
+const fs = __webpack_require__(19);
+const child_process_1 = __webpack_require__(130);
+const config_1 = __webpack_require__(73);
+const microservices_1 = __webpack_require__(3);
+const constant_1 = __webpack_require__(61);
+const rxjs_1 = __webpack_require__(50);
+const saveLog_service_1 = __webpack_require__(68);
+let UpdateApiService = class UpdateApiService {
+    constructor(configService, saveLogService, updateMicroservice) {
+        this.configService = configService;
+        this.saveLogService = saveLogService;
+        this.updateMicroservice = updateMicroservice;
+        this.logger = this.saveLogService.get('gateway-api');
+    }
+    onModuleInit() {
+        console.log(this.configService.get('RELEASE_REPO_URL'));
+        this.updateService = this.updateMicroservice.getService('UpdateGrpcService');
+    }
+    async pingSendToTarget(target) {
+        const data = await (0, rxjs_1.lastValueFrom)(this.updateService.testPing({ target }));
+        console.log(data);
+        return data;
+    }
+    async getNewVersion(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.getNewVersion(dto));
+    }
+    async getCurrentVersion(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.getCurrentVersion(dto));
+    }
+    async getReleaseAppsBranches(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.getReleaseBranch({ token: dto.token, pageNo: dto.pageNo, pageSize: dto.pageSize }));
+    }
+    async getReleaseAppsVersionList(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.getReleaseVersion({ software: dto.software, token: dto.token, branch: dto.branch }));
+    }
+    async updateSoftware(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.updateProgram(dto));
+    }
+    rrsUpdate({ branch, version } = {}) {
+        const updateScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/rrs-server`, 'rrs-update.sh');
+        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
+        if (!fs.existsSync(updateScript)) {
+            this.logger?.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
+            throw new common_1.NotFoundException({
+                message: `~/rainbow-deploy-kit/rrs-server/rrs-update.sh 파일을 찾을 수 없습니다.`,
+            });
+        }
+        (0, child_process_1.execSync)('git pull', {
+            cwd: rainbowDeployKitDir,
+            stdio: 'pipe',
+        });
+        (0, child_process_1.exec)(`nohup bash ${updateScript} --mode=${branch || 'main'} --version=${version} > /tmp/rrs-update.log 2>&1 &`);
+        return { applyReqUpdate: true, version: version || '', rejectReason: '' };
+    }
+    otherSwUpdate({ branch, version } = {}) {
+        return new Promise((resolve, reject) => {
+            reject(new common_1.GatewayTimeoutException('프로그램이 연결되지 않았습니다'));
+        });
+    }
+    async webUIAppAdd({ appNames, branch, fo }) {
+        const appAddScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-add-app.sh');
+        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
+        if (!fs.existsSync(appAddScript)) {
+            throw new common_1.NotFoundException({
+                message: `~/rainbow-deploy-kit/web-ui/fe-add-app.sh 파일을 찾을 수 없습니다.`,
+            });
+        }
+        try {
+            (0, child_process_1.execSync)('git pull', {
+                cwd: rainbowDeployKitDir,
+                stdio: 'pipe',
+            });
+            (0, child_process_1.execSync)(`bash ${appAddScript}${branch ? ` --mode=${branch}` : ''}${fo ? ` --fo=${fo}` : ''} ${appNames.join(' ')}`);
+            return { appNames, branch, fo };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException({
+                message: error.message,
+            });
+        }
+    }
+    async webUIAppDelete({ appNames }) {
+        const appDeleteScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-delete-app.sh');
+        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
+        if (!fs.existsSync(appDeleteScript)) {
+            throw new common_1.NotFoundException({
+                message: `~/rainbow-deploy-kit/web-ui/fe-delete-app.sh 파일을 찾을 수 없습니다.`,
+            });
+        }
+        try {
+            (0, child_process_1.execSync)('git pull', {
+                cwd: rainbowDeployKitDir,
+                stdio: 'pipe',
+            });
+            (0, child_process_1.execSync)(`bash ${appDeleteScript} ${appNames.join(' ')}`);
+            return { appNames };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException({
+                message: error.message,
+            });
+        }
+    }
+};
+exports.UpdateApiService = UpdateApiService;
+exports.UpdateApiService = UpdateApiService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(2, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object])
+], UpdateApiService);
+
+
+/***/ }),
+/* 129 */
+/***/ ((module) => {
+
+module.exports = require("os");
+
+/***/ }),
+/* 130 */
+/***/ ((module) => {
+
+module.exports = require("child_process");
+
+/***/ }),
+/* 131 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateApiController = void 0;
+const common_1 = __webpack_require__(5);
+const update_api_service_1 = __webpack_require__(128);
+const swagger_1 = __webpack_require__(8);
+const update_dto_1 = __webpack_require__(132);
+const etc_dto_1 = __webpack_require__(133);
+const version_dto_1 = __webpack_require__(134);
+const pagination_response_1 = __webpack_require__(105);
+const version_dto_2 = __webpack_require__(134);
+const saveLog_service_1 = __webpack_require__(68);
+let UpdateApiController = class UpdateApiController {
+    constructor(updateService, saveLogService) {
+        this.updateService = updateService;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
+    }
+    pingSendToTarget({ target }) {
+        return this.updateService.pingSendToTarget(target);
+    }
+    getNewVersion(dto) {
+        return this.updateService.getNewVersion(dto);
+    }
+    getCurrentVersion(dto) {
+        return this.updateService.getCurrentVersion(dto);
+    }
+    getReleaseAppsBranches(params) {
+        return this.updateService.getReleaseAppsBranches(params);
+    }
+    getReleaseAppsVersionList(dto) {
+        return this.updateService.getReleaseAppsVersionList(dto);
+    }
+    webUIAppAdd(webUIAppAddDto) {
+        return this.updateService.webUIAppAdd(webUIAppAddDto);
+    }
+    updateSoftware(reqUpdateSoftwareDto) {
+        return this.updateService.updateSoftware(reqUpdateSoftwareDto);
+    }
+    webUIAppDelete(webUIAppDeleteDto) {
+        return this.updateService.webUIAppDelete(webUIAppDeleteDto);
+    }
+};
+exports.UpdateApiController = UpdateApiController;
+__decorate([
+    (0, common_1.Get)('ping'),
+    (0, swagger_1.ApiOperation)({
+        summary: '핑 테스트',
+        description: '핑 테스트를 요청합니다. 타겟 호스트에 ping을 1회 전송합니다. ',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '핑 테스트 성공',
+        type: etc_dto_1.PingSendToTargetResponseDto,
+    }),
+    (0, swagger_1.ApiBadGatewayResponse)({
+        description: '외부망에 접근할 수 없습니다.',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof etc_dto_1.PingSendToTargetDto !== "undefined" && etc_dto_1.PingSendToTargetDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], UpdateApiController.prototype, "pingSendToTarget", null);
+__decorate([
+    (0, common_1.Get)('new-version'),
+    (0, swagger_1.ApiOperation)({
+        summary: '소프트웨어 새로운 버전 조회',
+        description: '소프트웨어 새로운 버전을 조회합니다. 위부망 접속이 안될 환경시 400 에러가 발생합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '소프트웨어 새로운 버전 조회 성공',
+        type: version_dto_1.GetNewVersionResponseDto,
+    }),
+    (0, swagger_1.ApiNotFoundResponse)({
+        description: '입력한 소프트웨어 또는 브랜치가 존재하지 않습니다.',
+    }),
+    (0, swagger_1.ApiBadGatewayResponse)({
+        description: '외부망에 접근할 수 없습니다.',
+    }),
+    (0, swagger_1.ApiBadRequestResponse)({
+        description: '소프트웨어 또는 브랜치 값이 입력되지 않았습니다.',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof version_dto_2.GetNewVersionRequestDto !== "undefined" && version_dto_2.GetNewVersionRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], UpdateApiController.prototype, "getNewVersion", null);
+__decorate([
+    (0, common_1.Get)('current-version'),
+    (0, swagger_1.ApiOperation)({
+        summary: '소프트웨어 현재 버전 조회',
+        description: '소프트웨어 현재 버전을 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '소프트웨어 현재 버전 조회 성공',
+        type: version_dto_1.GetCurrentVersionResponseDto,
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof version_dto_1.GetCurrentVersionRequestDto !== "undefined" && version_dto_1.GetCurrentVersionRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], UpdateApiController.prototype, "getCurrentVersion", null);
+__decorate([
+    (0, common_1.Get)('release-apps/branches'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'rainbow-release-apps 레포지토리의 브랜치 조회',
+        description: 'rainbow-release-apps 레포지토리의 브랜치를 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'rainbow-release-apps 레포지토리의 브랜치 조회 성공',
+        type: (pagination_response_1.PaginationResponse),
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof update_dto_1.GetReleaseAppsBranchesRequestDto !== "undefined" && update_dto_1.GetReleaseAppsBranchesRequestDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+], UpdateApiController.prototype, "getReleaseAppsBranches", null);
+__decorate([
+    (0, common_1.Get)('release-apps/version-list'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'rainbow-release-apps 레포지토리의 버전 조회',
+        description: 'rainbow-release-apps 레포지토리의 버전을 조회합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'rainbow-release-apps 레포지토리의 버전 조회 성공',
+        type: [update_dto_1.ResponseReleaseVersionInfoDto],
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof update_dto_1.GetReleaseAppsVersionListRequestDto !== "undefined" && update_dto_1.GetReleaseAppsVersionListRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", void 0)
+], UpdateApiController.prototype, "getReleaseAppsVersionList", null);
+__decorate([
+    (0, common_1.Post)('web-ui/app/add'),
+    (0, swagger_1.ApiOperation)({
+        summary: '웹 UI 앱 추가',
+        description: '웹 UI 앱을 추가합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '웹 UI 앱 추가 성공',
+        type: update_dto_1.ResponseWebUIAppAddDto,
+    }),
+    (0, swagger_1.ApiBadRequestResponse)({
+        description: '웹 UI 앱 추가 실패',
+    }),
+    (0, swagger_1.ApiNotFoundResponse)({
+        description: '웹 UI 앱 추가 스크립트 파일을 찾을 수 없습니다.',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof update_dto_1.WebUIAppAddDto !== "undefined" && update_dto_1.WebUIAppAddDto) === "function" ? _m : Object]),
+    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
+], UpdateApiController.prototype, "webUIAppAdd", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '소프트웨어 업데이트',
+        description: '소프트웨어 업데이트를 요청합니다.',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_p = typeof update_dto_1.UpdateRequestDto !== "undefined" && update_dto_1.UpdateRequestDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", void 0)
+], UpdateApiController.prototype, "updateSoftware", null);
+__decorate([
+    (0, common_1.Delete)('web-ui/app/delete'),
+    (0, swagger_1.ApiOperation)({
+        summary: '웹 UI 앱 삭제',
+        description: '웹 UI 앱을 삭제합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '웹 UI 앱 삭제 성공',
+        type: update_dto_1.ResponseWebUIAppDeleteDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '웹 UI 앱 삭제 실패',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 404,
+        description: '웹 UI 앱 삭제 스크립트 파일을 찾을 수 없습니다.',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_q = typeof update_dto_1.WebUIAppDeleteDto !== "undefined" && update_dto_1.WebUIAppDeleteDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", void 0)
+], UpdateApiController.prototype, "webUIAppDelete", null);
+exports.UpdateApiController = UpdateApiController = __decorate([
+    (0, swagger_1.ApiTags)('업데이트 관련 API (update)'),
+    (0, swagger_1.ApiExcludeController)(),
+    (0, common_1.Controller)('update'),
+    __metadata("design:paramtypes", [typeof (_a = typeof update_api_service_1.UpdateApiService !== "undefined" && update_api_service_1.UpdateApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], UpdateApiController);
+
+
+/***/ }),
+/* 132 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ResponseWebUIAppDeleteDto = exports.ResponseWebUIAppAddDto = exports.WebUIAppDeleteDto = exports.WebUIAppAddDto = exports.UpdateResponseSocketDto = exports.UpdateRequestSocketDto = exports.UpdateRequestDto = exports.ResponseReleaseVersionInfoDto = exports.GetReleaseAppsVersionListRequestDto = exports.GetReleaseAppBranchesResponseDto = exports.ResponseReleaseAppsBranches = exports.GetReleaseAppsBranchesRequestDto = exports.CommitDto = exports.GetSoftwareParamDto = void 0;
+const pagination_1 = __webpack_require__(104);
+const util_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+var Description;
+(function (Description) {
+    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
+    Description["BRANCH"] = "\uBE0C\uB79C\uCE58 \uC774\uB984";
+    Description["TOKEN"] = "\uC554\uD638\uD654\uB41C token";
+    Description["ID"] = "\uC694\uCCAD\uC5D0 \uB300\uD55C ID \uAC12. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uC751\uB2F5\uC5D0 \uB3D9\uC77C\uD55C ID \uAC12 \uBC18\uD658 \uD544\uC694.";
+    Description["VERSION"] = "version \uC815\uBCF4";
+    Description["RESULT"] = "\uC5C5\uB370\uC774\uD2B8 \uACB0\uACFC";
+    Description["MESSAGE"] = "\uC5C5\uB370\uC774\uD2B8 \uBA54\uC2DC\uC9C0";
+})(Description || (Description = {}));
+class GetSoftwareParamDto {
+}
+exports.GetSoftwareParamDto = GetSoftwareParamDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: '소프트웨어 종류 (예: rrs, slamnav2)',
+        example: 'slamnav2',
+    }),
+    __metadata("design:type", String)
+], GetSoftwareParamDto.prototype, "software", void 0);
+class CommitDto {
+}
+exports.CommitDto = CommitDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'commit sha',
+        example: 'ae601391564b381ee8d2271e9b4b79a632894016',
+    }),
+    __metadata("design:type", String)
+], CommitDto.prototype, "sha", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'commit url',
+        example: 'https://github.com/rainbow-mobile/rainbow-release-apps/commit/ae601391564b381ee8d2271e9b4b79a632894016',
+    }),
+    __metadata("design:type", String)
+], CommitDto.prototype, "url", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'commit name',
+    }),
+    __metadata("design:type", String)
+], CommitDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'commit protected',
+    }),
+    __metadata("design:type", Boolean)
+], CommitDto.prototype, "protected", void 0);
+class GetReleaseAppsBranchesRequestDto extends pagination_1.PaginationRequest {
+}
+exports.GetReleaseAppsBranchesRequestDto = GetReleaseAppsBranchesRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.TOKEN,
+        default: '3bJyXEJA/FvAYWnbAIsj6T96+217WeqR4HpdmuNTGcG/dzYaOLjjWkz3bjR1NGYQqj8nMS8A6N91bnaCTveF0Q==',
+    }),
+    __metadata("design:type", String)
+], GetReleaseAppsBranchesRequestDto.prototype, "token", void 0);
+class ResponseReleaseAppsBranches {
+}
+exports.ResponseReleaseAppsBranches = ResponseReleaseAppsBranches;
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'commit',
+        type: CommitDto,
+    }),
+    __metadata("design:type", CommitDto)
+], ResponseReleaseAppsBranches.prototype, "commit", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+    }),
+    __metadata("design:type", String)
+], ResponseReleaseAppsBranches.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+    }),
+    __metadata("design:type", Boolean)
+], ResponseReleaseAppsBranches.prototype, "protected", void 0);
+class GetReleaseAppBranchesResponseDto extends pagination_1.PaginationResponse {
+}
+exports.GetReleaseAppBranchesResponseDto = GetReleaseAppBranchesResponseDto;
+class GetReleaseAppsVersionListRequestDto {
+}
+exports.GetReleaseAppsVersionListRequestDto = GetReleaseAppsVersionListRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.TOKEN,
+        default: '3bJyXEJA/FvAYWnbAIsj6T96+217WeqR4HpdmuNTGcG/dzYaOLjjWkz3bjR1NGYQqj8nMS8A6N91bnaCTveF0Q==',
+    }),
+    __metadata("design:type", String)
+], GetReleaseAppsVersionListRequestDto.prototype, "token", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+        example: 'main',
+    }),
+    __metadata("design:type", String)
+], GetReleaseAppsVersionListRequestDto.prototype, "branch", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.SOFTWARE,
+        example: 'slamnav2',
+    }),
+    __metadata("design:type", String)
+], GetReleaseAppsVersionListRequestDto.prototype, "software", void 0);
+class ResponseReleaseVersionInfoDto {
+}
+exports.ResponseReleaseVersionInfoDto = ResponseReleaseVersionInfoDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+    }),
+    __metadata("design:type", String)
+], ResponseReleaseVersionInfoDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'version path',
+    }),
+    __metadata("design:type", String)
+], ResponseReleaseVersionInfoDto.prototype, "path", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'version sha',
+    }),
+    __metadata("design:type", String)
+], ResponseReleaseVersionInfoDto.prototype, "sha", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'version size',
+    }),
+    __metadata("design:type", Number)
+], ResponseReleaseVersionInfoDto.prototype, "size", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'version url',
+    }),
+    __metadata("design:type", String)
+], ResponseReleaseVersionInfoDto.prototype, "url", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'version download url',
+    }),
+    __metadata("design:type", String)
+], ResponseReleaseVersionInfoDto.prototype, "download_url", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'version links',
+    }),
+    __metadata("design:type", Object)
+], ResponseReleaseVersionInfoDto.prototype, "_links", void 0);
+class UpdateRequestDto {
+}
+exports.UpdateRequestDto = UpdateRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.SOFTWARE,
+        example: 'slamnav2',
+    }),
+    __metadata("design:type", String)
+], UpdateRequestDto.prototype, "software", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+        example: 'main',
+    }),
+    __metadata("design:type", String)
+], UpdateRequestDto.prototype, "branch", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.VERSION,
+        example: '1.0.0',
+    }),
+    __metadata("design:type", String)
+], UpdateRequestDto.prototype, "version", void 0);
+class UpdateRequestSocketDto extends UpdateRequestDto {
+}
+exports.UpdateRequestSocketDto = UpdateRequestSocketDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.ID,
+        example: util_1.UrlUtil.generateUUID(),
+    }),
+    __metadata("design:type", String)
+], UpdateRequestSocketDto.prototype, "id", void 0);
+class UpdateResponseSocketDto extends UpdateRequestSocketDto {
+}
+exports.UpdateResponseSocketDto = UpdateResponseSocketDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.RESULT,
+        example: 'true',
+    }),
+    __metadata("design:type", String)
+], UpdateResponseSocketDto.prototype, "result", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.MESSAGE,
+        example: '업데이트 완료',
+    }),
+    __metadata("design:type", String)
+], UpdateResponseSocketDto.prototype, "message", void 0);
+class WebUIAppAddDto {
+}
+exports.WebUIAppAddDto = WebUIAppAddDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '앱 이름 배열',
+        example: ['app1', 'app2'],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], WebUIAppAddDto.prototype, "appNames", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '브랜치 이름',
+        example: 'main',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], WebUIAppAddDto.prototype, "branch", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '로봇 UI에 노출할 첫페이지 URL',
+        example: '/S100',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], WebUIAppAddDto.prototype, "fo", void 0);
+class WebUIAppDeleteDto {
+}
+exports.WebUIAppDeleteDto = WebUIAppDeleteDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '앱 이름 배열',
+        example: ['app1', 'app2'],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], WebUIAppDeleteDto.prototype, "appNames", void 0);
+class ResponseWebUIAppAddDto {
+}
+exports.ResponseWebUIAppAddDto = ResponseWebUIAppAddDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '추가한 앱 이름 배열',
+        example: ['app1', 'app2'],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], ResponseWebUIAppAddDto.prototype, "appNames", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '브랜치 이름',
+        example: 'main',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ResponseWebUIAppAddDto.prototype, "branch", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '로봇 UI에 노출할 첫페이지 URL',
+        example: '/S100',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ResponseWebUIAppAddDto.prototype, "fo", void 0);
+class ResponseWebUIAppDeleteDto {
+}
+exports.ResponseWebUIAppDeleteDto = ResponseWebUIAppDeleteDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '삭제한 앱 이름 배열',
+        example: ['app1', 'app2'],
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], ResponseWebUIAppDeleteDto.prototype, "appNames", void 0);
+
+
+/***/ }),
+/* 133 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CurVersionDto = exports.NewVersionGitDto = exports.PingSendToTargetResponseDto = exports.PingSendToTargetDto = void 0;
+const class_validator_1 = __webpack_require__(11);
+const swagger_1 = __webpack_require__(8);
+var Description;
+(function (Description) {
+    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
+})(Description || (Description = {}));
+class PingSendToTargetDto {
+}
+exports.PingSendToTargetDto = PingSendToTargetDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '타겟 호스트',
+        default: '192.168.1.1',
+    }),
+    __metadata("design:type", String)
+], PingSendToTargetDto.prototype, "target", void 0);
+class PingSendToTargetResponseDto extends PingSendToTargetDto {
+}
+exports.PingSendToTargetResponseDto = PingSendToTargetResponseDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '타겟 호스트에 5번 ping 전송 결과',
+        default: '요청에 성공했습니다.',
+    }),
+    __metadata("design:type", String)
+], PingSendToTargetResponseDto.prototype, "message", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'ping 결과 stdout',
+        default: 'PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.\n64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.87 ms\n\n--- 192.168.1.1 ping statistics ---\n1 packets transmitted, 1 received, 0% packet loss, time 0ms\nrtt min/avg/max/mdev = 1.874/1.874/1.874/0.000 ms\n',
+    }),
+    __metadata("design:type", String)
+], PingSendToTargetResponseDto.prototype, "stdout", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'ping 결과 stderr',
+        default: '',
+    }),
+    __metadata("design:type", String)
+], PingSendToTargetResponseDto.prototype, "stderr", void 0);
+class NewVersionGitDto {
+}
+exports.NewVersionGitDto = NewVersionGitDto;
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '핫픽스 여부',
+        default: false,
+    }),
+    __metadata("design:type", Boolean)
+], NewVersionGitDto.prototype, "hotfix", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '최신 버전',
+        default: 'rrs-20250812125004',
+    }),
+    __metadata("design:type", String)
+], NewVersionGitDto.prototype, "new_version", void 0);
+class CurVersionDto {
+}
+exports.CurVersionDto = CurVersionDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: '현재 버전',
+        default: 'rrs-20250812125004',
+    }),
+    __metadata("design:type", String)
+], CurVersionDto.prototype, "current", void 0);
+
+
+/***/ }),
+/* 134 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GetCurrentVersionResponseSocketDto = exports.GetCurrentVersionRequestSocketDto = exports.GetCurrentVersionResponseDto = exports.GetCurrentVersionRequestDto = exports.GetNewVersionResponseDto = exports.GetNewVersionRequestDto = void 0;
+const class_validator_1 = __webpack_require__(11);
+const swagger_1 = __webpack_require__(8);
+const url_util_1 = __webpack_require__(14);
+var Description;
+(function (Description) {
+    Description["BRANCH"] = "\uBE0C\uB79C\uCE58 \uC774\uB984";
+    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
+    Description["VERSION"] = "version \uC815\uBCF4";
+    Description["HOTFIX"] = "hotfix \uC5EC\uBD80. hotfix\uAC00 true\uC778 \uACBD\uC6B0, \uC790\uB3D9 \uC5C5\uB370\uC774\uD2B8\uAC00 \uC694\uAD6C\uB429\uB2C8\uB2E4.";
+    Description["ID"] = "\uC694\uCCAD\uC5D0 \uB300\uD55C ID \uAC12. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uC751\uB2F5\uC5D0 \uB3D9\uC77C\uD55C ID \uAC12 \uBC18\uD658 \uD544\uC694.";
+    Description["RESULT"] = "\uC5C5\uB370\uC774\uD2B8 \uACB0\uACFC";
+    Description["MESSAGE"] = "\uC5C5\uB370\uC774\uD2B8 \uBA54\uC2DC\uC9C0";
+})(Description || (Description = {}));
+class GetNewVersionRequestDto {
+}
+exports.GetNewVersionRequestDto = GetNewVersionRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: Description.SOFTWARE,
+        example: 'slamnav2',
+    }),
+    __metadata("design:type", String)
+], GetNewVersionRequestDto.prototype, "software", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+        default: 'main',
+    }),
+    __metadata("design:type", String)
+], GetNewVersionRequestDto.prototype, "branch", void 0);
+class GetNewVersionResponseDto extends GetNewVersionRequestDto {
+}
+exports.GetNewVersionResponseDto = GetNewVersionResponseDto;
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.VERSION,
+        example: '1.0.0',
+    }),
+    __metadata("design:type", String)
+], GetNewVersionResponseDto.prototype, "version", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.HOTFIX,
+        example: true,
+    }),
+    __metadata("design:type", Boolean)
+], GetNewVersionResponseDto.prototype, "hotfix", void 0);
+class GetCurrentVersionRequestDto {
+}
+exports.GetCurrentVersionRequestDto = GetCurrentVersionRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: Description.SOFTWARE,
+        example: 'slamnav2',
+    }),
+    __metadata("design:type", String)
+], GetCurrentVersionRequestDto.prototype, "software", void 0);
+class GetCurrentVersionResponseDto extends GetCurrentVersionRequestDto {
+}
+exports.GetCurrentVersionResponseDto = GetCurrentVersionResponseDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.VERSION,
+        example: '1.0.0',
+    }),
+    __metadata("design:type", String)
+], GetCurrentVersionResponseDto.prototype, "version", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+        default: 'main',
+    }),
+    __metadata("design:type", String)
+], GetCurrentVersionResponseDto.prototype, "branch", void 0);
+class GetCurrentVersionRequestSocketDto {
+}
+exports.GetCurrentVersionRequestSocketDto = GetCurrentVersionRequestSocketDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.ID,
+        example: url_util_1.UrlUtil.generateUUID(),
+    }),
+    __metadata("design:type", String)
+], GetCurrentVersionRequestSocketDto.prototype, "id", void 0);
+class GetCurrentVersionResponseSocketDto extends GetCurrentVersionRequestSocketDto {
+}
+exports.GetCurrentVersionResponseSocketDto = GetCurrentVersionResponseSocketDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.VERSION,
+        example: '1.0.0',
+    }),
+    __metadata("design:type", String)
+], GetCurrentVersionResponseSocketDto.prototype, "version", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: Description.BRANCH,
+        default: 'main',
+    }),
+    __metadata("design:type", String)
+], GetCurrentVersionResponseSocketDto.prototype, "branch", void 0);
+
+
+/***/ }),
+/* 135 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const cobot_api_service_1 = __webpack_require__(124);
-const cobot_api_controller_1 = __webpack_require__(125);
+const cobot_api_service_1 = __webpack_require__(136);
+const cobot_api_controller_1 = __webpack_require__(137);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
 const config_1 = __webpack_require__(73);
@@ -10344,7 +12054,7 @@ exports.CobotApiModule = CobotApiModule = __decorate([
 
 
 /***/ }),
-/* 124 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10433,7 +12143,7 @@ exports.CobotApiService = CobotApiService = __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10455,11 +12165,11 @@ exports.CobotApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const swagger_2 = __webpack_require__(8);
-const cobot_api_service_1 = __webpack_require__(124);
-const cobot_dto_1 = __webpack_require__(126);
-const cobot_dto_2 = __webpack_require__(126);
-const cobot_dto_3 = __webpack_require__(126);
-const cobot_dto_4 = __webpack_require__(126);
+const cobot_api_service_1 = __webpack_require__(136);
+const cobot_dto_1 = __webpack_require__(138);
+const cobot_dto_2 = __webpack_require__(138);
+const cobot_dto_3 = __webpack_require__(138);
+const cobot_dto_4 = __webpack_require__(138);
 const saveLog_service_1 = __webpack_require__(68);
 let CobotApiController = class CobotApiController {
     constructor(cobotApiService, saveLogService) {
@@ -11335,7 +13045,7 @@ exports.CobotApiController = CobotApiController = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11783,7 +13493,7 @@ __decorate([
 
 
 /***/ }),
-/* 127 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11796,8 +13506,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const tcp_api_service_1 = __webpack_require__(128);
-const tcp_api_controller_1 = __webpack_require__(129);
+const tcp_api_service_1 = __webpack_require__(140);
+const tcp_api_controller_1 = __webpack_require__(141);
 const log_module_1 = __webpack_require__(74);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
@@ -11833,7 +13543,7 @@ exports.TcpApiModule = TcpApiModule = __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11884,7 +13594,7 @@ exports.TcpApiService = TcpApiService = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11905,8 +13615,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const tcp_api_service_1 = __webpack_require__(128);
-const cobot_dto_1 = __webpack_require__(126);
+const tcp_api_service_1 = __webpack_require__(140);
+const cobot_dto_1 = __webpack_require__(138);
 const saveLog_service_1 = __webpack_require__(68);
 let TcpApiController = class TcpApiController {
     constructor(tcpApiService, saveLogService) {
@@ -11975,7 +13685,7 @@ exports.TcpApiController = TcpApiController = __decorate([
 
 
 /***/ }),
-/* 130 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11989,11 +13699,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiModule = void 0;
 const common_1 = __webpack_require__(5);
 const config_1 = __webpack_require__(73);
-const socket_api_controller_1 = __webpack_require__(131);
-const socket_api_service_1 = __webpack_require__(132);
+const socket_api_controller_1 = __webpack_require__(143);
+const socket_api_service_1 = __webpack_require__(144);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
-const socket_mqtt_controller_1 = __webpack_require__(133);
+const socket_mqtt_controller_1 = __webpack_require__(145);
 const log_module_1 = __webpack_require__(74);
 let SocketApiModule = class SocketApiModule {
 };
@@ -12028,7 +13738,7 @@ exports.SocketApiModule = SocketApiModule = __decorate([
 
 
 /***/ }),
-/* 131 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12046,7 +13756,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const socket_api_service_1 = __webpack_require__(132);
+const socket_api_service_1 = __webpack_require__(144);
 const saveLog_service_1 = __webpack_require__(68);
 let SocketApiController = class SocketApiController {
     constructor(saveLogService) {
@@ -12312,7 +14022,7 @@ exports.SocketApiController = SocketApiController = __decorate([
 
 
 /***/ }),
-/* 132 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12366,7 +14076,7 @@ exports.SocketApiService = SocketApiService = __decorate([
 
 
 /***/ }),
-/* 133 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12387,14 +14097,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
 const config_1 = __webpack_require__(73);
-const status_type_1 = __webpack_require__(134);
-const socket_api_service_1 = __webpack_require__(132);
-const websockets_1 = __webpack_require__(136);
-const movestatus_type_1 = __webpack_require__(137);
+const status_type_1 = __webpack_require__(146);
+const socket_api_service_1 = __webpack_require__(144);
+const websockets_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(149);
 const microservices_1 = __webpack_require__(3);
 const saveLog_service_1 = __webpack_require__(68);
-const exAccessory_dto_1 = __webpack_require__(138);
-const programStatus_dto_1 = __webpack_require__(139);
+const exAccessory_dto_1 = __webpack_require__(150);
+const programStatus_dto_1 = __webpack_require__(151);
 let SocketMqttController = class SocketMqttController {
     constructor(configService, saveLogService) {
         this.configService = configService;
@@ -12454,7 +14164,7 @@ exports.SocketMqttController = SocketMqttController = __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12472,7 +14182,7 @@ exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = export
 const date_util_1 = __webpack_require__(16);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const state_type_1 = __webpack_require__(135);
+const state_type_1 = __webpack_require__(147);
 const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
@@ -13137,7 +14847,7 @@ __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 147 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -13198,13 +14908,13 @@ var ChargeState;
 
 
 /***/ }),
-/* 136 */
+/* 148 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/websockets");
 
 /***/ }),
-/* 137 */
+/* 149 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13222,8 +14932,8 @@ exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.V
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const util_1 = __webpack_require__(13);
-const state_type_1 = __webpack_require__(135);
-const state_type_2 = __webpack_require__(135);
+const state_type_1 = __webpack_require__(147);
+const state_type_2 = __webpack_require__(147);
 var Description;
 (function (Description) {
     Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
@@ -13535,7 +15245,7 @@ __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 150 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13707,7 +15417,7 @@ __decorate([
 
 
 /***/ }),
-/* 139 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13769,7 +15479,7 @@ __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13872,7 +15582,7 @@ function mapGrpcToHttpStatus(code) {
 
 
 /***/ }),
-/* 141 */
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13885,10 +15595,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const client_socket_service_1 = __webpack_require__(142);
-const client_socket_gateway_1 = __webpack_require__(143);
+const client_socket_service_1 = __webpack_require__(154);
+const client_socket_gateway_1 = __webpack_require__(155);
 const microservices_1 = __webpack_require__(3);
-const client_socket_mqtt_controller_1 = __webpack_require__(148);
+const client_socket_mqtt_controller_1 = __webpack_require__(160);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
 const nestjs_asyncapi_1 = __webpack_require__(2);
@@ -14073,7 +15783,7 @@ exports.ClientSocketModule = ClientSocketModule = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14095,7 +15805,7 @@ exports.ClientSocketService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
-const websockets_1 = __webpack_require__(136);
+const websockets_1 = __webpack_require__(148);
 const constant_1 = __webpack_require__(61);
 const move_type_1 = __webpack_require__(101);
 const control_type_1 = __webpack_require__(12);
@@ -14398,7 +16108,7 @@ exports.ClientSocketService = ClientSocketService = __decorate([
 
 
 /***/ }),
-/* 143 */
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14417,18 +16127,18 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketGateway = void 0;
-const websockets_1 = __webpack_require__(136);
-const client_socket_service_1 = __webpack_require__(142);
-const socket_io_1 = __webpack_require__(144);
+const websockets_1 = __webpack_require__(148);
+const client_socket_service_1 = __webpack_require__(154);
+const socket_io_1 = __webpack_require__(156);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const subscribe_dto_1 = __webpack_require__(145);
+const subscribe_dto_1 = __webpack_require__(157);
 const move_dto_1 = __webpack_require__(100);
 const localization_dto_1 = __webpack_require__(80);
 const load_dto_1 = __webpack_require__(113);
 const mapping_dto_1 = __webpack_require__(112);
 const control_dto_1 = __webpack_require__(9);
 const safety_io_dto_1 = __webpack_require__(72);
-const path_dto_1 = __webpack_require__(147);
+const path_dto_1 = __webpack_require__(159);
 const saveLog_service_1 = __webpack_require__(68);
 let ClientSocketGateway = class ClientSocketGateway {
     constructor(clientService, saveLogService) {
@@ -14804,13 +16514,13 @@ exports.ClientSocketGateway = ClientSocketGateway = __decorate([
 
 
 /***/ }),
-/* 144 */
+/* 156 */
 /***/ ((module) => {
 
 module.exports = require("socket.io");
 
 /***/ }),
-/* 145 */
+/* 157 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14827,7 +16537,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubscribeDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const description_1 = __webpack_require__(146);
+const description_1 = __webpack_require__(158);
 class SubscribeDto {
 }
 exports.SubscribeDto = SubscribeDto;
@@ -14844,7 +16554,7 @@ __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 158 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -14857,7 +16567,7 @@ var client_description;
 
 
 /***/ }),
-/* 147 */
+/* 159 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14930,7 +16640,7 @@ __decorate([
 
 
 /***/ }),
-/* 148 */
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14952,20 +16662,20 @@ exports.ClientSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const websockets_1 = __webpack_require__(136);
+const websockets_1 = __webpack_require__(148);
 const common_2 = __webpack_require__(26);
-const client_socket_service_1 = __webpack_require__(142);
+const client_socket_service_1 = __webpack_require__(154);
 const move_dto_1 = __webpack_require__(100);
 const localization_dto_1 = __webpack_require__(80);
 const load_dto_1 = __webpack_require__(113);
 const mapping_dto_1 = __webpack_require__(112);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(134);
-const movestatus_type_1 = __webpack_require__(137);
-const cloud_type_1 = __webpack_require__(149);
-const cobot_dto_1 = __webpack_require__(126);
-const exAccessory_dto_1 = __webpack_require__(138);
-const path_dto_1 = __webpack_require__(147);
+const status_type_1 = __webpack_require__(146);
+const movestatus_type_1 = __webpack_require__(149);
+const cloud_type_1 = __webpack_require__(161);
+const cobot_dto_1 = __webpack_require__(138);
+const exAccessory_dto_1 = __webpack_require__(150);
+const path_dto_1 = __webpack_require__(159);
 let ClientSocketMqttController = class ClientSocketMqttController {
     constructor(clientService) {
         this.clientService = clientService;
@@ -15289,7 +16999,7 @@ exports.ClientSocketMqttController = ClientSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 149 */
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15307,7 +17017,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MappingCloudDto = exports.LidarCloudDto = exports.CloudDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const movestatus_type_1 = __webpack_require__(137);
+const movestatus_type_1 = __webpack_require__(149);
 const util_1 = __webpack_require__(13);
 var Description;
 (function (Description) {
@@ -15423,7 +17133,7 @@ __decorate([
 
 
 /***/ }),
-/* 150 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15436,18 +17146,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(151);
+const slamnav_socket_service_1 = __webpack_require__(163);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const taskman_socket_service_1 = __webpack_require__(153);
+const taskman_socket_service_1 = __webpack_require__(165);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
-const robot_socket_mqtt_controller_1 = __webpack_require__(154);
-const slamnav_socket_gateway_1 = __webpack_require__(162);
-const taskman_socket_gateway_1 = __webpack_require__(163);
-const ex_accessory_socket_gateway_1 = __webpack_require__(166);
-const ex_accessory_socket_service_1 = __webpack_require__(160);
+const robot_socket_mqtt_controller_1 = __webpack_require__(166);
+const slamnav_socket_gateway_1 = __webpack_require__(173);
+const taskman_socket_gateway_1 = __webpack_require__(175);
+const ex_accessory_socket_gateway_1 = __webpack_require__(178);
+const ex_accessory_socket_service_1 = __webpack_require__(172);
 const log_module_1 = __webpack_require__(74);
 let RobotSocketModule = class RobotSocketModule {
 };
@@ -15513,7 +17223,7 @@ exports.RobotSocketModule = RobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 151 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15535,7 +17245,7 @@ exports.SlamnavService = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const lodash_1 = __webpack_require__(152);
+const lodash_1 = __webpack_require__(164);
 const constant_1 = __webpack_require__(61);
 const saveLog_service_1 = __webpack_require__(68);
 let SlamnavService = class SlamnavService {
@@ -15691,6 +17401,30 @@ let SlamnavService = class SlamnavService {
             throw error();
         }
     }
+    systemStatus(data) {
+        try {
+            if (data == null || data == undefined) {
+                this.logger?.warn(`[SLAMNAV] systemStatus: NULL`);
+                return;
+            }
+            const time = data.time;
+            if (data.time) {
+                const delayTime = Date.now() - parseInt(data.time);
+                if (delayTime > this.warningTime) {
+                    this.logger?.warn(`[SLAMNAV] systemStatus: ${delayTime}ms`);
+                }
+            }
+            if ((0, lodash_1.isEqual)(data, this.lastSystemStatus)) {
+                return;
+            }
+            this.lastSystemStatus = data;
+            this.mqttMicroservice.emit('systemStatus', { ...data, time });
+        }
+        catch (error) {
+            this.logger?.error(`[SLAMNAV] systemStatus: ${(0, common_1.errorToJson)(error)}`);
+            throw error();
+        }
+    }
     localPath(data) {
         try {
             if (data === undefined || data === null) {
@@ -15800,13 +17534,13 @@ exports.SlamnavService = SlamnavService = __decorate([
 
 
 /***/ }),
-/* 152 */
+/* 164 */
 /***/ ((module) => {
 
 module.exports = require("lodash");
 
 /***/ }),
-/* 153 */
+/* 165 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15890,7 +17624,7 @@ exports.TaskmanService = TaskmanService = __decorate([
 
 
 /***/ }),
-/* 154 */
+/* 166 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15910,28 +17644,28 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(151);
+const slamnav_socket_service_1 = __webpack_require__(163);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const taskman_socket_service_1 = __webpack_require__(153);
+const taskman_socket_service_1 = __webpack_require__(165);
 const move_dto_1 = __webpack_require__(100);
-const move_domain_1 = __webpack_require__(155);
-const localization_domain_1 = __webpack_require__(156);
-const control_domain_1 = __webpack_require__(157);
+const move_domain_1 = __webpack_require__(167);
+const localization_domain_1 = __webpack_require__(168);
+const control_domain_1 = __webpack_require__(169);
 const move_dto_2 = __webpack_require__(100);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(134);
-const movestatus_type_1 = __webpack_require__(137);
+const status_type_1 = __webpack_require__(146);
+const movestatus_type_1 = __webpack_require__(149);
 const map_command_domain_1 = __webpack_require__(109);
-const task_dto_1 = __webpack_require__(158);
-const ex_accessory_socket_service_1 = __webpack_require__(160);
-const exAccessory_dto_1 = __webpack_require__(138);
-const version_dto_1 = __webpack_require__(161);
+const task_dto_1 = __webpack_require__(170);
+const ex_accessory_socket_service_1 = __webpack_require__(172);
+const exAccessory_dto_1 = __webpack_require__(150);
+const version_dto_1 = __webpack_require__(134);
 const setting_dto_1 = __webpack_require__(96);
 const localization_dto_1 = __webpack_require__(80);
 const mapping_dto_1 = __webpack_require__(112);
 const load_dto_1 = __webpack_require__(113);
-const path_dto_1 = __webpack_require__(147);
+const path_dto_1 = __webpack_require__(159);
 const saveLog_service_1 = __webpack_require__(68);
 let RobotSocketMqttController = class RobotSocketMqttController {
     constructor(slamnavService, exAccessoryService, taskmanService, saveLogService) {
@@ -16186,7 +17920,7 @@ exports.RobotSocketMqttController = RobotSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 155 */
+/* 167 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -16337,7 +18071,7 @@ exports.MoveModel = MoveModel;
 
 
 /***/ }),
-/* 156 */
+/* 168 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -16409,7 +18143,7 @@ exports.LocalizationModel = LocalizationModel;
 
 
 /***/ }),
-/* 157 */
+/* 169 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -16628,7 +18362,7 @@ exports.ControlModel = ControlModel;
 
 
 /***/ }),
-/* 158 */
+/* 170 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16647,7 +18381,7 @@ const url_util_1 = __webpack_require__(14);
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
-const task_type_1 = __webpack_require__(159);
+const task_type_1 = __webpack_require__(171);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uD0DC\uC2A4\uD06C \uBA85\uB839. \uC218\uD589\uD560 \uD0DC\uC2A4\uD06C \uBA85\uB839\uC744 \uC785\uB825\uD558\uC138\uC694.";
@@ -16750,7 +18484,7 @@ __decorate([
 
 
 /***/ }),
-/* 159 */
+/* 171 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16829,7 +18563,7 @@ __decorate([
 
 
 /***/ }),
-/* 160 */
+/* 172 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16897,143 +18631,7 @@ exports.ExAccessorySocketService = ExAccessorySocketService = __decorate([
 
 
 /***/ }),
-/* 161 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GetCurrentVersionResponseSocketDto = exports.GetCurrentVersionRequestSocketDto = exports.GetCurrentVersionResponseDto = exports.GetCurrentVersionRequestDto = exports.GetNewVersionResponseDto = exports.GetNewVersionRequestDto = void 0;
-const class_validator_1 = __webpack_require__(11);
-const swagger_1 = __webpack_require__(8);
-const url_util_1 = __webpack_require__(14);
-var Description;
-(function (Description) {
-    Description["BRANCH"] = "\uBE0C\uB79C\uCE58 \uC774\uB984";
-    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
-    Description["VERSION"] = "version \uC815\uBCF4";
-    Description["HOTFIX"] = "hotfix \uC5EC\uBD80. hotfix\uAC00 true\uC778 \uACBD\uC6B0, \uC790\uB3D9 \uC5C5\uB370\uC774\uD2B8\uAC00 \uC694\uAD6C\uB429\uB2C8\uB2E4.";
-    Description["ID"] = "\uC694\uCCAD\uC5D0 \uB300\uD55C ID \uAC12. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uC751\uB2F5\uC5D0 \uB3D9\uC77C\uD55C ID \uAC12 \uBC18\uD658 \uD544\uC694.";
-    Description["RESULT"] = "\uC5C5\uB370\uC774\uD2B8 \uACB0\uACFC";
-    Description["MESSAGE"] = "\uC5C5\uB370\uC774\uD2B8 \uBA54\uC2DC\uC9C0";
-})(Description || (Description = {}));
-class GetNewVersionRequestDto {
-}
-exports.GetNewVersionRequestDto = GetNewVersionRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        description: Description.SOFTWARE,
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], GetNewVersionRequestDto.prototype, "software", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-        default: 'main',
-    }),
-    __metadata("design:type", String)
-], GetNewVersionRequestDto.prototype, "branch", void 0);
-class GetNewVersionResponseDto extends GetNewVersionRequestDto {
-}
-exports.GetNewVersionResponseDto = GetNewVersionResponseDto;
-__decorate([
-    (0, class_validator_1.IsObject)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.VERSION,
-        example: '1.0.0',
-    }),
-    __metadata("design:type", String)
-], GetNewVersionResponseDto.prototype, "version", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.HOTFIX,
-        example: true,
-    }),
-    __metadata("design:type", Boolean)
-], GetNewVersionResponseDto.prototype, "hotfix", void 0);
-class GetCurrentVersionRequestDto {
-}
-exports.GetCurrentVersionRequestDto = GetCurrentVersionRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        description: Description.SOFTWARE,
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], GetCurrentVersionRequestDto.prototype, "software", void 0);
-class GetCurrentVersionResponseDto extends GetCurrentVersionRequestDto {
-}
-exports.GetCurrentVersionResponseDto = GetCurrentVersionResponseDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.VERSION,
-        example: '1.0.0',
-    }),
-    __metadata("design:type", String)
-], GetCurrentVersionResponseDto.prototype, "version", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-        default: 'main',
-    }),
-    __metadata("design:type", String)
-], GetCurrentVersionResponseDto.prototype, "branch", void 0);
-class GetCurrentVersionRequestSocketDto {
-}
-exports.GetCurrentVersionRequestSocketDto = GetCurrentVersionRequestSocketDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.ID,
-        example: url_util_1.UrlUtil.generateUUID(),
-    }),
-    __metadata("design:type", String)
-], GetCurrentVersionRequestSocketDto.prototype, "id", void 0);
-class GetCurrentVersionResponseSocketDto extends GetCurrentVersionRequestSocketDto {
-}
-exports.GetCurrentVersionResponseSocketDto = GetCurrentVersionResponseSocketDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.VERSION,
-        example: '1.0.0',
-    }),
-    __metadata("design:type", String)
-], GetCurrentVersionResponseSocketDto.prototype, "version", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-        default: 'main',
-    }),
-    __metadata("design:type", String)
-], GetCurrentVersionResponseSocketDto.prototype, "branch", void 0);
-
-
-/***/ }),
-/* 162 */
+/* 173 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17049,12 +18647,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlamnavSocketGateway = void 0;
-const websockets_1 = __webpack_require__(136);
-const socket_io_1 = __webpack_require__(144);
-const slamnav_socket_service_1 = __webpack_require__(151);
+const websockets_1 = __webpack_require__(148);
+const socket_io_1 = __webpack_require__(156);
+const slamnav_socket_service_1 = __webpack_require__(163);
 const saveLog_service_1 = __webpack_require__(68);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
@@ -17063,14 +18661,15 @@ const constant_1 = __webpack_require__(61);
 const move_dto_1 = __webpack_require__(100);
 const localization_dto_1 = __webpack_require__(80);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(134);
-const movestatus_type_1 = __webpack_require__(137);
-const cloud_type_1 = __webpack_require__(149);
+const status_type_1 = __webpack_require__(146);
+const movestatus_type_1 = __webpack_require__(149);
+const cloud_type_1 = __webpack_require__(161);
 const load_dto_1 = __webpack_require__(113);
 const mapping_dto_1 = __webpack_require__(112);
-const version_dto_1 = __webpack_require__(161);
+const version_dto_1 = __webpack_require__(134);
 const setting_dto_1 = __webpack_require__(96);
-const path_dto_1 = __webpack_require__(147);
+const path_dto_1 = __webpack_require__(159);
+const systemstatus_type_1 = __webpack_require__(174);
 let SlamnavSocketGateway = class SlamnavSocketGateway {
     constructor(slamnavService, mqttMicroservice, saveLogService) {
         this.slamnavService = slamnavService;
@@ -17175,6 +18774,11 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
     async handleMoveStatus(data, client) {
         if (client.id == this.slamnav?.id) {
             this.slamnavService.moveStatus(data);
+        }
+    }
+    async handleSystemStatus(data, client) {
+        if (client.id == this.slamnav?.id) {
+            this.slamnavService.systemStatus(data);
         }
     }
     async handleLocalPath(data, client) {
@@ -17352,6 +18956,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMoveStatus", null);
 __decorate([
+    (0, websockets_1.SubscribeMessage)('systemStatus'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'systemStatus',
+        message: {
+            payload: systemstatus_type_1.SystemStatusSlamnav,
+        },
+        description: 'SLAMNAV에서 주기적 송신하는 시스템 상태정보. 1Hz',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_z = typeof systemstatus_type_1.SystemStatusSlamnav !== "undefined" && systemstatus_type_1.SystemStatusSlamnav) === "function" ? _z : Object, typeof (_0 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _0 : Object]),
+    __metadata("design:returntype", Promise)
+], SlamnavSocketGateway.prototype, "handleSystemStatus", null);
+__decorate([
     (0, websockets_1.SubscribeMessage)('localPath'),
     (0, nestjs_asyncapi_1.AsyncApiSub)({
         channel: 'localPath',
@@ -17363,7 +18982,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_z = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _z : Object, typeof (_0 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _0 : Object]),
+    __metadata("design:paramtypes", [typeof (_1 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _1 : Object, typeof (_2 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _2 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLocalPath", null);
 __decorate([
@@ -17378,7 +18997,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_1 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _1 : Object, typeof (_2 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _2 : Object]),
+    __metadata("design:paramtypes", [typeof (_3 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _3 : Object, typeof (_4 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _4 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleGlobalPath", null);
 __decorate([
@@ -17393,7 +19012,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_3 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _3 : Object, typeof (_4 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _4 : Object]),
+    __metadata("design:paramtypes", [typeof (_5 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _5 : Object, typeof (_6 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _6 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLidarCloud", null);
 __decorate([
@@ -17408,7 +19027,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_5 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _5 : Object, typeof (_6 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _6 : Object]),
+    __metadata("design:paramtypes", [typeof (_7 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _7 : Object, typeof (_8 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _8 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMappingCloud", null);
 exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
@@ -17423,7 +19042,153 @@ exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 174 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemStatusSlamnav = exports.CpuStatusDto = exports.LidarStatusDto = exports.CamStatusDto = void 0;
+const date_util_1 = __webpack_require__(16);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+class CamStatusDto {
+}
+exports.CamStatusDto = CamStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 연결 상태',
+        example: false,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], CamStatusDto.prototype, "connection", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 RGB 이미지 높이',
+        example: 1080,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "rgb_h", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 RGB 이미지 너비',
+        example: 1920,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "rgb_w", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 Depth 이미지 높이',
+        example: 1080,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "depth_h", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 Depth 이미지 너비',
+        example: 1920,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "depth_w", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 포인트 수',
+        example: 100000,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "pts", void 0);
+class LidarStatusDto {
+}
+exports.LidarStatusDto = LidarStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '라이다 연결 상태',
+        example: false,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], LidarStatusDto.prototype, "connection", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '라이다 포인트 수',
+        example: 100000,
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", Number)
+], LidarStatusDto.prototype, "pts", void 0);
+class CpuStatusDto {
+}
+exports.CpuStatusDto = CpuStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'CPU 사용률',
+        example: 0.0,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CpuStatusDto.prototype, "use", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'CPU 온도',
+        example: 0.0,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CpuStatusDto.prototype, "temp", void 0);
+class SystemStatusSlamnav {
+}
+exports.SystemStatusSlamnav = SystemStatusSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '카메라 상태', required: false }),
+    __metadata("design:type", Array)
+], SystemStatusSlamnav.prototype, "cam", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '라이다 상태', required: false }),
+    __metadata("design:type", LidarStatusDto)
+], SystemStatusSlamnav.prototype, "lidar", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'CPU 상태', required: false }),
+    __metadata("design:type", CpuStatusDto)
+], SystemStatusSlamnav.prototype, "cpu", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '메시지 발송 시간. ms 단위',
+        example: date_util_1.DateUtil.getTimeString(),
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SystemStatusSlamnav.prototype, "time", void 0);
+
+
+/***/ }),
+/* 175 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17442,17 +19207,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskmanSocketGateway = void 0;
-const websockets_1 = __webpack_require__(136);
-const socket_io_1 = __webpack_require__(144);
-const taskman_socket_service_1 = __webpack_require__(153);
+const websockets_1 = __webpack_require__(148);
+const socket_io_1 = __webpack_require__(156);
+const taskman_socket_service_1 = __webpack_require__(165);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
 const move_dto_1 = __webpack_require__(100);
 const control_dto_1 = __webpack_require__(9);
-const task_dto_1 = __webpack_require__(158);
-const variables_dto_1 = __webpack_require__(164);
-const state_dto_1 = __webpack_require__(165);
+const task_dto_1 = __webpack_require__(170);
+const variables_dto_1 = __webpack_require__(176);
+const state_dto_1 = __webpack_require__(177);
 const saveLog_service_1 = __webpack_require__(68);
 let TaskmanSocketGateway = class TaskmanSocketGateway {
     constructor(taskmanService, mqttMicroservice, moveMicroservice, controlMicroservice, saveLogService) {
@@ -17582,7 +19347,7 @@ exports.TaskmanSocketGateway = TaskmanSocketGateway = __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 176 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17599,7 +19364,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskVariablesResponseTaskman = exports.TaskVariablesRequestTaskman = exports.TaskVariablesResponseDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const task_type_1 = __webpack_require__(159);
+const task_type_1 = __webpack_require__(171);
 const util_1 = __webpack_require__(13);
 const class_transformer_1 = __webpack_require__(10);
 class TaskVariablesResponseDto {
@@ -17645,7 +19410,7 @@ __decorate([
 
 
 /***/ }),
-/* 165 */
+/* 177 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17734,7 +19499,7 @@ __decorate([
 
 
 /***/ }),
-/* 166 */
+/* 178 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17753,13 +19518,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessorySocketGateway = void 0;
-const websockets_1 = __webpack_require__(136);
+const websockets_1 = __webpack_require__(148);
 const common_1 = __webpack_require__(5);
-const socket_io_1 = __webpack_require__(144);
-const ex_accessory_socket_service_1 = __webpack_require__(160);
+const socket_io_1 = __webpack_require__(156);
+const ex_accessory_socket_service_1 = __webpack_require__(172);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
-const exAccessory_dto_1 = __webpack_require__(138);
+const exAccessory_dto_1 = __webpack_require__(150);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 const control_dto_1 = __webpack_require__(9);
 const saveLog_service_1 = __webpack_require__(68);
@@ -17894,7 +19659,7 @@ exports.ExAccessorySocketGateway = ExAccessorySocketGateway = __decorate([
 
 
 /***/ }),
-/* 167 */
+/* 179 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17907,16 +19672,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FrsSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_1 = __webpack_require__(168);
-const frs_socket_client_1 = __webpack_require__(169);
+const typeorm_1 = __webpack_require__(180);
+const frs_socket_client_1 = __webpack_require__(181);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const config_entity_1 = __webpack_require__(172);
+const config_entity_1 = __webpack_require__(184);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
-const frs_sub_docs_1 = __webpack_require__(174);
-const frs_socket_service_1 = __webpack_require__(171);
+const frs_sub_docs_1 = __webpack_require__(186);
+const frs_socket_service_1 = __webpack_require__(183);
 const log_module_1 = __webpack_require__(74);
 let FrsSocketModule = class FrsSocketModule {
 };
@@ -18040,13 +19805,13 @@ exports.FrsSocketModule = FrsSocketModule = __decorate([
 
 
 /***/ }),
-/* 168 */
+/* 180 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 169 */
+/* 181 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18066,9 +19831,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSSocketClient = void 0;
 const common_1 = __webpack_require__(5);
-const socket_io_client_1 = __webpack_require__(170);
-const frs_socket_service_1 = __webpack_require__(171);
-const lodash_1 = __webpack_require__(152);
+const socket_io_client_1 = __webpack_require__(182);
+const frs_socket_service_1 = __webpack_require__(183);
+const lodash_1 = __webpack_require__(164);
 const microservices_1 = __webpack_require__(3);
 const class_validator_1 = __webpack_require__(11);
 const parse_util_1 = __webpack_require__(56);
@@ -18332,13 +20097,13 @@ exports.FRSSocketClient = FRSSocketClient = __decorate([
 
 
 /***/ }),
-/* 170 */
+/* 182 */
 /***/ ((module) => {
 
 module.exports = require("socket.io-client");
 
 /***/ }),
-/* 171 */
+/* 183 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18531,7 +20296,7 @@ exports.FRSSocketService = FRSSocketService = __decorate([
 
 
 /***/ }),
-/* 172 */
+/* 184 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18547,7 +20312,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Config = void 0;
-const typeorm_1 = __webpack_require__(173);
+const typeorm_1 = __webpack_require__(185);
 let Config = class Config {
 };
 exports.Config = Config;
@@ -18579,13 +20344,13 @@ exports.Config = Config = __decorate([
 
 
 /***/ }),
-/* 173 */
+/* 185 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 174 */
+/* 186 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18606,7 +20371,7 @@ const move_dto_1 = __webpack_require__(100);
 const load_dto_1 = __webpack_require__(113);
 const localization_dto_1 = __webpack_require__(80);
 const control_dto_1 = __webpack_require__(9);
-const init_dto_1 = __webpack_require__(175);
+const init_dto_1 = __webpack_require__(187);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const move_dto_2 = __webpack_require__(100);
@@ -18885,7 +20650,7 @@ exports.FRSAsyncSub = FRSAsyncSub = __decorate([
 
 
 /***/ }),
-/* 175 */
+/* 187 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18937,7 +20702,7 @@ __decorate([
 
 
 /***/ }),
-/* 176 */
+/* 188 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18978,7 +20743,7 @@ exports.APILogInterceptor = APILogInterceptor = __decorate([
 
 
 /***/ }),
-/* 177 */
+/* 189 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18995,13 +20760,13 @@ const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const tcp_service_1 = __webpack_require__(178);
-const tcp_gateway_1 = __webpack_require__(181);
-const tcp_mqtt_controller_1 = __webpack_require__(183);
-const cobot_tcp_client_adapter_1 = __webpack_require__(184);
-const tcp_grpc_controller_1 = __webpack_require__(185);
-const tcp_custom_server_gateway_1 = __webpack_require__(179);
-const tcp_control_service_1 = __webpack_require__(182);
+const tcp_service_1 = __webpack_require__(190);
+const tcp_gateway_1 = __webpack_require__(193);
+const tcp_mqtt_controller_1 = __webpack_require__(195);
+const cobot_tcp_client_adapter_1 = __webpack_require__(196);
+const tcp_grpc_controller_1 = __webpack_require__(197);
+const tcp_custom_server_gateway_1 = __webpack_require__(191);
+const tcp_control_service_1 = __webpack_require__(194);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
 const log_module_1 = __webpack_require__(74);
@@ -19084,7 +20849,7 @@ exports.TCPModule = TCPModule = __decorate([
 
 
 /***/ }),
-/* 178 */
+/* 190 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19109,8 +20874,8 @@ const util_1 = __webpack_require__(13);
 const common_1 = __webpack_require__(5);
 const config_1 = __webpack_require__(73);
 const microservices_1 = __webpack_require__(3);
-const tcp_custom_server_gateway_1 = __webpack_require__(179);
-const tcp_gateway_1 = __webpack_require__(181);
+const tcp_custom_server_gateway_1 = __webpack_require__(191);
+const tcp_gateway_1 = __webpack_require__(193);
 const saveLog_service_1 = __webpack_require__(68);
 let TcpService = class TcpService {
     constructor(configService, tcpMainServer, tcpCustomServerGateway, saveLogService) {
@@ -19180,7 +20945,7 @@ exports.TcpService = TcpService = __decorate([
 
 
 /***/ }),
-/* 179 */
+/* 191 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19197,7 +20962,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpCustomServerGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(180);
+const net_1 = __webpack_require__(192);
 const common_2 = __webpack_require__(26);
 const util_1 = __webpack_require__(13);
 const rpc_code_exception_1 = __webpack_require__(53);
@@ -19338,13 +21103,13 @@ exports.TcpCustomServerGateway = TcpCustomServerGateway = __decorate([
 
 
 /***/ }),
-/* 180 */
+/* 192 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 181 */
+/* 193 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19361,7 +21126,7 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(180);
+const net_1 = __webpack_require__(192);
 const rxjs_1 = __webpack_require__(50);
 const common_2 = __webpack_require__(26);
 const config_1 = __webpack_require__(73);
@@ -19370,7 +21135,7 @@ const control_type_1 = __webpack_require__(12);
 const localization_type_1 = __webpack_require__(81);
 const load_dto_1 = __webpack_require__(113);
 const util_1 = __webpack_require__(13);
-const tcp_control_service_1 = __webpack_require__(182);
+const tcp_control_service_1 = __webpack_require__(194);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 const saveLog_service_1 = __webpack_require__(68);
 let TcpGateway = class TcpGateway {
@@ -19675,7 +21440,7 @@ exports.TcpGateway = TcpGateway = __decorate([
 
 
 /***/ }),
-/* 182 */
+/* 194 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19730,7 +21495,7 @@ exports.TcpControlService = TcpControlService = __decorate([
 
 
 /***/ }),
-/* 183 */
+/* 195 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19750,14 +21515,14 @@ var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(178);
+const tcp_service_1 = __webpack_require__(190);
 const microservices_1 = __webpack_require__(3);
 const move_dto_1 = __webpack_require__(100);
 const control_dto_1 = __webpack_require__(9);
 const localization_dto_1 = __webpack_require__(80);
 const load_dto_1 = __webpack_require__(113);
-const status_type_1 = __webpack_require__(134);
-const movestatus_type_1 = __webpack_require__(137);
+const status_type_1 = __webpack_require__(146);
+const movestatus_type_1 = __webpack_require__(149);
 let TcpMqttController = class TcpMqttController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -19831,7 +21596,7 @@ exports.TcpMqttController = TcpMqttController = __decorate([
 
 
 /***/ }),
-/* 184 */
+/* 196 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19847,8 +21612,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotTcpClientAdapter = void 0;
-const net_1 = __webpack_require__(180);
-const cobot_dto_1 = __webpack_require__(126);
+const net_1 = __webpack_require__(192);
+const cobot_dto_1 = __webpack_require__(138);
 const saveLog_service_1 = __webpack_require__(68);
 const common_1 = __webpack_require__(5);
 let CobotTcpClientAdapter = class CobotTcpClientAdapter {
@@ -19973,7 +21738,7 @@ exports.CobotTcpClientAdapter = CobotTcpClientAdapter = __decorate([
 
 
 /***/ }),
-/* 185 */
+/* 197 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19991,7 +21756,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGrpcController = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(178);
+const tcp_service_1 = __webpack_require__(190);
 let TcpGrpcController = class TcpGrpcController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -20017,7 +21782,7 @@ exports.TcpGrpcController = TcpGrpcController = __decorate([
 
 
 /***/ }),
-/* 186 */
+/* 198 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20033,13 +21798,13 @@ const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
-const cobot_service_1 = __webpack_require__(187);
-const cobot_tcp_client_adapter_1 = __webpack_require__(184);
-const cobot_grpc_controller_1 = __webpack_require__(196);
-const cobot_mongo_adapter_1 = __webpack_require__(197);
-const mongoose_1 = __webpack_require__(198);
-const cobot_command_entity_1 = __webpack_require__(200);
-const cobot_connection_entity_1 = __webpack_require__(201);
+const cobot_service_1 = __webpack_require__(199);
+const cobot_tcp_client_adapter_1 = __webpack_require__(196);
+const cobot_grpc_controller_1 = __webpack_require__(208);
+const cobot_mongo_adapter_1 = __webpack_require__(209);
+const mongoose_1 = __webpack_require__(210);
+const cobot_command_entity_1 = __webpack_require__(212);
+const cobot_connection_entity_1 = __webpack_require__(213);
 const log_module_1 = __webpack_require__(74);
 let CobotSocketModule = class CobotSocketModule {
 };
@@ -20100,7 +21865,7 @@ exports.CobotSocketModule = CobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 187 */
+/* 199 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20123,15 +21888,15 @@ const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(26);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
-const cobot_socket_domain_1 = __webpack_require__(188);
-const cobot_client_output_port_1 = __webpack_require__(189);
-const cobot_command_handler_1 = __webpack_require__(190);
+const cobot_socket_domain_1 = __webpack_require__(200);
+const cobot_client_output_port_1 = __webpack_require__(201);
+const cobot_command_handler_1 = __webpack_require__(202);
 const rpc_code_exception_1 = __webpack_require__(53);
 const constant_2 = __webpack_require__(54);
-const cobot_dto_1 = __webpack_require__(126);
-const cobot_data_handler_1 = __webpack_require__(191);
-const cobot_database_output_port_1 = __webpack_require__(193);
-const cobot_domain_1 = __webpack_require__(194);
+const cobot_dto_1 = __webpack_require__(138);
+const cobot_data_handler_1 = __webpack_require__(203);
+const cobot_database_output_port_1 = __webpack_require__(205);
+const cobot_domain_1 = __webpack_require__(206);
 const map_command_domain_1 = __webpack_require__(109);
 const saveLog_service_1 = __webpack_require__(68);
 let CobotService = class CobotService {
@@ -20731,7 +22496,7 @@ exports.CobotService = CobotService = __decorate([
 
 
 /***/ }),
-/* 188 */
+/* 200 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -20751,7 +22516,7 @@ exports.CobotModel = CobotModel;
 
 
 /***/ }),
-/* 189 */
+/* 201 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -20759,7 +22524,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 190 */
+/* 202 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -20806,13 +22571,13 @@ exports.CobotCommandHandler = CobotCommandHandler;
 
 
 /***/ }),
-/* 191 */
+/* 203 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotDataHandler = void 0;
-const cobot_system_stat_parser_1 = __webpack_require__(192);
+const cobot_system_stat_parser_1 = __webpack_require__(204);
 class CobotDataHandler {
     constructor(id, logger) {
         this.isConnected = false;
@@ -20867,7 +22632,7 @@ exports.CobotDataHandler = CobotDataHandler;
 
 
 /***/ }),
-/* 192 */
+/* 204 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -21073,7 +22838,7 @@ CobotSystemStatParser.INT_SIZE = 4;
 
 
 /***/ }),
-/* 193 */
+/* 205 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -21081,7 +22846,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 194 */
+/* 206 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -21090,7 +22855,7 @@ exports.CobotCommandModel = void 0;
 const map_command_domain_1 = __webpack_require__(109);
 const rpc_code_exception_1 = __webpack_require__(53);
 const grpc_code_constant_1 = __webpack_require__(55);
-const node_net_1 = __webpack_require__(195);
+const node_net_1 = __webpack_require__(207);
 class CobotCommandModel {
     constructor(cobotId, command) {
         this.cobotId = cobotId;
@@ -21183,13 +22948,13 @@ exports.CobotCommandModel = CobotCommandModel;
 
 
 /***/ }),
-/* 195 */
+/* 207 */
 /***/ ((module) => {
 
 module.exports = require("node:net");
 
 /***/ }),
-/* 196 */
+/* 208 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21207,7 +22972,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotGrpcController = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
-const cobot_service_1 = __webpack_require__(187);
+const cobot_service_1 = __webpack_require__(199);
 let CobotGrpcController = class CobotGrpcController {
     constructor(cobotService) {
         this.cobotService = cobotService;
@@ -21269,7 +23034,7 @@ exports.CobotGrpcController = CobotGrpcController = __decorate([
 
 
 /***/ }),
-/* 197 */
+/* 209 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21288,13 +23053,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotMongoAdapter = void 0;
-const mongoose_1 = __webpack_require__(198);
-const mongoose_2 = __webpack_require__(199);
+const mongoose_1 = __webpack_require__(210);
+const mongoose_2 = __webpack_require__(211);
 const common_1 = __webpack_require__(26);
 const rpc_code_exception_1 = __webpack_require__(53);
 const constant_1 = __webpack_require__(54);
-const cobot_command_entity_1 = __webpack_require__(200);
-const cobot_connection_entity_1 = __webpack_require__(201);
+const cobot_command_entity_1 = __webpack_require__(212);
+const cobot_connection_entity_1 = __webpack_require__(213);
 const util_1 = __webpack_require__(13);
 const saveLog_service_1 = __webpack_require__(68);
 const config_1 = __webpack_require__(73);
@@ -21388,19 +23153,19 @@ exports.CobotMongoAdapter = CobotMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 198 */
+/* 210 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/mongoose");
 
 /***/ }),
-/* 199 */
+/* 211 */
 /***/ ((module) => {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 200 */
+/* 212 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21415,7 +23180,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandSchema = exports.CobotCommandEntity = void 0;
-const mongoose_1 = __webpack_require__(198);
+const mongoose_1 = __webpack_require__(210);
 let CobotCommandEntity = class CobotCommandEntity {
 };
 exports.CobotCommandEntity = CobotCommandEntity;
@@ -21453,7 +23218,7 @@ exports.CobotCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 201 */
+/* 213 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21468,7 +23233,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotConnectionSchema = exports.CobotConnectionEntity = void 0;
-const mongoose_1 = __webpack_require__(198);
+const mongoose_1 = __webpack_require__(210);
 let CobotConnectionEntity = class CobotConnectionEntity {
 };
 exports.CobotConnectionEntity = CobotConnectionEntity;
@@ -21504,1583 +23269,10 @@ exports.CobotConnectionSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 202 */
+/* 214 */
 /***/ ((module) => {
 
 module.exports = require("body-parser");
-
-/***/ }),
-/* 203 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogApiModule = void 0;
-const common_1 = __webpack_require__(5);
-const log_api_service_1 = __webpack_require__(204);
-const log_api_controller_1 = __webpack_require__(205);
-const microservices_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(20);
-const config_1 = __webpack_require__(73);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
-let LogApiModule = class LogApiModule {
-};
-exports.LogApiModule = LogApiModule;
-exports.LogApiModule = LogApiModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            log_module_1.LogModule,
-            microservices_1.ClientsModule.registerAsync([
-                {
-                    name: constant_1.SEMLOG_SERVICE,
-                    inject: [config_1.ConfigService],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.GRPC,
-                        options: {
-                            package: 'log',
-                            protoPath: (0, path_1.join)(process.cwd(), 'proto', 'log.proto'),
-                            url: configService.get('LOG_URL'),
-                        },
-                    }),
-                },
-            ]),
-        ],
-        controllers: [log_api_controller_1.LogApiController],
-        providers: [log_api_service_1.LogApiService],
-        exports: [],
-    })
-], LogApiModule);
-
-
-/***/ }),
-/* 204 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogApiService = void 0;
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-let LogApiService = class LogApiService {
-    constructor(logMicroservice, saveLogService) {
-        this.logMicroservice = logMicroservice;
-        this.saveLogService = saveLogService;
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    onModuleInit() {
-        this.logService = this.logMicroservice.getService('SEMLogGrpcService');
-    }
-    async getAlarmDefinedList(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmDefine(dto));
-    }
-    async postAlarmDefine(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.postSemAlarmDefine(dto));
-    }
-    async deleteAlarmDefine(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmDefine(dto));
-    }
-    async deleteAlarmDefineAll() {
-        await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmDefineAll({}));
-        return;
-    }
-    async getActiveAlarmList() {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmActive({}));
-    }
-    async postActiveAlarm(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.semAlarm(dto));
-    }
-    async deleteActiveAlarm(dto) {
-        const resp = await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarm(dto));
-        return;
-    }
-    async deleteActiveAlarmAll() {
-        await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmAll({}));
-        return;
-    }
-    async getAlarmLogList(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmLog(dto));
-    }
-    async postAlarmLog(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.postSemAlarmLog(dto));
-    }
-    async deleteAlarmLog(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.logService.deleteSemAlarmLog(dto));
-    }
-};
-exports.LogApiService = LogApiService;
-exports.LogApiService = LogApiService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constant_1.SEMLOG_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], LogApiService);
-
-
-/***/ }),
-/* 205 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LogApiController = void 0;
-const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(8);
-const log_api_service_1 = __webpack_require__(204);
-const semlog_dto_1 = __webpack_require__(206);
-const search_request_1 = __webpack_require__(102);
-const saveLog_service_1 = __webpack_require__(68);
-let LogApiController = class LogApiController {
-    constructor(logService, saveLogService) {
-        this.logService = logService;
-        this.saveLogService = saveLogService;
-        this.logger = this.saveLogService.get('log');
-    }
-    async getAlarmList(dto) {
-        return this.logService.getAlarmDefinedList(dto);
-    }
-    async postAlarmDefine(dto) {
-        console.log('postAlarmDefine', dto);
-        return this.logService.postAlarmDefine(dto);
-    }
-    async deleteAlarmDefine(dto) {
-        return this.logService.deleteAlarmDefine(dto);
-    }
-    async deleteAlarmDefineAll() {
-        return this.logService.deleteAlarmDefineAll();
-    }
-    async getActiveAlarmList() {
-        return this.logService.getActiveAlarmList();
-    }
-    async postActiveAlarm(dto) {
-        return this.logService.postActiveAlarm(dto);
-    }
-    async deleteActiveAlarm(dto) {
-        return this.logService.deleteActiveAlarm(dto);
-    }
-    async deleteActiveAlarmAll() {
-        return this.logService.deleteActiveAlarmAll();
-    }
-    async getAlarmLogList(dto) {
-        return this.logService.getAlarmLogList(dto);
-    }
-    async postAlarmLog(dto) {
-        return this.logService.postAlarmLog(dto);
-    }
-    async deleteAlarmLog(dto) {
-        return this.logService.deleteAlarmLog(dto);
-    }
-};
-exports.LogApiController = LogApiController;
-__decorate([
-    (0, common_1.Get)('sem/alarm-define'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 리스트 요청',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람 리스트를 요청합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 리스트 요청 성공',
-        type: semlog_dto_1.SEMAlarmListResponseDto,
-        example: {
-            list: [
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                },
-            ],
-            totalCount: 1,
-            pageSize: 10,
-            totalPage: 1,
-        },
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], LogApiController.prototype, "getAlarmList", null);
-__decorate([
-    (0, common_1.Post)('sem/alarm-define'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 추가(테스트)',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 추가합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 추가 요청 성공',
-        type: semlog_dto_1.SEMAlarm,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof semlog_dto_1.SEMAlarm !== "undefined" && semlog_dto_1.SEMAlarm) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], LogApiController.prototype, "postAlarmDefine", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-define'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 삭제',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 삭제 요청 성공',
-        type: semlog_dto_1.SEMAlarm,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof semlog_dto_1.DeleteAlarmDefineRequestDto !== "undefined" && semlog_dto_1.DeleteAlarmDefineRequestDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
-], LogApiController.prototype, "deleteAlarmDefine", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-define/all'),
-    (0, swagger_1.ApiOperation)({
-        summary: '정의된 알람 전부 삭제',
-        description: 'SEM프로젝트 전용. 정의되어 있는 알람을 전부 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 전부 삭제 요청 성공',
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
-], LogApiController.prototype, "deleteAlarmDefineAll", null);
-__decorate([
-    (0, common_1.Get)('sem/alarm-active'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 리스트 요청',
-        description: 'SEM프로젝트 전용. 활성화된 알람 리스트를 요청합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 리스트 요청 성공',
-        type: semlog_dto_1.SEMAlarmActiveResponseDto,
-        example: {
-            list: [
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                },
-            ],
-        },
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
-], LogApiController.prototype, "getActiveAlarmList", null);
-__decorate([
-    (0, common_1.Post)('sem/alarm-active'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 추가',
-        description: 'SEM프로젝트 전용. 활성화된 알람을 추가합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 추가 성공',
-        type: semlog_dto_1.SEMAlarm,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof semlog_dto_1.PostSEMAlarmRequestDto !== "undefined" && semlog_dto_1.PostSEMAlarmRequestDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
-], LogApiController.prototype, "postActiveAlarm", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-active'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 삭제',
-        description: 'SEM프로젝트 전용. 활성화된 알람을 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 삭제 성공',
-        example: {},
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
-], LogApiController.prototype, "deleteActiveAlarm", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm-active/all'),
-    (0, swagger_1.ApiOperation)({
-        summary: '활성화된 알람 전부 삭제',
-        description: 'SEM프로젝트 전용. 활성화된 알람을 전부 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '활성화된 알람 전부 삭제 성공',
-        example: {},
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
-], LogApiController.prototype, "deleteActiveAlarmAll", null);
-__decorate([
-    (0, common_1.Get)('sem/alarm'),
-    (0, swagger_1.ApiOperation)({
-        summary: '알람 로그 리스트 요청',
-        description: 'SEM프로젝트 전용. 알람 로그 리스트를 요청합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 로그 리스트 요청 성공',
-        type: semlog_dto_1.SEMAlarmLogResponseDto,
-        example: {
-            list: [
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                    state: 'START',
-                    createAt: '2025-01-01 00:00:00',
-                },
-                {
-                    code: '2000',
-                    detail: '',
-                    operationName: 'PROGRAM_START_FAIL',
-                    description: '프로그램 시작을 실패했습니다.',
-                    state: 'END',
-                    createAt: '2025-01-01 00:00:10',
-                },
-            ],
-            totalCount: 1,
-            pageSize: 10,
-            totalPage: 1,
-        },
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _r : Object]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
-], LogApiController.prototype, "getAlarmLogList", null);
-__decorate([
-    (0, common_1.Post)('sem/alarm'),
-    (0, swagger_1.ApiOperation)({
-        summary: '알람 로그 저장',
-        description: 'SEM프로젝트 전용. 알람 로그를 저장합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 로그 저장 성공',
-        type: semlog_dto_1.SaveSEMAlarmLogResponseDto,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof semlog_dto_1.SaveSEMAlarmLogRequestDto !== "undefined" && semlog_dto_1.SaveSEMAlarmLogRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
-], LogApiController.prototype, "postAlarmLog", null);
-__decorate([
-    (0, common_1.Delete)('sem/alarm'),
-    (0, swagger_1.ApiOperation)({
-        summary: '알람 로그 삭제',
-        description: 'SEM프로젝트 전용. 알람 로그를 삭제합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '알람 로그 삭제 성공',
-        example: {},
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _v : Object]),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
-], LogApiController.prototype, "deleteAlarmLog", null);
-exports.LogApiController = LogApiController = __decorate([
-    (0, swagger_1.ApiTags)('로그 API'),
-    (0, common_1.Controller)('log'),
-    __metadata("design:paramtypes", [typeof (_a = typeof log_api_service_1.LogApiService !== "undefined" && log_api_service_1.LogApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], LogApiController);
-
-
-/***/ }),
-/* 206 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SEMGeneralLogRequestDto = exports.SaveSEMAlarmLogResponseDto = exports.SaveSEMAlarmLogRequestDto = exports.DeleteSEMAlarmRequestDto = exports.SEMAlarmActiveResponseDto = exports.SEMAlarmLogResponseDto = exports.SEMAlarmLogListRequestDto = exports.PostSEMAlarmRequestDto = exports.DeleteAlarmDefineRequestDto = exports.SEMAlarmListResponseDto = exports.SEMAlamrListRequestDto = exports.SEMAlarmLog = exports.SEMAlarm = exports.SEMAlarmActive = void 0;
-const pagination_1 = __webpack_require__(104);
-const swagger_1 = __webpack_require__(8);
-const class_validator_1 = __webpack_require__(11);
-const class_validator_2 = __webpack_require__(11);
-const class_transformer_1 = __webpack_require__(10);
-var Description;
-(function (Description) {
-    Description["ALARM_CODE"] = "\uC54C\uB78C \uCF54\uB4DC";
-    Description["ALARM_DETAIL"] = "\uC54C\uB78C \uC0C1\uC138";
-    Description["OPERATION_NAME"] = "\uC791\uC5C5 \uC774\uB984";
-    Description["DESCRIPTION"] = "\uC124\uBA85";
-    Description["LIST"] = "\uC54C\uB78C \uB9AC\uC2A4\uD2B8";
-    Description["ALARM_STATE"] = "\uC54C\uB78C \uC0C1\uD0DC. \uB2E8\uBC1C\uC801\uC778 \uC54C\uB78C\uC758 \uACBD\uC6B0 SET \uAC12\uC744, \uC54C\uB78C \uBC1C\uC0DD/\uD574\uC81C\uAC00 \uC874\uC7AC\uD558\uB294 \uACBD\uC6B0 START/END \uAC12\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694.";
-    Description["ALARM_TIME"] = "\uC54C\uB78C \uBC1C\uC0DD \uC2DC\uAC04";
-    Description["DATE_FROM"] = "\uC54C\uB78C \uC2DC\uC791 \uB0A0\uC9DC. \uD615\uC2DD\uC740 yyyy-mm-dd hh:mm:ss\uD615\uC2DD\uC73C\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694.";
-    Description["DATE_TO"] = "\uC54C\uB78C \uC885\uB8CC \uB0A0\uC9DC. \uD615\uC2DD\uC740 yyyy-mm-dd hh:mm:ss\uD615\uC2DD\uC73C\uB85C \uC785\uB825\uD574\uC8FC\uC138\uC694.";
-})(Description || (Description = {}));
-class SEMAlarmActive {
-}
-exports.SEMAlarmActive = SEMAlarmActive;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], SEMAlarmActive.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'SET',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMAlarmActive.prototype, "state", void 0);
-class SEMAlarm {
-}
-exports.SEMAlarm = SEMAlarm;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], SEMAlarm.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_DETAIL,
-        example: '',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], SEMAlarm.prototype, "detail", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.OPERATION_NAME,
-        example: 'PROGRAM_START_FAIL',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMAlarm.prototype, "operationName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.DESCRIPTION,
-        example: '프로그램 시작을 실패했습니다.',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], SEMAlarm.prototype, "description", void 0);
-class SEMAlarmLog extends SEMAlarm {
-}
-exports.SEMAlarmLog = SEMAlarmLog;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'SET',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SEMAlarmLog.prototype, "state", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_TIME,
-        example: '2021-01-01 00:00:00',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMAlarmLog.prototype, "createAt", void 0);
-class SEMAlamrListRequestDto extends pagination_1.PaginationRequest {
-}
-exports.SEMAlamrListRequestDto = SEMAlamrListRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], SEMAlamrListRequestDto.prototype, "code", void 0);
-class SEMAlarmListResponseDto extends pagination_1.PaginationResponse {
-}
-exports.SEMAlarmListResponseDto = SEMAlarmListResponseDto;
-class DeleteAlarmDefineRequestDto {
-}
-exports.DeleteAlarmDefineRequestDto = DeleteAlarmDefineRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], DeleteAlarmDefineRequestDto.prototype, "code", void 0);
-class PostSEMAlarmRequestDto {
-}
-exports.PostSEMAlarmRequestDto = PostSEMAlarmRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PostSEMAlarmRequestDto.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'START',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], PostSEMAlarmRequestDto.prototype, "state", void 0);
-class SEMAlarmLogListRequestDto extends pagination_1.PaginationRequest {
-}
-exports.SEMAlarmLogListRequestDto = SEMAlarmLogListRequestDto;
-class SEMAlarmLogResponseDto extends pagination_1.PaginationResponse {
-}
-exports.SEMAlarmLogResponseDto = SEMAlarmLogResponseDto;
-class SEMAlarmActiveResponseDto {
-}
-exports.SEMAlarmActiveResponseDto = SEMAlarmActiveResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.LIST,
-        example: [
-            {
-                code: '2000',
-                state: 'START',
-            },
-        ],
-        required: true,
-    }),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], SEMAlarmActiveResponseDto.prototype, "list", void 0);
-class DeleteSEMAlarmRequestDto {
-}
-exports.DeleteSEMAlarmRequestDto = DeleteSEMAlarmRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], DeleteSEMAlarmRequestDto.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.DATE_FROM,
-        example: '2025-01-01 00:00:00',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], DeleteSEMAlarmRequestDto.prototype, "dateFrom", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.DATE_TO,
-        example: '2025-12-31 23:59:59',
-        required: false,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], DeleteSEMAlarmRequestDto.prototype, "dateTo", void 0);
-class SaveSEMAlarmLogRequestDto {
-}
-exports.SaveSEMAlarmLogRequestDto = SaveSEMAlarmLogRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_CODE,
-        example: 2000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], SaveSEMAlarmLogRequestDto.prototype, "code", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ALARM_STATE,
-        example: 'SET',
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => String),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SaveSEMAlarmLogRequestDto.prototype, "state", void 0);
-class SaveSEMAlarmLogResponseDto extends SaveSEMAlarmLogRequestDto {
-}
-exports.SaveSEMAlarmLogResponseDto = SaveSEMAlarmLogResponseDto;
-class SEMGeneralLogRequestDto {
-}
-exports.SEMGeneralLogRequestDto = SEMGeneralLogRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '일반LOG를 읽어올 시작 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
-        example: '2025-01-01 00:00:00',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMGeneralLogRequestDto.prototype, "dateTo", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '일반LOG를 읽어올 종료 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
-        example: '2025-12-31 23:59:59',
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_2.Length)(1, 50),
-    __metadata("design:type", String)
-], SEMGeneralLogRequestDto.prototype, "dateFrom", void 0);
-
-
-/***/ }),
-/* 207 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateApiModule = void 0;
-const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(208);
-const update_api_controller_1 = __webpack_require__(211);
-const config_1 = __webpack_require__(73);
-const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(26);
-const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
-let UpdateApiModule = class UpdateApiModule {
-};
-exports.UpdateApiModule = UpdateApiModule;
-exports.UpdateApiModule = UpdateApiModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '.env',
-            }),
-            microservices_1.ClientsModule.registerAsync([
-                {
-                    name: constant_1.UPDATE_SERVICE,
-                    inject: [config_1.ConfigService],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.GRPC,
-                        options: {
-                            package: common_2.UpdateMicroservice.protobufPackage,
-                            protoPath: (0, path_1.join)(process.cwd(), 'proto/update.proto'),
-                            url: configService.get('UPDATE_GRPC_URL'),
-                        },
-                    }),
-                },
-            ]),
-            log_module_1.LogModule,
-        ],
-        controllers: [update_api_controller_1.UpdateApiController],
-        providers: [update_api_service_1.UpdateApiService],
-    })
-], UpdateApiModule);
-
-
-/***/ }),
-/* 208 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateApiService = void 0;
-const common_1 = __webpack_require__(5);
-const path = __webpack_require__(20);
-const os_1 = __webpack_require__(209);
-const fs = __webpack_require__(19);
-const child_process_1 = __webpack_require__(210);
-const config_1 = __webpack_require__(73);
-const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const rxjs_1 = __webpack_require__(50);
-const saveLog_service_1 = __webpack_require__(68);
-let UpdateApiService = class UpdateApiService {
-    constructor(configService, saveLogService, updateMicroservice) {
-        this.configService = configService;
-        this.saveLogService = saveLogService;
-        this.updateMicroservice = updateMicroservice;
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    onModuleInit() {
-        console.log(this.configService.get('RELEASE_REPO_URL'));
-        this.updateService = this.updateMicroservice.getService('UpdateGrpcService');
-    }
-    async pingSendToTarget(target) {
-        const data = await (0, rxjs_1.lastValueFrom)(this.updateService.testPing({ target }));
-        console.log(data);
-        return data;
-    }
-    async getNewVersion(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getNewVersion(dto));
-    }
-    async getCurrentVersion(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getCurrentVersion(dto));
-    }
-    async getReleaseAppsBranches(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getReleaseBranch({ token: dto.token, pageNo: dto.pageNo, pageSize: dto.pageSize }));
-    }
-    async getReleaseAppsVersionList(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.getReleaseVersion({ software: dto.software, token: dto.token, branch: dto.branch }));
-    }
-    async updateSoftware(dto) {
-        return await (0, rxjs_1.lastValueFrom)(this.updateService.updateProgram(dto));
-    }
-    rrsUpdate({ branch, version } = {}) {
-        const updateScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/rrs-server`, 'rrs-update.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(updateScript)) {
-            this.logger?.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/rrs-server/rrs-update.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        (0, child_process_1.execSync)('git pull', {
-            cwd: rainbowDeployKitDir,
-            stdio: 'pipe',
-        });
-        (0, child_process_1.exec)(`nohup bash ${updateScript} --mode=${branch || 'main'} --version=${version} > /tmp/rrs-update.log 2>&1 &`);
-        return { applyReqUpdate: true, version: version || '', rejectReason: '' };
-    }
-    otherSwUpdate({ branch, version } = {}) {
-        return new Promise((resolve, reject) => {
-            reject(new common_1.GatewayTimeoutException('프로그램이 연결되지 않았습니다'));
-        });
-    }
-    async webUIAppAdd({ appNames, branch, fo }) {
-        const appAddScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-add-app.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(appAddScript)) {
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/web-ui/fe-add-app.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        try {
-            (0, child_process_1.execSync)('git pull', {
-                cwd: rainbowDeployKitDir,
-                stdio: 'pipe',
-            });
-            (0, child_process_1.execSync)(`bash ${appAddScript}${branch ? ` --mode=${branch}` : ''}${fo ? ` --fo=${fo}` : ''} ${appNames.join(' ')}`);
-            return { appNames, branch, fo };
-        }
-        catch (error) {
-            throw new common_1.BadRequestException({
-                message: error.message,
-            });
-        }
-    }
-    async webUIAppDelete({ appNames }) {
-        const appDeleteScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-delete-app.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(appDeleteScript)) {
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/web-ui/fe-delete-app.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        try {
-            (0, child_process_1.execSync)('git pull', {
-                cwd: rainbowDeployKitDir,
-                stdio: 'pipe',
-            });
-            (0, child_process_1.execSync)(`bash ${appDeleteScript} ${appNames.join(' ')}`);
-            return { appNames };
-        }
-        catch (error) {
-            throw new common_1.BadRequestException({
-                message: error.message,
-            });
-        }
-    }
-};
-exports.UpdateApiService = UpdateApiService;
-exports.UpdateApiService = UpdateApiService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(2, (0, common_1.Inject)(constant_1.UPDATE_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object])
-], UpdateApiService);
-
-
-/***/ }),
-/* 209 */
-/***/ ((module) => {
-
-module.exports = require("os");
-
-/***/ }),
-/* 210 */
-/***/ ((module) => {
-
-module.exports = require("child_process");
-
-/***/ }),
-/* 211 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateApiController = void 0;
-const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(208);
-const swagger_1 = __webpack_require__(8);
-const update_dto_1 = __webpack_require__(212);
-const etc_dto_1 = __webpack_require__(213);
-const version_dto_1 = __webpack_require__(161);
-const pagination_response_1 = __webpack_require__(105);
-const version_dto_2 = __webpack_require__(161);
-const saveLog_service_1 = __webpack_require__(68);
-let UpdateApiController = class UpdateApiController {
-    constructor(updateService, saveLogService) {
-        this.updateService = updateService;
-        this.saveLogService = saveLogService;
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    pingSendToTarget({ target }) {
-        return this.updateService.pingSendToTarget(target);
-    }
-    getNewVersion(dto) {
-        return this.updateService.getNewVersion(dto);
-    }
-    getCurrentVersion(dto) {
-        return this.updateService.getCurrentVersion(dto);
-    }
-    getReleaseAppsBranches(params) {
-        return this.updateService.getReleaseAppsBranches(params);
-    }
-    getReleaseAppsVersionList(dto) {
-        return this.updateService.getReleaseAppsVersionList(dto);
-    }
-    webUIAppAdd(webUIAppAddDto) {
-        return this.updateService.webUIAppAdd(webUIAppAddDto);
-    }
-    updateSoftware(reqUpdateSoftwareDto) {
-        return this.updateService.updateSoftware(reqUpdateSoftwareDto);
-    }
-    webUIAppDelete(webUIAppDeleteDto) {
-        return this.updateService.webUIAppDelete(webUIAppDeleteDto);
-    }
-};
-exports.UpdateApiController = UpdateApiController;
-__decorate([
-    (0, common_1.Get)('ping'),
-    (0, swagger_1.ApiOperation)({
-        summary: '핑 테스트',
-        description: '핑 테스트를 요청합니다. 타겟 호스트에 ping을 1회 전송합니다. ',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '핑 테스트 성공',
-        type: etc_dto_1.PingSendToTargetResponseDto,
-    }),
-    (0, swagger_1.ApiBadGatewayResponse)({
-        description: '외부망에 접근할 수 없습니다.',
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof etc_dto_1.PingSendToTargetDto !== "undefined" && etc_dto_1.PingSendToTargetDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], UpdateApiController.prototype, "pingSendToTarget", null);
-__decorate([
-    (0, common_1.Get)('new-version'),
-    (0, swagger_1.ApiOperation)({
-        summary: '소프트웨어 새로운 버전 조회',
-        description: '소프트웨어 새로운 버전을 조회합니다. 위부망 접속이 안될 환경시 400 에러가 발생합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '소프트웨어 새로운 버전 조회 성공',
-        type: version_dto_1.GetNewVersionResponseDto,
-    }),
-    (0, swagger_1.ApiNotFoundResponse)({
-        description: '입력한 소프트웨어 또는 브랜치가 존재하지 않습니다.',
-    }),
-    (0, swagger_1.ApiBadGatewayResponse)({
-        description: '외부망에 접근할 수 없습니다.',
-    }),
-    (0, swagger_1.ApiBadRequestResponse)({
-        description: '소프트웨어 또는 브랜치 값이 입력되지 않았습니다.',
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof version_dto_2.GetNewVersionRequestDto !== "undefined" && version_dto_2.GetNewVersionRequestDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], UpdateApiController.prototype, "getNewVersion", null);
-__decorate([
-    (0, common_1.Get)('current-version'),
-    (0, swagger_1.ApiOperation)({
-        summary: '소프트웨어 현재 버전 조회',
-        description: '소프트웨어 현재 버전을 조회합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '소프트웨어 현재 버전 조회 성공',
-        type: version_dto_1.GetCurrentVersionResponseDto,
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof version_dto_1.GetCurrentVersionRequestDto !== "undefined" && version_dto_1.GetCurrentVersionRequestDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
-], UpdateApiController.prototype, "getCurrentVersion", null);
-__decorate([
-    (0, common_1.Get)('release-apps/branches'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'rainbow-release-apps 레포지토리의 브랜치 조회',
-        description: 'rainbow-release-apps 레포지토리의 브랜치를 조회합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: 'rainbow-release-apps 레포지토리의 브랜치 조회 성공',
-        type: (pagination_response_1.PaginationResponse),
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof update_dto_1.GetReleaseAppsBranchesRequestDto !== "undefined" && update_dto_1.GetReleaseAppsBranchesRequestDto) === "function" ? _j : Object]),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
-], UpdateApiController.prototype, "getReleaseAppsBranches", null);
-__decorate([
-    (0, common_1.Get)('release-apps/version-list'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'rainbow-release-apps 레포지토리의 버전 조회',
-        description: 'rainbow-release-apps 레포지토리의 버전을 조회합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'rainbow-release-apps 레포지토리의 버전 조회 성공',
-        type: [update_dto_1.ResponseReleaseVersionInfoDto],
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof update_dto_1.GetReleaseAppsVersionListRequestDto !== "undefined" && update_dto_1.GetReleaseAppsVersionListRequestDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", void 0)
-], UpdateApiController.prototype, "getReleaseAppsVersionList", null);
-__decorate([
-    (0, common_1.Post)('web-ui/app/add'),
-    (0, swagger_1.ApiOperation)({
-        summary: '웹 UI 앱 추가',
-        description: '웹 UI 앱을 추가합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '웹 UI 앱 추가 성공',
-        type: update_dto_1.ResponseWebUIAppAddDto,
-    }),
-    (0, swagger_1.ApiBadRequestResponse)({
-        description: '웹 UI 앱 추가 실패',
-    }),
-    (0, swagger_1.ApiNotFoundResponse)({
-        description: '웹 UI 앱 추가 스크립트 파일을 찾을 수 없습니다.',
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof update_dto_1.WebUIAppAddDto !== "undefined" && update_dto_1.WebUIAppAddDto) === "function" ? _m : Object]),
-    __metadata("design:returntype", typeof (_o = typeof Promise !== "undefined" && Promise) === "function" ? _o : Object)
-], UpdateApiController.prototype, "webUIAppAdd", null);
-__decorate([
-    (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({
-        summary: '소프트웨어 업데이트',
-        description: '소프트웨어 업데이트를 요청합니다.',
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof update_dto_1.UpdateRequestDto !== "undefined" && update_dto_1.UpdateRequestDto) === "function" ? _p : Object]),
-    __metadata("design:returntype", void 0)
-], UpdateApiController.prototype, "updateSoftware", null);
-__decorate([
-    (0, common_1.Delete)('web-ui/app/delete'),
-    (0, swagger_1.ApiOperation)({
-        summary: '웹 UI 앱 삭제',
-        description: '웹 UI 앱을 삭제합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '웹 UI 앱 삭제 성공',
-        type: update_dto_1.ResponseWebUIAppDeleteDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '웹 UI 앱 삭제 실패',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 404,
-        description: '웹 UI 앱 삭제 스크립트 파일을 찾을 수 없습니다.',
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof update_dto_1.WebUIAppDeleteDto !== "undefined" && update_dto_1.WebUIAppDeleteDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", void 0)
-], UpdateApiController.prototype, "webUIAppDelete", null);
-exports.UpdateApiController = UpdateApiController = __decorate([
-    (0, swagger_1.ApiTags)('업데이트 관련 API (update)'),
-    (0, swagger_1.ApiExcludeController)(),
-    (0, common_1.Controller)('update'),
-    __metadata("design:paramtypes", [typeof (_a = typeof update_api_service_1.UpdateApiService !== "undefined" && update_api_service_1.UpdateApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], UpdateApiController);
-
-
-/***/ }),
-/* 212 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ResponseWebUIAppDeleteDto = exports.ResponseWebUIAppAddDto = exports.WebUIAppDeleteDto = exports.WebUIAppAddDto = exports.UpdateResponseSocketDto = exports.UpdateRequestSocketDto = exports.UpdateRequestDto = exports.ResponseReleaseVersionInfoDto = exports.GetReleaseAppsVersionListRequestDto = exports.GetReleaseAppBranchesResponseDto = exports.ResponseReleaseAppsBranches = exports.GetReleaseAppsBranchesRequestDto = exports.CommitDto = exports.GetSoftwareParamDto = void 0;
-const pagination_1 = __webpack_require__(104);
-const util_1 = __webpack_require__(13);
-const swagger_1 = __webpack_require__(8);
-const class_validator_1 = __webpack_require__(11);
-var Description;
-(function (Description) {
-    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
-    Description["BRANCH"] = "\uBE0C\uB79C\uCE58 \uC774\uB984";
-    Description["TOKEN"] = "\uC554\uD638\uD654\uB41C token";
-    Description["ID"] = "\uC694\uCCAD\uC5D0 \uB300\uD55C ID \uAC12. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uC751\uB2F5\uC5D0 \uB3D9\uC77C\uD55C ID \uAC12 \uBC18\uD658 \uD544\uC694.";
-    Description["VERSION"] = "version \uC815\uBCF4";
-    Description["RESULT"] = "\uC5C5\uB370\uC774\uD2B8 \uACB0\uACFC";
-    Description["MESSAGE"] = "\uC5C5\uB370\uC774\uD2B8 \uBA54\uC2DC\uC9C0";
-})(Description || (Description = {}));
-class GetSoftwareParamDto {
-}
-exports.GetSoftwareParamDto = GetSoftwareParamDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        description: '소프트웨어 종류 (예: rrs, slamnav2)',
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], GetSoftwareParamDto.prototype, "software", void 0);
-class CommitDto {
-}
-exports.CommitDto = CommitDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit sha',
-        example: 'ae601391564b381ee8d2271e9b4b79a632894016',
-    }),
-    __metadata("design:type", String)
-], CommitDto.prototype, "sha", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit url',
-        example: 'https://github.com/rainbow-mobile/rainbow-release-apps/commit/ae601391564b381ee8d2271e9b4b79a632894016',
-    }),
-    __metadata("design:type", String)
-], CommitDto.prototype, "url", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit name',
-    }),
-    __metadata("design:type", String)
-], CommitDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit protected',
-    }),
-    __metadata("design:type", Boolean)
-], CommitDto.prototype, "protected", void 0);
-class GetReleaseAppsBranchesRequestDto extends pagination_1.PaginationRequest {
-}
-exports.GetReleaseAppsBranchesRequestDto = GetReleaseAppsBranchesRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.TOKEN,
-        default: '3bJyXEJA/FvAYWnbAIsj6T96+217WeqR4HpdmuNTGcG/dzYaOLjjWkz3bjR1NGYQqj8nMS8A6N91bnaCTveF0Q==',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsBranchesRequestDto.prototype, "token", void 0);
-class ResponseReleaseAppsBranches {
-}
-exports.ResponseReleaseAppsBranches = ResponseReleaseAppsBranches;
-__decorate([
-    (0, class_validator_1.IsObject)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'commit',
-        type: CommitDto,
-    }),
-    __metadata("design:type", CommitDto)
-], ResponseReleaseAppsBranches.prototype, "commit", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseAppsBranches.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-    }),
-    __metadata("design:type", Boolean)
-], ResponseReleaseAppsBranches.prototype, "protected", void 0);
-class GetReleaseAppBranchesResponseDto extends pagination_1.PaginationResponse {
-}
-exports.GetReleaseAppBranchesResponseDto = GetReleaseAppBranchesResponseDto;
-class GetReleaseAppsVersionListRequestDto {
-}
-exports.GetReleaseAppsVersionListRequestDto = GetReleaseAppsVersionListRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.TOKEN,
-        default: '3bJyXEJA/FvAYWnbAIsj6T96+217WeqR4HpdmuNTGcG/dzYaOLjjWkz3bjR1NGYQqj8nMS8A6N91bnaCTveF0Q==',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsVersionListRequestDto.prototype, "token", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-        example: 'main',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsVersionListRequestDto.prototype, "branch", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.SOFTWARE,
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], GetReleaseAppsVersionListRequestDto.prototype, "software", void 0);
-class ResponseReleaseVersionInfoDto {
-}
-exports.ResponseReleaseVersionInfoDto = ResponseReleaseVersionInfoDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version path',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "path", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version sha',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "sha", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version size',
-    }),
-    __metadata("design:type", Number)
-], ResponseReleaseVersionInfoDto.prototype, "size", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version url',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "url", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version download url',
-    }),
-    __metadata("design:type", String)
-], ResponseReleaseVersionInfoDto.prototype, "download_url", void 0);
-__decorate([
-    (0, class_validator_1.IsObject)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'version links',
-    }),
-    __metadata("design:type", Object)
-], ResponseReleaseVersionInfoDto.prototype, "_links", void 0);
-class UpdateRequestDto {
-}
-exports.UpdateRequestDto = UpdateRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.SOFTWARE,
-        example: 'slamnav2',
-    }),
-    __metadata("design:type", String)
-], UpdateRequestDto.prototype, "software", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.BRANCH,
-        example: 'main',
-    }),
-    __metadata("design:type", String)
-], UpdateRequestDto.prototype, "branch", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.VERSION,
-        example: '1.0.0',
-    }),
-    __metadata("design:type", String)
-], UpdateRequestDto.prototype, "version", void 0);
-class UpdateRequestSocketDto extends UpdateRequestDto {
-}
-exports.UpdateRequestSocketDto = UpdateRequestSocketDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.ID,
-        example: util_1.UrlUtil.generateUUID(),
-    }),
-    __metadata("design:type", String)
-], UpdateRequestSocketDto.prototype, "id", void 0);
-class UpdateResponseSocketDto extends UpdateRequestSocketDto {
-}
-exports.UpdateResponseSocketDto = UpdateResponseSocketDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.RESULT,
-        example: 'true',
-    }),
-    __metadata("design:type", String)
-], UpdateResponseSocketDto.prototype, "result", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: Description.MESSAGE,
-        example: '업데이트 완료',
-    }),
-    __metadata("design:type", String)
-], UpdateResponseSocketDto.prototype, "message", void 0);
-class WebUIAppAddDto {
-}
-exports.WebUIAppAddDto = WebUIAppAddDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], WebUIAppAddDto.prototype, "appNames", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '브랜치 이름',
-        example: 'main',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], WebUIAppAddDto.prototype, "branch", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '로봇 UI에 노출할 첫페이지 URL',
-        example: '/S100',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], WebUIAppAddDto.prototype, "fo", void 0);
-class WebUIAppDeleteDto {
-}
-exports.WebUIAppDeleteDto = WebUIAppDeleteDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], WebUIAppDeleteDto.prototype, "appNames", void 0);
-class ResponseWebUIAppAddDto {
-}
-exports.ResponseWebUIAppAddDto = ResponseWebUIAppAddDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '추가한 앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], ResponseWebUIAppAddDto.prototype, "appNames", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '브랜치 이름',
-        example: 'main',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ResponseWebUIAppAddDto.prototype, "branch", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '로봇 UI에 노출할 첫페이지 URL',
-        example: '/S100',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ResponseWebUIAppAddDto.prototype, "fo", void 0);
-class ResponseWebUIAppDeleteDto {
-}
-exports.ResponseWebUIAppDeleteDto = ResponseWebUIAppDeleteDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '삭제한 앱 이름 배열',
-        example: ['app1', 'app2'],
-    }),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], ResponseWebUIAppDeleteDto.prototype, "appNames", void 0);
-
-
-/***/ }),
-/* 213 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CurVersionDto = exports.NewVersionGitDto = exports.PingSendToTargetResponseDto = exports.PingSendToTargetDto = void 0;
-const class_validator_1 = __webpack_require__(11);
-const swagger_1 = __webpack_require__(8);
-var Description;
-(function (Description) {
-    Description["SOFTWARE"] = "\uC18C\uD504\uD2B8\uC6E8\uC5B4 \uC885\uB958 (\uC608: rrs, slamnav2)";
-})(Description || (Description = {}));
-class PingSendToTargetDto {
-}
-exports.PingSendToTargetDto = PingSendToTargetDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '타겟 호스트',
-        default: '192.168.1.1',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetDto.prototype, "target", void 0);
-class PingSendToTargetResponseDto extends PingSendToTargetDto {
-}
-exports.PingSendToTargetResponseDto = PingSendToTargetResponseDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '타겟 호스트에 5번 ping 전송 결과',
-        default: '요청에 성공했습니다.',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetResponseDto.prototype, "message", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'ping 결과 stdout',
-        default: 'PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.\n64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.87 ms\n\n--- 192.168.1.1 ping statistics ---\n1 packets transmitted, 1 received, 0% packet loss, time 0ms\nrtt min/avg/max/mdev = 1.874/1.874/1.874/0.000 ms\n',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetResponseDto.prototype, "stdout", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: 'ping 결과 stderr',
-        default: '',
-    }),
-    __metadata("design:type", String)
-], PingSendToTargetResponseDto.prototype, "stderr", void 0);
-class NewVersionGitDto {
-}
-exports.NewVersionGitDto = NewVersionGitDto;
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '핫픽스 여부',
-        default: false,
-    }),
-    __metadata("design:type", Boolean)
-], NewVersionGitDto.prototype, "hotfix", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '최신 버전',
-        default: 'rrs-20250812125004',
-    }),
-    __metadata("design:type", String)
-], NewVersionGitDto.prototype, "new_version", void 0);
-class CurVersionDto {
-}
-exports.CurVersionDto = CurVersionDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiPropertyOptional)({
-        description: '현재 버전',
-        default: 'rrs-20250812125004',
-    }),
-    __metadata("design:type", String)
-], CurVersionDto.prototype, "current", void 0);
-
 
 /***/ })
 /******/ 	]);
@@ -23121,17 +23313,17 @@ const nestjs_asyncapi_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
 const api_module_1 = __webpack_require__(4);
 const common_1 = __webpack_require__(5);
-const grpc_to_http_filter_1 = __webpack_require__(140);
+const grpc_to_http_filter_1 = __webpack_require__(152);
 const swagger_1 = __webpack_require__(8);
-const client_socket_module_1 = __webpack_require__(141);
-const robot_socket_module_1 = __webpack_require__(150);
-const frs_socket_module_1 = __webpack_require__(167);
-const api_interceptor_1 = __webpack_require__(176);
-const tcp_socket_module_1 = __webpack_require__(177);
-const cobot_socket_module_1 = __webpack_require__(186);
+const client_socket_module_1 = __webpack_require__(153);
+const robot_socket_module_1 = __webpack_require__(162);
+const frs_socket_module_1 = __webpack_require__(179);
+const api_interceptor_1 = __webpack_require__(188);
+const tcp_socket_module_1 = __webpack_require__(189);
+const cobot_socket_module_1 = __webpack_require__(198);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const bodyParser = __webpack_require__(202);
+const bodyParser = __webpack_require__(214);
 async function bootstrap() {
     const apiModule = await core_1.NestFactory.create(api_module_1.RRSApiModule);
     apiModule.enableCors({
