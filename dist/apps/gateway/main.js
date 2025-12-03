@@ -16067,6 +16067,9 @@ let ClientSocketService = class ClientSocketService {
     moveStatus(dto) {
         this.server.to(['moveStatus', 'status', 'all']).emit('moveStatus', dto);
     }
+    systemStatus(dto) {
+        this.server.to(['systemStatus', 'status', 'all']).emit('systemStatus', dto);
+    }
     localPath(dto) {
         this.server.to(['localPath', 'path', 'all']).emit('localPath', dto);
     }
@@ -16656,7 +16659,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
@@ -16676,6 +16679,7 @@ const cloud_type_1 = __webpack_require__(161);
 const cobot_dto_1 = __webpack_require__(138);
 const exAccessory_dto_1 = __webpack_require__(150);
 const path_dto_1 = __webpack_require__(159);
+const systemstatus_type_1 = __webpack_require__(174);
 let ClientSocketMqttController = class ClientSocketMqttController {
     constructor(clientService) {
         this.clientService = clientService;
@@ -16724,6 +16728,9 @@ let ClientSocketMqttController = class ClientSocketMqttController {
     }
     async handleMoveStatus(data) {
         return this.clientService.moveStatus(data);
+    }
+    async handleSystemStatus(data) {
+        return this.clientService.systemStatus(data);
     }
     async handleLocalPath(data) {
         return this.clientService.localPath(data);
@@ -16895,6 +16902,20 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleMoveStatus", null);
 __decorate([
+    (0, microservices_1.EventPattern)('systemStatus'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'systemStatus',
+        message: {
+            payload: systemstatus_type_1.SystemStatusSlamnav,
+        },
+        description: 'SLAMNAV에서 주기적 송신하는 상태정보. 10Hz',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof systemstatus_type_1.SystemStatusSlamnav !== "undefined" && systemstatus_type_1.SystemStatusSlamnav) === "function" ? _j : Object]),
+    __metadata("design:returntype", Promise)
+], ClientSocketMqttController.prototype, "handleSystemStatus", null);
+__decorate([
     (0, microservices_1.EventPattern)('localPath'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'localPath',
@@ -16905,7 +16926,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleLocalPath", null);
 __decorate([
@@ -16919,7 +16940,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_l = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _l : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleGlobalPath", null);
 __decorate([
@@ -16933,7 +16954,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _l : Object]),
+    __metadata("design:paramtypes", [typeof (_m = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _m : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleLidarCloud", null);
 __decorate([
@@ -16947,7 +16968,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _o : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleMappingCloud", null);
 __decorate([
@@ -16961,7 +16982,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof common_2.CobotMicroservice !== "undefined" && common_2.CobotMicroservice.CobotCommandResponse) === "function" ? _o : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof common_2.CobotMicroservice !== "undefined" && common_2.CobotMicroservice.CobotCommandResponse) === "function" ? _p : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleCobotResponse", null);
 __decorate([
@@ -16975,7 +16996,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof exAccessory_dto_1.ExAccessoryResponseDto !== "undefined" && exAccessory_dto_1.ExAccessoryResponseDto) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_q = typeof exAccessory_dto_1.ExAccessoryResponseDto !== "undefined" && exAccessory_dto_1.ExAccessoryResponseDto) === "function" ? _q : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleExAccessoryResponse", null);
 __decorate([
@@ -16989,7 +17010,7 @@ __decorate([
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _q : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof exAccessory_dto_1.ExAccessoryStatusDto !== "undefined" && exAccessory_dto_1.ExAccessoryStatusDto) === "function" ? _r : Object]),
     __metadata("design:returntype", Promise)
 ], ClientSocketMqttController.prototype, "handleExAccessoryStatus", null);
 exports.ClientSocketMqttController = ClientSocketMqttController = __decorate([
@@ -19165,8 +19186,29 @@ class SystemStatusSlamnav {
 }
 exports.SystemStatusSlamnav = SystemStatusSlamnav;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '카메라 상태', required: false }),
-    __metadata("design:type", Array)
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 상태',
+        examples: [
+            {
+                connection: false,
+                rgb_h: 1080,
+                rgb_w: 1920,
+                depth_h: 1080,
+                depth_w: 1920,
+                pts: 100000,
+            },
+            {
+                connection: false,
+                rgb_h: 1080,
+                rgb_w: 1920,
+                depth_h: 1080,
+                depth_w: 1920,
+                pts: 100000,
+            },
+        ],
+        required: false,
+    }),
+    __metadata("design:type", CamStatusDto)
 ], SystemStatusSlamnav.prototype, "cam", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '라이다 상태', required: false }),
