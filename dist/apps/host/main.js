@@ -968,9 +968,9 @@ const constant_1 = __webpack_require__(67);
 const map_pending_service_1 = __webpack_require__(74);
 const map_file_adapter_1 = __webpack_require__(86);
 const log_module_1 = __webpack_require__(87);
-const mongoose_1 = __webpack_require__(90);
-const map_mongo_adapter_1 = __webpack_require__(91);
-const map_mongo_entity_1 = __webpack_require__(93);
+const mongoose_1 = __webpack_require__(89);
+const map_mongo_adapter_1 = __webpack_require__(90);
+const map_mongo_entity_1 = __webpack_require__(92);
 let MapModule = class MapModule {
 };
 exports.MapModule = MapModule;
@@ -4763,7 +4763,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(33);
-const schedule_1 = __webpack_require__(89);
 const path = __webpack_require__(31);
 const fs_1 = __webpack_require__(44);
 let CleanLogService = class CleanLogService {
@@ -4777,18 +4776,6 @@ let CleanLogService = class CleanLogService {
         this.LOG_ROOT = path;
         this.RETAIN_DAYS = retainDays;
         this.runClean = true;
-    }
-    async handleCron() {
-        if (!this.runClean)
-            return;
-        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
-        try {
-            await this.cleanDir(this.LOG_ROOT);
-            this.logger?.info('[Log] 🧹 로그 정리 완료');
-        }
-        catch (e) {
-            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
-        }
     }
     async cleanDir(dir) {
         let entries;
@@ -4833,12 +4820,6 @@ let CleanLogService = class CleanLogService {
     }
 };
 exports.CleanLogService = CleanLogService;
-__decorate([
-    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CleanLogService.prototype, "handleCron", null);
 exports.CleanLogService = CleanLogService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
@@ -4849,16 +4830,10 @@ exports.CleanLogService = CleanLogService = __decorate([
 /* 89 */
 /***/ ((module) => {
 
-module.exports = require("@nestjs/schedule");
-
-/***/ }),
-/* 90 */
-/***/ ((module) => {
-
 module.exports = require("@nestjs/mongoose");
 
 /***/ }),
-/* 91 */
+/* 90 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4879,9 +4854,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapMongoAdapter = void 0;
 const common_1 = __webpack_require__(33);
 const config_1 = __webpack_require__(2);
-const mongoose_1 = __webpack_require__(90);
-const mongoose_2 = __webpack_require__(92);
-const map_mongo_entity_1 = __webpack_require__(93);
+const mongoose_1 = __webpack_require__(89);
+const mongoose_2 = __webpack_require__(91);
+const map_mongo_entity_1 = __webpack_require__(92);
 const saveLog_service_1 = __webpack_require__(35);
 const util_1 = __webpack_require__(38);
 const error_to_json_1 = __webpack_require__(30);
@@ -4958,13 +4933,13 @@ exports.MapMongoAdapter = MapMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 92 */
+/* 91 */
 /***/ ((module) => {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 93 */
+/* 92 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4980,7 +4955,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapSchema = exports.Map = void 0;
-const mongoose_1 = __webpack_require__(90);
+const mongoose_1 = __webpack_require__(89);
 let Map = class Map {
 };
 exports.Map = Map;
@@ -5044,7 +5019,7 @@ exports.MapSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 94 */
+/* 93 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5057,14 +5032,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingModule = void 0;
 const common_1 = __webpack_require__(33);
-const setting_file_service_1 = __webpack_require__(95);
+const setting_file_service_1 = __webpack_require__(94);
 const config_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
-const setting_grpc_controller_1 = __webpack_require__(96);
+const setting_grpc_controller_1 = __webpack_require__(95);
 const constant_1 = __webpack_require__(67);
-const setting_postgres_adapter_1 = __webpack_require__(97);
-const setting_socketio_adpater_1 = __webpack_require__(98);
-const setting_slamnav_service_1 = __webpack_require__(99);
+const setting_postgres_adapter_1 = __webpack_require__(96);
+const setting_socketio_adpater_1 = __webpack_require__(97);
+const setting_slamnav_service_1 = __webpack_require__(98);
 const log_module_1 = __webpack_require__(87);
 let SettingModule = class SettingModule {
 };
@@ -5108,7 +5083,7 @@ exports.SettingModule = SettingModule = __decorate([
 
 
 /***/ }),
-/* 95 */
+/* 94 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5563,7 +5538,7 @@ exports.SettingFileService = SettingFileService = __decorate([
 
 
 /***/ }),
-/* 96 */
+/* 95 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5581,7 +5556,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingGrpcInputController = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(33);
-const setting_file_service_1 = __webpack_require__(95);
+const setting_file_service_1 = __webpack_require__(94);
 const constant_1 = __webpack_require__(51);
 const rpc_code_exception_1 = __webpack_require__(50);
 let SettingGrpcInputController = class SettingGrpcInputController {
@@ -5626,7 +5601,7 @@ exports.SettingGrpcInputController = SettingGrpcInputController = __decorate([
 
 
 /***/ }),
-/* 97 */
+/* 96 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5641,7 +5616,7 @@ exports.SettingPostgresAdapter = SettingPostgresAdapter;
 
 
 /***/ }),
-/* 98 */
+/* 97 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5656,7 +5631,7 @@ exports.SettingSocketioAdapter = SettingSocketioAdapter;
 
 
 /***/ }),
-/* 99 */
+/* 98 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5668,7 +5643,7 @@ exports.SettingSlamnavService = SettingSlamnavService;
 
 
 /***/ }),
-/* 100 */
+/* 99 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5682,12 +5657,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundModule = void 0;
 const common_1 = __webpack_require__(33);
 const config_1 = __webpack_require__(2);
-const typeorm_1 = __webpack_require__(101);
+const typeorm_1 = __webpack_require__(100);
 const pg_1 = __webpack_require__(85);
-const sound_entity_1 = __webpack_require__(102);
-const sound_grpc_controller_1 = __webpack_require__(104);
-const sound_service_1 = __webpack_require__(105);
-const sound_play_sound_adapter_1 = __webpack_require__(107);
+const sound_entity_1 = __webpack_require__(101);
+const sound_grpc_controller_1 = __webpack_require__(103);
+const sound_service_1 = __webpack_require__(104);
+const sound_play_sound_adapter_1 = __webpack_require__(106);
 const log_module_1 = __webpack_require__(87);
 let SoundModule = class SoundModule {
 };
@@ -5753,13 +5728,13 @@ async function ensureSoundDatabase() {
 
 
 /***/ }),
-/* 101 */
+/* 100 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 102 */
+/* 101 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5775,7 +5750,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Sound = void 0;
-const typeorm_1 = __webpack_require__(103);
+const typeorm_1 = __webpack_require__(102);
 let Sound = class Sound {
 };
 exports.Sound = Sound;
@@ -5817,13 +5792,13 @@ exports.Sound = Sound = __decorate([
 
 
 /***/ }),
-/* 103 */
+/* 102 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 104 */
+/* 103 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5842,7 +5817,7 @@ exports.SoundGrpcController = void 0;
 const common_1 = __webpack_require__(4);
 const grpc_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(33);
-const sound_service_1 = __webpack_require__(105);
+const sound_service_1 = __webpack_require__(104);
 let SoundGrpcController = class SoundGrpcController {
     constructor(soundService) {
         this.soundService = soundService;
@@ -5876,7 +5851,7 @@ exports.SoundGrpcController = SoundGrpcController = __decorate([
 
 
 /***/ }),
-/* 105 */
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5897,7 +5872,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundService = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(33);
-const sound_output_port_1 = __webpack_require__(106);
+const sound_output_port_1 = __webpack_require__(105);
 const microservices_1 = __webpack_require__(3);
 const fs_1 = __webpack_require__(44);
 const path_1 = __webpack_require__(31);
@@ -6029,7 +6004,7 @@ exports.SoundService = SoundService = __decorate([
 
 
 /***/ }),
-/* 106 */
+/* 105 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -6037,7 +6012,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 107 */
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6055,9 +6030,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundPlaySoundAdapter = void 0;
 const common_1 = __webpack_require__(4);
 const fs_1 = __webpack_require__(44);
-const PlaySound = __webpack_require__(108);
+const PlaySound = __webpack_require__(107);
 const microservices_1 = __webpack_require__(3);
-const child_process_1 = __webpack_require__(109);
+const child_process_1 = __webpack_require__(108);
 const path_1 = __webpack_require__(31);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
@@ -6170,19 +6145,19 @@ exports.SoundPlaySoundAdapter = SoundPlaySoundAdapter = __decorate([
 
 
 /***/ }),
-/* 108 */
+/* 107 */
 /***/ ((module) => {
 
 module.exports = require("play-sound");
 
 /***/ }),
-/* 109 */
+/* 108 */
 /***/ ((module) => {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 110 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6196,20 +6171,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateModule = void 0;
 const common_1 = __webpack_require__(33);
 const config_1 = __webpack_require__(2);
-const typeorm_1 = __webpack_require__(101);
+const typeorm_1 = __webpack_require__(100);
 const microservices_1 = __webpack_require__(3);
 const pg_1 = __webpack_require__(85);
-const update_command_entity_1 = __webpack_require__(111);
-const update_grpc_controller_1 = __webpack_require__(112);
-const update_service_1 = __webpack_require__(113);
-const update_sh_adapter_1 = __webpack_require__(121);
-const update_socketio_adapter_1 = __webpack_require__(122);
+const update_command_entity_1 = __webpack_require__(110);
+const update_grpc_controller_1 = __webpack_require__(111);
+const update_service_1 = __webpack_require__(112);
+const update_sh_adapter_1 = __webpack_require__(120);
+const update_socketio_adapter_1 = __webpack_require__(121);
 const constant_1 = __webpack_require__(67);
-const update_pending_service_1 = __webpack_require__(123);
-const update_database_adapter_1 = __webpack_require__(124);
-const mongoose_1 = __webpack_require__(90);
-const update_version_entity_1 = __webpack_require__(125);
-const update_log_entity_1 = __webpack_require__(126);
+const update_pending_service_1 = __webpack_require__(122);
+const update_database_adapter_1 = __webpack_require__(123);
+const mongoose_1 = __webpack_require__(89);
+const update_version_entity_1 = __webpack_require__(124);
+const update_log_entity_1 = __webpack_require__(125);
 const log_module_1 = __webpack_require__(87);
 let UpdateModule = class UpdateModule {
 };
@@ -6314,7 +6289,7 @@ async function ensureHostDatabase() {
 
 
 /***/ }),
-/* 111 */
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6329,7 +6304,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateCommandSchema = exports.UpdateCommand = void 0;
-const mongoose_1 = __webpack_require__(90);
+const mongoose_1 = __webpack_require__(89);
 let UpdateCommand = class UpdateCommand {
 };
 exports.UpdateCommand = UpdateCommand;
@@ -6391,7 +6366,7 @@ exports.UpdateCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 112 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6409,7 +6384,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateGrpcController = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(33);
-const update_service_1 = __webpack_require__(113);
+const update_service_1 = __webpack_require__(112);
 let UpdateGrpcController = class UpdateGrpcController {
     constructor(updateService) {
         this.updateService = updateService;
@@ -6449,7 +6424,7 @@ exports.UpdateGrpcController = UpdateGrpcController = __decorate([
 
 
 /***/ }),
-/* 113 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6470,22 +6445,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateService = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(33);
-const net = __webpack_require__(114);
-const child_process_1 = __webpack_require__(109);
+const net = __webpack_require__(113);
+const child_process_1 = __webpack_require__(108);
 const common_3 = __webpack_require__(33);
 const config_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
-const crypto = __webpack_require__(115);
+const crypto = __webpack_require__(114);
 const fs_1 = __webpack_require__(44);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
-const os_1 = __webpack_require__(116);
+const os_1 = __webpack_require__(115);
 const path_1 = __webpack_require__(31);
-const update_domain_1 = __webpack_require__(117);
-const update_slamnav_output_port_1 = __webpack_require__(118);
-const update_database_output_port_1 = __webpack_require__(119);
+const update_domain_1 = __webpack_require__(116);
+const update_slamnav_output_port_1 = __webpack_require__(117);
+const update_database_output_port_1 = __webpack_require__(118);
 const map_command_domain_1 = __webpack_require__(60);
-const update_sh_output_port_1 = __webpack_require__(120);
+const update_sh_output_port_1 = __webpack_require__(119);
 const saveLog_service_1 = __webpack_require__(35);
 let UpdateService = class UpdateService {
     constructor(configService, updateShOutputPort, updateSlamnavOutputPort, updateDatabaseOutputPort, saveLogService) {
@@ -6782,25 +6757,25 @@ exports.UpdateService = UpdateService = __decorate([
 
 
 /***/ }),
-/* 114 */
+/* 113 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 115 */
+/* 114 */
 /***/ ((module) => {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 116 */
+/* 115 */
 /***/ ((module) => {
 
 module.exports = require("os");
 
 /***/ }),
-/* 117 */
+/* 116 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -6947,6 +6922,14 @@ exports.UpdateModel = UpdateModel;
 
 
 /***/ }),
+/* 117 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
 /* 118 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -6964,14 +6947,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 /* 120 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6990,9 +6965,9 @@ exports.UpdateShAdapter = void 0;
 const rpc_code_exception_1 = __webpack_require__(50);
 const grpc_code_constant_1 = __webpack_require__(52);
 const config_1 = __webpack_require__(2);
-const child_process_1 = __webpack_require__(109);
+const child_process_1 = __webpack_require__(108);
 const fs_1 = __webpack_require__(44);
-const os_1 = __webpack_require__(116);
+const os_1 = __webpack_require__(115);
 const path_1 = __webpack_require__(31);
 const saveLog_service_1 = __webpack_require__(35);
 const common_1 = __webpack_require__(33);
@@ -7025,7 +7000,7 @@ exports.UpdateShAdapter = UpdateShAdapter = __decorate([
 
 
 /***/ }),
-/* 122 */
+/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7050,7 +7025,7 @@ const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const common_2 = __webpack_require__(33);
 const constant_2 = __webpack_require__(67);
-const update_pending_service_1 = __webpack_require__(123);
+const update_pending_service_1 = __webpack_require__(122);
 const saveLog_service_1 = __webpack_require__(35);
 let UpdateSocketioAdapter = class UpdateSocketioAdapter {
     constructor(mqttService, pendingService, saveLogService) {
@@ -7128,7 +7103,7 @@ exports.UpdateSocketioAdapter = UpdateSocketioAdapter = __decorate([
 
 
 /***/ }),
-/* 123 */
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7151,7 +7126,7 @@ exports.UpdatePendingResponseService = UpdatePendingResponseService = __decorate
 
 
 /***/ }),
-/* 124 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7170,14 +7145,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateDatabaseAdapter = void 0;
-const mongoose_1 = __webpack_require__(90);
-const mongoose_2 = __webpack_require__(92);
-const typeorm_1 = __webpack_require__(101);
+const mongoose_1 = __webpack_require__(89);
+const mongoose_2 = __webpack_require__(91);
+const typeorm_1 = __webpack_require__(100);
 const parse_util_1 = __webpack_require__(53);
-const typeorm_2 = __webpack_require__(103);
+const typeorm_2 = __webpack_require__(102);
 const util_1 = __webpack_require__(38);
-const update_command_entity_1 = __webpack_require__(111);
-const update_version_entity_1 = __webpack_require__(125);
+const update_command_entity_1 = __webpack_require__(110);
+const update_version_entity_1 = __webpack_require__(124);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const saveLog_service_1 = __webpack_require__(35);
@@ -7272,7 +7247,7 @@ exports.UpdateDatabaseAdapter = UpdateDatabaseAdapter = __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7288,7 +7263,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateVersion = void 0;
-const typeorm_1 = __webpack_require__(103);
+const typeorm_1 = __webpack_require__(102);
 let UpdateVersion = class UpdateVersion {
 };
 exports.UpdateVersion = UpdateVersion;
@@ -7326,7 +7301,7 @@ exports.UpdateVersion = UpdateVersion = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7341,7 +7316,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateLogSchema = exports.UpdateLog = void 0;
-const mongoose_1 = __webpack_require__(90);
+const mongoose_1 = __webpack_require__(89);
 let UpdateLog = class UpdateLog {
 };
 exports.UpdateLog = UpdateLog;
@@ -7389,7 +7364,7 @@ exports.UpdateLogSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 127 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7402,16 +7377,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkModule = void 0;
 const common_1 = __webpack_require__(33);
-const network_grpc_controller_1 = __webpack_require__(128);
-const network_service_1 = __webpack_require__(129);
+const network_grpc_controller_1 = __webpack_require__(127);
+const network_service_1 = __webpack_require__(128);
 const microservices_1 = __webpack_require__(3);
 const config_1 = __webpack_require__(2);
 const constant_1 = __webpack_require__(67);
-const network_nmcli_adapter_1 = __webpack_require__(133);
-const network_mongo_adapter_1 = __webpack_require__(135);
-const network_mqtt_controller_1 = __webpack_require__(137);
-const network_command_entity_1 = __webpack_require__(136);
-const mongoose_1 = __webpack_require__(90);
+const network_nmcli_adapter_1 = __webpack_require__(132);
+const network_mongo_adapter_1 = __webpack_require__(134);
+const network_mqtt_controller_1 = __webpack_require__(136);
+const network_command_entity_1 = __webpack_require__(135);
+const mongoose_1 = __webpack_require__(89);
 const log_module_1 = __webpack_require__(87);
 let NetworkModule = class NetworkModule {
 };
@@ -7466,7 +7441,7 @@ exports.NetworkModule = NetworkModule = __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7484,7 +7459,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkGrpcInputController = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(33);
-const network_service_1 = __webpack_require__(129);
+const network_service_1 = __webpack_require__(128);
 let NetworkGrpcInputController = class NetworkGrpcInputController {
     constructor(networkService) {
         this.networkService = networkService;
@@ -7527,7 +7502,7 @@ exports.NetworkGrpcInputController = NetworkGrpcInputController = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7550,9 +7525,9 @@ const parse_util_1 = __webpack_require__(53);
 const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(67);
-const network_output_port_1 = __webpack_require__(130);
-const network_database_output_port_1 = __webpack_require__(131);
-const network_domain_1 = __webpack_require__(132);
+const network_output_port_1 = __webpack_require__(129);
+const network_database_output_port_1 = __webpack_require__(130);
+const network_domain_1 = __webpack_require__(131);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_2 = __webpack_require__(51);
 const saveLog_service_1 = __webpack_require__(35);
@@ -7807,6 +7782,14 @@ exports.NetworkService = NetworkService = __decorate([
 
 
 /***/ }),
+/* 129 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
 /* 130 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -7816,14 +7799,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 /* 131 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 132 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -7937,7 +7912,7 @@ exports.NetworkModel = NetworkModel;
 
 
 /***/ }),
-/* 133 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7953,12 +7928,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkNmcliAdapter = void 0;
-const wifi = __webpack_require__(134);
+const wifi = __webpack_require__(133);
 const microservices_1 = __webpack_require__(3);
 const parse_util_1 = __webpack_require__(53);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
-const child_process_1 = __webpack_require__(109);
+const child_process_1 = __webpack_require__(108);
 const saveLog_service_1 = __webpack_require__(35);
 const common_1 = __webpack_require__(33);
 let NetworkNmcliAdapter = class NetworkNmcliAdapter {
@@ -8389,13 +8364,13 @@ exports.NetworkNmcliAdapter = NetworkNmcliAdapter = __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 133 */
 /***/ ((module) => {
 
 module.exports = require("node-wifi");
 
 /***/ }),
-/* 135 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8414,11 +8389,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkMongoAdapter = void 0;
-const mongoose_1 = __webpack_require__(90);
-const mongoose_2 = __webpack_require__(92);
+const mongoose_1 = __webpack_require__(89);
+const mongoose_2 = __webpack_require__(91);
 const parse_util_1 = __webpack_require__(53);
 const util_1 = __webpack_require__(38);
-const network_command_entity_1 = __webpack_require__(136);
+const network_command_entity_1 = __webpack_require__(135);
 const rpc_code_exception_1 = __webpack_require__(50);
 const constant_1 = __webpack_require__(51);
 const saveLog_service_1 = __webpack_require__(35);
@@ -8487,7 +8462,7 @@ exports.NetworkMongoAdapter = NetworkMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8502,7 +8477,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkCommandSchema = exports.NetworkCommand = void 0;
-const mongoose_1 = __webpack_require__(90);
+const mongoose_1 = __webpack_require__(89);
 let NetworkCommand = class NetworkCommand {
 };
 exports.NetworkCommand = NetworkCommand;
@@ -8530,7 +8505,7 @@ exports.NetworkCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 137 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8552,7 +8527,7 @@ exports.NetworkMqttController = void 0;
 const constant_1 = __webpack_require__(67);
 const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const network_service_1 = __webpack_require__(129);
+const network_service_1 = __webpack_require__(128);
 let NetworkMqttController = class NetworkMqttController {
     constructor(mqttMicroservice, networkService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -8577,7 +8552,7 @@ exports.NetworkMqttController = NetworkMqttController = __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8590,19 +8565,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifModule = void 0;
 const common_1 = __webpack_require__(33);
-const onvif_api_controller_1 = __webpack_require__(139);
-const onvif_device_service_1 = __webpack_require__(145);
-const onvif_ptz_service_1 = __webpack_require__(148);
-const onvif_media_service_1 = __webpack_require__(142);
-const onvif_event_service_1 = __webpack_require__(151);
-const onvif_deviceio_service_1 = __webpack_require__(150);
+const onvif_api_controller_1 = __webpack_require__(138);
+const onvif_device_service_1 = __webpack_require__(144);
+const onvif_ptz_service_1 = __webpack_require__(147);
+const onvif_media_service_1 = __webpack_require__(141);
+const onvif_event_service_1 = __webpack_require__(150);
+const onvif_deviceio_service_1 = __webpack_require__(149);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(4);
 const path_1 = __webpack_require__(31);
-const onvif_mqtt_controller_1 = __webpack_require__(152);
+const onvif_mqtt_controller_1 = __webpack_require__(151);
 const constant_1 = __webpack_require__(67);
 const config_1 = __webpack_require__(2);
-const onvif_pending_service_1 = __webpack_require__(153);
+const onvif_pending_service_1 = __webpack_require__(152);
 const log_module_1 = __webpack_require__(87);
 let OnvifModule = class OnvifModule {
 };
@@ -8665,7 +8640,7 @@ exports.OnvifModule = OnvifModule = __decorate([
 
 
 /***/ }),
-/* 139 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8685,14 +8660,14 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifApiController = void 0;
 const common_1 = __webpack_require__(33);
-const xml2js = __webpack_require__(140);
-const express_1 = __webpack_require__(141);
-const onvif_media_service_1 = __webpack_require__(142);
-const onvif_device_service_1 = __webpack_require__(145);
+const xml2js = __webpack_require__(139);
+const express_1 = __webpack_require__(140);
+const onvif_media_service_1 = __webpack_require__(141);
+const onvif_device_service_1 = __webpack_require__(144);
 const fs_1 = __webpack_require__(44);
-const onvif_ptz_service_1 = __webpack_require__(148);
-const onvif_deviceio_service_1 = __webpack_require__(150);
-const onvif_event_service_1 = __webpack_require__(151);
+const onvif_ptz_service_1 = __webpack_require__(147);
+const onvif_deviceio_service_1 = __webpack_require__(149);
+const onvif_event_service_1 = __webpack_require__(150);
 const parse_util_1 = __webpack_require__(53);
 const saveLog_service_1 = __webpack_require__(35);
 let OnvifApiController = class OnvifApiController {
@@ -8970,19 +8945,19 @@ exports.OnvifApiController = OnvifApiController = __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 139 */
 /***/ ((module) => {
 
 module.exports = require("xml2js");
 
 /***/ }),
-/* 141 */
+/* 140 */
 /***/ ((module) => {
 
 module.exports = require("express");
 
 /***/ }),
-/* 142 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9006,9 +8981,9 @@ const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(28);
 const parse_util_1 = __webpack_require__(53);
 const constant_1 = __webpack_require__(67);
-const template_1 = __webpack_require__(143);
-const wsdl_util_1 = __webpack_require__(144);
-const os_1 = __webpack_require__(116);
+const template_1 = __webpack_require__(142);
+const wsdl_util_1 = __webpack_require__(143);
+const os_1 = __webpack_require__(115);
 const saveLog_service_1 = __webpack_require__(35);
 let OnvifMediaService = class OnvifMediaService {
     constructor(configMicroservice, saveLogService) {
@@ -9145,7 +9120,7 @@ exports.OnvifMediaService = OnvifMediaService = __decorate([
 
 
 /***/ }),
-/* 143 */
+/* 142 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -9352,7 +9327,7 @@ exports.MediaWSDLTemplate = {
 
 
 /***/ }),
-/* 144 */
+/* 143 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -9421,7 +9396,7 @@ exports.WsdlUtil = WsdlUtil;
 
 
 /***/ }),
-/* 145 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9440,17 +9415,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifDeviceService = void 0;
-const dgram = __webpack_require__(146);
-const xml2js = __webpack_require__(140);
+const dgram = __webpack_require__(145);
+const xml2js = __webpack_require__(139);
 const common_1 = __webpack_require__(33);
-const os_1 = __webpack_require__(116);
+const os_1 = __webpack_require__(115);
 const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(28);
 const date_util_1 = __webpack_require__(41);
 const parse_util_1 = __webpack_require__(53);
 const constant_1 = __webpack_require__(67);
-const template_1 = __webpack_require__(147);
-const wsdl_util_1 = __webpack_require__(144);
+const template_1 = __webpack_require__(146);
+const wsdl_util_1 = __webpack_require__(143);
 const url_util_1 = __webpack_require__(39);
 const saveLog_service_1 = __webpack_require__(35);
 let OnvifDeviceService = class OnvifDeviceService {
@@ -9558,12 +9533,6 @@ let OnvifDeviceService = class OnvifDeviceService {
                 catch (error) {
                     console.error(error);
                 }
-            });
-            this.server.bind(this.PORT, '0.0.0.0', () => {
-                this.server.setMulticastLoopback(false);
-                this.server.addMembership(this.MULTICAST_ADDRESS);
-                this.logger?.info(`[Device] ONVIF listening on ${this.MULTICAST_ADDRESS}:${this.PORT}`);
-                this.hello();
             });
         }
     }
@@ -9828,13 +9797,13 @@ exports.OnvifDeviceService = OnvifDeviceService = __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 145 */
 /***/ ((module) => {
 
 module.exports = require("dgram");
 
 /***/ }),
-/* 147 */
+/* 146 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10243,7 +10212,7 @@ exports.NetworkWSDLTemplate = {
 
 
 /***/ }),
-/* 148 */
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10260,7 +10229,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifPtzService = void 0;
 const parse_util_1 = __webpack_require__(53);
-const template_1 = __webpack_require__(149);
+const template_1 = __webpack_require__(148);
 const saveLog_service_1 = __webpack_require__(35);
 const common_1 = __webpack_require__(33);
 let OnvifPtzService = class OnvifPtzService {
@@ -10305,7 +10274,7 @@ exports.OnvifPtzService = OnvifPtzService = __decorate([
 
 
 /***/ }),
-/* 149 */
+/* 148 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10338,7 +10307,7 @@ exports.PTZWSDLTemplate = {
 
 
 /***/ }),
-/* 150 */
+/* 149 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10350,7 +10319,7 @@ exports.OnvifDeviceIOService = OnvifDeviceIOService;
 
 
 /***/ }),
-/* 151 */
+/* 150 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10362,7 +10331,7 @@ exports.OnvifEventService = OnvifEventService;
 
 
 /***/ }),
-/* 152 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10383,7 +10352,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifMqttController = void 0;
 const common_1 = __webpack_require__(33);
 const microservices_1 = __webpack_require__(3);
-const onvif_device_service_1 = __webpack_require__(145);
+const onvif_device_service_1 = __webpack_require__(144);
 const constant_1 = __webpack_require__(67);
 let OnvifMqttController = class OnvifMqttController {
     constructor(mqttMicroservice, deviceService) {
@@ -10419,7 +10388,7 @@ exports.OnvifMqttController = OnvifMqttController = __decorate([
 
 
 /***/ }),
-/* 153 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10442,13 +10411,13 @@ exports.OnvifPendingService = OnvifPendingService = __decorate([
 
 
 /***/ }),
-/* 154 */
+/* 153 */
 /***/ ((module) => {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 155 */
+/* 154 */
 /***/ ((module) => {
 
 module.exports = require("express-xml-bodyparser");
@@ -10493,13 +10462,13 @@ const microservices_1 = __webpack_require__(3);
 const common_1 = __webpack_require__(4);
 const path_1 = __webpack_require__(31);
 const map_module_1 = __webpack_require__(32);
-const setting_module_1 = __webpack_require__(94);
-const sound_module_1 = __webpack_require__(100);
-const update_module_1 = __webpack_require__(110);
-const network_module_1 = __webpack_require__(127);
-const onvif_module_1 = __webpack_require__(138);
-const bodyParser = __webpack_require__(154);
-const xmlParser = __webpack_require__(155);
+const setting_module_1 = __webpack_require__(93);
+const sound_module_1 = __webpack_require__(99);
+const update_module_1 = __webpack_require__(109);
+const network_module_1 = __webpack_require__(126);
+const onvif_module_1 = __webpack_require__(137);
+const bodyParser = __webpack_require__(153);
+const xmlParser = __webpack_require__(154);
 const common_2 = __webpack_require__(33);
 const constant_1 = __webpack_require__(67);
 async function bootstrap() {

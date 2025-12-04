@@ -3658,7 +3658,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(3);
-const schedule_1 = __webpack_require__(70);
 const path = __webpack_require__(45);
 const fs_1 = __webpack_require__(44);
 let CleanLogService = class CleanLogService {
@@ -3672,18 +3671,6 @@ let CleanLogService = class CleanLogService {
         this.LOG_ROOT = path;
         this.RETAIN_DAYS = retainDays;
         this.runClean = true;
-    }
-    async handleCron() {
-        if (!this.runClean)
-            return;
-        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
-        try {
-            await this.cleanDir(this.LOG_ROOT);
-            this.logger?.info('[Log] 🧹 로그 정리 완료');
-        }
-        catch (e) {
-            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
-        }
     }
     async cleanDir(dir) {
         let entries;
@@ -3728,12 +3715,6 @@ let CleanLogService = class CleanLogService {
     }
 };
 exports.CleanLogService = CleanLogService;
-__decorate([
-    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CleanLogService.prototype, "handleCron", null);
 exports.CleanLogService = CleanLogService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
@@ -3742,12 +3723,6 @@ exports.CleanLogService = CleanLogService = __decorate([
 
 /***/ }),
 /* 70 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/schedule");
-
-/***/ }),
-/* 71 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3760,15 +3735,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemlogModule = void 0;
 const config_1 = __webpack_require__(58);
-const sem_log_service_1 = __webpack_require__(72);
+const sem_log_service_1 = __webpack_require__(71);
 const common_1 = __webpack_require__(3);
-const sem_log_alarm_log_dto_1 = __webpack_require__(74);
-const typeorm_1 = __webpack_require__(76);
-const sem_log_alarm_dto_1 = __webpack_require__(77);
-const pg_1 = __webpack_require__(78);
-const sem_log_mqtt_controller_1 = __webpack_require__(79);
-const sem_log_grpc_controller_1 = __webpack_require__(80);
-const sem_log_postgres_adapter_1 = __webpack_require__(81);
+const sem_log_alarm_log_dto_1 = __webpack_require__(73);
+const typeorm_1 = __webpack_require__(75);
+const sem_log_alarm_dto_1 = __webpack_require__(76);
+const pg_1 = __webpack_require__(77);
+const sem_log_mqtt_controller_1 = __webpack_require__(78);
+const sem_log_grpc_controller_1 = __webpack_require__(79);
+const sem_log_postgres_adapter_1 = __webpack_require__(80);
 const log_module_1 = __webpack_require__(68);
 let SemlogModule = class SemlogModule {
 };
@@ -3835,7 +3810,7 @@ async function ensureSemlogDatabase() {
 
 
 /***/ }),
-/* 72 */
+/* 71 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3856,7 +3831,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogService = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_database_output_port_1 = __webpack_require__(73);
+const sem_log_database_output_port_1 = __webpack_require__(72);
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
 const date_util_1 = __webpack_require__(41);
@@ -4119,7 +4094,7 @@ exports.SemLogService = SemLogService = __decorate([
 
 
 /***/ }),
-/* 73 */
+/* 72 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -4127,7 +4102,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 74 */
+/* 73 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4143,7 +4118,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmLog = void 0;
-const typeorm_1 = __webpack_require__(75);
+const typeorm_1 = __webpack_require__(74);
 let SemLogAlarmLog = class SemLogAlarmLog {
 };
 exports.SemLogAlarmLog = SemLogAlarmLog;
@@ -4181,19 +4156,19 @@ exports.SemLogAlarmLog = SemLogAlarmLog = __decorate([
 
 
 /***/ }),
-/* 75 */
+/* 74 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 76 */
+/* 75 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 77 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4208,7 +4183,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmList = void 0;
-const typeorm_1 = __webpack_require__(75);
+const typeorm_1 = __webpack_require__(74);
 let SemLogAlarmList = class SemLogAlarmList {
 };
 exports.SemLogAlarmList = SemLogAlarmList;
@@ -4234,13 +4209,13 @@ exports.SemLogAlarmList = SemLogAlarmList = __decorate([
 
 
 /***/ }),
-/* 78 */
+/* 77 */
 /***/ ((module) => {
 
 module.exports = require("pg");
 
 /***/ }),
-/* 79 */
+/* 78 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4257,7 +4232,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogMqttInputController = void 0;
 const common_1 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(72);
+const sem_log_service_1 = __webpack_require__(71);
 const microservices_1 = __webpack_require__(10);
 let SemLogMqttInputController = class SemLogMqttInputController {
     constructor(semlogService) {
@@ -4286,7 +4261,7 @@ exports.SemLogMqttInputController = SemLogMqttInputController = __decorate([
 
 
 /***/ }),
-/* 80 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4304,7 +4279,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogGrpcController = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(72);
+const sem_log_service_1 = __webpack_require__(71);
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
 let SemLogGrpcController = class SemLogGrpcController {
@@ -4364,7 +4339,7 @@ exports.SemLogGrpcController = SemLogGrpcController = __decorate([
 
 
 /***/ }),
-/* 81 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4383,14 +4358,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogPostgresAdapter = void 0;
-const typeorm_1 = __webpack_require__(76);
-const sem_log_alarm_dto_1 = __webpack_require__(77);
-const sem_log_alarm_log_dto_1 = __webpack_require__(74);
-const typeorm_2 = __webpack_require__(75);
+const typeorm_1 = __webpack_require__(75);
+const sem_log_alarm_dto_1 = __webpack_require__(76);
+const sem_log_alarm_log_dto_1 = __webpack_require__(73);
+const typeorm_2 = __webpack_require__(74);
 const util_1 = __webpack_require__(38);
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
-const pagination_1 = __webpack_require__(82);
+const pagination_1 = __webpack_require__(81);
 const saveLog_service_1 = __webpack_require__(35);
 const common_1 = __webpack_require__(3);
 let SemLogPostgresAdapter = class SemLogPostgresAdapter {
@@ -5009,7 +4984,7 @@ exports.SemLogPostgresAdapter = SemLogPostgresAdapter = __decorate([
 
 
 /***/ }),
-/* 82 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5028,12 +5003,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(82), exports);
 __exportStar(__webpack_require__(83), exports);
-__exportStar(__webpack_require__(84), exports);
 
 
 /***/ }),
-/* 83 */
+/* 82 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5106,7 +5081,7 @@ function getPaginationLimit(pageSize) {
 
 
 /***/ }),
-/* 84 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5204,7 +5179,7 @@ const core_1 = __webpack_require__(1);
 const tsdb_module_1 = __webpack_require__(2);
 const config_1 = __webpack_require__(58);
 const microservices_1 = __webpack_require__(10);
-const semlog_module_1 = __webpack_require__(71);
+const semlog_module_1 = __webpack_require__(70);
 const path_1 = __webpack_require__(45);
 const proto_1 = __webpack_require__(8);
 async function bootstrap() {

@@ -3933,7 +3933,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(5);
-const schedule_1 = __webpack_require__(87);
 const path = __webpack_require__(3);
 const fs_1 = __webpack_require__(46);
 let CleanLogService = class CleanLogService {
@@ -3947,18 +3946,6 @@ let CleanLogService = class CleanLogService {
         this.LOG_ROOT = path;
         this.RETAIN_DAYS = retainDays;
         this.runClean = true;
-    }
-    async handleCron() {
-        if (!this.runClean)
-            return;
-        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
-        try {
-            await this.cleanDir(this.LOG_ROOT);
-            this.logger?.info('[Log] 🧹 로그 정리 완료');
-        }
-        catch (e) {
-            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
-        }
     }
     async cleanDir(dir) {
         let entries;
@@ -4003,23 +3990,11 @@ let CleanLogService = class CleanLogService {
     }
 };
 exports.CleanLogService = CleanLogService;
-__decorate([
-    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CleanLogService.prototype, "handleCron", null);
 exports.CleanLogService = CleanLogService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
 ], CleanLogService);
 
-
-/***/ }),
-/* 87 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/schedule");
 
 /***/ })
 /******/ 	]);
