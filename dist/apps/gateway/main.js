@@ -46,10 +46,10 @@ const move_api_module_1 = __webpack_require__(97);
 const map_api_module_1 = __webpack_require__(106);
 const sound_api_module_1 = __webpack_require__(117);
 const log_api_module_1 = __webpack_require__(123);
-const update_api_module_1 = __webpack_require__(127);
-const cobot_api_module_1 = __webpack_require__(135);
-const tcp_api_module_1 = __webpack_require__(139);
-const socket_api_module_1 = __webpack_require__(142);
+const update_api_module_1 = __webpack_require__(128);
+const cobot_api_module_1 = __webpack_require__(136);
+const tcp_api_module_1 = __webpack_require__(140);
+const socket_api_module_1 = __webpack_require__(143);
 const schedule_1 = __webpack_require__(76);
 const log_module_1 = __webpack_require__(74);
 const saveLog_service_1 = __webpack_require__(68);
@@ -2544,11 +2544,27 @@ exports.COBOT_GRPC_SERVICE_NAME = "CobotGrpcService";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SEM_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SEM_LOG_GRPC_SERVICE_NAME = exports.SERVICE_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.ServiceLogGrpcServiceControllerMethods = ServiceLogGrpcServiceControllerMethods;
 exports.SEMLogGrpcServiceControllerMethods = SEMLogGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(3);
 exports.protobufPackage = "log";
 exports.LOG_PACKAGE_NAME = "log";
+function ServiceLogGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["getServiceLog"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("ServiceLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("ServiceLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SERVICE_LOG_GRPC_SERVICE_NAME = "ServiceLogGrpcService";
 function SEMLogGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
@@ -10377,6 +10393,10 @@ let LogApiService = class LogApiService {
     }
     onModuleInit() {
         this.logService = this.logMicroservice.getService('SEMLogGrpcService');
+        this.serviceLogService = this.logMicroservice.getService('ServiceLogGrpcService');
+    }
+    async getServiceLog(serviceName, dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.serviceLogService.getServiceLog({ serviceName, ...dto, levels: dto.levels || [] }));
     }
     async getAlarmDefinedList(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.logService.getSemAlarmDefine(dto));
@@ -10440,7 +10460,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -10449,11 +10469,15 @@ const log_api_service_1 = __webpack_require__(124);
 const semlog_dto_1 = __webpack_require__(126);
 const search_request_1 = __webpack_require__(102);
 const saveLog_service_1 = __webpack_require__(68);
+const servicelog_dto_1 = __webpack_require__(127);
 let LogApiController = class LogApiController {
     constructor(logService, saveLogService) {
         this.logService = logService;
         this.saveLogService = saveLogService;
         this.logger = this.saveLogService.get('log');
+    }
+    async getLogList(serviceName, dto) {
+        return this.logService.getServiceLog(serviceName, dto);
     }
     async getAlarmList(dto) {
         return this.logService.getAlarmDefinedList(dto);
@@ -10492,6 +10516,21 @@ let LogApiController = class LogApiController {
 };
 exports.LogApiController = LogApiController;
 __decorate([
+    (0, common_1.Get)(':serviceName'),
+    (0, swagger_1.ApiOperation)({
+        summary: '서비스 로그 요청',
+        description: '서비스 로그 리스트를 요청합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '서비스 로그 리스트 요청 성공',
+    }),
+    __param(0, (0, common_1.Param)('serviceName')),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_c = typeof servicelog_dto_1.GetServiceLogRequestDto !== "undefined" && servicelog_dto_1.GetServiceLogRequestDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], LogApiController.prototype, "getLogList", null);
+__decorate([
     (0, common_1.Get)('sem/alarm-define'),
     (0, swagger_1.ApiOperation)({
         summary: '정의된 알람 리스트 요청',
@@ -10516,8 +10555,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    __metadata("design:paramtypes", [typeof (_e = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], LogApiController.prototype, "getAlarmList", null);
 __decorate([
     (0, common_1.Post)('sem/alarm-define'),
@@ -10531,8 +10570,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof semlog_dto_1.SEMAlarm !== "undefined" && semlog_dto_1.SEMAlarm) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    __metadata("design:paramtypes", [typeof (_g = typeof semlog_dto_1.SEMAlarm !== "undefined" && semlog_dto_1.SEMAlarm) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], LogApiController.prototype, "postAlarmDefine", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-define'),
@@ -10546,8 +10585,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof semlog_dto_1.DeleteAlarmDefineRequestDto !== "undefined" && semlog_dto_1.DeleteAlarmDefineRequestDto) === "function" ? _g : Object]),
-    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    __metadata("design:paramtypes", [typeof (_j = typeof semlog_dto_1.DeleteAlarmDefineRequestDto !== "undefined" && semlog_dto_1.DeleteAlarmDefineRequestDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], LogApiController.prototype, "deleteAlarmDefine", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-define/all'),
@@ -10560,7 +10599,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], LogApiController.prototype, "deleteAlarmDefineAll", null);
 __decorate([
     (0, common_1.Get)('sem/alarm-active'),
@@ -10584,7 +10623,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], LogApiController.prototype, "getActiveAlarmList", null);
 __decorate([
     (0, common_1.Post)('sem/alarm-active'),
@@ -10598,8 +10637,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof semlog_dto_1.PostSEMAlarmRequestDto !== "undefined" && semlog_dto_1.PostSEMAlarmRequestDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [typeof (_o = typeof semlog_dto_1.PostSEMAlarmRequestDto !== "undefined" && semlog_dto_1.PostSEMAlarmRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
 ], LogApiController.prototype, "postActiveAlarm", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-active'),
@@ -10613,8 +10652,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], LogApiController.prototype, "deleteActiveAlarm", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm-active/all'),
@@ -10628,7 +10667,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_q = typeof Promise !== "undefined" && Promise) === "function" ? _q : Object)
+    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
 ], LogApiController.prototype, "deleteActiveAlarmAll", null);
 __decorate([
     (0, common_1.Get)('sem/alarm'),
@@ -10665,8 +10704,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _r : Object]),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+    __metadata("design:paramtypes", [typeof (_t = typeof search_request_1.SearchRequestDto !== "undefined" && search_request_1.SearchRequestDto) === "function" ? _t : Object]),
+    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
 ], LogApiController.prototype, "getAlarmLogList", null);
 __decorate([
     (0, common_1.Post)('sem/alarm'),
@@ -10680,8 +10719,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof semlog_dto_1.SaveSEMAlarmLogRequestDto !== "undefined" && semlog_dto_1.SaveSEMAlarmLogRequestDto) === "function" ? _t : Object]),
-    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
+    __metadata("design:paramtypes", [typeof (_v = typeof semlog_dto_1.SaveSEMAlarmLogRequestDto !== "undefined" && semlog_dto_1.SaveSEMAlarmLogRequestDto) === "function" ? _v : Object]),
+    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
 ], LogApiController.prototype, "postAlarmLog", null);
 __decorate([
     (0, common_1.Delete)('sem/alarm'),
@@ -10695,8 +10734,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _v : Object]),
-    __metadata("design:returntype", typeof (_w = typeof Promise !== "undefined" && Promise) === "function" ? _w : Object)
+    __metadata("design:paramtypes", [typeof (_x = typeof semlog_dto_1.DeleteSEMAlarmRequestDto !== "undefined" && semlog_dto_1.DeleteSEMAlarmRequestDto) === "function" ? _x : Object]),
+    __metadata("design:returntype", typeof (_y = typeof Promise !== "undefined" && Promise) === "function" ? _y : Object)
 ], LogApiController.prototype, "deleteAlarmLog", null);
 exports.LogApiController = LogApiController = __decorate([
     (0, swagger_1.ApiTags)('로그 API'),
@@ -11010,11 +11049,44 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GetServiceLogRequestDto = void 0;
+const search_request_1 = __webpack_require__(102);
+const class_validator_1 = __webpack_require__(11);
+class GetServiceLogRequestDto extends search_request_1.SearchRequestDto {
+}
+exports.GetServiceLogRequestDto = GetServiceLogRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], GetServiceLogRequestDto.prototype, "category", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], GetServiceLogRequestDto.prototype, "levels", void 0);
+
+
+/***/ }),
+/* 128 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(128);
-const update_api_controller_1 = __webpack_require__(131);
+const update_api_service_1 = __webpack_require__(129);
+const update_api_controller_1 = __webpack_require__(132);
 const config_1 = __webpack_require__(73);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
@@ -11054,7 +11126,7 @@ exports.UpdateApiModule = UpdateApiModule = __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11075,9 +11147,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiService = void 0;
 const common_1 = __webpack_require__(5);
 const path = __webpack_require__(20);
-const os_1 = __webpack_require__(129);
+const os_1 = __webpack_require__(130);
 const fs = __webpack_require__(19);
-const child_process_1 = __webpack_require__(130);
+const child_process_1 = __webpack_require__(131);
 const config_1 = __webpack_require__(73);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
@@ -11189,19 +11261,19 @@ exports.UpdateApiService = UpdateApiService = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ ((module) => {
 
 module.exports = require("os");
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ ((module) => {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11221,13 +11293,13 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiController = void 0;
 const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(128);
+const update_api_service_1 = __webpack_require__(129);
 const swagger_1 = __webpack_require__(8);
-const update_dto_1 = __webpack_require__(132);
-const etc_dto_1 = __webpack_require__(133);
-const version_dto_1 = __webpack_require__(134);
+const update_dto_1 = __webpack_require__(133);
+const etc_dto_1 = __webpack_require__(134);
+const version_dto_1 = __webpack_require__(135);
 const pagination_response_1 = __webpack_require__(105);
-const version_dto_2 = __webpack_require__(134);
+const version_dto_2 = __webpack_require__(135);
 const saveLog_service_1 = __webpack_require__(68);
 let UpdateApiController = class UpdateApiController {
     constructor(updateService, saveLogService) {
@@ -11414,7 +11486,7 @@ exports.UpdateApiController = UpdateApiController = __decorate([
 
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11770,7 +11842,7 @@ __decorate([
 
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11868,7 +11940,7 @@ __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12004,7 +12076,7 @@ __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12017,8 +12089,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const cobot_api_service_1 = __webpack_require__(136);
-const cobot_api_controller_1 = __webpack_require__(137);
+const cobot_api_service_1 = __webpack_require__(137);
+const cobot_api_controller_1 = __webpack_require__(138);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
 const config_1 = __webpack_require__(73);
@@ -12054,7 +12126,7 @@ exports.CobotApiModule = CobotApiModule = __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12143,7 +12215,7 @@ exports.CobotApiService = CobotApiService = __decorate([
 
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12165,11 +12237,11 @@ exports.CobotApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const swagger_2 = __webpack_require__(8);
-const cobot_api_service_1 = __webpack_require__(136);
-const cobot_dto_1 = __webpack_require__(138);
-const cobot_dto_2 = __webpack_require__(138);
-const cobot_dto_3 = __webpack_require__(138);
-const cobot_dto_4 = __webpack_require__(138);
+const cobot_api_service_1 = __webpack_require__(137);
+const cobot_dto_1 = __webpack_require__(139);
+const cobot_dto_2 = __webpack_require__(139);
+const cobot_dto_3 = __webpack_require__(139);
+const cobot_dto_4 = __webpack_require__(139);
 const saveLog_service_1 = __webpack_require__(68);
 let CobotApiController = class CobotApiController {
     constructor(cobotApiService, saveLogService) {
@@ -13045,7 +13117,7 @@ exports.CobotApiController = CobotApiController = __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13493,7 +13565,7 @@ __decorate([
 
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13506,8 +13578,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const tcp_api_service_1 = __webpack_require__(140);
-const tcp_api_controller_1 = __webpack_require__(141);
+const tcp_api_service_1 = __webpack_require__(141);
+const tcp_api_controller_1 = __webpack_require__(142);
 const log_module_1 = __webpack_require__(74);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
@@ -13543,7 +13615,7 @@ exports.TcpApiModule = TcpApiModule = __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13594,7 +13666,7 @@ exports.TcpApiService = TcpApiService = __decorate([
 
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13615,8 +13687,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const tcp_api_service_1 = __webpack_require__(140);
-const cobot_dto_1 = __webpack_require__(138);
+const tcp_api_service_1 = __webpack_require__(141);
+const cobot_dto_1 = __webpack_require__(139);
 const saveLog_service_1 = __webpack_require__(68);
 let TcpApiController = class TcpApiController {
     constructor(tcpApiService, saveLogService) {
@@ -13685,7 +13757,7 @@ exports.TcpApiController = TcpApiController = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13699,11 +13771,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiModule = void 0;
 const common_1 = __webpack_require__(5);
 const config_1 = __webpack_require__(73);
-const socket_api_controller_1 = __webpack_require__(143);
-const socket_api_service_1 = __webpack_require__(144);
+const socket_api_controller_1 = __webpack_require__(144);
+const socket_api_service_1 = __webpack_require__(145);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
-const socket_mqtt_controller_1 = __webpack_require__(145);
+const socket_mqtt_controller_1 = __webpack_require__(146);
 const log_module_1 = __webpack_require__(74);
 let SocketApiModule = class SocketApiModule {
 };
@@ -13738,7 +13810,7 @@ exports.SocketApiModule = SocketApiModule = __decorate([
 
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13756,7 +13828,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const socket_api_service_1 = __webpack_require__(144);
+const socket_api_service_1 = __webpack_require__(145);
 const saveLog_service_1 = __webpack_require__(68);
 let SocketApiController = class SocketApiController {
     constructor(saveLogService) {
@@ -14022,7 +14094,7 @@ exports.SocketApiController = SocketApiController = __decorate([
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14076,7 +14148,7 @@ exports.SocketApiService = SocketApiService = __decorate([
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14097,14 +14169,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
 const config_1 = __webpack_require__(73);
-const status_type_1 = __webpack_require__(146);
-const socket_api_service_1 = __webpack_require__(144);
-const websockets_1 = __webpack_require__(148);
-const movestatus_type_1 = __webpack_require__(149);
+const status_type_1 = __webpack_require__(147);
+const socket_api_service_1 = __webpack_require__(145);
+const websockets_1 = __webpack_require__(149);
+const movestatus_type_1 = __webpack_require__(150);
 const microservices_1 = __webpack_require__(3);
 const saveLog_service_1 = __webpack_require__(68);
-const exAccessory_dto_1 = __webpack_require__(150);
-const programStatus_dto_1 = __webpack_require__(151);
+const exAccessory_dto_1 = __webpack_require__(151);
+const programStatus_dto_1 = __webpack_require__(152);
 let SocketMqttController = class SocketMqttController {
     constructor(configService, saveLogService) {
         this.configService = configService;
@@ -14164,7 +14236,7 @@ exports.SocketMqttController = SocketMqttController = __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14182,7 +14254,7 @@ exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = export
 const date_util_1 = __webpack_require__(16);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const state_type_1 = __webpack_require__(147);
+const state_type_1 = __webpack_require__(148);
 const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
@@ -14847,7 +14919,7 @@ __decorate([
 
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -14908,13 +14980,13 @@ var ChargeState;
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/websockets");
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14932,8 +15004,8 @@ exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.V
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const util_1 = __webpack_require__(13);
-const state_type_1 = __webpack_require__(147);
-const state_type_2 = __webpack_require__(147);
+const state_type_1 = __webpack_require__(148);
+const state_type_2 = __webpack_require__(148);
 var Description;
 (function (Description) {
     Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
@@ -15245,7 +15317,7 @@ __decorate([
 
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15417,7 +15489,7 @@ __decorate([
 
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15479,7 +15551,7 @@ __decorate([
 
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15582,7 +15654,7 @@ function mapGrpcToHttpStatus(code) {
 
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15595,10 +15667,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const client_socket_service_1 = __webpack_require__(154);
-const client_socket_gateway_1 = __webpack_require__(155);
+const client_socket_service_1 = __webpack_require__(155);
+const client_socket_gateway_1 = __webpack_require__(156);
 const microservices_1 = __webpack_require__(3);
-const client_socket_mqtt_controller_1 = __webpack_require__(160);
+const client_socket_mqtt_controller_1 = __webpack_require__(161);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
 const nestjs_asyncapi_1 = __webpack_require__(2);
@@ -15783,7 +15855,7 @@ exports.ClientSocketModule = ClientSocketModule = __decorate([
 
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15805,7 +15877,7 @@ exports.ClientSocketService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
-const websockets_1 = __webpack_require__(148);
+const websockets_1 = __webpack_require__(149);
 const constant_1 = __webpack_require__(61);
 const move_type_1 = __webpack_require__(101);
 const control_type_1 = __webpack_require__(12);
@@ -16111,7 +16183,7 @@ exports.ClientSocketService = ClientSocketService = __decorate([
 
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16130,18 +16202,18 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketGateway = void 0;
-const websockets_1 = __webpack_require__(148);
-const client_socket_service_1 = __webpack_require__(154);
-const socket_io_1 = __webpack_require__(156);
+const websockets_1 = __webpack_require__(149);
+const client_socket_service_1 = __webpack_require__(155);
+const socket_io_1 = __webpack_require__(157);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const subscribe_dto_1 = __webpack_require__(157);
+const subscribe_dto_1 = __webpack_require__(158);
 const move_dto_1 = __webpack_require__(100);
 const localization_dto_1 = __webpack_require__(80);
 const load_dto_1 = __webpack_require__(113);
 const mapping_dto_1 = __webpack_require__(112);
 const control_dto_1 = __webpack_require__(9);
 const safety_io_dto_1 = __webpack_require__(72);
-const path_dto_1 = __webpack_require__(159);
+const path_dto_1 = __webpack_require__(160);
 const saveLog_service_1 = __webpack_require__(68);
 let ClientSocketGateway = class ClientSocketGateway {
     constructor(clientService, saveLogService) {
@@ -16517,13 +16589,13 @@ exports.ClientSocketGateway = ClientSocketGateway = __decorate([
 
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ ((module) => {
 
 module.exports = require("socket.io");
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16540,7 +16612,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubscribeDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const description_1 = __webpack_require__(158);
+const description_1 = __webpack_require__(159);
 class SubscribeDto {
 }
 exports.SubscribeDto = SubscribeDto;
@@ -16557,7 +16629,7 @@ __decorate([
 
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -16570,7 +16642,7 @@ var client_description;
 
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16643,7 +16715,7 @@ __decorate([
 
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16665,21 +16737,21 @@ exports.ClientSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const websockets_1 = __webpack_require__(148);
+const websockets_1 = __webpack_require__(149);
 const common_2 = __webpack_require__(26);
-const client_socket_service_1 = __webpack_require__(154);
+const client_socket_service_1 = __webpack_require__(155);
 const move_dto_1 = __webpack_require__(100);
 const localization_dto_1 = __webpack_require__(80);
 const load_dto_1 = __webpack_require__(113);
 const mapping_dto_1 = __webpack_require__(112);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(146);
-const movestatus_type_1 = __webpack_require__(149);
-const cloud_type_1 = __webpack_require__(161);
-const cobot_dto_1 = __webpack_require__(138);
-const exAccessory_dto_1 = __webpack_require__(150);
-const path_dto_1 = __webpack_require__(159);
-const systemstatus_type_1 = __webpack_require__(174);
+const status_type_1 = __webpack_require__(147);
+const movestatus_type_1 = __webpack_require__(150);
+const cloud_type_1 = __webpack_require__(162);
+const cobot_dto_1 = __webpack_require__(139);
+const exAccessory_dto_1 = __webpack_require__(151);
+const path_dto_1 = __webpack_require__(160);
+const systemstatus_type_1 = __webpack_require__(163);
 let ClientSocketMqttController = class ClientSocketMqttController {
     constructor(clientService) {
         this.clientService = clientService;
@@ -17020,7 +17092,7 @@ exports.ClientSocketMqttController = ClientSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17038,7 +17110,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MappingCloudDto = exports.LidarCloudDto = exports.CloudDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const movestatus_type_1 = __webpack_require__(149);
+const movestatus_type_1 = __webpack_require__(150);
 const util_1 = __webpack_require__(13);
 var Description;
 (function (Description) {
@@ -17154,7 +17226,174 @@ __decorate([
 
 
 /***/ }),
-/* 162 */
+/* 163 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemStatusSlamnav = exports.CpuStatusDto = exports.LidarStatusDto = exports.CamStatusDto = void 0;
+const date_util_1 = __webpack_require__(16);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+class CamStatusDto {
+}
+exports.CamStatusDto = CamStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 연결 상태',
+        example: false,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], CamStatusDto.prototype, "connection", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 RGB 이미지 높이',
+        example: 1080,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "rgb_h", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 RGB 이미지 너비',
+        example: 1920,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "rgb_w", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 Depth 이미지 높이',
+        example: 1080,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "depth_h", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 Depth 이미지 너비',
+        example: 1920,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "depth_w", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 포인트 수',
+        example: 100000,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CamStatusDto.prototype, "pts", void 0);
+class LidarStatusDto {
+}
+exports.LidarStatusDto = LidarStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '라이다 연결 상태',
+        example: false,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Boolean),
+    __metadata("design:type", Boolean)
+], LidarStatusDto.prototype, "connection", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '라이다 포인트 수',
+        example: 100000,
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", Number)
+], LidarStatusDto.prototype, "pts", void 0);
+class CpuStatusDto {
+}
+exports.CpuStatusDto = CpuStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'CPU 사용률',
+        example: 0.0,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CpuStatusDto.prototype, "use", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'CPU 온도',
+        example: 0.0,
+        required: true,
+    }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Number)
+], CpuStatusDto.prototype, "temp", void 0);
+class SystemStatusSlamnav {
+}
+exports.SystemStatusSlamnav = SystemStatusSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 상태',
+        example: [
+            {
+                connection: false,
+                rgb_h: 1080,
+                rgb_w: 1920,
+                depth_h: 1080,
+                depth_w: 1920,
+                pts: 100000,
+            },
+            {
+                connection: false,
+                rgb_h: 1080,
+                rgb_w: 1920,
+                depth_h: 1080,
+                depth_w: 1920,
+                pts: 100000,
+            },
+        ],
+        required: false,
+    }),
+    __metadata("design:type", Array)
+], SystemStatusSlamnav.prototype, "cam", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '라이다 상태', required: false }),
+    __metadata("design:type", LidarStatusDto)
+], SystemStatusSlamnav.prototype, "lidar", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'CPU 상태', required: false }),
+    __metadata("design:type", CpuStatusDto)
+], SystemStatusSlamnav.prototype, "cpu", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '메시지 발송 시간. ms 단위',
+        example: date_util_1.DateUtil.getTimeString(),
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SystemStatusSlamnav.prototype, "time", void 0);
+
+
+/***/ }),
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17167,18 +17406,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(163);
+const slamnav_socket_service_1 = __webpack_require__(165);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const taskman_socket_service_1 = __webpack_require__(165);
+const taskman_socket_service_1 = __webpack_require__(167);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
-const robot_socket_mqtt_controller_1 = __webpack_require__(166);
-const slamnav_socket_gateway_1 = __webpack_require__(173);
-const taskman_socket_gateway_1 = __webpack_require__(175);
-const ex_accessory_socket_gateway_1 = __webpack_require__(178);
-const ex_accessory_socket_service_1 = __webpack_require__(172);
+const robot_socket_mqtt_controller_1 = __webpack_require__(168);
+const slamnav_socket_gateway_1 = __webpack_require__(175);
+const taskman_socket_gateway_1 = __webpack_require__(176);
+const ex_accessory_socket_gateway_1 = __webpack_require__(179);
+const ex_accessory_socket_service_1 = __webpack_require__(174);
 const log_module_1 = __webpack_require__(74);
 let RobotSocketModule = class RobotSocketModule {
 };
@@ -17244,7 +17483,7 @@ exports.RobotSocketModule = RobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 165 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17266,7 +17505,7 @@ exports.SlamnavService = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const lodash_1 = __webpack_require__(164);
+const lodash_1 = __webpack_require__(166);
 const constant_1 = __webpack_require__(61);
 const saveLog_service_1 = __webpack_require__(68);
 let SlamnavService = class SlamnavService {
@@ -17555,13 +17794,13 @@ exports.SlamnavService = SlamnavService = __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 166 */
 /***/ ((module) => {
 
 module.exports = require("lodash");
 
 /***/ }),
-/* 165 */
+/* 167 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17645,7 +17884,7 @@ exports.TaskmanService = TaskmanService = __decorate([
 
 
 /***/ }),
-/* 166 */
+/* 168 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17665,28 +17904,28 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(163);
+const slamnav_socket_service_1 = __webpack_require__(165);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const taskman_socket_service_1 = __webpack_require__(165);
+const taskman_socket_service_1 = __webpack_require__(167);
 const move_dto_1 = __webpack_require__(100);
-const move_domain_1 = __webpack_require__(167);
-const localization_domain_1 = __webpack_require__(168);
-const control_domain_1 = __webpack_require__(169);
+const move_domain_1 = __webpack_require__(169);
+const localization_domain_1 = __webpack_require__(170);
+const control_domain_1 = __webpack_require__(171);
 const move_dto_2 = __webpack_require__(100);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(146);
-const movestatus_type_1 = __webpack_require__(149);
+const status_type_1 = __webpack_require__(147);
+const movestatus_type_1 = __webpack_require__(150);
 const map_command_domain_1 = __webpack_require__(109);
-const task_dto_1 = __webpack_require__(170);
-const ex_accessory_socket_service_1 = __webpack_require__(172);
-const exAccessory_dto_1 = __webpack_require__(150);
-const version_dto_1 = __webpack_require__(134);
+const task_dto_1 = __webpack_require__(172);
+const ex_accessory_socket_service_1 = __webpack_require__(174);
+const exAccessory_dto_1 = __webpack_require__(151);
+const version_dto_1 = __webpack_require__(135);
 const setting_dto_1 = __webpack_require__(96);
 const localization_dto_1 = __webpack_require__(80);
 const mapping_dto_1 = __webpack_require__(112);
 const load_dto_1 = __webpack_require__(113);
-const path_dto_1 = __webpack_require__(159);
+const path_dto_1 = __webpack_require__(160);
 const saveLog_service_1 = __webpack_require__(68);
 let RobotSocketMqttController = class RobotSocketMqttController {
     constructor(slamnavService, exAccessoryService, taskmanService, saveLogService) {
@@ -17941,7 +18180,7 @@ exports.RobotSocketMqttController = RobotSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 167 */
+/* 169 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -18092,7 +18331,7 @@ exports.MoveModel = MoveModel;
 
 
 /***/ }),
-/* 168 */
+/* 170 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -18164,7 +18403,7 @@ exports.LocalizationModel = LocalizationModel;
 
 
 /***/ }),
-/* 169 */
+/* 171 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -18383,7 +18622,7 @@ exports.ControlModel = ControlModel;
 
 
 /***/ }),
-/* 170 */
+/* 172 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18402,7 +18641,7 @@ const url_util_1 = __webpack_require__(14);
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
-const task_type_1 = __webpack_require__(171);
+const task_type_1 = __webpack_require__(173);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uD0DC\uC2A4\uD06C \uBA85\uB839. \uC218\uD589\uD560 \uD0DC\uC2A4\uD06C \uBA85\uB839\uC744 \uC785\uB825\uD558\uC138\uC694.";
@@ -18505,7 +18744,7 @@ __decorate([
 
 
 /***/ }),
-/* 171 */
+/* 173 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18584,7 +18823,7 @@ __decorate([
 
 
 /***/ }),
-/* 172 */
+/* 174 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18652,7 +18891,7 @@ exports.ExAccessorySocketService = ExAccessorySocketService = __decorate([
 
 
 /***/ }),
-/* 173 */
+/* 175 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18671,9 +18910,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlamnavSocketGateway = void 0;
-const websockets_1 = __webpack_require__(148);
-const socket_io_1 = __webpack_require__(156);
-const slamnav_socket_service_1 = __webpack_require__(163);
+const websockets_1 = __webpack_require__(149);
+const socket_io_1 = __webpack_require__(157);
+const slamnav_socket_service_1 = __webpack_require__(165);
 const saveLog_service_1 = __webpack_require__(68);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
@@ -18682,15 +18921,15 @@ const constant_1 = __webpack_require__(61);
 const move_dto_1 = __webpack_require__(100);
 const localization_dto_1 = __webpack_require__(80);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(146);
-const movestatus_type_1 = __webpack_require__(149);
-const cloud_type_1 = __webpack_require__(161);
+const status_type_1 = __webpack_require__(147);
+const movestatus_type_1 = __webpack_require__(150);
+const cloud_type_1 = __webpack_require__(162);
 const load_dto_1 = __webpack_require__(113);
 const mapping_dto_1 = __webpack_require__(112);
-const version_dto_1 = __webpack_require__(134);
+const version_dto_1 = __webpack_require__(135);
 const setting_dto_1 = __webpack_require__(96);
-const path_dto_1 = __webpack_require__(159);
-const systemstatus_type_1 = __webpack_require__(174);
+const path_dto_1 = __webpack_require__(160);
+const systemstatus_type_1 = __webpack_require__(163);
 let SlamnavSocketGateway = class SlamnavSocketGateway {
     constructor(slamnavService, mqttMicroservice, saveLogService) {
         this.slamnavService = slamnavService;
@@ -19063,174 +19302,7 @@ exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
 
 
 /***/ }),
-/* 174 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SystemStatusSlamnav = exports.CpuStatusDto = exports.LidarStatusDto = exports.CamStatusDto = void 0;
-const date_util_1 = __webpack_require__(16);
-const swagger_1 = __webpack_require__(8);
-const class_validator_1 = __webpack_require__(11);
-const class_transformer_1 = __webpack_require__(10);
-class CamStatusDto {
-}
-exports.CamStatusDto = CamStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 연결 상태',
-        example: false,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Boolean),
-    __metadata("design:type", Boolean)
-], CamStatusDto.prototype, "connection", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 RGB 이미지 높이',
-        example: 1080,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], CamStatusDto.prototype, "rgb_h", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 RGB 이미지 너비',
-        example: 1920,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], CamStatusDto.prototype, "rgb_w", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 Depth 이미지 높이',
-        example: 1080,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], CamStatusDto.prototype, "depth_h", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 Depth 이미지 너비',
-        example: 1920,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], CamStatusDto.prototype, "depth_w", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 포인트 수',
-        example: 100000,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], CamStatusDto.prototype, "pts", void 0);
-class LidarStatusDto {
-}
-exports.LidarStatusDto = LidarStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '라이다 연결 상태',
-        example: false,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Boolean),
-    __metadata("design:type", Boolean)
-], LidarStatusDto.prototype, "connection", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '라이다 포인트 수',
-        example: 100000,
-        required: true,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", Number)
-], LidarStatusDto.prototype, "pts", void 0);
-class CpuStatusDto {
-}
-exports.CpuStatusDto = CpuStatusDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'CPU 사용률',
-        example: 0.0,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], CpuStatusDto.prototype, "use", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'CPU 온도',
-        example: 0.0,
-        required: true,
-    }),
-    (0, class_transformer_1.Type)(() => Number),
-    __metadata("design:type", Number)
-], CpuStatusDto.prototype, "temp", void 0);
-class SystemStatusSlamnav {
-}
-exports.SystemStatusSlamnav = SystemStatusSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 상태',
-        examples: [
-            {
-                connection: false,
-                rgb_h: 1080,
-                rgb_w: 1920,
-                depth_h: 1080,
-                depth_w: 1920,
-                pts: 100000,
-            },
-            {
-                connection: false,
-                rgb_h: 1080,
-                rgb_w: 1920,
-                depth_h: 1080,
-                depth_w: 1920,
-                pts: 100000,
-            },
-        ],
-        required: false,
-    }),
-    __metadata("design:type", CamStatusDto)
-], SystemStatusSlamnav.prototype, "cam", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '라이다 상태', required: false }),
-    __metadata("design:type", LidarStatusDto)
-], SystemStatusSlamnav.prototype, "lidar", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'CPU 상태', required: false }),
-    __metadata("design:type", CpuStatusDto)
-], SystemStatusSlamnav.prototype, "cpu", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '메시지 발송 시간. ms 단위',
-        example: date_util_1.DateUtil.getTimeString(),
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], SystemStatusSlamnav.prototype, "time", void 0);
-
-
-/***/ }),
-/* 175 */
+/* 176 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19249,17 +19321,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskmanSocketGateway = void 0;
-const websockets_1 = __webpack_require__(148);
-const socket_io_1 = __webpack_require__(156);
-const taskman_socket_service_1 = __webpack_require__(165);
+const websockets_1 = __webpack_require__(149);
+const socket_io_1 = __webpack_require__(157);
+const taskman_socket_service_1 = __webpack_require__(167);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
 const move_dto_1 = __webpack_require__(100);
 const control_dto_1 = __webpack_require__(9);
-const task_dto_1 = __webpack_require__(170);
-const variables_dto_1 = __webpack_require__(176);
-const state_dto_1 = __webpack_require__(177);
+const task_dto_1 = __webpack_require__(172);
+const variables_dto_1 = __webpack_require__(177);
+const state_dto_1 = __webpack_require__(178);
 const saveLog_service_1 = __webpack_require__(68);
 let TaskmanSocketGateway = class TaskmanSocketGateway {
     constructor(taskmanService, mqttMicroservice, moveMicroservice, controlMicroservice, saveLogService) {
@@ -19389,7 +19461,7 @@ exports.TaskmanSocketGateway = TaskmanSocketGateway = __decorate([
 
 
 /***/ }),
-/* 176 */
+/* 177 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19406,7 +19478,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskVariablesResponseTaskman = exports.TaskVariablesRequestTaskman = exports.TaskVariablesResponseDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const task_type_1 = __webpack_require__(171);
+const task_type_1 = __webpack_require__(173);
 const util_1 = __webpack_require__(13);
 const class_transformer_1 = __webpack_require__(10);
 class TaskVariablesResponseDto {
@@ -19452,7 +19524,7 @@ __decorate([
 
 
 /***/ }),
-/* 177 */
+/* 178 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19541,7 +19613,7 @@ __decorate([
 
 
 /***/ }),
-/* 178 */
+/* 179 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19560,13 +19632,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessorySocketGateway = void 0;
-const websockets_1 = __webpack_require__(148);
+const websockets_1 = __webpack_require__(149);
 const common_1 = __webpack_require__(5);
-const socket_io_1 = __webpack_require__(156);
-const ex_accessory_socket_service_1 = __webpack_require__(172);
+const socket_io_1 = __webpack_require__(157);
+const ex_accessory_socket_service_1 = __webpack_require__(174);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
-const exAccessory_dto_1 = __webpack_require__(150);
+const exAccessory_dto_1 = __webpack_require__(151);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 const control_dto_1 = __webpack_require__(9);
 const saveLog_service_1 = __webpack_require__(68);
@@ -19701,7 +19773,7 @@ exports.ExAccessorySocketGateway = ExAccessorySocketGateway = __decorate([
 
 
 /***/ }),
-/* 179 */
+/* 180 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19714,16 +19786,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FrsSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_1 = __webpack_require__(180);
-const frs_socket_client_1 = __webpack_require__(181);
+const typeorm_1 = __webpack_require__(181);
+const frs_socket_client_1 = __webpack_require__(182);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const config_entity_1 = __webpack_require__(184);
+const config_entity_1 = __webpack_require__(185);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
-const frs_sub_docs_1 = __webpack_require__(186);
-const frs_socket_service_1 = __webpack_require__(183);
+const frs_sub_docs_1 = __webpack_require__(187);
+const frs_socket_service_1 = __webpack_require__(184);
 const log_module_1 = __webpack_require__(74);
 let FrsSocketModule = class FrsSocketModule {
 };
@@ -19847,13 +19919,13 @@ exports.FrsSocketModule = FrsSocketModule = __decorate([
 
 
 /***/ }),
-/* 180 */
+/* 181 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 181 */
+/* 182 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19873,9 +19945,9 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSSocketClient = void 0;
 const common_1 = __webpack_require__(5);
-const socket_io_client_1 = __webpack_require__(182);
-const frs_socket_service_1 = __webpack_require__(183);
-const lodash_1 = __webpack_require__(164);
+const socket_io_client_1 = __webpack_require__(183);
+const frs_socket_service_1 = __webpack_require__(184);
+const lodash_1 = __webpack_require__(166);
 const microservices_1 = __webpack_require__(3);
 const class_validator_1 = __webpack_require__(11);
 const parse_util_1 = __webpack_require__(56);
@@ -20139,13 +20211,13 @@ exports.FRSSocketClient = FRSSocketClient = __decorate([
 
 
 /***/ }),
-/* 182 */
+/* 183 */
 /***/ ((module) => {
 
 module.exports = require("socket.io-client");
 
 /***/ }),
-/* 183 */
+/* 184 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20338,7 +20410,7 @@ exports.FRSSocketService = FRSSocketService = __decorate([
 
 
 /***/ }),
-/* 184 */
+/* 185 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20354,7 +20426,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Config = void 0;
-const typeorm_1 = __webpack_require__(185);
+const typeorm_1 = __webpack_require__(186);
 let Config = class Config {
 };
 exports.Config = Config;
@@ -20386,13 +20458,13 @@ exports.Config = Config = __decorate([
 
 
 /***/ }),
-/* 185 */
+/* 186 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 186 */
+/* 187 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20413,7 +20485,7 @@ const move_dto_1 = __webpack_require__(100);
 const load_dto_1 = __webpack_require__(113);
 const localization_dto_1 = __webpack_require__(80);
 const control_dto_1 = __webpack_require__(9);
-const init_dto_1 = __webpack_require__(187);
+const init_dto_1 = __webpack_require__(188);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const move_dto_2 = __webpack_require__(100);
@@ -20692,7 +20764,7 @@ exports.FRSAsyncSub = FRSAsyncSub = __decorate([
 
 
 /***/ }),
-/* 187 */
+/* 188 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20744,7 +20816,7 @@ __decorate([
 
 
 /***/ }),
-/* 188 */
+/* 189 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20785,7 +20857,7 @@ exports.APILogInterceptor = APILogInterceptor = __decorate([
 
 
 /***/ }),
-/* 189 */
+/* 190 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20802,13 +20874,13 @@ const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const tcp_service_1 = __webpack_require__(190);
-const tcp_gateway_1 = __webpack_require__(193);
-const tcp_mqtt_controller_1 = __webpack_require__(195);
-const cobot_tcp_client_adapter_1 = __webpack_require__(196);
-const tcp_grpc_controller_1 = __webpack_require__(197);
-const tcp_custom_server_gateway_1 = __webpack_require__(191);
-const tcp_control_service_1 = __webpack_require__(194);
+const tcp_service_1 = __webpack_require__(191);
+const tcp_gateway_1 = __webpack_require__(194);
+const tcp_mqtt_controller_1 = __webpack_require__(196);
+const cobot_tcp_client_adapter_1 = __webpack_require__(197);
+const tcp_grpc_controller_1 = __webpack_require__(198);
+const tcp_custom_server_gateway_1 = __webpack_require__(192);
+const tcp_control_service_1 = __webpack_require__(195);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
 const log_module_1 = __webpack_require__(74);
@@ -20891,7 +20963,7 @@ exports.TCPModule = TCPModule = __decorate([
 
 
 /***/ }),
-/* 190 */
+/* 191 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20916,8 +20988,8 @@ const util_1 = __webpack_require__(13);
 const common_1 = __webpack_require__(5);
 const config_1 = __webpack_require__(73);
 const microservices_1 = __webpack_require__(3);
-const tcp_custom_server_gateway_1 = __webpack_require__(191);
-const tcp_gateway_1 = __webpack_require__(193);
+const tcp_custom_server_gateway_1 = __webpack_require__(192);
+const tcp_gateway_1 = __webpack_require__(194);
 const saveLog_service_1 = __webpack_require__(68);
 let TcpService = class TcpService {
     constructor(configService, tcpMainServer, tcpCustomServerGateway, saveLogService) {
@@ -20987,7 +21059,7 @@ exports.TcpService = TcpService = __decorate([
 
 
 /***/ }),
-/* 191 */
+/* 192 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21004,7 +21076,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpCustomServerGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(192);
+const net_1 = __webpack_require__(193);
 const common_2 = __webpack_require__(26);
 const util_1 = __webpack_require__(13);
 const rpc_code_exception_1 = __webpack_require__(53);
@@ -21145,13 +21217,13 @@ exports.TcpCustomServerGateway = TcpCustomServerGateway = __decorate([
 
 
 /***/ }),
-/* 192 */
+/* 193 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 193 */
+/* 194 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21168,7 +21240,7 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(192);
+const net_1 = __webpack_require__(193);
 const rxjs_1 = __webpack_require__(50);
 const common_2 = __webpack_require__(26);
 const config_1 = __webpack_require__(73);
@@ -21177,7 +21249,7 @@ const control_type_1 = __webpack_require__(12);
 const localization_type_1 = __webpack_require__(81);
 const load_dto_1 = __webpack_require__(113);
 const util_1 = __webpack_require__(13);
-const tcp_control_service_1 = __webpack_require__(194);
+const tcp_control_service_1 = __webpack_require__(195);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 const saveLog_service_1 = __webpack_require__(68);
 let TcpGateway = class TcpGateway {
@@ -21482,7 +21554,7 @@ exports.TcpGateway = TcpGateway = __decorate([
 
 
 /***/ }),
-/* 194 */
+/* 195 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21537,7 +21609,7 @@ exports.TcpControlService = TcpControlService = __decorate([
 
 
 /***/ }),
-/* 195 */
+/* 196 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21557,14 +21629,14 @@ var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(190);
+const tcp_service_1 = __webpack_require__(191);
 const microservices_1 = __webpack_require__(3);
 const move_dto_1 = __webpack_require__(100);
 const control_dto_1 = __webpack_require__(9);
 const localization_dto_1 = __webpack_require__(80);
 const load_dto_1 = __webpack_require__(113);
-const status_type_1 = __webpack_require__(146);
-const movestatus_type_1 = __webpack_require__(149);
+const status_type_1 = __webpack_require__(147);
+const movestatus_type_1 = __webpack_require__(150);
 let TcpMqttController = class TcpMqttController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -21638,7 +21710,7 @@ exports.TcpMqttController = TcpMqttController = __decorate([
 
 
 /***/ }),
-/* 196 */
+/* 197 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21654,8 +21726,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotTcpClientAdapter = void 0;
-const net_1 = __webpack_require__(192);
-const cobot_dto_1 = __webpack_require__(138);
+const net_1 = __webpack_require__(193);
+const cobot_dto_1 = __webpack_require__(139);
 const saveLog_service_1 = __webpack_require__(68);
 const common_1 = __webpack_require__(5);
 let CobotTcpClientAdapter = class CobotTcpClientAdapter {
@@ -21780,7 +21852,7 @@ exports.CobotTcpClientAdapter = CobotTcpClientAdapter = __decorate([
 
 
 /***/ }),
-/* 197 */
+/* 198 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21798,7 +21870,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGrpcController = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(190);
+const tcp_service_1 = __webpack_require__(191);
 let TcpGrpcController = class TcpGrpcController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -21824,7 +21896,7 @@ exports.TcpGrpcController = TcpGrpcController = __decorate([
 
 
 /***/ }),
-/* 198 */
+/* 199 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21840,13 +21912,13 @@ const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(73);
-const cobot_service_1 = __webpack_require__(199);
-const cobot_tcp_client_adapter_1 = __webpack_require__(196);
-const cobot_grpc_controller_1 = __webpack_require__(208);
-const cobot_mongo_adapter_1 = __webpack_require__(209);
-const mongoose_1 = __webpack_require__(210);
-const cobot_command_entity_1 = __webpack_require__(212);
-const cobot_connection_entity_1 = __webpack_require__(213);
+const cobot_service_1 = __webpack_require__(200);
+const cobot_tcp_client_adapter_1 = __webpack_require__(197);
+const cobot_grpc_controller_1 = __webpack_require__(209);
+const cobot_mongo_adapter_1 = __webpack_require__(210);
+const mongoose_1 = __webpack_require__(211);
+const cobot_command_entity_1 = __webpack_require__(213);
+const cobot_connection_entity_1 = __webpack_require__(214);
 const log_module_1 = __webpack_require__(74);
 let CobotSocketModule = class CobotSocketModule {
 };
@@ -21907,7 +21979,7 @@ exports.CobotSocketModule = CobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 199 */
+/* 200 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21930,15 +22002,15 @@ const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(26);
 const constant_1 = __webpack_require__(61);
 const microservices_1 = __webpack_require__(3);
-const cobot_socket_domain_1 = __webpack_require__(200);
-const cobot_client_output_port_1 = __webpack_require__(201);
-const cobot_command_handler_1 = __webpack_require__(202);
+const cobot_socket_domain_1 = __webpack_require__(201);
+const cobot_client_output_port_1 = __webpack_require__(202);
+const cobot_command_handler_1 = __webpack_require__(203);
 const rpc_code_exception_1 = __webpack_require__(53);
 const constant_2 = __webpack_require__(54);
-const cobot_dto_1 = __webpack_require__(138);
-const cobot_data_handler_1 = __webpack_require__(203);
-const cobot_database_output_port_1 = __webpack_require__(205);
-const cobot_domain_1 = __webpack_require__(206);
+const cobot_dto_1 = __webpack_require__(139);
+const cobot_data_handler_1 = __webpack_require__(204);
+const cobot_database_output_port_1 = __webpack_require__(206);
+const cobot_domain_1 = __webpack_require__(207);
 const map_command_domain_1 = __webpack_require__(109);
 const saveLog_service_1 = __webpack_require__(68);
 let CobotService = class CobotService {
@@ -22538,7 +22610,7 @@ exports.CobotService = CobotService = __decorate([
 
 
 /***/ }),
-/* 200 */
+/* 201 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -22558,7 +22630,7 @@ exports.CobotModel = CobotModel;
 
 
 /***/ }),
-/* 201 */
+/* 202 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -22566,7 +22638,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 202 */
+/* 203 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -22613,13 +22685,13 @@ exports.CobotCommandHandler = CobotCommandHandler;
 
 
 /***/ }),
-/* 203 */
+/* 204 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotDataHandler = void 0;
-const cobot_system_stat_parser_1 = __webpack_require__(204);
+const cobot_system_stat_parser_1 = __webpack_require__(205);
 class CobotDataHandler {
     constructor(id, logger) {
         this.isConnected = false;
@@ -22674,7 +22746,7 @@ exports.CobotDataHandler = CobotDataHandler;
 
 
 /***/ }),
-/* 204 */
+/* 205 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -22880,7 +22952,7 @@ CobotSystemStatParser.INT_SIZE = 4;
 
 
 /***/ }),
-/* 205 */
+/* 206 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -22888,7 +22960,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 206 */
+/* 207 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -22897,7 +22969,7 @@ exports.CobotCommandModel = void 0;
 const map_command_domain_1 = __webpack_require__(109);
 const rpc_code_exception_1 = __webpack_require__(53);
 const grpc_code_constant_1 = __webpack_require__(55);
-const node_net_1 = __webpack_require__(207);
+const node_net_1 = __webpack_require__(208);
 class CobotCommandModel {
     constructor(cobotId, command) {
         this.cobotId = cobotId;
@@ -22990,13 +23062,13 @@ exports.CobotCommandModel = CobotCommandModel;
 
 
 /***/ }),
-/* 207 */
+/* 208 */
 /***/ ((module) => {
 
 module.exports = require("node:net");
 
 /***/ }),
-/* 208 */
+/* 209 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23014,7 +23086,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotGrpcController = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
-const cobot_service_1 = __webpack_require__(199);
+const cobot_service_1 = __webpack_require__(200);
 let CobotGrpcController = class CobotGrpcController {
     constructor(cobotService) {
         this.cobotService = cobotService;
@@ -23076,7 +23148,7 @@ exports.CobotGrpcController = CobotGrpcController = __decorate([
 
 
 /***/ }),
-/* 209 */
+/* 210 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23095,13 +23167,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotMongoAdapter = void 0;
-const mongoose_1 = __webpack_require__(210);
-const mongoose_2 = __webpack_require__(211);
+const mongoose_1 = __webpack_require__(211);
+const mongoose_2 = __webpack_require__(212);
 const common_1 = __webpack_require__(26);
 const rpc_code_exception_1 = __webpack_require__(53);
 const constant_1 = __webpack_require__(54);
-const cobot_command_entity_1 = __webpack_require__(212);
-const cobot_connection_entity_1 = __webpack_require__(213);
+const cobot_command_entity_1 = __webpack_require__(213);
+const cobot_connection_entity_1 = __webpack_require__(214);
 const util_1 = __webpack_require__(13);
 const saveLog_service_1 = __webpack_require__(68);
 const config_1 = __webpack_require__(73);
@@ -23195,19 +23267,19 @@ exports.CobotMongoAdapter = CobotMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 210 */
+/* 211 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/mongoose");
 
 /***/ }),
-/* 211 */
+/* 212 */
 /***/ ((module) => {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 212 */
+/* 213 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23222,7 +23294,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandSchema = exports.CobotCommandEntity = void 0;
-const mongoose_1 = __webpack_require__(210);
+const mongoose_1 = __webpack_require__(211);
 let CobotCommandEntity = class CobotCommandEntity {
 };
 exports.CobotCommandEntity = CobotCommandEntity;
@@ -23260,7 +23332,7 @@ exports.CobotCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 213 */
+/* 214 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23275,7 +23347,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotConnectionSchema = exports.CobotConnectionEntity = void 0;
-const mongoose_1 = __webpack_require__(210);
+const mongoose_1 = __webpack_require__(211);
 let CobotConnectionEntity = class CobotConnectionEntity {
 };
 exports.CobotConnectionEntity = CobotConnectionEntity;
@@ -23311,7 +23383,7 @@ exports.CobotConnectionSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ ((module) => {
 
 module.exports = require("body-parser");
@@ -23355,17 +23427,17 @@ const nestjs_asyncapi_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
 const api_module_1 = __webpack_require__(4);
 const common_1 = __webpack_require__(5);
-const grpc_to_http_filter_1 = __webpack_require__(152);
+const grpc_to_http_filter_1 = __webpack_require__(153);
 const swagger_1 = __webpack_require__(8);
-const client_socket_module_1 = __webpack_require__(153);
-const robot_socket_module_1 = __webpack_require__(162);
-const frs_socket_module_1 = __webpack_require__(179);
-const api_interceptor_1 = __webpack_require__(188);
-const tcp_socket_module_1 = __webpack_require__(189);
-const cobot_socket_module_1 = __webpack_require__(198);
+const client_socket_module_1 = __webpack_require__(154);
+const robot_socket_module_1 = __webpack_require__(164);
+const frs_socket_module_1 = __webpack_require__(180);
+const api_interceptor_1 = __webpack_require__(189);
+const tcp_socket_module_1 = __webpack_require__(190);
+const cobot_socket_module_1 = __webpack_require__(199);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const bodyParser = __webpack_require__(214);
+const bodyParser = __webpack_require__(215);
 async function bootstrap() {
     const apiModule = await core_1.NestFactory.create(api_module_1.RRSApiModule);
     apiModule.enableCors({

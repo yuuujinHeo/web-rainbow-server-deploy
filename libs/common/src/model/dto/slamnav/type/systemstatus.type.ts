@@ -94,7 +94,7 @@ export class CpuStatusDto {
 export class SystemStatusSlamnav {
   @ApiProperty({
     description: '카메라 상태',
-    examples: [
+    example: [
       {
         connection: false,
         rgb_h: 1080,
@@ -114,7 +114,7 @@ export class SystemStatusSlamnav {
     ],
     required: false,
   })
-  cam: CamStatusDto;
+  cam: CamStatusDto[];
 
   @ApiProperty({ description: '라이다 상태', required: false })
   lidar: LidarStatusDto;

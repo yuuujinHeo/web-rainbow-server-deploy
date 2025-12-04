@@ -38,6 +38,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
+      - /data/log:/data/log
       - ./dist/apps/monitoring:/usr/src/app/dist/apps/monitoring
       - ./public:/usr/src/app/public
       - ./libs:/usr/src/app/libs

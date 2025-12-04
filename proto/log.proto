@@ -2,6 +2,40 @@ syntax = "proto3";
 
 package log;
 
+
+message ServiceLog {
+    string time = 1;
+    string level = 2;
+    string category = 3;
+    string text = 4;
+}
+
+service ServiceLogGrpcService {
+    rpc GetServiceLog(GetServiceLogRequest) returns (GetServiceLogResponse);
+}
+
+message GetServiceLogRequest {
+    string serviceName = 1;
+    optional int32 pageNo = 2;
+    optional int32 pageSize = 3;
+    optional string searchText = 4;
+    optional string searchType = 5;
+    optional string sortOption = 6;
+    optional string sortDirection = 7;
+    optional string dateFrom = 8;
+    optional string dateTo = 9;
+    optional string category = 10;
+    repeated string levels = 11;
+}
+
+message GetServiceLogResponse {
+    string serviceName = 1;
+    repeated ServiceLog list = 2;
+    optional int32 pageSize = 3;
+    optional int32 totalCount = 4;
+    optional int32 totalPage = 5;
+}
+
 service SEMLogGrpcService {
     //Define
     rpc GetSEMAlarmDefine(GetSEMAlarmDefineRequest) returns (GetSEMAlarmDefineResponse);

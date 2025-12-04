@@ -11,6 +11,35 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "log";
 
+export interface ServiceLog {
+  time: string;
+  level: string;
+  category: string;
+  text: string;
+}
+
+export interface GetServiceLogRequest {
+  serviceName: string;
+  pageNo?: number | undefined;
+  pageSize?: number | undefined;
+  searchText?: string | undefined;
+  searchType?: string | undefined;
+  sortOption?: string | undefined;
+  sortDirection?: string | undefined;
+  dateFrom?: string | undefined;
+  dateTo?: string | undefined;
+  category?: string | undefined;
+  levels: string[];
+}
+
+export interface GetServiceLogResponse {
+  serviceName: string;
+  list: ServiceLog[];
+  pageSize?: number | undefined;
+  totalCount?: number | undefined;
+  totalPage?: number | undefined;
+}
+
 export interface Empty {
 }
 
@@ -163,6 +192,34 @@ export interface PostSEMGeneralLogResponse {
 }
 
 export const LOG_PACKAGE_NAME = "log";
+
+export interface ServiceLogGrpcServiceClient {
+  getServiceLog(request: GetServiceLogRequest, metadata?: Metadata): Observable<GetServiceLogResponse>;
+}
+
+export interface ServiceLogGrpcServiceController {
+  getServiceLog(
+    request: GetServiceLogRequest,
+    metadata?: Metadata,
+  ): Promise<GetServiceLogResponse> | Observable<GetServiceLogResponse> | GetServiceLogResponse;
+}
+
+export function ServiceLogGrpcServiceControllerMethods() {
+  return function (constructor: Function) {
+    const grpcMethods: string[] = ["getServiceLog"];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("ServiceLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("ServiceLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+    }
+  };
+}
+
+export const SERVICE_LOG_GRPC_SERVICE_NAME = "ServiceLogGrpcService";
 
 export interface SEMLogGrpcServiceClient {
   /** Define */

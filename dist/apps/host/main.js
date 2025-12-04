@@ -687,11 +687,27 @@ exports.COBOT_GRPC_SERVICE_NAME = "CobotGrpcService";
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SEM_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.SEM_LOG_GRPC_SERVICE_NAME = exports.SERVICE_LOG_GRPC_SERVICE_NAME = exports.LOG_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.ServiceLogGrpcServiceControllerMethods = ServiceLogGrpcServiceControllerMethods;
 exports.SEMLogGrpcServiceControllerMethods = SEMLogGrpcServiceControllerMethods;
 const microservices_1 = __webpack_require__(3);
 exports.protobufPackage = "log";
 exports.LOG_PACKAGE_NAME = "log";
+function ServiceLogGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = ["getServiceLog"];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("ServiceLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("ServiceLogGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.SERVICE_LOG_GRPC_SERVICE_NAME = "ServiceLogGrpcService";
 function SEMLogGrpcServiceControllerMethods() {
     return function (constructor) {
         const grpcMethods = [
