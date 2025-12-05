@@ -18,6 +18,9 @@ export enum ControlCommand {
   getObsBox = 'getObsBox',
 }
 
+export enum DetectCommand {
+  aruco = 'aruco',
+}
 export enum LEDColor {
   none = 'none',
   red = 'red',

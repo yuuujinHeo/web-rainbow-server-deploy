@@ -119,6 +119,24 @@ export interface GetObsBoxResponse {
   message?: string | undefined;
 }
 
+export interface DetectRequest {
+  command: string;
+  cameraNumber?: number | undefined;
+  cameraSerial?: string | undefined;
+  size?: number | undefined;
+}
+
+export interface DetectResponse {
+  command: string;
+  cameraNumber?: number | undefined;
+  cameraSerial?: string | undefined;
+  size?: number | undefined;
+  pose: number[];
+  tf: number[];
+  result: string;
+  message?: string | undefined;
+}
+
 export const CONTROL_PACKAGE_NAME = "control";
 
 /** led, */
@@ -141,6 +159,8 @@ export interface ControlGrpcServiceClient {
   setObsBox(request: SetObsBoxRequest, metadata?: Metadata): Observable<SetObsBoxResponse>;
 
   getObsBox(request: Empty, metadata?: Metadata): Observable<GetObsBoxResponse>;
+
+  detect(request: DetectRequest, metadata?: Metadata): Observable<DetectResponse>;
 }
 
 /** led, */
@@ -187,6 +207,11 @@ export interface ControlGrpcServiceController {
     request: Empty,
     metadata?: Metadata,
   ): Promise<GetObsBoxResponse> | Observable<GetObsBoxResponse> | GetObsBoxResponse;
+
+  detect(
+    request: DetectRequest,
+    metadata?: Metadata,
+  ): Promise<DetectResponse> | Observable<DetectResponse> | DetectResponse;
 }
 
 export function ControlGrpcServiceControllerMethods() {
@@ -201,6 +226,7 @@ export function ControlGrpcServiceControllerMethods() {
       "safetyIoControl",
       "setObsBox",
       "getObsBox",
+      "detect",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

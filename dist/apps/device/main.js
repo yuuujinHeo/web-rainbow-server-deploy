@@ -312,6 +312,7 @@ function ControlGrpcServiceControllerMethods() {
             "safetyIoControl",
             "setObsBox",
             "getObsBox",
+            "detect",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -1229,6 +1230,26 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)
 ], Control.prototype, "mapRange", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "cameraNumber", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Control.prototype, "cameraSerial", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Control.prototype, "size", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Array)
+], Control.prototype, "pose", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Array)
+], Control.prototype, "tf", void 0);
 exports.Control = Control = __decorate([
     (0, mongoose_1.Schema)()
 ], Control);
@@ -1401,7 +1422,7 @@ const customFormat = winston_1.format.printf(({ timestamp, level, message }) => 
         const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
         let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
         logtext = formatLogMessage(logtext);
-        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
+        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateTimeKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
     }
     return '';
 });
@@ -1413,7 +1434,7 @@ const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
         const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
         const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
         let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
-        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
+        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateTimeKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
     }
 });
 let SaveLogService = class SaveLogService {
@@ -1533,6 +1554,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
 const date_fns_1 = __webpack_require__(47);
 class DateUtil {
+    static nowKST() {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        });
+        const parts = formatter.formatToParts(now);
+        const get = (type) => parts.find((p) => p.type === type)?.value;
+        return new Date(Number(get('year')), Number(get('month')) - 1, Number(get('day')), Number(get('hour')), Number(get('minute')), Number(get('second')));
+    }
     static toDatetimeString(date) {
         return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
     }
@@ -1554,6 +1591,21 @@ class DateUtil {
             `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
     }
     static formatDateKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}-${obj.month}-${obj.day}`;
+    }
+    static formatDateTimeKST(date) {
         const options = {
             timeZone: 'Asia/Seoul',
             year: 'numeric',
@@ -2049,6 +2101,13 @@ class ParseUtil {
             return group.toUpperCase().replace('-', '').replace('_', '');
         });
     }
+    static chunkArray(arr, size) {
+        const result = [];
+        for (let i = 0; i < arr.length; i += size) {
+            result.push(arr.slice(i, i + size));
+        }
+        return result;
+    }
     static stringifyAllValues(obj) {
         for (const key in obj) {
             if (typeof obj[key] === 'object') {
@@ -2173,6 +2232,9 @@ let ControlGrpcInputController = class ControlGrpcInputController {
     getObsBox(request, metadata) {
         return this.controlService.getObsBox(request);
     }
+    detect(request, metadata) {
+        return this.controlService.detect(request);
+    }
 };
 exports.ControlGrpcInputController = ControlGrpcInputController;
 exports.ControlGrpcInputController = ControlGrpcInputController = __decorate([
@@ -2213,6 +2275,7 @@ const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
 const control_ex_accessory_output_port_1 = __webpack_require__(66);
 const saveLog_service_1 = __webpack_require__(40);
+const detect_domain_1 = __webpack_require__(116);
 let ControlService = class ControlService {
     constructor(databaseOutput, slamnavOutput, exAccessoryOutput, saveLogService) {
         this.databaseOutput = databaseOutput;
@@ -2441,6 +2504,26 @@ let ControlService = class ControlService {
     slamDisconnect() {
         this.slamnav_connection = false;
     }
+    async detectResponse(resp) {
+        try {
+            this.logger?.info(`[Control] detectResponse : ${JSON.stringify(resp)}`);
+            if (resp.id) {
+                const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
+                if (dbmodel) {
+                    const model = new control_domain_1.ControlModel(dbmodel);
+                    model.assignId(dbmodel._id);
+                    model.statusChange(resp.result);
+                    model.message = resp.message;
+                    model.result = resp.result;
+                    await this.databaseOutput.update(model);
+                    this.logger?.info(`[Control] update DB : ${model.id}, ${model.status}, ${model.result}, ${model.message}`);
+                }
+            }
+        }
+        catch (error) {
+            this.logger?.error(`[Control] detectResponse : ${(0, common_2.errorToJson)(error)}`);
+        }
+    }
     async updateResponse(resp) {
         try {
             this.logger?.info(`[Control] update controlResponse : ${JSON.stringify(resp)}`);
@@ -2560,6 +2643,36 @@ let ControlService = class ControlService {
             }
         }
     }
+    async detect(request) {
+        let command = null;
+        let resp = null;
+        try {
+            this.logger?.info(`[Control] detect : ${JSON.stringify(request)}`);
+            command = new detect_domain_1.DetectModel(request);
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result._id.toString());
+            command.checkVariables();
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            resp = await this.slamnavOutput.detect(command);
+            this.logger?.info(`[Control] detect Response : ${JSON.stringify(resp)}`);
+            await command.checkResult(resp.result, resp.message);
+            return {
+                command: request.command,
+                cameraNumber: request.cameraNumber,
+                cameraSerial: request.cameraSerial ?? '',
+                size: request.size,
+                pose: resp.pose ?? [],
+                tf: resp.tf ?? [],
+                result: resp.result ?? '',
+                message: resp.message ?? '',
+            };
+        }
+        catch (error) {
+            this.logger?.error(`[Control] detect : ${(0, common_2.errorToJson)(error)}`);
+        }
+    }
 };
 exports.ControlService = ControlService;
 exports.ControlService = ControlService = __decorate([
@@ -2623,8 +2736,6 @@ class ControlModel {
         this.minZ = param?.minZ;
         this.maxZ = param?.maxZ;
         this.mapRange = param?.mapRange;
-        this.message = param?.message;
-        this.result = param?.result;
     }
     onOffControl(param) {
         this.status = ControlStatus.pending;
@@ -2812,7 +2923,7 @@ exports.ControlModel = ControlModel;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LEDColor = exports.ControlCommand = void 0;
+exports.LEDColor = exports.DetectCommand = exports.ControlCommand = void 0;
 var ControlCommand;
 (function (ControlCommand) {
     ControlCommand["dockStart"] = "dock";
@@ -2833,6 +2944,10 @@ var ControlCommand;
     ControlCommand["setObsBox"] = "setObsBox";
     ControlCommand["getObsBox"] = "getObsBox";
 })(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
+var DetectCommand;
+(function (DetectCommand) {
+    DetectCommand["aruco"] = "aruco";
+})(DetectCommand || (exports.DetectCommand = DetectCommand = {}));
 var LEDColor;
 (function (LEDColor) {
     LEDColor["none"] = "none";
@@ -2954,6 +3069,14 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.logger?.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(resp)}`);
+        return resp;
+    }
+    async detect(data) {
+        this.logger?.debug(`[Control] Socket detect : ${JSON.stringify(data)}`);
+        const response = this.waitForResponse(data.id, 50000);
+        this.mqttMicroservice.emit('detectRequest', data);
+        const resp = await response;
+        this.logger?.debug(`[Control] Socket detectResponse : ${JSON.stringify(resp)}`);
         return resp;
     }
     async waitForResponse(id, timeoutMs) {
@@ -3252,7 +3375,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlMqttController = void 0;
 const common_1 = __webpack_require__(32);
@@ -3300,6 +3423,28 @@ let ControlMqttController = class ControlMqttController {
             this.logger?.error(`[Control] getControlResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
+    getDetectResponse(data) {
+        try {
+            const { id } = data;
+            const listener = this.pendingService.pendingResponses.get(id);
+            if (listener) {
+                if (data.result === 'accept') {
+                    this.logger?.info(`[Control] getDetectResponse : Accepted`);
+                    this.controlService.detectResponse(data);
+                    return;
+                }
+                listener.received.push(data);
+                listener.resolve(data);
+                this.pendingService.pendingResponses.delete(id);
+            }
+            else {
+                this.controlService.detectResponse(data);
+            }
+        }
+        catch (error) {
+            this.logger?.error(`[Control] getDetectResponse : ${(0, common_2.errorToJson)(error)}`);
+        }
+    }
 };
 exports.ControlMqttController = ControlMqttController;
 __decorate([
@@ -3321,6 +3466,13 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_d = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], ControlMqttController.prototype, "getControlResponse", null);
+__decorate([
+    (0, microservices_1.EventPattern)('detectResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof control_dto_1.DetectResponseSlamnav !== "undefined" && control_dto_1.DetectResponseSlamnav) === "function" ? _e : Object]),
+    __metadata("design:returntype", void 0)
+], ControlMqttController.prototype, "getDetectResponse", null);
 exports.ControlMqttController = ControlMqttController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [typeof (_a = typeof control_service_1.ControlService !== "undefined" && control_service_1.ControlService) === "function" ? _a : Object, typeof (_b = typeof control_pending_service_1.ControlPendingService !== "undefined" && control_pending_service_1.ControlPendingService) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
@@ -3343,7 +3495,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
+exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
 const swagger_1 = __webpack_require__(79);
 const class_transformer_1 = __webpack_require__(80);
 const class_validator_1 = __webpack_require__(81);
@@ -3543,6 +3695,216 @@ __decorate([
     }),
     __metadata("design:type", ControlResponseDto)
 ], ControlResponseFrs.prototype, "data", void 0);
+class DetectRequestDto {
+}
+exports.DetectRequestDto = DetectRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '감지 명령',
+        example: 'aruco',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectRequestDto.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 번호',
+        example: 0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], DetectRequestDto.prototype, "cameraNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 시리얼넘버',
+        example: '1234567890',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], DetectRequestDto.prototype, "cameraSerial", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커 사이즈',
+        example: 0.1,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DetectRequestDto.prototype, "size", void 0);
+class DetectResponseDto {
+}
+exports.DetectResponseDto = DetectResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '감지 명령',
+        example: 'aruco',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 번호',
+        example: 0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], DetectResponseDto.prototype, "cameraNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 시리얼넘버',
+        example: '1234567890',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "cameraSerial", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커 사이즈',
+        example: 0.1,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DetectResponseDto.prototype, "size", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 pose(x,y,z,roll,pitch,yaw)',
+        example: [[0.1, -2.3, 0.0, 0.0, 0.0, 0.0]],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseDto.prototype, "pose", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 tf(4x4)',
+        example: [[1.0, 0.0, 0.0, 0.1, 0.0, 1.0, 0.0, -2.3, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseDto.prototype, "tf", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+        example: 'accept',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "message", void 0);
+class DetectResponseSlamnav {
+}
+exports.DetectResponseSlamnav = DetectResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ID,
+        example: util_1.UrlUtil.generateUUID(),
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '감지 명령',
+        example: 'aruco',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 번호',
+        example: 0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], DetectResponseSlamnav.prototype, "cameraNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 시리얼넘버',
+        example: '1234567890',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "cameraSerial", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커 사이즈',
+        example: 0.1,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DetectResponseSlamnav.prototype, "size", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 pose(x,y,z,roll,pitch,yaw)',
+        example: [0.1, -2.3, 0.0, 0.0, 0.0, 0.0],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseSlamnav.prototype, "pose", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 tf(4x4)',
+        example: [1.0, 0.0, 0.0, 0.1, 0.0, 1.0, 0.0, -2.3, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseSlamnav.prototype, "tf", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+        example: 'accept',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "message", void 0);
 class ObsBoxRequestDto {
 }
 exports.ObsBoxRequestDto = ObsBoxRequestDto;
@@ -3895,8 +4257,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(32);
+const schedule_1 = __webpack_require__(115);
 const path = __webpack_require__(30);
 const fs_1 = __webpack_require__(49);
+const util_1 = __webpack_require__(43);
 let CleanLogService = class CleanLogService {
     constructor() {
         this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
@@ -3909,6 +4273,18 @@ let CleanLogService = class CleanLogService {
         this.RETAIN_DAYS = retainDays;
         this.runClean = true;
     }
+    async handleCron() {
+        if (!this.runClean)
+            return;
+        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
+        try {
+            await this.cleanDir(this.LOG_ROOT);
+            this.logger?.info('[Log] 🧹 로그 정리 완료');
+        }
+        catch (e) {
+            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
+        }
+    }
     async cleanDir(dir) {
         let entries;
         try {
@@ -3917,6 +4293,9 @@ let CleanLogService = class CleanLogService {
         catch {
             return;
         }
+        const now = new Date();
+        const cutoff_date = new Date(now.getTime() - this.RETAIN_DAYS * 24 * 60 * 60 * 1000);
+        const cutoff_date_string = util_1.DateUtil.formatDateKST(cutoff_date);
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);
             if (entry.isDirectory()) {
@@ -3926,14 +4305,9 @@ let CleanLogService = class CleanLogService {
             if (!entry.name.endsWith('.log') && !entry.name.endsWith('.log.gz')) {
                 continue;
             }
-            let stat;
-            try {
-                stat = await fs_1.promises.stat(fullPath);
-            }
-            catch {
-                continue;
-            }
-            if (this.isOlderThan(stat.mtime, this.RETAIN_DAYS)) {
+            const file_name = entry.name.split('.')[0];
+            if (file_name < cutoff_date_string) {
+                this.logger?.info(`[Log] 파일 비교: ${file_name} < ${cutoff_date_string}`);
                 this.logger?.info(`[Log] 🗑 delete: ${fullPath}`);
                 try {
                     await fs_1.promises.unlink(fullPath);
@@ -3952,6 +4326,12 @@ let CleanLogService = class CleanLogService {
     }
 };
 exports.CleanLogService = CleanLogService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CleanLogService.prototype, "handleCron", null);
 exports.CleanLogService = CleanLogService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
@@ -6643,6 +7023,82 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], PaginationResponse.prototype, "list", void 0);
+
+
+/***/ }),
+/* 115 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 116 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DetectModel = void 0;
+const rpc_code_exception_1 = __webpack_require__(37);
+const constant_1 = __webpack_require__(38);
+const control_type_1 = __webpack_require__(65);
+const control_domain_1 = __webpack_require__(64);
+class DetectModel {
+    constructor(param) {
+        this.status = control_domain_1.ControlStatus.pending;
+        this.command = param?.command;
+        this.cameraNumber = param?.cameraNumber;
+        this.cameraSerial = param?.cameraSerial;
+        this.size = param?.size;
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    statusChange(status) {
+        if (!this.id) {
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
+        }
+        const moveStatus = this.parseStatus(status);
+        this.status = moveStatus;
+    }
+    parseStatus(value) {
+        if (Object.values(control_domain_1.ControlStatus).includes(value)) {
+            return value;
+        }
+        return control_domain_1.ControlStatus.unknown;
+    }
+    async checkResult(result, message) {
+        this.statusChange(result);
+        this.message = message;
+        this.result = result;
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
+        }
+    }
+    checkVariables() {
+        switch (this.command) {
+            case control_type_1.DetectCommand.aruco: {
+                let no_camera_number = false;
+                if (this.cameraNumber === undefined || this.cameraNumber < 0) {
+                    no_camera_number = true;
+                }
+                if (this.cameraSerial === undefined || this.cameraSerial === '') {
+                    if (no_camera_number) {
+                        throw new rpc_code_exception_1.RpcCodeException('cameraNumber 또는 cameraSerial 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
+                }
+                if (this.size === undefined || this.size <= 0) {
+                    throw new rpc_code_exception_1.RpcCodeException('size 값이 없거나 0보다 작습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            default: {
+                throw new rpc_code_exception_1.RpcCodeException(`지원하지 않는 command 값입니다. (${this.command})`, constant_1.GrpcCode.InvalidArgument);
+                break;
+            }
+        }
+    }
+}
+exports.DetectModel = DetectModel;
 
 
 /***/ })

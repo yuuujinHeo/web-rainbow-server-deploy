@@ -32,6 +32,13 @@ export class ParseUtil {
     });
   }
 
+  static chunkArray(arr: number[], size: number): number[][] {
+    const result: number[][] = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  }
   static stringifyAllValues(obj) {
     for (const key in obj) {
       if (typeof obj[key] === 'object') {

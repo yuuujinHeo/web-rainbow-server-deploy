@@ -178,6 +178,191 @@ export class ControlResponseFrs {
   data: ControlResponseDto;
 }
 
+export class DetectRequestDto {
+  @ApiProperty({
+    description: '감지 명령',
+    example: 'aruco',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  command: string;
+
+  @ApiProperty({
+    description: '카메라 번호',
+    example: 0,
+    required: false,
+  })
+  @IsOptional()
+  cameraNumber?: number;
+
+  @ApiProperty({
+    description: '카메라 시리얼넘버',
+    example: '1234567890',
+    required: false,
+  })
+  @IsOptional()
+  cameraSerial?: string;
+
+  @ApiProperty({
+    description: '아르코마커 사이즈',
+    example: 0.1,
+    required: true,
+  })
+  @IsNumber()
+  size: number;
+}
+
+export class DetectResponseDto {
+  @ApiProperty({
+    description: '감지 명령',
+    example: 'aruco',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  command: string;
+
+  @ApiProperty({
+    description: '카메라 번호',
+    example: 0,
+    required: false,
+  })
+  @IsOptional()
+  cameraNumber?: number;
+
+  @ApiProperty({
+    description: '카메라 시리얼넘버',
+    example: '1234567890',
+    required: false,
+  })
+  @IsOptional()
+  cameraSerial?: string;
+
+  @ApiProperty({
+    description: '아르코마커 사이즈',
+    example: 0.1,
+    required: true,
+  })
+  @IsNumber()
+  size: number;
+
+  @ApiProperty({
+    description: '아르코마커의 pose(x,y,z,roll,pitch,yaw)',
+    example: [[0.1, -2.3, 0.0, 0.0, 0.0, 0.0]],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  pose?: number[][];
+
+  @ApiProperty({
+    description: '아르코마커의 tf(4x4)',
+    example: [[1.0, 0.0, 0.0, 0.1, 0.0, 1.0, 0.0, -2.3, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  tf?: number[][];
+
+  @ApiProperty({
+    description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+    example: 'accept',
+    required: false,
+  })
+  @IsString()
+  @Expose()
+  result?: string;
+
+  @ApiProperty({
+    description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+    example: '',
+    required: false,
+  })
+  @IsString()
+  @Expose()
+  message?: string;
+}
+
+export class DetectResponseSlamnav {
+  @ApiProperty({
+    description: Description.ID,
+    example: UrlUtil.generateUUID(),
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  id: string;
+  @ApiProperty({
+    description: '감지 명령',
+    example: 'aruco',
+    required: true,
+  })
+  @IsString()
+  @Length(1, 50)
+  command: string;
+
+  @ApiProperty({
+    description: '카메라 번호',
+    example: 0,
+    required: false,
+  })
+  @IsOptional()
+  cameraNumber?: number;
+
+  @ApiProperty({
+    description: '카메라 시리얼넘버',
+    example: '1234567890',
+    required: false,
+  })
+  @IsOptional()
+  cameraSerial?: string;
+
+  @ApiProperty({
+    description: '아르코마커 사이즈',
+    example: 0.1,
+    required: true,
+  })
+  @IsNumber()
+  size: number;
+
+  @ApiProperty({
+    description: '아르코마커의 pose(x,y,z,roll,pitch,yaw)',
+    example: [0.1, -2.3, 0.0, 0.0, 0.0, 0.0],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  pose?: number[];
+
+  @ApiProperty({
+    description: '아르코마커의 tf(4x4)',
+    example: [1.0, 0.0, 0.0, 0.1, 0.0, 1.0, 0.0, -2.3, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  tf?: number[];
+
+  @ApiProperty({
+    description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+    example: 'accept',
+    required: false,
+  })
+  @IsString()
+  @Expose()
+  result?: string;
+
+  @ApiProperty({
+    description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+    example: '',
+    required: false,
+  })
+  @IsString()
+  @Expose()
+  message?: string;
+}
+
 export class ObsBoxRequestDto {
   @ApiProperty({
     description: '장애물감지영역 최소 x값',

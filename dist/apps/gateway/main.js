@@ -50,6 +50,7 @@ const update_api_module_1 = __webpack_require__(127);
 const cobot_api_module_1 = __webpack_require__(135);
 const tcp_api_module_1 = __webpack_require__(139);
 const socket_api_module_1 = __webpack_require__(142);
+const schedule_1 = __webpack_require__(215);
 const log_module_1 = __webpack_require__(74);
 const saveLog_service_1 = __webpack_require__(68);
 const cleanLog_service_1 = __webpack_require__(75);
@@ -64,6 +65,7 @@ exports.RRSApiModule = RRSApiModule;
 exports.RRSApiModule = RRSApiModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            schedule_1.ScheduleModule.forRoot(),
             log_module_1.LogModule,
             move_api_module_1.MoveApiModule,
             control_api_module_1.ControlApiModule,
@@ -175,7 +177,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -225,6 +227,9 @@ let ControlApiController = class ControlApiController {
     async setObsboxControl(dto) {
         return this.controlService.setObsBoxRequest(dto);
     }
+    async detectRequest(dto) {
+        return this.controlService.detectRequest(dto);
+    }
 };
 exports.ControlApiController = ControlApiController;
 __decorate([
@@ -271,6 +276,8 @@ SLAMNAV의 기능에 관련된 제어를 켜고 끄는 요청을 합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -323,6 +330,8 @@ SLAMNAV의 선언된 기능을 실행/중지 요청합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -370,6 +379,8 @@ __decorate([
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -457,6 +468,8 @@ __decorate([
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -507,6 +520,8 @@ __decorate([
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -561,6 +576,8 @@ LED의 수동 제어를 요청합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+- SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -614,6 +631,8 @@ __decorate([
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -657,6 +676,8 @@ __decorate([
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -700,6 +721,8 @@ __decorate([
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     __metadata("design:type", Function),
@@ -753,6 +776,8 @@ __decorate([
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     __param(0, (0, common_1.Body)()),
@@ -760,6 +785,66 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_s = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _s : Object]),
     __metadata("design:returntype", Promise)
 ], ControlApiController.prototype, "setObsboxControl", null);
+__decorate([
+    (0, common_1.Post)('detect'),
+    (0, swagger_1.ApiOperation)({
+        summary: '감지 요청',
+        description: `
+  감지를 요청합니다.
+  
+  ## 📌 기능 설명
+  - 카메라 등의 센서로 감지를 요청합니다.
+  - 아르코마커 인식 후 마커의 pose(x,y,z,roll,pitch,yaw)와 tf(4x4)를 조회합니다.
+  - 아르코마커 인식 요청 시 인식할 카메라의 번호 혹은 시리얼넘버를 입력해야합니다.
+  - 로봇에 부착된 시리얼넘버는 모델마다 상이하며 번호로는 전면(0번), 오른쪽(1번), 왼쪽(2번), 후면(3번) 카메라가 존재합니다.
+  - 아르코마커의 사이즈를 m단위로 입력해야합니다.
+  - cameraNumber와 cameraSerial 중 하나는 반드시 입력해야합니다. 
+  
+  ## 📌 요청 바디(JSON)
+  
+  | 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+  |-|-|-|-|-|-|
+  | command | string | ✅ | - | 감지 명령 | 'aruco' |
+  | cameraNumber | number | - | - | 카메라 번호 | 0 |
+  | cameraSerial | string | - | - | 카메라 시리얼넘버 | '1234567890' |
+  | size | number | - | m | 아르코마커 사이즈 | 0.1 |
+  
+  ## 📌 응답 바디(JSON)
+  
+  | 필드명       | 타입    | 설명                          | 예시 |
+  |-------------|---------|-------------------------------|--------|
+  | command | string | 감지 명령 | 'aruco' |
+  | cameraNumber | number | 카메라 번호 | 0 |
+  | cameraSerial | string | 카메라 시리얼넘버 | '1234567890' |
+  | size | number | 아르코마커 사이즈 | 0.1 |
+  | pose | number[] | 아르코마커의 pose(x,y,z,roll,pitch,yaw) | [[0.1, -2.3, 0.0, 0.0, 0.0, 0.0]] |
+  | tf | number[] | 아르코마커의 tf(4x4) | [[1.0, 0.0, 0.0, 0.1, 0.0, 1.0, 0.0, -2.3, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]] |
+  | result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+  | message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+  
+  ## ⚠️ 에러 케이스
+  ### **403** INVALID_ARGUMENT
+  - 파라메터가 없거나 잘못된 값일 때
+  ### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+  ### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+  ### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+  ### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
+    `,
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '감지 요청 성공',
+        type: control_dto_1.DetectResponseDto,
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_t = typeof control_dto_1.DetectRequestDto !== "undefined" && control_dto_1.DetectRequestDto) === "function" ? _t : Object]),
+    __metadata("design:returntype", Promise)
+], ControlApiController.prototype, "detectRequest", null);
 exports.ControlApiController = ControlApiController = __decorate([
     (0, swagger_1.ApiTags)('SLAMNAV 컨트롤 API'),
     (0, common_1.Controller)('control'),
@@ -789,7 +874,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
+exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
@@ -989,6 +1074,216 @@ __decorate([
     }),
     __metadata("design:type", ControlResponseDto)
 ], ControlResponseFrs.prototype, "data", void 0);
+class DetectRequestDto {
+}
+exports.DetectRequestDto = DetectRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '감지 명령',
+        example: 'aruco',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectRequestDto.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 번호',
+        example: 0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], DetectRequestDto.prototype, "cameraNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 시리얼넘버',
+        example: '1234567890',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], DetectRequestDto.prototype, "cameraSerial", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커 사이즈',
+        example: 0.1,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DetectRequestDto.prototype, "size", void 0);
+class DetectResponseDto {
+}
+exports.DetectResponseDto = DetectResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '감지 명령',
+        example: 'aruco',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 번호',
+        example: 0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], DetectResponseDto.prototype, "cameraNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 시리얼넘버',
+        example: '1234567890',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "cameraSerial", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커 사이즈',
+        example: 0.1,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DetectResponseDto.prototype, "size", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 pose(x,y,z,roll,pitch,yaw)',
+        example: [[0.1, -2.3, 0.0, 0.0, 0.0, 0.0]],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseDto.prototype, "pose", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 tf(4x4)',
+        example: [[1.0, 0.0, 0.0, 0.1, 0.0, 1.0, 0.0, -2.3, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseDto.prototype, "tf", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+        example: 'accept',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseDto.prototype, "message", void 0);
+class DetectResponseSlamnav {
+}
+exports.DetectResponseSlamnav = DetectResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.ID,
+        example: util_1.UrlUtil.generateUUID(),
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '감지 명령',
+        example: 'aruco',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "command", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 번호',
+        example: 0,
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], DetectResponseSlamnav.prototype, "cameraNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 시리얼넘버',
+        example: '1234567890',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "cameraSerial", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커 사이즈',
+        example: 0.1,
+        required: true,
+    }),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], DetectResponseSlamnav.prototype, "size", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 pose(x,y,z,roll,pitch,yaw)',
+        example: [0.1, -2.3, 0.0, 0.0, 0.0, 0.0],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseSlamnav.prototype, "pose", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '아르코마커의 tf(4x4)',
+        example: [1.0, 0.0, 0.0, 0.1, 0.0, 1.0, 0.0, -2.3, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], DetectResponseSlamnav.prototype, "tf", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청한 명령에 대한 결과입니다. accept, reject, success, fail 등 명령에 대해 다양한 값이 존재합니다.',
+        example: 'accept',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'result값이 reject, fail 인 경우 SLAMNAV에서 보내는 메시지 입니다.',
+        example: '',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DetectResponseSlamnav.prototype, "message", void 0);
 class ObsBoxRequestDto {
 }
 exports.ObsBoxRequestDto = ObsBoxRequestDto;
@@ -1295,7 +1590,7 @@ module.exports = require("class-validator");
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LEDColor = exports.ControlCommand = void 0;
+exports.LEDColor = exports.DetectCommand = exports.ControlCommand = void 0;
 var ControlCommand;
 (function (ControlCommand) {
     ControlCommand["dockStart"] = "dock";
@@ -1316,6 +1611,10 @@ var ControlCommand;
     ControlCommand["setObsBox"] = "setObsBox";
     ControlCommand["getObsBox"] = "getObsBox";
 })(ControlCommand || (exports.ControlCommand = ControlCommand = {}));
+var DetectCommand;
+(function (DetectCommand) {
+    DetectCommand["aruco"] = "aruco";
+})(DetectCommand || (exports.DetectCommand = DetectCommand = {}));
 var LEDColor;
 (function (LEDColor) {
     LEDColor["none"] = "none";
@@ -1387,6 +1686,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
 const date_fns_1 = __webpack_require__(17);
 class DateUtil {
+    static nowKST() {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        });
+        const parts = formatter.formatToParts(now);
+        const get = (type) => parts.find((p) => p.type === type)?.value;
+        return new Date(Number(get('year')), Number(get('month')) - 1, Number(get('day')), Number(get('hour')), Number(get('minute')), Number(get('second')));
+    }
     static toDatetimeString(date) {
         return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
     }
@@ -1408,6 +1723,21 @@ class DateUtil {
             `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
     }
     static formatDateKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}-${obj.month}-${obj.day}`;
+    }
+    static formatDateTimeKST(date) {
         const options = {
             timeZone: 'Asia/Seoul',
             year: 'numeric',
@@ -2173,6 +2503,7 @@ function ControlGrpcServiceControllerMethods() {
             "safetyIoControl",
             "setObsBox",
             "getObsBox",
+            "detect",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -2897,6 +3228,13 @@ class ParseUtil {
             return group.toUpperCase().replace('-', '').replace('_', '');
         });
     }
+    static chunkArray(arr, size) {
+        const result = [];
+        for (let i = 0; i < arr.length; i += size) {
+            result.push(arr.slice(i, i + size));
+        }
+        return result;
+    }
     static stringifyAllValues(obj) {
         for (const key in obj) {
             if (typeof obj[key] === 'object') {
@@ -3020,6 +3358,9 @@ const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(50);
 const control_type_1 = __webpack_require__(12);
 const saveLog_service_1 = __webpack_require__(68);
+const util_1 = __webpack_require__(13);
+const rpc_code_exception_1 = __webpack_require__(53);
+const constant_2 = __webpack_require__(54);
 let ControlApiService = class ControlApiService {
     constructor(controlMicroservice, cobotMicroservice, saveLogService) {
         this.controlMicroservice = controlMicroservice;
@@ -3059,6 +3400,43 @@ let ControlApiService = class ControlApiService {
     }
     async setObsBoxRequest(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.controlService.setObsBox(dto));
+    }
+    async detectRequest(dto) {
+        try {
+            const response = await (0, rxjs_1.lastValueFrom)(this.controlService.detect(dto));
+            try {
+                return {
+                    command: response.command,
+                    cameraNumber: response.cameraNumber,
+                    cameraSerial: response.cameraSerial,
+                    size: response.size,
+                    pose: util_1.ParseUtil.chunkArray(response.pose, 6),
+                    tf: util_1.ParseUtil.chunkArray(response.tf, 16),
+                    result: response.result,
+                    message: response.message,
+                };
+            }
+            catch (error) {
+                this.logger?.error(`[Control] detectRequest : ${util_1.ParseUtil.errorToJson(error)}`);
+                return {
+                    command: response.command,
+                    cameraNumber: response.cameraNumber,
+                    cameraSerial: response.cameraSerial,
+                    size: response.size,
+                    pose: response.pose,
+                    tf: response.tf,
+                    result: response.result,
+                    message: response.message,
+                };
+            }
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException) {
+                throw error;
+            }
+            this.logger?.error(`[Control] detectRequest : ${util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('detectRequest 명령을 수행할 수 없습니다', constant_2.GrpcCode.InternalError);
+        }
     }
 };
 exports.ControlApiService = ControlApiService;
@@ -3360,7 +3738,7 @@ const customFormat = winston_1.format.printf(({ timestamp, level, message }) => 
         const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
         let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
         logtext = formatLogMessage(logtext);
-        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
+        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateTimeKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
     }
     return '';
 });
@@ -3372,7 +3750,7 @@ const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
         const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
         const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
         let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
-        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
+        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateTimeKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
     }
 });
 let SaveLogService = class SaveLogService {
@@ -3592,8 +3970,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(5);
+const schedule_1 = __webpack_require__(215);
 const path = __webpack_require__(20);
 const fs_1 = __webpack_require__(19);
+const util_1 = __webpack_require__(13);
 let CleanLogService = class CleanLogService {
     constructor() {
         this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
@@ -3606,6 +3986,18 @@ let CleanLogService = class CleanLogService {
         this.RETAIN_DAYS = retainDays;
         this.runClean = true;
     }
+    async handleCron() {
+        if (!this.runClean)
+            return;
+        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
+        try {
+            await this.cleanDir(this.LOG_ROOT);
+            this.logger?.info('[Log] 🧹 로그 정리 완료');
+        }
+        catch (e) {
+            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
+        }
+    }
     async cleanDir(dir) {
         let entries;
         try {
@@ -3614,6 +4006,9 @@ let CleanLogService = class CleanLogService {
         catch {
             return;
         }
+        const now = new Date();
+        const cutoff_date = new Date(now.getTime() - this.RETAIN_DAYS * 24 * 60 * 60 * 1000);
+        const cutoff_date_string = util_1.DateUtil.formatDateKST(cutoff_date);
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);
             if (entry.isDirectory()) {
@@ -3623,14 +4018,9 @@ let CleanLogService = class CleanLogService {
             if (!entry.name.endsWith('.log') && !entry.name.endsWith('.log.gz')) {
                 continue;
             }
-            let stat;
-            try {
-                stat = await fs_1.promises.stat(fullPath);
-            }
-            catch {
-                continue;
-            }
-            if (this.isOlderThan(stat.mtime, this.RETAIN_DAYS)) {
+            const file_name = entry.name.split('.')[0];
+            if (file_name < cutoff_date_string) {
+                this.logger?.info(`[Log] 파일 비교: ${file_name} < ${cutoff_date_string}`);
                 this.logger?.info(`[Log] 🗑 delete: ${fullPath}`);
                 try {
                     await fs_1.promises.unlink(fullPath);
@@ -3649,6 +4039,12 @@ let CleanLogService = class CleanLogService {
     }
 };
 exports.CleanLogService = CleanLogService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CleanLogService.prototype, "handleCron", null);
 exports.CleanLogService = CleanLogService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
@@ -3832,6 +4228,8 @@ SLAMNAV로 위치초기화 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -3880,6 +4278,8 @@ SLAMNAV로 랜덤위치초기화 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -3926,6 +4326,8 @@ SLAMNAV로 자동 위치초기화 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -3972,6 +4374,8 @@ SLAMNAV로 자동 위치초기화(INIT노드기반) 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -4014,6 +4418,8 @@ SLAMNAV로 위치추정 시작 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -4056,6 +4462,8 @@ SLAMNAV로 위치추정 종료 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6316,6 +6724,8 @@ SLAMNAV로 주행 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6379,6 +6789,8 @@ SLAMNAV로 특정 위치로 주행 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6435,6 +6847,8 @@ SLAMNAV로 목표 노드로 주행 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6482,6 +6896,8 @@ SLAMNAV로 조이스틱 이동 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6525,6 +6941,8 @@ SLAMNAV로 이동 정지 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6567,6 +6985,8 @@ SLAMNAV로 이동 일시정지 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6609,6 +7029,8 @@ SLAMNAV로 이동 일시재개 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6668,6 +7090,8 @@ SLAMNAV로 프로필 이동 명령을 전달합니다.
   - DB관련 에러 등 서버 내부적인 에러
 ### **502** BAD_GATEWAY
   - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     __param(0, (0, common_1.Body)()),
@@ -6705,6 +7129,8 @@ __decorate([
   - 파라메터가 없거나 잘못된 값일 때
 ### **500** INTERNAL_SERVER_ERROR
   - DB관련 에러 등 서버 내부적인 에러
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -6754,6 +7180,8 @@ __decorate([
   - 파라메터가 없거나 잘못된 값일 때
 ### **500** INTERNAL_SERVER_ERROR
   - DB관련 에러 등 서버 내부적인 에러
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
     `,
     }),
     (0, swagger_1.ApiOkResponse)({
@@ -10369,6 +10797,7 @@ let LogApiService = class LogApiService {
         this.serviceLogService = this.logMicroservice.getService('ServiceLogGrpcService');
     }
     async getServiceLog(serviceName, dto) {
+        console.log('gateway getServiceLog');
         return await (0, rxjs_1.lastValueFrom)(this.serviceLogService.getServiceLog({ serviceName, ...dto, levels: dto.levels || [] }));
     }
     async getAlarmDefinedList(dto) {
@@ -17521,6 +17950,10 @@ let SlamnavService = class SlamnavService {
         this.logger?.debug(`[SLAMNAV] controlRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('controlRequest', data);
     }
+    detectRequest(data) {
+        this.logger?.debug(`[SLAMNAV] detectRequest : ${JSON.stringify(data)}`);
+        this.slamnav?.emit('detectRequest', data);
+    }
     loadRequest(data) {
         this.logger?.debug(`[SLAMNAV] loadRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('loadRequest', data);
@@ -17572,6 +18005,13 @@ let SlamnavService = class SlamnavService {
         }
         this.logger?.debug(`[SLAMNAV] controlResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('controlResponse', data);
+    }
+    detectResponse(data) {
+        if (data.id == undefined) {
+            this.logger?.warn(`[SLAMNAV] detectResponse : id undefined`);
+        }
+        this.logger?.debug(`[SLAMNAV] detectResponse : ${JSON.stringify(data)}`);
+        this.mqttMicroservice.emit('detectResponse', data);
     }
     settingResponse(data) {
         if (data.id == undefined) {
@@ -17873,7 +18313,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
@@ -17900,6 +18340,7 @@ const mapping_dto_1 = __webpack_require__(111);
 const load_dto_1 = __webpack_require__(112);
 const path_dto_1 = __webpack_require__(159);
 const saveLog_service_1 = __webpack_require__(68);
+const detect_domain_1 = __webpack_require__(216);
 let RobotSocketMqttController = class RobotSocketMqttController {
     constructor(slamnavService, exAccessoryService, taskmanService, saveLogService) {
         this.slamnavService = slamnavService;
@@ -17932,6 +18373,9 @@ let RobotSocketMqttController = class RobotSocketMqttController {
     ControlRequest(data) {
         console.log('mqtt got controlRequest');
         this.slamnavService.controlRequest(data);
+    }
+    DetectRequest(data) {
+        this.slamnavService.detectRequest(data);
     }
     LoadRequest(data) {
         this.slamnavService.loadRequest(data);
@@ -18050,6 +18494,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "ControlRequest", null);
 __decorate([
+    (0, microservices_1.EventPattern)('detectRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'detectRequest',
+        message: {
+            payload: setting_dto_1.SettingRequestSlamnav,
+        },
+        description: 'Detect 요청',
+    }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof detect_domain_1.DetectModel !== "undefined" && detect_domain_1.DetectModel) === "function" ? _l : Object]),
+    __metadata("design:returntype", void 0)
+], RobotSocketMqttController.prototype, "DetectRequest", null);
+__decorate([
     (0, microservices_1.EventPattern)('loadRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'loadRequest',
@@ -18060,7 +18518,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _l : Object]),
+    __metadata("design:paramtypes", [typeof (_m = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _m : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "LoadRequest", null);
 __decorate([
@@ -18074,7 +18532,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof setting_dto_1.SettingRequestSlamnav !== "undefined" && setting_dto_1.SettingRequestSlamnav) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof setting_dto_1.SettingRequestSlamnav !== "undefined" && setting_dto_1.SettingRequestSlamnav) === "function" ? _o : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "SettingRequest", null);
 __decorate([
@@ -18087,49 +18545,49 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof path_dto_1.PathResponseSlamnav !== "undefined" && path_dto_1.PathResponseSlamnav) === "function" ? _o : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof path_dto_1.PathResponseSlamnav !== "undefined" && path_dto_1.PathResponseSlamnav) === "function" ? _p : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "PathResponse", null);
 __decorate([
     (0, microservices_1.EventPattern)('moveResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof move_dto_2.MoveResponseSlamnav !== "undefined" && move_dto_2.MoveResponseSlamnav) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_q = typeof move_dto_2.MoveResponseSlamnav !== "undefined" && move_dto_2.MoveResponseSlamnav) === "function" ? _q : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveResponse", null);
 __decorate([
     (0, microservices_1.EventPattern)('dockResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _q : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _r : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getDockResponse", null);
 __decorate([
     (0, microservices_1.EventPattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _s : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getStatus", null);
 __decorate([
     (0, microservices_1.EventPattern)('moveStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_t = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _t : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveStatus", null);
 __decorate([
     (0, microservices_1.EventPattern)('exAccessoryRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof exAccessory_dto_1.ExAccessoryRequestExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryRequestExAccessory) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_u = typeof exAccessory_dto_1.ExAccessoryRequestExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryRequestExAccessory) === "function" ? _u : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "exAccessoryRequest", null);
 __decorate([
     (0, microservices_1.EventPattern)('taskman:taskRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _v : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "taskRequest", null);
 __decorate([
@@ -18411,8 +18869,6 @@ class ControlModel {
         this.minZ = param?.minZ;
         this.maxZ = param?.maxZ;
         this.mapRange = param?.mapRange;
-        this.message = param?.message;
-        this.result = param?.result;
     }
     onOffControl(param) {
         this.status = ControlStatus.pending;
@@ -18880,7 +19336,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlamnavSocketGateway = void 0;
 const websockets_1 = __webpack_require__(148);
@@ -18981,6 +19437,14 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
         }
         else {
             this.logger?.warn(`[SLAMNAV] handleControlResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+        }
+    }
+    async handleDetectResponse(data, client) {
+        if (client.id == this.slamnav?.id) {
+            this.slamnavService.detectResponse(data);
+        }
+        else {
+            this.logger?.warn(`[SLAMNAV] handleDetectResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleSettingResponse(data, client) {
@@ -19129,6 +19593,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleControlResponse", null);
 __decorate([
+    (0, websockets_1.SubscribeMessage)('detectResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'detectResponse',
+        message: {
+            payload: control_dto_1.DetectResponseSlamnav,
+        },
+        description: 'Detect 요청에 따른 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.DetectResponseSlamnav !== "undefined" && control_dto_1.DetectResponseSlamnav) === "function" ? _r : Object, typeof (_s = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _s : Object]),
+    __metadata("design:returntype", Promise)
+], SlamnavSocketGateway.prototype, "handleDetectResponse", null);
+__decorate([
     (0, websockets_1.SubscribeMessage)('settingResponse'),
     (0, nestjs_asyncapi_1.AsyncApiSub)({
         channel: 'settingResponse',
@@ -19140,7 +19619,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof setting_dto_1.SettingResponseSlamnav !== "undefined" && setting_dto_1.SettingResponseSlamnav) === "function" ? _r : Object, typeof (_s = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_t = typeof setting_dto_1.SettingResponseSlamnav !== "undefined" && setting_dto_1.SettingResponseSlamnav) === "function" ? _t : Object, typeof (_u = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _u : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleSettingResponse", null);
 __decorate([
@@ -19155,7 +19634,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof version_dto_1.GetCurrentVersionResponseSocketDto !== "undefined" && version_dto_1.GetCurrentVersionResponseSocketDto) === "function" ? _t : Object, typeof (_u = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof version_dto_1.GetCurrentVersionResponseSocketDto !== "undefined" && version_dto_1.GetCurrentVersionResponseSocketDto) === "function" ? _v : Object, typeof (_w = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleVersionResponse", null);
 __decorate([
@@ -19170,7 +19649,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _v : Object, typeof (_w = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _w : Object]),
+    __metadata("design:paramtypes", [typeof (_x = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _x : Object, typeof (_y = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _y : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleStatus", null);
 __decorate([
@@ -19185,7 +19664,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _x : Object, typeof (_y = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _y : Object]),
+    __metadata("design:paramtypes", [typeof (_z = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _z : Object, typeof (_0 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _0 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMoveStatus", null);
 __decorate([
@@ -19200,7 +19679,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_z = typeof systemstatus_type_1.SystemStatusSlamnav !== "undefined" && systemstatus_type_1.SystemStatusSlamnav) === "function" ? _z : Object, typeof (_0 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _0 : Object]),
+    __metadata("design:paramtypes", [typeof (_1 = typeof systemstatus_type_1.SystemStatusSlamnav !== "undefined" && systemstatus_type_1.SystemStatusSlamnav) === "function" ? _1 : Object, typeof (_2 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _2 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleSystemStatus", null);
 __decorate([
@@ -19215,7 +19694,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_1 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _1 : Object, typeof (_2 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _2 : Object]),
+    __metadata("design:paramtypes", [typeof (_3 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _3 : Object, typeof (_4 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _4 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLocalPath", null);
 __decorate([
@@ -19230,7 +19709,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_3 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _3 : Object, typeof (_4 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _4 : Object]),
+    __metadata("design:paramtypes", [typeof (_5 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _5 : Object, typeof (_6 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _6 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleGlobalPath", null);
 __decorate([
@@ -19245,7 +19724,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_5 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _5 : Object, typeof (_6 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _6 : Object]),
+    __metadata("design:paramtypes", [typeof (_7 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _7 : Object, typeof (_8 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _8 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLidarCloud", null);
 __decorate([
@@ -19260,7 +19739,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_7 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _7 : Object, typeof (_8 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _8 : Object]),
+    __metadata("design:paramtypes", [typeof (_9 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _9 : Object, typeof (_10 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _10 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMappingCloud", null);
 exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
@@ -20987,7 +21466,7 @@ let TcpService = class TcpService {
             const customServers = this.tcpCustomServerGateway.getServers();
             for (const server of customServers) {
                 serverList.push({
-                    createAt: util_1.DateUtil.formatDateKST(server.createAt),
+                    createAt: util_1.DateUtil.formatDateTimeKST(server.createAt),
                     port: server.port,
                     clients: server.clients.size,
                 });
@@ -21079,7 +21558,7 @@ let TcpCustomServerGateway = class TcpCustomServerGateway {
                     this.servers.push(server);
                     resolve({
                         port: server.port,
-                        createAt: util_1.DateUtil.formatDateKST(server.createAt),
+                        createAt: util_1.DateUtil.formatDateTimeKST(server.createAt),
                     });
                 });
                 server.server.on('error', (err) => {
@@ -21236,7 +21715,7 @@ let TcpGateway = class TcpGateway {
         this.logger = this.saveLogService.get('gateway-tcp');
     }
     getCreateAt() {
-        return util_1.DateUtil.formatDateKST(this.createAt);
+        return util_1.DateUtil.formatDateTimeKST(this.createAt);
     }
     getClientsSize() {
         return this.clients.size;
@@ -23360,6 +23839,82 @@ exports.CobotConnectionSchema.set('timestamps', true);
 /***/ ((module) => {
 
 module.exports = require("body-parser");
+
+/***/ }),
+/* 215 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 216 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DetectModel = void 0;
+const rpc_code_exception_1 = __webpack_require__(53);
+const constant_1 = __webpack_require__(54);
+const control_type_1 = __webpack_require__(12);
+const control_domain_1 = __webpack_require__(170);
+class DetectModel {
+    constructor(param) {
+        this.status = control_domain_1.ControlStatus.pending;
+        this.command = param?.command;
+        this.cameraNumber = param?.cameraNumber;
+        this.cameraSerial = param?.cameraSerial;
+        this.size = param?.size;
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    statusChange(status) {
+        if (!this.id) {
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
+        }
+        const moveStatus = this.parseStatus(status);
+        this.status = moveStatus;
+    }
+    parseStatus(value) {
+        if (Object.values(control_domain_1.ControlStatus).includes(value)) {
+            return value;
+        }
+        return control_domain_1.ControlStatus.unknown;
+    }
+    async checkResult(result, message) {
+        this.statusChange(result);
+        this.message = message;
+        this.result = result;
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
+        }
+    }
+    checkVariables() {
+        switch (this.command) {
+            case control_type_1.DetectCommand.aruco: {
+                let no_camera_number = false;
+                if (this.cameraNumber === undefined || this.cameraNumber < 0) {
+                    no_camera_number = true;
+                }
+                if (this.cameraSerial === undefined || this.cameraSerial === '') {
+                    if (no_camera_number) {
+                        throw new rpc_code_exception_1.RpcCodeException('cameraNumber 또는 cameraSerial 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+                    }
+                }
+                if (this.size === undefined || this.size <= 0) {
+                    throw new rpc_code_exception_1.RpcCodeException('size 값이 없거나 0보다 작습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            default: {
+                throw new rpc_code_exception_1.RpcCodeException(`지원하지 않는 command 값입니다. (${this.command})`, constant_1.GrpcCode.InvalidArgument);
+                break;
+            }
+        }
+    }
+}
+exports.DetectModel = DetectModel;
+
 
 /***/ })
 /******/ 	]);

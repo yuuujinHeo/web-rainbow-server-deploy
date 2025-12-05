@@ -312,6 +312,7 @@ function ControlGrpcServiceControllerMethods() {
             "safetyIoControl",
             "setObsBox",
             "getObsBox",
+            "detect",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -1616,7 +1617,7 @@ const customFormat = winston_1.format.printf(({ timestamp, level, message }) => 
         const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
         let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
         logtext = formatLogMessage(logtext);
-        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
+        return `${levelColor(`[${levelText}] ${pid}  -`)} ${util_1.DateUtil.formatDateTimeKST(new Date(timestamp))}    ${levelColor(`LOG`)} ${chalk_1.default.yellow(`[${category}]`)} ${levelColor(`${logtext}`)}`;
     }
     return '';
 });
@@ -1628,7 +1629,7 @@ const fileFormat = winston_1.format.printf(({ timestamp, level, message }) => {
         const categoryMatch = message.match(/\[(?!['"])[A-Za-z0-9 _-]+\]/);
         const category = categoryMatch ? categoryMatch[0].slice(1, -1) : '';
         let logtext = categoryMatch ? message.replace(categoryMatch[0], '').trim() : message;
-        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
+        return `[${levelText}] ${pid}  - ${util_1.DateUtil.formatDateTimeKST(new Date(timestamp))}   LOG [${category}] ${logtext}`;
     }
 });
 let SaveLogService = class SaveLogService {
@@ -1748,6 +1749,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
 const date_fns_1 = __webpack_require__(55);
 class DateUtil {
+    static nowKST() {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        });
+        const parts = formatter.formatToParts(now);
+        const get = (type) => parts.find((p) => p.type === type)?.value;
+        return new Date(Number(get('year')), Number(get('month')) - 1, Number(get('day')), Number(get('hour')), Number(get('minute')), Number(get('second')));
+    }
     static toDatetimeString(date) {
         return (0, date_fns_1.format)(date, 'yyyy-MM-dd HH:mm:ss');
     }
@@ -1769,6 +1786,21 @@ class DateUtil {
             `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`);
     }
     static formatDateKST(date) {
+        const options = {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+        const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${obj.year}-${obj.month}-${obj.day}`;
+    }
+    static formatDateTimeKST(date) {
         const options = {
             timeZone: 'Asia/Seoul',
             year: 'numeric',
@@ -2264,6 +2296,13 @@ class ParseUtil {
             return group.toUpperCase().replace('-', '').replace('_', '');
         });
     }
+    static chunkArray(arr, size) {
+        const result = [];
+        for (let i = 0; i < arr.length; i += size) {
+            result.push(arr.slice(i, i + size));
+        }
+        return result;
+    }
     static stringifyAllValues(obj) {
         for (const key in obj) {
             if (typeof obj[key] === 'object') {
@@ -2714,8 +2753,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(33);
+const schedule_1 = __webpack_require__(77);
 const path = __webpack_require__(30);
 const fs_1 = __webpack_require__(57);
+const util_1 = __webpack_require__(51);
 let CleanLogService = class CleanLogService {
     constructor() {
         this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
@@ -2728,6 +2769,18 @@ let CleanLogService = class CleanLogService {
         this.RETAIN_DAYS = retainDays;
         this.runClean = true;
     }
+    async handleCron() {
+        if (!this.runClean)
+            return;
+        this.logger?.info(`[Log] 🧹 로그 정리 시작 (root=${this.LOG_ROOT}, retain=${this.RETAIN_DAYS}d)`);
+        try {
+            await this.cleanDir(this.LOG_ROOT);
+            this.logger?.info('[Log] 🧹 로그 정리 완료');
+        }
+        catch (e) {
+            this.logger?.error('[Log] 로그 정리 중 오류 발생', e);
+        }
+    }
     async cleanDir(dir) {
         let entries;
         try {
@@ -2736,6 +2789,9 @@ let CleanLogService = class CleanLogService {
         catch {
             return;
         }
+        const now = new Date();
+        const cutoff_date = new Date(now.getTime() - this.RETAIN_DAYS * 24 * 60 * 60 * 1000);
+        const cutoff_date_string = util_1.DateUtil.formatDateKST(cutoff_date);
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);
             if (entry.isDirectory()) {
@@ -2745,14 +2801,9 @@ let CleanLogService = class CleanLogService {
             if (!entry.name.endsWith('.log') && !entry.name.endsWith('.log.gz')) {
                 continue;
             }
-            let stat;
-            try {
-                stat = await fs_1.promises.stat(fullPath);
-            }
-            catch {
-                continue;
-            }
-            if (this.isOlderThan(stat.mtime, this.RETAIN_DAYS)) {
+            const file_name = entry.name.split('.')[0];
+            if (file_name < cutoff_date_string) {
+                this.logger?.info(`[Log] 파일 비교: ${file_name} < ${cutoff_date_string}`);
                 this.logger?.info(`[Log] 🗑 delete: ${fullPath}`);
                 try {
                     await fs_1.promises.unlink(fullPath);
@@ -2771,11 +2822,23 @@ let CleanLogService = class CleanLogService {
     }
 };
 exports.CleanLogService = CleanLogService;
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CleanLogService.prototype, "handleCron", null);
 exports.CleanLogService = CleanLogService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
 ], CleanLogService);
 
+
+/***/ }),
+/* 77 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
 
 /***/ })
 /******/ 	]);

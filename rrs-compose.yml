@@ -16,6 +16,7 @@ services:
     network_mode: host
     privileged: true
     volumes:
+      - /data/log:/data/log
       - ./dist/apps/gateway:/usr/src/app/dist/apps/gateway
       - ./libs:/usr/src/app/libs
       - ./log:/log

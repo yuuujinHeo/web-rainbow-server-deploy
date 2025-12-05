@@ -1,6 +1,34 @@
 import { format } from 'date-fns';
 
 export class DateUtil {
+  static nowKST(): Date {
+    const now = new Date();
+
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+
+    // "2025-12-01, 13:22:11" 이런 형식으로 분해
+    const parts = formatter.formatToParts(now);
+
+    const get = (type: string) => parts.find((p) => p.type === type)?.value;
+
+    return new Date(
+      Number(get('year')),
+      Number(get('month')) - 1, // JS는 0월=1월
+      Number(get('day')),
+      Number(get('hour')),
+      Number(get('minute')),
+      Number(get('second')),
+    );
+  }
   static toDatetimeString(date: Date): string {
     return format(date, 'yyyy-MM-dd HH:mm:ss');
   }
@@ -31,6 +59,24 @@ export class DateUtil {
   }
 
   static formatDateKST(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    };
+
+    const parts = new Intl.DateTimeFormat('ko-KR', options).formatToParts(date);
+    const obj = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+
+    return `${obj.year}-${obj.month}-${obj.day}`;
+  }
+
+  static formatDateTimeKST(date: Date): string {
     const options: Intl.DateTimeFormatOptions = {
       timeZone: 'Asia/Seoul',
       year: 'numeric',

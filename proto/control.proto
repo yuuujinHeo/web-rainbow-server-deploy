@@ -13,6 +13,7 @@ service ControlGrpcService {
     rpc SafetyIoControl(SafetyIoControlRequest) returns (SafetyIoControlResponse);
     rpc SetObsBox(SetObsBoxRequest) returns (SetObsBoxResponse);
     rpc GetObsBox(Empty) returns (GetObsBoxResponse);
+    rpc Detect(DetectRequest) returns (DetectResponse);
 }
 
 message Empty {
@@ -121,4 +122,22 @@ message GetObsBoxResponse {
     optional double mapRange = 7;
     string result = 8;
     optional string message = 9;
+}
+
+message DetectRequest {
+    string command = 1;
+    optional int32 cameraNumber = 2;
+    optional string cameraSerial = 3;
+    optional double size = 4;
+}
+
+message DetectResponse {
+    string command = 1;
+    optional int32 cameraNumber = 2;
+    optional string cameraSerial = 3;
+    optional double size = 4;
+    repeated double pose = 5;
+    repeated double tf = 6;
+    string result = 7;
+    optional string message = 8;
 }
