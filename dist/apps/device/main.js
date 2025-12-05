@@ -955,15 +955,15 @@ const common_1 = __webpack_require__(32);
 const control_mongo_adapter_1 = __webpack_require__(33);
 const control_grpc_controller_1 = __webpack_require__(60);
 const mongoose_1 = __webpack_require__(34);
-const control_socket_io_adapter_1 = __webpack_require__(67);
+const control_socket_io_adapter_1 = __webpack_require__(68);
 const microservices_1 = __webpack_require__(2);
-const control_mqtt_controller_1 = __webpack_require__(77);
+const control_mqtt_controller_1 = __webpack_require__(78);
 const control_entity_1 = __webpack_require__(36);
 const control_service_1 = __webpack_require__(61);
 const config_1 = __webpack_require__(59);
-const constant_1 = __webpack_require__(68);
-const control_pending_service_1 = __webpack_require__(75);
-const log_module_1 = __webpack_require__(82);
+const constant_1 = __webpack_require__(69);
+const control_pending_service_1 = __webpack_require__(76);
+const log_module_1 = __webpack_require__(83);
 let ControlModule = class ControlModule {
 };
 exports.ControlModule = ControlModule;
@@ -2275,7 +2275,7 @@ const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
 const control_ex_accessory_output_port_1 = __webpack_require__(66);
 const saveLog_service_1 = __webpack_require__(40);
-const detect_domain_1 = __webpack_require__(116);
+const detect_domain_1 = __webpack_require__(67);
 let ControlService = class ControlService {
     constructor(databaseOutput, slamnavOutput, exAccessoryOutput, saveLogService) {
         this.databaseOutput = databaseOutput;
@@ -2821,6 +2821,7 @@ class ControlModel {
         switch (this.command) {
             case control_type_1.ControlCommand.dockStart:
             case control_type_1.ControlCommand.undockStart:
+            case control_type_1.ControlCommand.chargeTrigger:
             case control_type_1.ControlCommand.randomSeq: {
                 break;
             }
@@ -2928,6 +2929,7 @@ var ControlCommand;
 (function (ControlCommand) {
     ControlCommand["dockStart"] = "dock";
     ControlCommand["undockStart"] = "undock";
+    ControlCommand["chargeTrigger"] = "chargeTrigger";
     ControlCommand["randomSeq"] = "randomSeq";
     ControlCommand["ledControl"] = "ledControl";
     ControlCommand["lidarOnOff"] = "lidarOnOff";
@@ -2977,6 +2979,67 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 /* 67 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DetectModel = void 0;
+const rpc_code_exception_1 = __webpack_require__(37);
+const constant_1 = __webpack_require__(38);
+const control_type_1 = __webpack_require__(65);
+const control_domain_1 = __webpack_require__(64);
+class DetectModel {
+    constructor(param) {
+        this.status = control_domain_1.ControlStatus.pending;
+        this.command = param?.command;
+        this.cameraNumber = param?.cameraNumber;
+        this.cameraSerial = param?.cameraSerial;
+        this.size = param?.size;
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    statusChange(status) {
+        if (!this.id) {
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
+        }
+        const moveStatus = this.parseStatus(status);
+        this.status = moveStatus;
+    }
+    parseStatus(value) {
+        if (Object.values(control_domain_1.ControlStatus).includes(value)) {
+            return value;
+        }
+        return control_domain_1.ControlStatus.unknown;
+    }
+    async checkResult(result, message) {
+        this.statusChange(result);
+        this.message = message;
+        this.result = result;
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
+        }
+    }
+    checkVariables() {
+        switch (this.command) {
+            case control_type_1.DetectCommand.aruco: {
+                if (this.size === undefined || this.size <= 0) {
+                    throw new rpc_code_exception_1.RpcCodeException('size 값이 없거나 0보다 작습니다.', constant_1.GrpcCode.InvalidArgument);
+                }
+                break;
+            }
+            default: {
+                throw new rpc_code_exception_1.RpcCodeException(`지원하지 않는 command 값입니다. (${this.command})`, constant_1.GrpcCode.InvalidArgument);
+                break;
+            }
+        }
+    }
+}
+exports.DetectModel = DetectModel;
+
+
+/***/ }),
+/* 68 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2997,8 +3060,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlSocketIoAdapter = void 0;
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(68);
-const control_pending_service_1 = __webpack_require__(75);
+const constant_1 = __webpack_require__(69);
+const control_pending_service_1 = __webpack_require__(76);
 const util_1 = __webpack_require__(43);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_2 = __webpack_require__(38);
@@ -3116,7 +3179,7 @@ exports.ControlSocketIoAdapter = ControlSocketIoAdapter = __decorate([
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3136,14 +3199,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.message = exports.environment = void 0;
-__exportStar(__webpack_require__(69), exports);
 __exportStar(__webpack_require__(70), exports);
-exports.environment = __webpack_require__(71);
-exports.message = __webpack_require__(73);
+__exportStar(__webpack_require__(71), exports);
+exports.environment = __webpack_require__(72);
+exports.message = __webpack_require__(74);
 
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3174,7 +3237,7 @@ exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3182,7 +3245,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3201,11 +3264,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(72), exports);
+__exportStar(__webpack_require__(73), exports);
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3229,7 +3292,7 @@ exports.SYSTEM = {
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3248,11 +3311,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(74), exports);
+__exportStar(__webpack_require__(75), exports);
 
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3311,7 +3374,7 @@ exports.SUCCESS_MESSAGES = {
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3323,7 +3386,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlPendingService = void 0;
-const pending_util_1 = __webpack_require__(76);
+const pending_util_1 = __webpack_require__(77);
 const common_1 = __webpack_require__(32);
 let ControlPendingService = class ControlPendingService extends pending_util_1.PendingResponseUtil {
 };
@@ -3334,7 +3397,7 @@ exports.ControlPendingService = ControlPendingService = __decorate([
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3359,7 +3422,7 @@ exports.PendingResponseUtil = PendingResponseUtil = __decorate([
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3384,8 +3447,8 @@ const control_service_1 = __webpack_require__(61);
 const common_2 = __webpack_require__(3);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
-const control_dto_1 = __webpack_require__(78);
-const control_pending_service_1 = __webpack_require__(75);
+const control_dto_1 = __webpack_require__(79);
+const control_pending_service_1 = __webpack_require__(76);
 const saveLog_service_1 = __webpack_require__(40);
 let ControlMqttController = class ControlMqttController {
     constructor(controlService, pendingService, saveLogService) {
@@ -3480,7 +3543,7 @@ exports.ControlMqttController = ControlMqttController = __decorate([
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3496,9 +3559,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
-const swagger_1 = __webpack_require__(79);
-const class_transformer_1 = __webpack_require__(80);
-const class_validator_1 = __webpack_require__(81);
+const swagger_1 = __webpack_require__(80);
+const class_transformer_1 = __webpack_require__(81);
+const class_validator_1 = __webpack_require__(82);
 const control_type_1 = __webpack_require__(65);
 const util_1 = __webpack_require__(43);
 var Description;
@@ -4194,25 +4257,25 @@ exports.SafetyFieldResponseDto = SafetyFieldResponseDto;
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/swagger");
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ ((module) => {
 
 module.exports = require("class-transformer");
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ ((module) => {
 
 module.exports = require("class-validator");
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4226,7 +4289,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogModule = void 0;
 const common_1 = __webpack_require__(32);
 const saveLog_service_1 = __webpack_require__(40);
-const cleanLog_service_1 = __webpack_require__(83);
+const cleanLog_service_1 = __webpack_require__(84);
 let LogModule = class LogModule {
 };
 exports.LogModule = LogModule;
@@ -4241,7 +4304,7 @@ exports.LogModule = LogModule = __decorate([
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4257,7 +4320,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(32);
-const schedule_1 = __webpack_require__(115);
+const schedule_1 = __webpack_require__(85);
 const path = __webpack_require__(30);
 const fs_1 = __webpack_require__(49);
 const util_1 = __webpack_require__(43);
@@ -4339,7 +4402,13 @@ exports.CleanLogService = CleanLogService = __decorate([
 
 
 /***/ }),
-/* 84 */
+/* 85 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 86 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4353,17 +4422,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationModule = void 0;
 const common_1 = __webpack_require__(32);
 const mongoose_1 = __webpack_require__(34);
-const localization_entity_1 = __webpack_require__(85);
-const localization_grpc_controller_1 = __webpack_require__(86);
-const localization_service_1 = __webpack_require__(87);
-const localization_mongo_adapter_1 = __webpack_require__(92);
-const localization_socketio_adapter_1 = __webpack_require__(93);
+const localization_entity_1 = __webpack_require__(87);
+const localization_grpc_controller_1 = __webpack_require__(88);
+const localization_service_1 = __webpack_require__(89);
+const localization_mongo_adapter_1 = __webpack_require__(94);
+const localization_socketio_adapter_1 = __webpack_require__(95);
 const microservices_1 = __webpack_require__(2);
-const localization_mqtt_controller_1 = __webpack_require__(95);
+const localization_mqtt_controller_1 = __webpack_require__(97);
 const config_1 = __webpack_require__(59);
-const constant_1 = __webpack_require__(68);
-const localization_pending_service_1 = __webpack_require__(94);
-const log_module_1 = __webpack_require__(82);
+const constant_1 = __webpack_require__(69);
+const localization_pending_service_1 = __webpack_require__(96);
+const log_module_1 = __webpack_require__(83);
 let LocalizationModule = class LocalizationModule {
 };
 exports.LocalizationModule = LocalizationModule;
@@ -4418,7 +4487,7 @@ exports.LocalizationModule = LocalizationModule = __decorate([
 
 
 /***/ }),
-/* 85 */
+/* 87 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4489,7 +4558,7 @@ exports.LocalizationSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 86 */
+/* 88 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4506,7 +4575,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationGrpcInputController = void 0;
 const common_1 = __webpack_require__(3);
-const localization_service_1 = __webpack_require__(87);
+const localization_service_1 = __webpack_require__(89);
 const common_2 = __webpack_require__(32);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
@@ -4544,7 +4613,7 @@ exports.LocalizationGrpcInputController = LocalizationGrpcInputController = __de
 
 
 /***/ }),
-/* 87 */
+/* 89 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4564,11 +4633,11 @@ var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationService = void 0;
 const common_1 = __webpack_require__(32);
-const localization_database_output_port_1 = __webpack_require__(88);
-const localization_slamnav_output_port_1 = __webpack_require__(89);
+const localization_database_output_port_1 = __webpack_require__(90);
+const localization_slamnav_output_port_1 = __webpack_require__(91);
 const common_2 = __webpack_require__(3);
-const localization_domain_1 = __webpack_require__(90);
-const constant_1 = __webpack_require__(68);
+const localization_domain_1 = __webpack_require__(92);
+const constant_1 = __webpack_require__(69);
 const microservices_1 = __webpack_require__(2);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_2 = __webpack_require__(38);
@@ -4651,23 +4720,23 @@ exports.LocalizationService = LocalizationService = __decorate([
 
 
 /***/ }),
-/* 88 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 89 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
 /* 90 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 91 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 92 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -4675,7 +4744,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationModel = exports.LocalizationStatus = void 0;
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
-const localization_type_1 = __webpack_require__(91);
+const localization_type_1 = __webpack_require__(93);
 const util_1 = __webpack_require__(43);
 const uuid_1 = __webpack_require__(45);
 var LocalizationStatus;
@@ -4739,7 +4808,7 @@ exports.LocalizationModel = LocalizationModel;
 
 
 /***/ }),
-/* 91 */
+/* 93 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -4757,7 +4826,7 @@ var LocalizationCommand;
 
 
 /***/ }),
-/* 92 */
+/* 94 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4778,7 +4847,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationMongoAdapter = void 0;
 const mongoose_1 = __webpack_require__(34);
 const mongoose_2 = __webpack_require__(35);
-const localization_entity_1 = __webpack_require__(85);
+const localization_entity_1 = __webpack_require__(87);
 const saveLog_service_1 = __webpack_require__(40);
 const util_1 = __webpack_require__(43);
 const rpc_code_exception_1 = __webpack_require__(37);
@@ -4844,7 +4913,7 @@ exports.LocalizationMongoAdapter = LocalizationMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 93 */
+/* 95 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4865,8 +4934,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationSocketIOAdapter = void 0;
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(68);
-const localization_pending_service_1 = __webpack_require__(94);
+const constant_1 = __webpack_require__(69);
+const localization_pending_service_1 = __webpack_require__(96);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_2 = __webpack_require__(38);
 const saveLog_service_1 = __webpack_require__(40);
@@ -4922,7 +4991,7 @@ exports.LocalizationSocketIOAdapter = LocalizationSocketIOAdapter = __decorate([
 
 
 /***/ }),
-/* 94 */
+/* 96 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4934,7 +5003,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationPendingResponseService = void 0;
-const pending_util_1 = __webpack_require__(76);
+const pending_util_1 = __webpack_require__(77);
 const common_1 = __webpack_require__(32);
 let LocalizationPendingResponseService = class LocalizationPendingResponseService extends pending_util_1.PendingResponseUtil {
 };
@@ -4945,7 +5014,7 @@ exports.LocalizationPendingResponseService = LocalizationPendingResponseService 
 
 
 /***/ }),
-/* 95 */
+/* 97 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4966,12 +5035,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationMqttInputController = void 0;
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(2);
-const localization_service_1 = __webpack_require__(87);
-const localization_pending_service_1 = __webpack_require__(94);
+const localization_service_1 = __webpack_require__(89);
+const localization_pending_service_1 = __webpack_require__(96);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
 const common_2 = __webpack_require__(3);
-const localization_dto_1 = __webpack_require__(96);
+const localization_dto_1 = __webpack_require__(98);
 const saveLog_service_1 = __webpack_require__(40);
 let LocalizationMqttInputController = class LocalizationMqttInputController {
     constructor(localizationService, pendingService, saveLogService) {
@@ -5037,7 +5106,7 @@ exports.LocalizationMqttInputController = LocalizationMqttInputController = __de
 
 
 /***/ }),
-/* 96 */
+/* 98 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5052,12 +5121,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationResponseFrs = exports.LocalizationResponseSlamnav = exports.LocalizationResponseDto = exports.LocalizationRequestSlamnav = exports.LocalizationRequestDto = void 0;
-const class_validator_1 = __webpack_require__(81);
-const class_transformer_1 = __webpack_require__(80);
-const swagger_1 = __webpack_require__(79);
-const localization_type_1 = __webpack_require__(91);
+const class_validator_1 = __webpack_require__(82);
+const class_transformer_1 = __webpack_require__(81);
+const swagger_1 = __webpack_require__(80);
+const localization_type_1 = __webpack_require__(93);
 const util_1 = __webpack_require__(43);
-const description_1 = __webpack_require__(97);
+const description_1 = __webpack_require__(99);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uC704\uCE58\uCD08\uAE30\uD654 \uBA85\uB839";
@@ -5226,7 +5295,7 @@ __decorate([
 
 
 /***/ }),
-/* 97 */
+/* 99 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5241,7 +5310,7 @@ var FrsDescription;
 
 
 /***/ }),
-/* 98 */
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5254,20 +5323,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveModule = void 0;
 const common_1 = __webpack_require__(32);
-const move_service_1 = __webpack_require__(99);
-const move_mongo_adapter_1 = __webpack_require__(104);
-const move_grpc_controller_1 = __webpack_require__(106);
+const move_service_1 = __webpack_require__(101);
+const move_mongo_adapter_1 = __webpack_require__(106);
+const move_grpc_controller_1 = __webpack_require__(108);
 const mongoose_1 = __webpack_require__(34);
-const move_entity_1 = __webpack_require__(105);
-const move_socketio_adapter_1 = __webpack_require__(107);
+const move_entity_1 = __webpack_require__(107);
+const move_socketio_adapter_1 = __webpack_require__(109);
 const microservices_1 = __webpack_require__(2);
-const move_mqtt_controller_1 = __webpack_require__(109);
+const move_mqtt_controller_1 = __webpack_require__(111);
 const config_1 = __webpack_require__(59);
-const constant_1 = __webpack_require__(68);
-const move_pending_service_1 = __webpack_require__(108);
+const constant_1 = __webpack_require__(69);
+const move_pending_service_1 = __webpack_require__(110);
 const common_2 = __webpack_require__(3);
 const path_1 = __webpack_require__(30);
-const log_module_1 = __webpack_require__(82);
+const log_module_1 = __webpack_require__(83);
 let MoveModule = class MoveModule {
 };
 exports.MoveModule = MoveModule;
@@ -5334,7 +5403,7 @@ exports.MoveModule = MoveModule = __decorate([
 
 
 /***/ }),
-/* 99 */
+/* 101 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5354,12 +5423,12 @@ var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveService = void 0;
 const microservices_1 = __webpack_require__(2);
-const move_domain_1 = __webpack_require__(100);
+const move_domain_1 = __webpack_require__(102);
 const common_1 = __webpack_require__(32);
-const move_database_output_port_1 = __webpack_require__(102);
-const move_slamnav_output_port_1 = __webpack_require__(103);
+const move_database_output_port_1 = __webpack_require__(104);
+const move_slamnav_output_port_1 = __webpack_require__(105);
 const rxjs_1 = __webpack_require__(27);
-const move_type_1 = __webpack_require__(101);
+const move_type_1 = __webpack_require__(103);
 const constant_1 = __webpack_require__(38);
 const rpc_code_exception_1 = __webpack_require__(37);
 const saveLog_service_1 = __webpack_require__(40);
@@ -5522,7 +5591,7 @@ exports.MoveService = MoveService = __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 102 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -5530,7 +5599,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveModel = exports.MoveMethod = exports.MoveStatus = void 0;
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
-const move_type_1 = __webpack_require__(101);
+const move_type_1 = __webpack_require__(103);
 const util_1 = __webpack_require__(43);
 var MoveStatus;
 (function (MoveStatus) {
@@ -5673,7 +5742,7 @@ exports.MoveModel = MoveModel;
 
 
 /***/ }),
-/* 101 */
+/* 103 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -5694,23 +5763,23 @@ var MoveCommand;
 
 
 /***/ }),
-/* 102 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 103 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
 /* 104 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 105 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5731,7 +5800,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveMongoAdapter = void 0;
 const mongoose_1 = __webpack_require__(34);
 const mongoose_2 = __webpack_require__(35);
-const move_entity_1 = __webpack_require__(105);
+const move_entity_1 = __webpack_require__(107);
 const parse_util_1 = __webpack_require__(55);
 const util_1 = __webpack_require__(43);
 const rpc_code_exception_1 = __webpack_require__(37);
@@ -5931,7 +6000,7 @@ exports.MoveMongoAdapter = MoveMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 105 */
+/* 107 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6043,7 +6112,7 @@ exports.MoveSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 106 */
+/* 108 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6060,9 +6129,9 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveGrpcInputController = void 0;
 const common_1 = __webpack_require__(3);
-const move_service_1 = __webpack_require__(99);
+const move_service_1 = __webpack_require__(101);
 const common_2 = __webpack_require__(32);
-const move_type_1 = __webpack_require__(101);
+const move_type_1 = __webpack_require__(103);
 let MoveGrpcInputController = class MoveGrpcInputController {
     constructor(moveService) {
         this.moveService = moveService;
@@ -6110,7 +6179,7 @@ exports.MoveGrpcInputController = MoveGrpcInputController = __decorate([
 
 
 /***/ }),
-/* 107 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6131,8 +6200,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveSocketIOAdapter = void 0;
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(68);
-const move_pending_service_1 = __webpack_require__(108);
+const constant_1 = __webpack_require__(69);
+const move_pending_service_1 = __webpack_require__(110);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_2 = __webpack_require__(38);
 const saveLog_service_1 = __webpack_require__(40);
@@ -6193,7 +6262,7 @@ exports.MoveSocketIOAdapter = MoveSocketIOAdapter = __decorate([
 
 
 /***/ }),
-/* 108 */
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6205,7 +6274,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MovePendingResponseService = void 0;
-const pending_util_1 = __webpack_require__(76);
+const pending_util_1 = __webpack_require__(77);
 const common_1 = __webpack_require__(32);
 let MovePendingResponseService = class MovePendingResponseService extends pending_util_1.PendingResponseUtil {
 };
@@ -6216,7 +6285,7 @@ exports.MovePendingResponseService = MovePendingResponseService = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6237,12 +6306,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveMqttInputController = void 0;
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(2);
-const move_service_1 = __webpack_require__(99);
-const move_pending_service_1 = __webpack_require__(108);
+const move_service_1 = __webpack_require__(101);
+const move_pending_service_1 = __webpack_require__(110);
 const rpc_code_exception_1 = __webpack_require__(37);
 const constant_1 = __webpack_require__(38);
 const common_2 = __webpack_require__(3);
-const move_dto_1 = __webpack_require__(110);
+const move_dto_1 = __webpack_require__(112);
 const saveLog_service_1 = __webpack_require__(40);
 let MoveMqttInputController = class MoveMqttInputController {
     constructor(moveService, pendingService, saveLogService) {
@@ -6330,7 +6399,7 @@ exports.MoveMqttInputController = MoveMqttInputController = __decorate([
 
 
 /***/ }),
-/* 110 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6345,13 +6414,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveLinearRequestDto = exports.MoveLogLastResponseDto = exports.MoveLogLastRequestDto = exports.MoveLogResponseDto = exports.MoveLogRequestDto = exports.MoveResponseFrs = exports.MoveResponseSlamnav = exports.MoveRequestSlamnav = exports.MoveResponseDto = exports.MoveTargetCommandDto = exports.MoveGoalCommandDto = exports.MoveRequestDto = void 0;
-const class_validator_1 = __webpack_require__(81);
-const class_transformer_1 = __webpack_require__(80);
-const swagger_1 = __webpack_require__(79);
-const move_type_1 = __webpack_require__(101);
+const class_validator_1 = __webpack_require__(82);
+const class_transformer_1 = __webpack_require__(81);
+const swagger_1 = __webpack_require__(80);
+const move_type_1 = __webpack_require__(103);
 const util_1 = __webpack_require__(43);
-const search_request_1 = __webpack_require__(111);
-const pagination_1 = __webpack_require__(113);
+const search_request_1 = __webpack_require__(113);
+const pagination_1 = __webpack_require__(115);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uC774\uB3D9 \uBA85\uB839";
@@ -6776,7 +6845,7 @@ __decorate([
 
 
 /***/ }),
-/* 111 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6791,10 +6860,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SearchRequestDto = void 0;
-const swagger_1 = __webpack_require__(79);
-const pagination_request_1 = __webpack_require__(112);
-const class_validator_1 = __webpack_require__(81);
-const class_transformer_1 = __webpack_require__(80);
+const swagger_1 = __webpack_require__(80);
+const pagination_request_1 = __webpack_require__(114);
+const class_validator_1 = __webpack_require__(82);
+const class_transformer_1 = __webpack_require__(81);
 class SearchRequestDto extends pagination_request_1.PaginationRequest {
 }
 exports.SearchRequestDto = SearchRequestDto;
@@ -6868,7 +6937,7 @@ __decorate([
 
 
 /***/ }),
-/* 112 */
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6885,8 +6954,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationRequest = void 0;
 exports.getPaginationOffset = getPaginationOffset;
 exports.getPaginationLimit = getPaginationLimit;
-const class_validator_1 = __webpack_require__(81);
-const swagger_1 = __webpack_require__(79);
+const class_validator_1 = __webpack_require__(82);
+const swagger_1 = __webpack_require__(80);
 class PaginationRequest {
     getOffset() {
         if (this.pageNo === null || this.pageNo === undefined || this.pageNo < 1) {
@@ -6941,7 +7010,7 @@ function getPaginationLimit(pageSize) {
 
 
 /***/ }),
-/* 113 */
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6960,12 +7029,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(112), exports);
 __exportStar(__webpack_require__(114), exports);
+__exportStar(__webpack_require__(116), exports);
 
 
 /***/ }),
-/* 114 */
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6980,7 +7049,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaginationResponse = void 0;
-const swagger_1 = __webpack_require__(79);
+const swagger_1 = __webpack_require__(80);
 class PaginationResponse {
     constructor(list, pageSize, totalCount) {
         this.pageSize = pageSize;
@@ -7025,82 +7094,6 @@ __decorate([
 ], PaginationResponse.prototype, "list", void 0);
 
 
-/***/ }),
-/* 115 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/schedule");
-
-/***/ }),
-/* 116 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DetectModel = void 0;
-const rpc_code_exception_1 = __webpack_require__(37);
-const constant_1 = __webpack_require__(38);
-const control_type_1 = __webpack_require__(65);
-const control_domain_1 = __webpack_require__(64);
-class DetectModel {
-    constructor(param) {
-        this.status = control_domain_1.ControlStatus.pending;
-        this.command = param?.command;
-        this.cameraNumber = param?.cameraNumber;
-        this.cameraSerial = param?.cameraSerial;
-        this.size = param?.size;
-    }
-    assignId(id) {
-        this.id = id;
-    }
-    statusChange(status) {
-        if (!this.id) {
-            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.InvalidArgument);
-        }
-        const moveStatus = this.parseStatus(status);
-        this.status = moveStatus;
-    }
-    parseStatus(value) {
-        if (Object.values(control_domain_1.ControlStatus).includes(value)) {
-            return value;
-        }
-        return control_domain_1.ControlStatus.unknown;
-    }
-    async checkResult(result, message) {
-        this.statusChange(result);
-        this.message = message;
-        this.result = result;
-        if (result === 'reject' || result === 'fail') {
-            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
-        }
-    }
-    checkVariables() {
-        switch (this.command) {
-            case control_type_1.DetectCommand.aruco: {
-                let no_camera_number = false;
-                if (this.cameraNumber === undefined || this.cameraNumber < 0) {
-                    no_camera_number = true;
-                }
-                if (this.cameraSerial === undefined || this.cameraSerial === '') {
-                    if (no_camera_number) {
-                        throw new rpc_code_exception_1.RpcCodeException('cameraNumber 또는 cameraSerial 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
-                    }
-                }
-                if (this.size === undefined || this.size <= 0) {
-                    throw new rpc_code_exception_1.RpcCodeException('size 값이 없거나 0보다 작습니다.', constant_1.GrpcCode.InvalidArgument);
-                }
-                break;
-            }
-            default: {
-                throw new rpc_code_exception_1.RpcCodeException(`지원하지 않는 command 값입니다. (${this.command})`, constant_1.GrpcCode.InvalidArgument);
-                break;
-            }
-        }
-    }
-}
-exports.DetectModel = DetectModel;
-
-
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -7140,10 +7133,10 @@ const microservices_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(30);
 const control_module_1 = __webpack_require__(31);
-const localization_module_1 = __webpack_require__(84);
+const localization_module_1 = __webpack_require__(86);
 const config_1 = __webpack_require__(59);
-const move_module_1 = __webpack_require__(98);
-const constant_1 = __webpack_require__(68);
+const move_module_1 = __webpack_require__(100);
+const constant_1 = __webpack_require__(69);
 async function bootstrap() {
     const controlModule = await core_1.NestFactory.create(control_module_1.ControlModule);
     const config = controlModule.get(config_1.ConfigService);

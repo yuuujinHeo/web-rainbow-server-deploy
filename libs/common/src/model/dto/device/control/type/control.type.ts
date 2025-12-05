@@ -1,6 +1,7 @@
 export enum ControlCommand {
   dockStart = 'dock',
   undockStart = 'undock',
+  chargeTrigger = 'chargeTrigger',
   randomSeq = 'randomSeq',
   ledControl = 'ledControl',
   lidarOnOff = 'lidarOnOff',

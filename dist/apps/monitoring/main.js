@@ -3616,6 +3616,7 @@ var ControlCommand;
 (function (ControlCommand) {
     ControlCommand["dockStart"] = "dock";
     ControlCommand["undockStart"] = "undock";
+    ControlCommand["chargeTrigger"] = "chargeTrigger";
     ControlCommand["randomSeq"] = "randomSeq";
     ControlCommand["ledControl"] = "ledControl";
     ControlCommand["lidarOnOff"] = "lidarOnOff";
@@ -3701,7 +3702,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(3);
-const schedule_1 = __webpack_require__(89);
+const schedule_1 = __webpack_require__(70);
 const path = __webpack_require__(45);
 const fs_1 = __webpack_require__(44);
 const util_1 = __webpack_require__(38);
@@ -3784,6 +3785,12 @@ exports.CleanLogService = CleanLogService = __decorate([
 
 /***/ }),
 /* 70 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/schedule");
+
+/***/ }),
+/* 71 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3796,15 +3803,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemlogModule = void 0;
 const config_1 = __webpack_require__(58);
-const sem_log_service_1 = __webpack_require__(71);
+const sem_log_service_1 = __webpack_require__(72);
 const common_1 = __webpack_require__(3);
-const sem_log_alarm_log_dto_1 = __webpack_require__(73);
-const typeorm_1 = __webpack_require__(75);
-const sem_log_alarm_dto_1 = __webpack_require__(76);
-const pg_1 = __webpack_require__(77);
-const sem_log_mqtt_controller_1 = __webpack_require__(78);
-const sem_log_grpc_controller_1 = __webpack_require__(79);
-const sem_log_postgres_adapter_1 = __webpack_require__(80);
+const sem_log_alarm_log_dto_1 = __webpack_require__(74);
+const typeorm_1 = __webpack_require__(76);
+const sem_log_alarm_dto_1 = __webpack_require__(77);
+const pg_1 = __webpack_require__(78);
+const sem_log_mqtt_controller_1 = __webpack_require__(79);
+const sem_log_grpc_controller_1 = __webpack_require__(80);
+const sem_log_postgres_adapter_1 = __webpack_require__(81);
 const log_module_1 = __webpack_require__(68);
 let SemlogModule = class SemlogModule {
 };
@@ -3871,7 +3878,7 @@ async function ensureSemlogDatabase() {
 
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3892,7 +3899,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogService = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_database_output_port_1 = __webpack_require__(72);
+const sem_log_database_output_port_1 = __webpack_require__(73);
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
 const date_util_1 = __webpack_require__(41);
@@ -4155,7 +4162,7 @@ exports.SemLogService = SemLogService = __decorate([
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -4163,7 +4170,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4179,7 +4186,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmLog = void 0;
-const typeorm_1 = __webpack_require__(74);
+const typeorm_1 = __webpack_require__(75);
 let SemLogAlarmLog = class SemLogAlarmLog {
 };
 exports.SemLogAlarmLog = SemLogAlarmLog;
@@ -4217,19 +4224,19 @@ exports.SemLogAlarmLog = SemLogAlarmLog = __decorate([
 
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4244,7 +4251,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogAlarmList = void 0;
-const typeorm_1 = __webpack_require__(74);
+const typeorm_1 = __webpack_require__(75);
 let SemLogAlarmList = class SemLogAlarmList {
 };
 exports.SemLogAlarmList = SemLogAlarmList;
@@ -4270,13 +4277,13 @@ exports.SemLogAlarmList = SemLogAlarmList = __decorate([
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ ((module) => {
 
 module.exports = require("pg");
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4293,7 +4300,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogMqttInputController = void 0;
 const common_1 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(71);
+const sem_log_service_1 = __webpack_require__(72);
 const microservices_1 = __webpack_require__(10);
 let SemLogMqttInputController = class SemLogMqttInputController {
     constructor(semlogService) {
@@ -4322,7 +4329,7 @@ exports.SemLogMqttInputController = SemLogMqttInputController = __decorate([
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4340,7 +4347,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogGrpcController = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const sem_log_service_1 = __webpack_require__(71);
+const sem_log_service_1 = __webpack_require__(72);
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
 let SemLogGrpcController = class SemLogGrpcController {
@@ -4400,7 +4407,7 @@ exports.SemLogGrpcController = SemLogGrpcController = __decorate([
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4419,14 +4426,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemLogPostgresAdapter = void 0;
-const typeorm_1 = __webpack_require__(75);
-const sem_log_alarm_dto_1 = __webpack_require__(76);
-const sem_log_alarm_log_dto_1 = __webpack_require__(73);
-const typeorm_2 = __webpack_require__(74);
+const typeorm_1 = __webpack_require__(76);
+const sem_log_alarm_dto_1 = __webpack_require__(77);
+const sem_log_alarm_log_dto_1 = __webpack_require__(74);
+const typeorm_2 = __webpack_require__(75);
 const util_1 = __webpack_require__(38);
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
-const pagination_1 = __webpack_require__(81);
+const pagination_1 = __webpack_require__(82);
 const saveLog_service_1 = __webpack_require__(35);
 const common_1 = __webpack_require__(3);
 let SemLogPostgresAdapter = class SemLogPostgresAdapter {
@@ -5045,7 +5052,7 @@ exports.SemLogPostgresAdapter = SemLogPostgresAdapter = __decorate([
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5064,12 +5071,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(82), exports);
 __exportStar(__webpack_require__(83), exports);
+__exportStar(__webpack_require__(84), exports);
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5142,7 +5149,7 @@ function getPaginationLimit(pageSize) {
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5203,7 +5210,7 @@ __decorate([
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5218,9 +5225,9 @@ exports.ServiceLogModule = void 0;
 const config_1 = __webpack_require__(58);
 const common_1 = __webpack_require__(3);
 const log_module_1 = __webpack_require__(68);
-const servicelog_file_adapter_1 = __webpack_require__(85);
-const servicelog_grpc_controller_1 = __webpack_require__(86);
-const servicelog_service_1 = __webpack_require__(87);
+const servicelog_file_adapter_1 = __webpack_require__(86);
+const servicelog_grpc_controller_1 = __webpack_require__(87);
+const servicelog_service_1 = __webpack_require__(88);
 let ServiceLogModule = class ServiceLogModule {
 };
 exports.ServiceLogModule = ServiceLogModule;
@@ -5247,7 +5254,7 @@ exports.ServiceLogModule = ServiceLogModule = __decorate([
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -5288,7 +5295,7 @@ exports.ServiceLogFileAdapter = ServiceLogFileAdapter;
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5306,7 +5313,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ServiceLogGrpcController = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
-const servicelog_service_1 = __webpack_require__(87);
+const servicelog_service_1 = __webpack_require__(88);
 let ServiceLogGrpcController = class ServiceLogGrpcController {
     constructor(serviceLogService) {
         this.serviceLogService = serviceLogService;
@@ -5326,7 +5333,7 @@ exports.ServiceLogGrpcController = ServiceLogGrpcController = __decorate([
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5350,7 +5357,7 @@ const common_2 = __webpack_require__(3);
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
 const saveLog_service_1 = __webpack_require__(35);
-const servicelog_output_port_1 = __webpack_require__(88);
+const servicelog_output_port_1 = __webpack_require__(89);
 let ServiceLogService = class ServiceLogService {
     constructor(logOutputPort, saveLogService) {
         this.logOutputPort = logOutputPort;
@@ -5382,18 +5389,12 @@ exports.ServiceLogService = ServiceLogService = __decorate([
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-
-/***/ }),
-/* 89 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/schedule");
 
 /***/ })
 /******/ 	]);
@@ -5433,10 +5434,10 @@ const core_1 = __webpack_require__(1);
 const tsdb_module_1 = __webpack_require__(2);
 const config_1 = __webpack_require__(58);
 const microservices_1 = __webpack_require__(10);
-const semlog_module_1 = __webpack_require__(70);
+const semlog_module_1 = __webpack_require__(71);
 const path_1 = __webpack_require__(45);
 const proto_1 = __webpack_require__(8);
-const servicelog_module_1 = __webpack_require__(84);
+const servicelog_module_1 = __webpack_require__(85);
 async function bootstrap() {
     const tsdbModule = await core_1.NestFactory.create(tsdb_module_1.TsdbModule);
     const config = tsdbModule.get(config_1.ConfigService);
