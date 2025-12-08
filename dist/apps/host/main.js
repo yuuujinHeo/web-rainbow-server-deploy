@@ -8053,9 +8053,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
     }
     async getWifi() {
         try {
-            if (this.curWifi.length == 0) {
-                await this.nmcliConnectionShow();
-            }
+            await this.nmcliConnectionShow();
             const wifi_detail = await this.getCurrentWifi();
             for (let i = 0; i < wifi_detail.length; i++) {
                 if (this.curWifi.length > 0) {
@@ -8299,6 +8297,11 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
                 }
             });
             if (ActiveWifi) {
+                if (this.curWifi.length > 0) {
+                    if (this.curWifi[0].name === ActiveWifi) {
+                        return;
+                    }
+                }
                 this.curWifi = [];
                 this.curWifi.push(await this.getConnectionInfo(ActiveWifi));
             }
