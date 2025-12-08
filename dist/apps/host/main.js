@@ -8090,7 +8090,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
     }
     async getDevice(model) {
         try {
-            const data = (0, child_process_1.execSync)('nmcli device show ' + model.device).toString();
+            const data = (0, child_process_1.execSync)('sudo nmcli device show ' + model.device).toString();
             const json = await this.parseNMCLI(data);
             if (json.type == 'wifi') {
                 const wifi_detail = await this.getCurrentWifi();
@@ -8114,7 +8114,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         try {
             let cmd;
             if (model.dhcp) {
-                cmd = `nmcli con modify '${model.name}' ipv4.method auto`;
+                cmd = `sudo nmcli con modify '${model.name}' ipv4.method auto`;
                 this.logger?.info(`[Network] SET Network DHCP : ${model.name}`);
             }
             else {
@@ -8124,7 +8124,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
                 }
                 dns_str += '"';
                 cmd =
-                    "nmcli con modify '" +
+                    "sudo nmcli con modify '" +
                         model.name +
                         "' ipv4.addresses " +
                         model.address +
@@ -8138,7 +8138,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
                 this.logger?.info(`[Network] SET Network Manual : ${model.name} -> ${cmd}, ${JSON.stringify(model)}`);
             }
             (0, child_process_1.execSync)(cmd);
-            (0, child_process_1.execSync)(`nmcli con up ${model.name}`);
+            (0, child_process_1.execSync)(`sudo nmcli con up ${model.name}`);
             return {
                 device: model.device,
                 name: model.name,
@@ -8158,10 +8158,10 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         try {
             let cmd_line;
             if (model.password == undefined || model.password == '') {
-                cmd_line = 'nmcli dev wifi connect "' + model.ssid + '"';
+                cmd_line = 'sudo nmcli dev wifi connect "' + model.ssid + '"';
             }
             else {
-                cmd_line = 'nmcli dev wifi connect "' + model.ssid + '" password "' + model.password + '"';
+                cmd_line = 'sudo nmcli dev wifi connect "' + model.ssid + '" password "' + model.password + '"';
             }
             this.logger?.info(`[Network] Connect Wifi : ${cmd_line}, ${JSON.stringify(model)}`);
             try {
@@ -8256,7 +8256,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
     }
     async nmcliDeviceShow() {
         try {
-            const data = (0, child_process_1.execSync)('nmcli device show').toString();
+            const data = (0, child_process_1.execSync)('sudo nmcli device show').toString();
             this.curEthernet = [];
             this.curWifi = [];
             this.curBluetooth = [];
@@ -8281,7 +8281,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
     }
     async nmcliConnectionShow() {
         try {
-            const result = (0, child_process_1.execSync)('nmcli connection show --active').toString();
+            const result = (0, child_process_1.execSync)('sudo nmcli connection show --active').toString();
             let ActiveWifi = null;
             let ActiveEthernet = null;
             let ActiveBluetooth = null;
@@ -8317,7 +8317,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
         }
     }
     async getConnectionInfo(name) {
-        const data = (0, child_process_1.execSync)(`nmcli connection show '${name}'`).toString();
+        const data = (0, child_process_1.execSync)(`sudo nmcli connection show '${name}'`).toString();
         const info = {
             name: name,
             type: '',
