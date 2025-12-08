@@ -3175,7 +3175,7 @@ exports.message = __webpack_require__(72);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.TEST_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
 exports.AUTH_SERVICE = 'AUTH_SERVICE';
 exports.USER_SERVICE = 'USER_SERVICE';
 exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
@@ -3190,6 +3190,7 @@ exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
 exports.MOVE_SERVICE = 'MOVE_SERVICE';
 exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
 exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
+exports.TEST_SERVICE = 'TEST_SERVICE';
 exports.MAP_SERVICE = 'MAP_SERVICE';
 exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
 exports.SOUND_SERVICE = 'SOUND_SERVICE';
@@ -8163,7 +8164,12 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
                 cmd_line = 'nmcli dev wifi connect "' + model.ssid + '" password "' + model.password + '"';
             }
             this.logger?.info(`[Network] Connect Wifi : ${cmd_line}, ${JSON.stringify(model)}`);
-            (0, child_process_1.execSync)('nmcli dev wifi rescan');
+            try {
+                (0, child_process_1.execSync)('sudo nmcli dev wifi rescan');
+            }
+            catch (error) {
+                this.logger?.warn(`[Network] Connect Wifi: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            }
             await new Promise((resolve) => setTimeout(resolve, 2000));
             const data = (0, child_process_1.execSync)(cmd_line);
             this.logger?.info(`[Network] Connect Wifi Response: ${data}`);
@@ -8197,7 +8203,7 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
     }
     async wifiScan() {
         try {
-            (0, child_process_1.execSync)('nmcli dev wifi rescan');
+            (0, child_process_1.execSync)('sudo nmcli dev wifi rescan');
             await new Promise((resolve) => setTimeout(resolve, 2000));
             return this.getWifiList();
         }
