@@ -17,3 +17,4 @@ export * as CobotMicroservice from './cobot/cobot';
 export * as LogMicroservice from './log/log';
 export * as UpdateMicroservice from './update/update';
 export * as TcpMicroservice from './tcp/tcp';
+export * as TestMicroservice from './test/test';

@@ -1,7 +1,6 @@
 import { DateUtil } from '@app/common/util/date.util';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
-import { ChargeState, LocalizationState, MapState } from './state.type';
 import { Type } from 'class-transformer';
 
 export class CamStatusDto {

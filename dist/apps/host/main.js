@@ -73,7 +73,7 @@ __exportStar(__webpack_require__(6), exports);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
+exports.TestMicroservice = exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
 exports.UserMicroservice = __webpack_require__(7);
 exports.AuthMicroservice = __webpack_require__(8);
 exports.AmrMicroservice = __webpack_require__(9);
@@ -93,6 +93,7 @@ exports.CobotMicroservice = __webpack_require__(22);
 exports.LogMicroservice = __webpack_require__(23);
 exports.UpdateMicroservice = __webpack_require__(24);
 exports.TcpMicroservice = __webpack_require__(25);
+exports.TestMicroservice = __webpack_require__(156);
 
 
 /***/ }),
@@ -10494,6 +10495,870 @@ module.exports = require("body-parser");
 
 module.exports = require("express-xml-bodyparser");
 
+/***/ }),
+/* 156 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TEST_GRPC_SERVICE_NAME = exports.TEST_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.TestGrpcServiceControllerMethods = TestGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "test";
+exports.TEST_PACKAGE_NAME = "test";
+function TestGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getTestRecordAll",
+            "getTestRecord",
+            "getTestResultRecent",
+            "getTestResultbySubject",
+            "checkTestRunning",
+            "startTest",
+            "stopTest",
+            "createTestRecord",
+            "updateTestRecord",
+            "updateTestResult",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.TEST_GRPC_SERVICE_NAME = "TestGrpcService";
+
+
+/***/ }),
+/* 157 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestModule = void 0;
+const common_1 = __webpack_require__(33);
+const test_service_1 = __webpack_require__(158);
+const log_module_1 = __webpack_require__(87);
+const config_1 = __webpack_require__(2);
+const mongoose_1 = __webpack_require__(90);
+const test_entity_1 = __webpack_require__(162);
+const test_mongo_adapter_1 = __webpack_require__(163);
+const test_grpc_controller_1 = __webpack_require__(164);
+let TestModule = class TestModule {
+};
+exports.TestModule = TestModule;
+exports.TestModule = TestModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            log_module_1.LogModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            mongoose_1.MongooseModule.forFeature([
+                {
+                    name: test_entity_1.TestRecord.name,
+                    schema: test_entity_1.TestRecordSchema,
+                },
+                {
+                    name: test_entity_1.TestResult.name,
+                    schema: test_entity_1.TestResultSchema,
+                },
+            ]),
+            mongoose_1.MongooseModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: (configService) => ({
+                    uri: configService.get('MONGO_URL'),
+                }),
+            }),
+        ],
+        controllers: [test_grpc_controller_1.TestGrpcInputController],
+        providers: [
+            test_service_1.TestService,
+            {
+                provide: 'TestDatabaseOutputPort',
+                useClass: test_mongo_adapter_1.TestMongoAdapter,
+            },
+        ],
+        exports: [test_service_1.TestService],
+    })
+], TestModule);
+
+
+/***/ }),
+/* 158 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestService = void 0;
+const common_1 = __webpack_require__(33);
+const common_2 = __webpack_require__(33);
+const microservices_1 = __webpack_require__(3);
+const saveLog_service_1 = __webpack_require__(35);
+const test_database_output_port_1 = __webpack_require__(159);
+const common_3 = __webpack_require__(4);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const test_record_domain_1 = __webpack_require__(160);
+const test_domain_1 = __webpack_require__(161);
+let TestService = class TestService {
+    constructor(database, saveLogService) {
+        this.database = database;
+        this.saveLogService = saveLogService;
+        this.runningTestInfo = null;
+        this.logger = this.saveLogService.get('host');
+    }
+    onModuleInit() {
+    }
+    recordToResponse(record) {
+        return {
+            id: record.id.toString(),
+            tester: record.tester,
+            tests: record.tests.map((test) => ({
+                id: test.id.toString(),
+                testRecordId: test.testRecordId?.toString(),
+                subject: test.subject,
+                result: test.result,
+                testAt: test.testAt?.toISOString(),
+            })),
+            createdAt: record.createdAt?.toISOString(),
+            updatedAt: record.updatedAt?.toISOString(),
+        };
+    }
+    resultToResponse(result) {
+        return {
+            id: result.id.toString(),
+            testRecordId: result.testRecordId?.toString(),
+            subject: result.subject,
+            result: result.result,
+            testAt: result.testAt?.toISOString(),
+        };
+    }
+    async getTestRecordAll(dto) {
+        try {
+            return await this.database.getRecordAll(dto);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] getTestRecordAll : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getTestRecord(dto) {
+        try {
+            const resp = await this.database.getRecordbyId(dto.id);
+            if (resp === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            console.log('resp : ', resp);
+            return this.recordToResponse(resp);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] getTestRecord : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getTestRecordRecent() {
+        try {
+            const resp = await this.database.getRecordRecent();
+            if (resp === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            return this.recordToResponse(resp);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] getTestRecordRecent : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async createTestRecord(dto) {
+        try {
+            if (dto.tester === undefined || dto.tester === null || dto.tester === '') {
+                throw new rpc_code_exception_1.RpcCodeException('tester를 입력해주세요.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const model = new test_record_domain_1.RecordModel({ tester: dto.tester });
+            const resp = await this.database.saveRecord(model);
+            model.assignId(resp.id.toString());
+            if (dto.subjects === undefined || dto.subjects === null || dto.subjects.length === 0) {
+                return {
+                    id: resp.id.toString(),
+                    tester: dto.tester,
+                    tests: [],
+                    createdAt: resp.createdAt?.toISOString(),
+                    updatedAt: resp.updatedAt?.toISOString(),
+                };
+            }
+            for (const subject of dto.subjects) {
+                const testModel = new test_domain_1.TestModel({ testRecordId: model.id, subject: subject });
+                const resp = await this.database.saveSubjects(testModel);
+                testModel.assignId(resp.id.toString());
+                model.addTest({
+                    id: resp.id.toString(),
+                    testRecordId: resp.testRecordId?.toString(),
+                    subject: resp.subject,
+                    result: resp.result,
+                    testAt: resp.testAt,
+                });
+            }
+            const finalResp = await this.database.updateRecord(model);
+            console.log('finalResp : ', finalResp);
+            return this.recordToResponse(finalResp);
+        }
+        catch (error) {
+            console.error('error : ', error);
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] insertTestRecord : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 추가할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async updateTestRecord(dto) {
+        try {
+            if (dto.id === undefined || dto.id === null || dto.id === '') {
+                throw new rpc_code_exception_1.RpcCodeException('id를 입력해주세요.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const record = await this.database.getRecordbyId(dto.id);
+            if (record === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            console.log('record : ', record);
+            const data = { ...record.toObject(), ...dto };
+            console.log('data : ', data);
+            const model = new test_record_domain_1.RecordModel(data);
+            model.assignId(record.id.toString());
+            const resp = await this.database.updateRecord(model);
+            return this.recordToResponse(resp);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] updateTestRecord : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 업데이트할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getTestResultbySubject(dto) {
+        try {
+            if (dto.subject === undefined || dto.subject === null || dto.subject === '') {
+                throw new rpc_code_exception_1.RpcCodeException('subject를 입력해주세요.', constant_1.GrpcCode.InvalidArgument);
+            }
+            return await this.database.getResultbySubject(dto);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] getTestResultbySubject : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 결과를 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getTestResultRecent(dto) {
+        try {
+            const record = await this.database.getRecordRecent();
+            if (record === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            if (record.tests.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException('해당 기록에 저장된 결과를 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            if (dto.subjects === undefined || dto.subjects === null || dto.subjects.length === 0) {
+                return {
+                    items: record.tests.map((test) => ({
+                        id: test.id.toString(),
+                        testRecordId: test.testRecordId?.toString(),
+                        subject: test.subject,
+                        result: test.result,
+                        testAt: test.testAt?.toISOString(),
+                    })),
+                };
+            }
+            const resp = record.tests
+                .filter((test) => dto.subjects.includes(test.subject))
+                .map((test) => ({
+                id: test.id.toString(),
+                testRecordId: test.testRecordId?.toString(),
+                subject: test.subject,
+                result: test.result,
+                testAt: test.testAt?.toISOString(),
+            }));
+            return {
+                items: resp,
+            };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] getTestResultRecent : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 결과를 조회할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async updateTestResult(dto) {
+        try {
+            if (dto.testRecordId === undefined || dto.testRecordId === null || dto.testRecordId === '') {
+                throw new rpc_code_exception_1.RpcCodeException('testRecordId를 입력해주세요.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (dto.subject === undefined || dto.subject === null || dto.subject === '') {
+                throw new rpc_code_exception_1.RpcCodeException('subject를 입력해주세요.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (dto.result === undefined || dto.result === null || dto.result === '') {
+                throw new rpc_code_exception_1.RpcCodeException('result를 입력해주세요.', constant_1.GrpcCode.InvalidArgument);
+            }
+            const record = await this.database.getRecordbyId(dto.testRecordId);
+            if (record === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            const recordModel = new test_record_domain_1.RecordModel(record.toObject());
+            recordModel.assignId(record.id.toString());
+            if (record.tests.some((test) => test.subject === dto.subject)) {
+                recordModel.tests.find((test) => test.subject === dto.subject).result = dto.result;
+            }
+            else {
+                const testModel = new test_domain_1.TestModel({ testRecordId: record.id, subject: dto.subject });
+                testModel.setResult(dto.result);
+                const resp = await this.database.saveSubjects(testModel);
+                testModel.assignId(resp.id.toString());
+                recordModel.addTest({
+                    id: resp.id.toString(),
+                    testRecordId: resp.testRecordId?.toString(),
+                    subject: resp.subject,
+                    result: resp.result,
+                    testAt: resp.testAt,
+                });
+            }
+            console.log('recordModel : ', recordModel);
+            const finalResp = await this.database.updateRecord(recordModel);
+            return this.resultToResponse(finalResp.tests.filter((test) => test.subject === dto.subject)[0]);
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] updateTestResult : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 결과를 업데이트할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    observeTestRunning() {
+        if (this.runningTestInfo) {
+            if (this.runningTestInfo.testEndTimestamp < Date.now()) {
+                this.stopTest({ sessionId: this.runningTestInfo.testSessionId });
+            }
+            else {
+                setTimeout(() => {
+                    this.observeTestRunning();
+                }, 1000);
+            }
+        }
+    }
+    async checkTestRunning(dto) {
+        try {
+            if (this.runningTestInfo === null) {
+                return {
+                    isRunning: false,
+                };
+            }
+            if (this.runningTestInfo.testSessionId === dto.sessionId) {
+                return {
+                    isRunning: false,
+                };
+            }
+            else {
+                return { ...this.runningTestInfo, isRunning: true };
+            }
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] checkTestRunning : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 실행 중인지 확인할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async startTest(dto) {
+        try {
+            const { isRunning, testRecordId } = await this.checkTestRunning(dto);
+            if (isRunning) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트가 이미 실행중입니다.', constant_1.GrpcCode.AlreadyExists);
+            }
+            this.runningTestInfo = {
+                tester: dto.tester,
+                testRecordId: dto.testRecordId,
+                testSessionId: dto.sessionId,
+                testEndTimestamp: Date.now() + 1000 * 60 * 5,
+            };
+            this.observeTestRunning();
+            return this.runningTestInfo;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] startTest : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트 시작 정보를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async stopTest(dto) {
+        try {
+            const { isRunning, testRecordId } = await this.checkTestRunning(dto);
+            if (!isRunning) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트가 실행중이 아닙니다.', constant_1.GrpcCode.NotFound);
+            }
+            this.runningTestInfo = null;
+            return {
+                testRecordId: testRecordId,
+            };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Test] stopTest : ${(0, common_3.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('테스트를 중지할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+};
+exports.TestService = TestService;
+exports.TestService = TestService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_2.Inject)('TestDatabaseOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof test_database_output_port_1.TestDatabaseOutputPort !== "undefined" && test_database_output_port_1.TestDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], TestService);
+
+
+/***/ }),
+/* 159 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 160 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RecordModel = void 0;
+const util_1 = __webpack_require__(38);
+class RecordModel {
+    constructor(param) {
+        this.id = util_1.UrlUtil.generateUUID();
+        this.tester = param.tester;
+        console.log('param.tests : ', param.tests);
+        this.tests = param.tests ?? [];
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    addTest(test) {
+        if (this.tests.some((t) => t.id === test.id)) {
+            this.tests.find((t) => t.id === test.id).result = test.result;
+        }
+        else {
+            this.tests.push(test);
+        }
+    }
+}
+exports.RecordModel = RecordModel;
+
+
+/***/ }),
+/* 161 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestModel = void 0;
+const util_1 = __webpack_require__(38);
+class TestModel {
+    constructor(param) {
+        this.id = util_1.UrlUtil.generateUUID();
+        this.testRecordId = param.testRecordId;
+        this.subject = param.subject;
+        this.result = '';
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    setResult(result) {
+        this.result = result;
+    }
+}
+exports.TestModel = TestModel;
+
+
+/***/ }),
+/* 162 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestRecordSchema = exports.TestRecord = exports.TestResultSchema = exports.TestResult = void 0;
+const mongoose_1 = __webpack_require__(90);
+let TestResult = class TestResult {
+};
+exports.TestResult = TestResult;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "testRecordId", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true, maxlength: 128 }),
+    __metadata("design:type", String)
+], TestResult.prototype, "subject", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        type: String,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "result", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TestResult.prototype, "testAt", void 0);
+exports.TestResult = TestResult = __decorate([
+    (0, mongoose_1.Schema)({
+        collection: 'test',
+    })
+], TestResult);
+exports.TestResultSchema = mongoose_1.SchemaFactory.createForClass(TestResult);
+let TestRecord = class TestRecord {
+};
+exports.TestRecord = TestRecord;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestRecord.prototype, "id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+        maxlength: 128,
+    }),
+    __metadata("design:type", String)
+], TestRecord.prototype, "tester", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: [exports.TestResultSchema], defulat: [] }),
+    __metadata("design:type", Array)
+], TestRecord.prototype, "tests", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TestRecord.prototype, "createdAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], TestRecord.prototype, "updatedAt", void 0);
+exports.TestRecord = TestRecord = __decorate([
+    (0, mongoose_1.Schema)({
+        collection: 'test_record',
+    })
+], TestRecord);
+exports.TestRecordSchema = mongoose_1.SchemaFactory.createForClass(TestRecord);
+
+
+/***/ }),
+/* 163 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestMongoAdapter = void 0;
+const mongoose_1 = __webpack_require__(90);
+const mongoose_2 = __webpack_require__(92);
+const parse_util_1 = __webpack_require__(53);
+const test_entity_1 = __webpack_require__(162);
+const test_entity_2 = __webpack_require__(162);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(35);
+const common_1 = __webpack_require__(33);
+const config_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(3);
+let TestMongoAdapter = class TestMongoAdapter {
+    constructor(saveLogService, recordRepository, resultRepository, configService) {
+        this.saveLogService = saveLogService;
+        this.recordRepository = recordRepository;
+        this.resultRepository = resultRepository;
+        this.configService = configService;
+        this.logger = this.saveLogService.get('host');
+    }
+    async getRecordAll(dto) {
+        try {
+            const query = {};
+            const { pageNo = 1, pageSize = 10, searchText, searchType, sortOption = 'createdAt', sortDirection = 'desc', dateFrom, dateTo } = dto;
+            console.log('dto', dto);
+            this.logger?.debug(`[Test] getRecordAll request: ${JSON.stringify(dto)}`);
+            if (searchText && searchText.trim() !== '') {
+                if (searchType && searchType !== '') {
+                    switch (searchType) {
+                        case 'tester':
+                            query.tester = { $regex: searchText, $options: 'i' };
+                            break;
+                    }
+                }
+                else {
+                    query.tester = { $regex: searchText, $options: 'i' };
+                }
+            }
+            const sortDirectionValue = sortDirection === 'asc' ? 1 : -1;
+            const sortQuery = {};
+            sortQuery[sortOption] = sortDirectionValue;
+            const skip = (pageNo - 1) * pageSize;
+            console.log('query', query);
+            const totalCount = await this.recordRepository.countDocuments(query);
+            const data = await this.recordRepository.find(query).populate('tests').sort(sortQuery).skip(skip).limit(pageSize);
+            console.log('data', data);
+            const totalPage = Math.ceil(totalCount / pageSize);
+            return {
+                list: data.map((item) => ({
+                    id: item.id.toString(),
+                    tester: item.tester,
+                    tests: item.tests?.map((test) => ({
+                        id: test.id.toString(),
+                        testRecordId: test.testRecordId?.toString(),
+                        subject: test.subject,
+                        result: test.result,
+                        testAt: test.testAt?.toISOString(),
+                    })),
+                    createdAt: item.createdAt.toISOString(),
+                    updatedAt: item.updatedAt.toISOString(),
+                })),
+                pageSize,
+                totalCount,
+                totalPage,
+            };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException) {
+                throw error;
+            }
+            this.logger?.error(`[Test] DB getRecordAll: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+    async getRecordbyId(id) {
+        try {
+            if ((await this.recordRepository.findOne({ id })) === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 결과를 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            return await this.recordRepository.findOne({ id });
+        }
+        catch (error) {
+            this.logger?.error(`[Test] DB getRecordbyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+    async getRecordRecent() {
+        try {
+            if ((await this.recordRepository.findOne().sort({ createdAt: -1 })) === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 기록을 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            return await this.recordRepository.findOne().sort({ createdAt: -1 });
+        }
+        catch (error) {
+            this.logger?.error(`[Test] DB getRecordRecent: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+    async getResultbyId(id) {
+        try {
+            if ((await this.resultRepository.findOne({ id })) === null) {
+                throw new rpc_code_exception_1.RpcCodeException('테스트 결과를 찾을 수 없습니다.', constant_1.GrpcCode.NotFound);
+            }
+            return await this.resultRepository.findOne({ id });
+        }
+        catch (error) {
+            this.logger?.error(`[Test] DB getResultbyId: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+    async getResultbySubject(dto) {
+        try {
+            const query = {};
+            query.subject = dto.subject;
+            const data = await this.resultRepository.find(query);
+            return {
+                items: data.map((item) => ({
+                    id: item.id?.toString(),
+                    testRecordId: item.testRecordId?.toString(),
+                    subject: item.subject,
+                    result: item.result,
+                    testAt: item.testAt?.toISOString(),
+                })),
+            };
+        }
+        catch (error) {
+            this.logger?.error(`[Test] DB getResultbySubject: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 가져올 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+    async saveRecord(model) {
+        return await this.recordRepository.create(model);
+    }
+    async saveSubjects(model) {
+        return await this.resultRepository.create(model);
+    }
+    async updateRecord(record) {
+        console.log('record : ', record);
+        await this.recordRepository
+            .findOneAndUpdate({ id: record.id }, { ...record, updatedAt: new Date() }, {
+            upsert: true,
+        })
+            .exec();
+        return await this.recordRepository.findOne({ id: record.id }).lean();
+    }
+    async updateTestResult(result) {
+        try {
+            await this.resultRepository
+                .findOneAndUpdate({ id: result.id }, { ...result, updatedAt: new Date() }, {
+                upsert: true,
+            })
+                .exec();
+            return await this.resultRepository.findOne({ id: result.id }).lean();
+        }
+        catch (error) {
+            this.logger?.error(`[Test] DB updateTestResult: ${parse_util_1.ParseUtil.errorToJson(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('데이터를 업데이트할 수 없습니다.', constant_1.GrpcCode.DBError);
+        }
+    }
+};
+exports.TestMongoAdapter = TestMongoAdapter;
+exports.TestMongoAdapter = TestMongoAdapter = __decorate([
+    (0, common_1.Injectable)(),
+    __param(1, (0, mongoose_1.InjectModel)(test_entity_1.TestRecord.name)),
+    __param(2, (0, mongoose_1.InjectModel)(test_entity_2.TestResult.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object, typeof (_b = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _b : Object, typeof (_c = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _c : Object, typeof (_d = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _d : Object])
+], TestMongoAdapter);
+
+
+/***/ }),
+/* 164 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestGrpcInputController = void 0;
+const common_1 = __webpack_require__(4);
+const common_2 = __webpack_require__(33);
+const test_service_1 = __webpack_require__(158);
+let TestGrpcInputController = class TestGrpcInputController {
+    constructor(testService) {
+        this.testService = testService;
+    }
+    getTestRecordAll(request, metadata) {
+        return this.testService.getTestRecordAll(request);
+    }
+    getTestRecord(request, metadata) {
+        return this.testService.getTestRecord(request);
+    }
+    getTestResultRecent(request, metadata) {
+        return this.testService.getTestResultRecent(request);
+    }
+    getTestResultbySubject(request, metadata) {
+        return this.testService.getTestResultbySubject(request);
+    }
+    checkTestRunning(request, metadata) {
+        return this.testService.checkTestRunning(request);
+    }
+    startTest(request, metadata) {
+        return this.testService.startTest(request);
+    }
+    stopTest(request, metadata) {
+        return this.testService.stopTest(request);
+    }
+    createTestRecord(request, metadata) {
+        return this.testService.createTestRecord(request);
+    }
+    updateTestRecord(request, metadata) {
+        return this.testService.updateTestRecord(request);
+    }
+    updateTestResult(request, metadata) {
+        return this.testService.updateTestResult(request);
+    }
+};
+exports.TestGrpcInputController = TestGrpcInputController;
+exports.TestGrpcInputController = TestGrpcInputController = __decorate([
+    (0, common_2.Controller)(),
+    common_1.TestMicroservice.TestGrpcServiceControllerMethods(),
+    (0, common_2.UseInterceptors)(common_1.GrpcInterceptor),
+    __metadata("design:paramtypes", [typeof (_a = typeof test_service_1.TestService !== "undefined" && test_service_1.TestService) === "function" ? _a : Object])
+], TestGrpcInputController);
+
+
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -10543,6 +11408,7 @@ const bodyParser = __webpack_require__(154);
 const xmlParser = __webpack_require__(155);
 const common_2 = __webpack_require__(33);
 const constant_1 = __webpack_require__(67);
+const test_module_1 = __webpack_require__(157);
 async function bootstrap() {
     console.log('🚀 호스트 서버 시작...');
     const mapModule = await core_1.NestFactory.create(map_module_1.MapModule);
@@ -10660,6 +11526,17 @@ async function bootstrap() {
     const mqttClient = onvifModule.get(constant_1.MQTT_BROKER);
     await mqttClient.connect();
     mqttClient.emit('get:socket:connection', {});
+    const testModule = await core_1.NestFactory.create(test_module_1.TestModule);
+    testModule.connectMicroservice({
+        transport: microservices_1.Transport.GRPC,
+        options: {
+            package: common_1.TestMicroservice.protobufPackage,
+            protoPath: (0, path_1.join)(process.cwd(), 'proto/test.proto'),
+            url: config.getOrThrow('TEST_GRPC_URL'),
+        },
+    });
+    await testModule.init();
+    await testModule.startAllMicroservices();
 }
 bootstrap().catch((error) => {
     console.error('❌ 호스트 서버 시작 실패:', error);

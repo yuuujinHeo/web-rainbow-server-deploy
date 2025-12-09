@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package test;
+
+service TestGrpcService {
+    rpc GetTestRecordAll(GetTestRecordAllRequest) returns (GetTestRecordAllResponse);
+    rpc GetTestRecord(GetTestRecordRequest) returns (TestRecord);
+    rpc GetTestResultRecent(GetTestResultRecentRequest) returns (GetTestResultResponse);
+    rpc GetTestResultbySubject(GetTestResultbySubjectRequest) returns (GetTestResultResponse);
+    rpc CheckTestRunning(CheckTestRunningRequest) returns (CheckTestRunningResponse);
+    rpc StartTest(StartTestRequest) returns (StartTestResponse);
+    rpc StopTest(StopTestRequest) returns (StopTestResponse);
+    rpc CreateTestRecord(CreateTestRecordRequest) returns (TestRecord);
+    rpc UpdateTestRecord(UpdateTestRecordRequest) returns (TestRecord);
+    rpc UpdateTestResult(UpdateTestResultRequest) returns (TestResult);
+}
+
+message TestResult {
+    string id = 1;
+    string testRecordId = 2;
+    string subject = 3;
+    string result = 4;
+    string testAt = 5;
+}
+
+message TestRecord {
+    string id = 1;
+    string tester = 2;
+    repeated TestResult tests = 3;
+    string createdAt = 4;
+    string updatedAt = 5;
+}
+
+message GetTestRecordAllRequest {
+    optional int32 pageNo = 1;
+    optional int32 pageSize = 2;
+    optional string searchText = 3;
+    optional string searchType = 4;
+    optional string sortOption = 5;
+    optional string sortDirection = 6;
+    optional string dateFrom = 7;
+    optional string dateTo = 8;
+}
+
+message GetTestRecordAllResponse {
+    repeated TestRecord list = 1;
+    optional int32 pageSize = 2;
+    optional int32 totalCount = 3;
+    optional int32 totalPage = 4;
+}
+
+message GetTestRecordRequest {
+    string id = 1;
+}
+
+message GetTestResultRecentRequest {
+    repeated string subjects = 1;
+}
+
+message GetTestResultResponse {
+    repeated TestResult items = 1;
+}
+
+message GetTestResultbySubjectRequest {
+    string subject = 1;
+}
+
+message CheckTestRunningRequest {
+    string sessionId = 1;
+}
+
+message CheckTestRunningResponse {
+    bool isRunning = 1;
+    optional string testRecordId = 2;
+    optional string tester = 3;
+    optional string testSessionId = 4;
+    optional int32 testEndTimestamp = 5;
+}
+
+message StartTestRequest {
+    string testRecordId = 1;
+    string tester = 2;
+    string sessionId = 3;
+}
+
+message StartTestResponse {
+    string testRecordId = 1;
+    string tester = 2;
+    string testSessionId = 3;
+    int32 testEndTimestamp = 4;
+}
+
+message StopTestRequest {
+    string sessionId = 1;
+}
+
+message StopTestResponse {
+    optional string testRecordId = 1;
+    optional string tester = 2;
+    optional string testSessionId = 3;
+} 
+
+message CreateTestRecordRequest {
+    string sessionId = 1;
+    repeated string subjects = 2;
+    optional string tester = 3;
+}
+
+message UpdateTestRecordRequest {
+    string sessionId = 1;
+    string id = 2;
+    optional string tester = 3;
+}
+
+message UpdateTestResultRequest {
+    string sessionId = 1;
+    string testRecordId = 2;
+    string subject = 3;
+    string result = 4;
+}

@@ -54,6 +54,7 @@ const schedule_1 = __webpack_require__(76);
 const log_module_1 = __webpack_require__(74);
 const saveLog_service_1 = __webpack_require__(68);
 const cleanLog_service_1 = __webpack_require__(75);
+const test_api_module_1 = __webpack_require__(218);
 let RRSApiModule = class RRSApiModule {
     constructor(saveLogService, cleanLogService) {
         this.saveLogService = saveLogService;
@@ -80,6 +81,7 @@ exports.RRSApiModule = RRSApiModule = __decorate([
             tcp_api_module_1.TcpApiModule,
             log_api_module_1.LogApiModule,
             update_api_module_1.UpdateApiModule,
+            test_api_module_1.TestApiModule,
         ],
         controllers: [],
         providers: [],
@@ -2298,7 +2300,7 @@ __exportStar(__webpack_require__(28), exports);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
+exports.TestMicroservice = exports.TcpMicroservice = exports.UpdateMicroservice = exports.LogMicroservice = exports.CobotMicroservice = exports.SoundMicroservice = exports.SettingMicroservice = exports.TaskMicroservice = exports.OnvifMicroservice = exports.MapMicroservice = exports.NetworkMicroservice = exports.LocalizationMicroservice = exports.MoveMicroservice = exports.CodeMicroservice = exports.ControlMicroservice = exports.ConfigMicroservice = exports.RedisMicroservice = exports.AmrMicroservice = exports.AuthMicroservice = exports.UserMicroservice = void 0;
 exports.UserMicroservice = __webpack_require__(29);
 exports.AuthMicroservice = __webpack_require__(30);
 exports.AmrMicroservice = __webpack_require__(31);
@@ -2318,6 +2320,7 @@ exports.CobotMicroservice = __webpack_require__(44);
 exports.LogMicroservice = __webpack_require__(45);
 exports.UpdateMicroservice = __webpack_require__(46);
 exports.TcpMicroservice = __webpack_require__(47);
+exports.TestMicroservice = __webpack_require__(217);
 
 
 /***/ }),
@@ -23948,6 +23951,1016 @@ exports.CobotConnectionSchema.set('timestamps', true);
 /***/ ((module) => {
 
 module.exports = require("body-parser");
+
+/***/ }),
+/* 217 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TEST_GRPC_SERVICE_NAME = exports.TEST_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.TestGrpcServiceControllerMethods = TestGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "test";
+exports.TEST_PACKAGE_NAME = "test";
+function TestGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getTestRecordAll",
+            "getTestRecord",
+            "getTestResultRecent",
+            "getTestResultbySubject",
+            "checkTestRunning",
+            "startTest",
+            "stopTest",
+            "createTestRecord",
+            "updateTestRecord",
+            "updateTestResult",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.TEST_GRPC_SERVICE_NAME = "TestGrpcService";
+
+
+/***/ }),
+/* 218 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestApiModule = void 0;
+const common_1 = __webpack_require__(5);
+const test_api_service_1 = __webpack_require__(219);
+const test_api_controller_1 = __webpack_require__(220);
+const microservices_1 = __webpack_require__(3);
+const common_2 = __webpack_require__(26);
+const config_1 = __webpack_require__(73);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(61);
+const log_module_1 = __webpack_require__(74);
+let TestApiModule = class TestApiModule {
+};
+exports.TestApiModule = TestApiModule;
+exports.TestApiModule = TestApiModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            log_module_1.LogModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: constant_1.TEST_SERVICE,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.GRPC,
+                        options: {
+                            package: common_2.TestMicroservice.protobufPackage,
+                            protoPath: (0, path_1.join)(process.cwd(), 'proto/test.proto'),
+                            url: configService.get('TEST_GRPC_URL'),
+                        },
+                    }),
+                },
+            ]),
+        ],
+        controllers: [test_api_controller_1.TestApiController],
+        providers: [test_api_service_1.TestApiService],
+    })
+], TestApiModule);
+
+
+/***/ }),
+/* 219 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestApiService = void 0;
+const constant_1 = __webpack_require__(61);
+const saveLog_service_1 = __webpack_require__(68);
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const rxjs_1 = __webpack_require__(50);
+let TestApiService = class TestApiService {
+    constructor(testMicroservice, saveLogService) {
+        this.testMicroservice = testMicroservice;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
+    }
+    onModuleInit() {
+        this.testService = this.testMicroservice.getService('TestGrpcService');
+    }
+    async getTestRecordAll(param) {
+        const data = await (0, rxjs_1.lastValueFrom)(this.testService.getTestRecordAll(param));
+        return {
+            ...data,
+            list: data.list?.map((item) => ({
+                ...item,
+                createdAt: item.createdAt ? new Date(item.createdAt) : null,
+                updatedAt: item.updatedAt ? new Date(item.updatedAt) : null,
+            })),
+        };
+    }
+    async getTestRecord(id) {
+        const data = await (0, rxjs_1.lastValueFrom)(this.testService.getTestRecord({ id }));
+        return {
+            ...data,
+            createdAt: new Date(data.createdAt),
+            updatedAt: new Date(data.updatedAt),
+        };
+    }
+    async getRecentTestResult(param) {
+        return this.testService.getTestResultRecent({ subjects: param.subjects });
+    }
+    async getTestResultBySubject(param) {
+        return this.testService.getTestResultbySubject({ subject: param.subject });
+    }
+    async checkTestRunning(sessionId) {
+        return this.testService.checkTestRunning({ sessionId });
+    }
+    async startTest(param, sessionId) {
+        return this.testService.startTest({ sessionId: sessionId, testRecordId: param.testRecordId.toString(), tester: param.tester });
+    }
+    async endTest(sessionId) {
+        return this.testService.stopTest({ sessionId: sessionId });
+    }
+    async insertTestRecord(param, sessionId) {
+        return this.testService.createTestRecord({ sessionId, tester: param.tester, subjects: param.subjects });
+    }
+    async updateTestRecord(param, sessionId) {
+        return this.testService.updateTestRecord({ sessionId: sessionId, id: param.id.toString(), tester: param.tester });
+    }
+    async updateTestResult(param, sessionId) {
+        return this.testService.updateTestResult({
+            sessionId: sessionId,
+            testRecordId: param.testRecordId.toString(),
+            subject: param.subject,
+            result: param.result,
+        });
+    }
+};
+exports.TestApiService = TestApiService;
+exports.TestApiService = TestApiService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.TEST_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], TestApiService);
+
+
+/***/ }),
+/* 220 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestApiController = void 0;
+const common_1 = __webpack_require__(5);
+const swagger_1 = __webpack_require__(8);
+const test_api_service_1 = __webpack_require__(219);
+const saveLog_service_1 = __webpack_require__(68);
+const test_entity_1 = __webpack_require__(221);
+const test_dto_1 = __webpack_require__(222);
+const express_1 = __webpack_require__(111);
+let TestApiController = class TestApiController {
+    constructor(testService, saveLogService) {
+        this.testService = testService;
+        this.saveLogService = saveLogService;
+        console.log(':-->', process.env.TEST_SERVICE_URL);
+        this.logger = this.saveLogService.get('gateway-api');
+    }
+    async getTestRecordList(param) {
+        return this.testService.getTestRecordAll(param);
+    }
+    async getTestRecord(id) {
+        return this.testService.getTestRecord(id);
+    }
+    getRecentTestResult(param) {
+        return this.testService.getRecentTestResult(param);
+    }
+    getTestResultBySubject(param) {
+        return this.testService.getTestResultBySubject(param);
+    }
+    checkTestRunning(req) {
+        const sessionId = req.sessionID;
+        return this.testService.checkTestRunning(sessionId);
+    }
+    startTest(req, param) {
+        const sessionId = req.sessionID;
+        return this.testService.startTest(param, sessionId);
+    }
+    endTest(req) {
+        const sessionId = req.sessionID;
+        return this.testService.endTest(sessionId);
+    }
+    insertTestRecord(req, insertTestRecordDto) {
+        const sessionId = req.sessionID;
+        return this.testService.insertTestRecord(insertTestRecordDto, sessionId);
+    }
+    updateTestRecord(req, updateTestRecordDto) {
+        const sessionId = req.sessionID;
+        return this.testService.updateTestRecord(updateTestRecordDto, sessionId);
+    }
+    upsertTestResult(req, updateTestDataDto) {
+        const sessionId = req.sessionID;
+        return this.testService.updateTestResult(updateTestDataDto, sessionId);
+    }
+};
+exports.TestApiController = TestApiController;
+__decorate([
+    (0, common_1.Get)('record'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 결과 목록 조회',
+        description: '페이지네이션과 필터링을 지원하는 테스트 결과 목록을 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({ description: '테스트 기록 조회 성공', type: test_entity_1.TestRecord }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof test_dto_1.GetTestRecordListDto !== "undefined" && test_dto_1.GetTestRecordListDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], TestApiController.prototype, "getTestRecordList", null);
+__decorate([
+    (0, common_1.Get)('record/:id'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 레코드 조회',
+        description: '테스트 레코드를 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({ description: '테스트 기록 조회 성공', type: test_entity_1.TestRecord }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TestApiController.prototype, "getTestRecord", null);
+__decorate([
+    (0, common_1.Get)('recent'),
+    (0, swagger_1.ApiOperation)({
+        summary: '주제별 최근 테스트 결과 조회',
+        description: '지정된 주제들의 최근 테스트 결과를 조회합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '최근 테스트 결과 조회 성공',
+        type: test_dto_1.ResponseTestResultDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 파라미터',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof test_dto_1.GetRecentTestResultDto !== "undefined" && test_dto_1.GetRecentTestResultDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "getRecentTestResult", null);
+__decorate([
+    (0, common_1.Get)('subject'),
+    (0, swagger_1.ApiOperation)({
+        summary: '특정 주제 테스트 결과 조회',
+        description: '특정 주제의 모든 테스트 결과를 조회합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '주제별 테스트 결과 조회 성공',
+        type: test_dto_1.ResponseTestResultDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 파라미터',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof test_dto_1.GetTestResultBySubjectDto !== "undefined" && test_dto_1.GetTestResultBySubjectDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "getTestResultBySubject", null);
+__decorate([
+    (0, common_1.Get)('running'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 진행 여부 확인',
+        description: '테스트 진행 여부를 확인합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 진행 여부 확인 성공',
+        type: test_dto_1.CheckTestRunningDto,
+    }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _f : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "checkTestRunning", null);
+__decorate([
+    (0, common_1.Post)('start'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 시작',
+        description: '테스트를 시작합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 시작 성공',
+        type: test_dto_1.TestRunningInfoDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '이미 진행중인 테스트가 있습니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _g : Object, typeof (_h = typeof test_dto_1.StartTestDto !== "undefined" && test_dto_1.StartTestDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "startTest", null);
+__decorate([
+    (0, common_1.Post)('end'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 종료',
+        description: '테스트를 종료합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 종료 성공',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '테스트 시작 API를 통해 테스트를 시작하지 않았습니다. 테스트 시작 API를 통해 테스트를 시작하세요.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _j : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "endTest", null);
+__decorate([
+    (0, common_1.Post)('record'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 레코드 생성',
+        description: '새로운 테스트 레코드를 생성합니다.',
+    }),
+    (0, swagger_1.ApiBody)({
+        type: test_dto_1.InsertTestRecordDto,
+        description: '테스트 레코드 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 레코드 생성 성공',
+        type: test_dto_1.TestRecordDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_k = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _k : Object, typeof (_l = typeof test_dto_1.InsertTestRecordDto !== "undefined" && test_dto_1.InsertTestRecordDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "insertTestRecord", null);
+__decorate([
+    (0, common_1.Put)('record'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 레코드 수정',
+        description: '기존 테스트 레코드를 수정합니다.',
+    }),
+    (0, swagger_1.ApiBody)({
+        type: test_dto_1.UpdateTestRecordDto,
+        description: '테스트 레코드 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 레코드 수정 성공',
+        type: test_dto_1.TestRecordDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _m : Object, typeof (_o = typeof test_dto_1.UpdateTestRecordDto !== "undefined" && test_dto_1.UpdateTestRecordDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "updateTestRecord", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 결과 생성/수정',
+        description: '새로운 테스트 결과를 생성하거나 기존 결과를 수정합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: '테스트 결과 생성/수정 성공',
+        type: test_dto_1.TestResultDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_p = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _p : Object, typeof (_q = typeof test_dto_1.UpdateTestDataDto !== "undefined" && test_dto_1.UpdateTestDataDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "upsertTestResult", null);
+exports.TestApiController = TestApiController = __decorate([
+    (0, swagger_1.ApiTags)('테스트 API'),
+    (0, common_1.Controller)('test'),
+    __metadata("design:paramtypes", [typeof (_a = typeof test_api_service_1.TestApiService !== "undefined" && test_api_service_1.TestApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], TestApiController);
+
+
+/***/ }),
+/* 221 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestRecordSchema = exports.TestRecord = exports.TestResultSchema = exports.TestResult = void 0;
+const mongoose_1 = __webpack_require__(212);
+let TestResult = class TestResult {
+};
+exports.TestResult = TestResult;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "testRecordId", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true, maxlength: 128 }),
+    __metadata("design:type", String)
+], TestResult.prototype, "subject", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        type: String,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "result", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TestResult.prototype, "testAt", void 0);
+exports.TestResult = TestResult = __decorate([
+    (0, mongoose_1.Schema)({
+        collection: 'test',
+    })
+], TestResult);
+exports.TestResultSchema = mongoose_1.SchemaFactory.createForClass(TestResult);
+let TestRecord = class TestRecord {
+};
+exports.TestRecord = TestRecord;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestRecord.prototype, "id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+        maxlength: 128,
+    }),
+    __metadata("design:type", String)
+], TestRecord.prototype, "tester", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: [exports.TestResultSchema], defulat: [] }),
+    __metadata("design:type", Array)
+], TestRecord.prototype, "tests", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TestRecord.prototype, "createdAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], TestRecord.prototype, "updatedAt", void 0);
+exports.TestRecord = TestRecord = __decorate([
+    (0, mongoose_1.Schema)({
+        collection: 'test_record',
+    })
+], TestRecord);
+exports.TestRecordSchema = mongoose_1.SchemaFactory.createForClass(TestRecord);
+
+
+/***/ }),
+/* 222 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CheckTestRunningDto = exports.TestRunningInfoDto = exports.StartTestDto = exports.UpdateTestRecordDto = exports.InsertTestRecordDto = exports.ResponseTestRecordListDto = exports.ResponseTestRecordDto = exports.ResponseTestResultDto = exports.UpdateTestDataDto = exports.InsertTestDataDto = exports.GetTestRecordListDto = exports.GetRecentTestResultDto = exports.GetTestResultBySubjectDto = exports.TestRecordDto = exports.TestResultDto = void 0;
+const pagination_request_1 = __webpack_require__(103);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+class TestResultDto {
+}
+exports.TestResultDto = TestResultDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 ID',
+    }),
+    __metadata("design:type", Number)
+], TestResultDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 레코드 ID',
+    }),
+    __metadata("design:type", Number)
+], TestResultDto.prototype, "testRecordId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'DISPLAY',
+        description: '테스트 주제',
+    }),
+    __metadata("design:type", String)
+], TestResultDto.prototype, "subject", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'success',
+        description: '테스트 결과',
+        enum: ['success', 'fail'],
+        nullable: true,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], TestResultDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-07-16T07:56:52.000Z',
+        description: '테스트 수행 시간',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TestResultDto.prototype, "testAt", void 0);
+class TestRecordDto {
+}
+exports.TestRecordDto = TestRecordDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 레코드 ID',
+    }),
+    __metadata("design:type", Number)
+], TestRecordDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: [],
+        description: '테스트 결과 목록',
+        type: TestResultDto,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], TestRecordDto.prototype, "tests", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        nullable: true,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], TestRecordDto.prototype, "tester", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-07-16T07:56:52.000Z',
+        description: '테스트 레코드 생성 시간',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TestRecordDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-07-16T07:56:52.000Z',
+        description: '테스트 레코드 수정 시간',
+    }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], TestRecordDto.prototype, "updatedAt", void 0);
+class GetTestResultBySubjectDto {
+}
+exports.GetTestResultBySubjectDto = GetTestResultBySubjectDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'DISPLAY',
+        description: '테스트 주제',
+    }),
+    __metadata("design:type", String)
+], GetTestResultBySubjectDto.prototype, "subject", void 0);
+class GetRecentTestResultDto {
+}
+exports.GetRecentTestResultDto = GetRecentTestResultDto;
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (typeof value === 'string') {
+            return value.split(',').map((s) => s.trim());
+        }
+        return value;
+    }),
+    (0, swagger_1.ApiProperty)({
+        example: ['DISPLAY', 'SPEAKER'],
+        description: '테스트 주제 배열 (쉼표로 구분된 문자열도 지원)',
+        required: false,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], GetRecentTestResultDto.prototype, "subjects", void 0);
+class GetTestRecordListDto extends pagination_request_1.PaginationRequest {
+}
+exports.GetTestRecordListDto = GetTestRecordListDto;
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: '',
+        required: false,
+        description: '테스트 주제 배열',
+        enum: ['SPEAKER', 'DISPLAY'],
+    }),
+    __metadata("design:type", Array)
+], GetTestRecordListDto.prototype, "subject", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '일반LOG를 읽어올 시작 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
+        example: '2025-01-01 00:00:00',
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "dateTo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '일반LOG를 읽어올 종료 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
+        example: '2025-12-31 23:59:59',
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "dateFrom", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: '',
+        required: false,
+        description: '검색단어',
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "searchText", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'id',
+        required: false,
+        enum: ['id', 'name'],
+        description: '정렬옵션. id 또는 name 값을 기준으로 정렬합니다.',
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "sortOption", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '정렬 방향. ASC 또는 DESC를 입력해주세요.',
+        example: 'ASC',
+        required: false,
+        enum: ['ASC', 'DESC'],
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "sortDirection", void 0);
+class InsertTestDataDto {
+}
+exports.InsertTestDataDto = InsertTestDataDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'DISPLAY',
+        description: '테스트 주제',
+    }),
+    __metadata("design:type", String)
+], InsertTestDataDto.prototype, "subject", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(['success', 'fail']),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'success',
+        description: '테스트 결과',
+        enum: ['success', 'fail'],
+    }),
+    __metadata("design:type", String)
+], InsertTestDataDto.prototype, "result", void 0);
+class UpdateTestDataDto extends InsertTestDataDto {
+}
+exports.UpdateTestDataDto = UpdateTestDataDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], UpdateTestDataDto.prototype, "testRecordId", void 0);
+class ResponseTestResultDto {
+}
+exports.ResponseTestResultDto = ResponseTestResultDto;
+__decorate([
+    (0, class_validator_1.IsArray)({ each: true }),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => TestResultDto),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: [],
+        description: '테스트 결과 목록',
+        type: TestResultDto,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], ResponseTestResultDto.prototype, "items", void 0);
+class ResponseTestRecordDto {
+}
+exports.ResponseTestRecordDto = ResponseTestRecordDto;
+__decorate([
+    (0, class_validator_1.IsArray)({ each: true }),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => TestRecordDto),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: [],
+        description: '테스트 레코드 목록',
+        type: TestRecordDto,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], ResponseTestRecordDto.prototype, "items", void 0);
+class ResponseTestRecordListDto extends ResponseTestRecordDto {
+}
+exports.ResponseTestRecordListDto = ResponseTestRecordListDto;
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 10,
+        description: '페이지 크기',
+    }),
+    __metadata("design:type", Number)
+], ResponseTestRecordListDto.prototype, "pageSize", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '전체 페이지 수',
+    }),
+    __metadata("design:type", Number)
+], ResponseTestRecordListDto.prototype, "totalPage", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 100,
+        description: '전체 테스트 결과 수',
+    }),
+    __metadata("design:type", Number)
+], ResponseTestRecordListDto.prototype, "totalCount", void 0);
+class InsertTestRecordDto {
+}
+exports.InsertTestRecordDto = InsertTestRecordDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        required: false,
+        nullable: true,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], InsertTestRecordDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    (0, swagger_1.ApiProperty)({
+        example: ['DISPLAY', 'SPEAKER'],
+        description: '테스트 주제 배열',
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], InsertTestRecordDto.prototype, "subjects", void 0);
+class UpdateTestRecordDto {
+}
+exports.UpdateTestRecordDto = UpdateTestRecordDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], UpdateTestRecordDto.prototype, "id", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        nullable: true,
+        required: false,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], UpdateTestRecordDto.prototype, "tester", void 0);
+class StartTestDto {
+}
+exports.StartTestDto = StartTestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+    }),
+    __metadata("design:type", String)
+], StartTestDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], StartTestDto.prototype, "testRecordId", void 0);
+class TestRunningInfoDto {
+}
+exports.TestRunningInfoDto = TestRunningInfoDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+    }),
+    __metadata("design:type", String)
+], TestRunningInfoDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], TestRunningInfoDto.prototype, "testRecordId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'test-session-1234567890',
+        description: '테스트 세션 ID',
+    }),
+    __metadata("design:type", String)
+], TestRunningInfoDto.prototype, "testSessionId", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 종료 시간',
+    }),
+    __metadata("design:type", Number)
+], TestRunningInfoDto.prototype, "testEndTimestamp", void 0);
+class CheckTestRunningDto {
+}
+exports.CheckTestRunningDto = CheckTestRunningDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 레코드 ID',
+        required: false,
+        nullable: true,
+        default: undefined,
+    }),
+    __metadata("design:type", String)
+], CheckTestRunningDto.prototype, "testRecordId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        required: false,
+        nullable: true,
+        default: undefined,
+    }),
+    __metadata("design:type", String)
+], CheckTestRunningDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: true,
+        description: '테스트 진행 여부',
+    }),
+    __metadata("design:type", Boolean)
+], CheckTestRunningDto.prototype, "isRunning", void 0);
+
 
 /***/ })
 /******/ 	]);
