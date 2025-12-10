@@ -21862,7 +21862,6 @@ let FRSSocketClient = class FRSSocketClient {
                 robotSerial: this.robotSerial,
                 data: data,
             };
-            this.logger?.debug(`[FRS] sendFRSData : ${key}, ${JSON.stringify(sendData)}`);
             this.socket?.emit(key, JSON.stringify(sendData));
         }
         else {
