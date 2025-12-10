@@ -24,5 +24,6 @@ export const TASK_SERVICE = 'TASK_SERVICE';
 export const COBOT_SERVICE = 'COBOT_SERVICE';
 export const TCP_SERVICE = 'TCP_SERVICE';
 export const SEMLOG_SERVICE = 'SEMLOG_SERVICE';
+export const SERVICE_LOG_SERVICE = 'SERVICE_LOG_SERVICE';
 
 export const MQTT_BROKER = 'MQTT_BROKER';

@@ -5263,26 +5263,95 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ServiceLogFileAdapter = void 0;
 const rpc_code_exception_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(52);
-const path_1 = __webpack_require__(45);
-const fs_1 = __webpack_require__(44);
+const path = __webpack_require__(45);
+const fs = __webpack_require__(44);
+const util_1 = __webpack_require__(38);
 class ServiceLogFileAdapter {
     getServiceLogPath(serviceName) {
-        return path_1.default.join('data', 'log', serviceName);
+        return path.join('/data', 'log', serviceName);
     }
     async getServiceLog(request) {
         try {
-            if (!fs_1.default.existsSync(this.getServiceLogPath(request.serviceName))) {
+            console.log('request', request);
+            const logPath = this.getServiceLogPath(request.serviceName);
+            console.log('logPath', logPath);
+            if (!fs.existsSync(logPath)) {
                 throw new rpc_code_exception_1.RpcCodeException(`${request.serviceName} 서비스 로그 경로가 존재하지 않습니다.`, constant_1.GrpcCode.NotFound);
             }
+            const logdata = [];
+            const dt = new Date(request.dateFrom);
+            const dateEnd = new Date(request.dateTo);
+            while (dt <= dateEnd) {
+                const filePath = logPath + '/' + util_1.DateUtil.formatDateKST(dt) + '.log';
+                console.debug(filePath);
+                if (fs.existsSync(filePath)) {
+                    const data = fs.readFileSync(filePath, 'utf-8');
+                    const lines = data.split('\n').filter((line) => line.trim() !== '');
+                    const BATCH_SIZE = 100000;
+                    const chunks = [];
+                    for (let i = 0; i < lines.length; i += BATCH_SIZE) {
+                        chunks.push(lines.slice(i, i + BATCH_SIZE));
+                    }
+                    for (const chunk of chunks) {
+                        for (const line of chunk) {
+                            const logRegex = /^\[(\w+)]\s+(\d+)\s+-\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+LOG\s+\[(.+?)]\s+(.+)$/;
+                            const match = line.match(logRegex);
+                            if (match) {
+                                const [, level, _pid, time, category, text] = match;
+                                if (request.levels) {
+                                    if (!request.levels.includes(level))
+                                        continue;
+                                }
+                                if (request.searchType == 'category') {
+                                    if (request.searchText != '') {
+                                        if (!category || !category.includes(request.searchText)) {
+                                            continue;
+                                        }
+                                    }
+                                }
+                                else if (request.searchType == 'log') {
+                                    if (request.searchText != '') {
+                                        if (!text.includes(request.searchText)) {
+                                            continue;
+                                        }
+                                    }
+                                }
+                                else if (request.searchType == 'time') {
+                                    if (request.searchText != '') {
+                                        if (!time.includes(request.searchText)) {
+                                            continue;
+                                        }
+                                    }
+                                }
+                                logdata.push({
+                                    time,
+                                    level,
+                                    category: category ? category : '',
+                                    text,
+                                });
+                            }
+                        }
+                    }
+                }
+                dt.setDate(dt.getDate() + 1);
+            }
+            if (request.sortOption == 'recent') {
+                logdata.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+            }
+            const skip = (request.pageNo - 1) * request.pageSize;
+            const totalCount = logdata.length;
+            const totalPage = Math.ceil(totalCount / request.pageSize);
+            const logs = logdata.slice(request.pageNo * request.pageSize, request.pageSize + request.pageNo * request.pageSize);
             return {
+                list: logs,
+                pageSize: request.pageSize,
+                totalCount: totalCount,
+                totalPage: totalPage,
                 serviceName: request.serviceName,
-                list: [],
-                totalCount: 0,
-                pageSize: 0,
-                totalPage: 0,
             };
         }
         catch (error) {
+            console.error(error);
             if (error instanceof rpc_code_exception_1.RpcCodeException) {
                 throw error;
             }
@@ -5364,6 +5433,7 @@ let ServiceLogService = class ServiceLogService {
         this.logOutputPort = logOutputPort;
         this.saveLogService = saveLogService;
         this.logger = this.saveLogService.get('monitoring');
+        console.log('==================================================================================');
     }
     async getServiceLog(request) {
         try {

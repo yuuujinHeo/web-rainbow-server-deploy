@@ -3524,7 +3524,7 @@ exports.message = __webpack_require__(66);
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MQTT_BROKER = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.TEST_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.MQTT_BROKER = exports.SERVICE_LOG_SERVICE = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.TEST_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
 exports.AUTH_SERVICE = 'AUTH_SERVICE';
 exports.USER_SERVICE = 'USER_SERVICE';
 exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
@@ -3547,6 +3547,7 @@ exports.TASK_SERVICE = 'TASK_SERVICE';
 exports.COBOT_SERVICE = 'COBOT_SERVICE';
 exports.TCP_SERVICE = 'TCP_SERVICE';
 exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
+exports.SERVICE_LOG_SERVICE = 'SERVICE_LOG_SERVICE';
 exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
@@ -10782,6 +10783,7 @@ const path_1 = __webpack_require__(20);
 const config_1 = __webpack_require__(73);
 const constant_1 = __webpack_require__(61);
 const log_module_1 = __webpack_require__(74);
+const common_2 = __webpack_require__(26);
 let LogApiModule = class LogApiModule {
 };
 exports.LogApiModule = LogApiModule;
@@ -10796,9 +10798,21 @@ exports.LogApiModule = LogApiModule = __decorate([
                     useFactory: (configService) => ({
                         transport: microservices_1.Transport.GRPC,
                         options: {
-                            package: 'log',
-                            protoPath: (0, path_1.join)(process.cwd(), 'proto', 'log.proto'),
+                            package: common_2.LogMicroservice.protobufPackage,
+                            protoPath: (0, path_1.join)(process.cwd(), 'proto/log.proto'),
                             url: configService.get('LOG_URL'),
+                        },
+                    }),
+                },
+                {
+                    name: constant_1.SERVICE_LOG_SERVICE,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.GRPC,
+                        options: {
+                            package: common_2.LogMicroservice.protobufPackage,
+                            protoPath: (0, path_1.join)(process.cwd(), 'proto/log.proto'),
+                            url: configService.get('SERVICELOG_GRPC_URL'),
                         },
                     }),
                 },
@@ -10828,7 +10842,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiService = void 0;
 const constant_1 = __webpack_require__(61);
@@ -10837,14 +10851,15 @@ const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(50);
 let LogApiService = class LogApiService {
-    constructor(logMicroservice, saveLogService) {
+    constructor(logMicroservice, serviceLogMicroservice, saveLogService) {
         this.logMicroservice = logMicroservice;
+        this.serviceLogMicroservice = serviceLogMicroservice;
         this.saveLogService = saveLogService;
         this.logger = this.saveLogService.get('gateway-api');
     }
     onModuleInit() {
         this.logService = this.logMicroservice.getService('SEMLogGrpcService');
-        this.serviceLogService = this.logMicroservice.getService('ServiceLogGrpcService');
+        this.serviceLogService = this.serviceLogMicroservice.getService('ServiceLogGrpcService');
     }
     async getServiceLog(serviceName, dto) {
         console.log('gateway getServiceLog');
@@ -10891,7 +10906,8 @@ exports.LogApiService = LogApiService;
 exports.LogApiService = LogApiService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constant_1.SEMLOG_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+    __param(1, (0, common_1.Inject)(constant_1.SERVICE_LOG_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
 ], LogApiService);
 
 
