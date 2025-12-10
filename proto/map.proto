@@ -16,6 +16,7 @@ service MapGrpcService {
     rpc PublishMap(PublishMapRequest) returns (PublishMapResponse);
     rpc GetMapTileExist(GetMapTileRequest) returns (GetMapTilesExistResponse);
     rpc GetMapTile(GetMapTileRequest) returns (GetMapTileResponse);
+    rpc DeleteMap(DeleteMapRequest) returns (DeleteMapResponse);
 }
 
 message Empty {}
@@ -221,4 +222,12 @@ message GetMapTileRequest {
 
 message GetMapTileResponse {
     bytes data = 1;
+}
+
+message DeleteMapRequest {
+    string mapName = 1;
+}
+
+message DeleteMapResponse {
+    string mapName = 1;
 }

@@ -187,3 +187,17 @@ export class UploadMapRequestDto {
   @Optional()
   newMapName: string;
 }
+
+export class DeleteMapRequestDto {
+  @ApiProperty({ description: Description.MAPNAME, example: 'map1' })
+  @IsString()
+  @Length(1, 50)
+  mapName: string;
+}
+
+export class DeleteMapResponseDto {
+  @ApiProperty({ description: Description.MAPNAME, example: 'map1' })
+  @IsString()
+  @Length(1, 50)
+  mapName: string;
+}

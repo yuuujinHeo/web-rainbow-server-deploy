@@ -2722,6 +2722,7 @@ function MapGrpcServiceControllerMethods() {
             "publishMap",
             "getMapTileExist",
             "getMapTile",
+            "deleteMap",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -8143,7 +8144,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -8248,6 +8249,9 @@ let MapApiController = class MapApiController {
     }
     async mappingReload() {
         return this.mapService.mappingReload();
+    }
+    async deleteMap(dto) {
+        return this.mapService.deleteMap(dto);
     }
 };
 exports.MapApiController = MapApiController;
@@ -9057,6 +9061,48 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], MapApiController.prototype, "mappingReload", null);
+__decorate([
+    (0, common_1.Delete)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '맵 삭제',
+        description: `
+맵을 삭제합니다.
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| mapName | string | ✅ | - | 맵 이름 | 'map1' |
+
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| mapName | string | 맵 이름 | 'map1' |
+
+## ⚠️ 에러 케이스
+### **403** INVALID_ARGUMENT
+  - 파라메터가 비어있을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **503** SERVICE_UNAVAILABLE
+  - 맵 서비스와 연결되지 않았을 때
+    `,
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '맵 삭제 성공',
+        type: map_dto_1.DeleteMapResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 에러',
+        type: error_response_dto_1.ErrorResponseDto,
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_t = typeof map_dto_1.DeleteMapRequestDto !== "undefined" && map_dto_1.DeleteMapRequestDto) === "function" ? _t : Object]),
+    __metadata("design:returntype", Promise)
+], MapApiController.prototype, "deleteMap", null);
 exports.MapApiController = MapApiController = __decorate([
     (0, swagger_1.ApiTags)('맵 API'),
     (0, common_1.Controller)('map'),
@@ -9203,6 +9249,9 @@ let MapApiService = class MapApiService {
     async publishMap(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.mapService.publishMap(dto));
     }
+    async deleteMap(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.mapService.deleteMap(dto));
+    }
 };
 exports.MapApiService = MapApiService;
 exports.MapApiService = MapApiService = __decorate([
@@ -9245,6 +9294,7 @@ var MapCommand;
     MapCommand["saveTopo"] = "saveTopo";
     MapCommand["loadMap"] = "loadMap";
     MapCommand["loadTopo"] = "loadTopo";
+    MapCommand["deleteMap"] = "deleteMap";
     MapCommand["mappingStart"] = "mappingStart";
     MapCommand["mappingStop"] = "mappingStop";
     MapCommand["mappingSave"] = "mappingSave";
@@ -9321,6 +9371,13 @@ class MapCommandModel {
                 }
                 this.path = this.getMapsDir(this.mapName);
                 this.newPath = this.getMapsDir(this.newMapName);
+                break;
+            }
+            case MapCommand.deleteMap: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName);
                 break;
             }
             case MapCommand.getMapList: {
@@ -9818,7 +9875,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UploadMapRequestDto = exports.DownloadMapRequestDto = exports.SaveTopologyResponseDto = exports.SaveTopologyRequestDto = exports.GetTopologyResponseDto = exports.GetTopologyRequestDto = exports.GetTopologyPipeRequestDto = exports.SaveCloudPipeResponseDto = exports.SaveCloudPipeRequestDto = exports.SaveCloudResponseDto = exports.SaveCloudRequestDto = exports.GetCloudResponseDto = exports.GetCloudRequestDto = exports.FileDto = exports.GetMapListResponseDto = void 0;
+exports.DeleteMapResponseDto = exports.DeleteMapRequestDto = exports.UploadMapRequestDto = exports.DownloadMapRequestDto = exports.SaveTopologyResponseDto = exports.SaveTopologyRequestDto = exports.GetTopologyResponseDto = exports.GetTopologyRequestDto = exports.GetTopologyPipeRequestDto = exports.SaveCloudPipeResponseDto = exports.SaveCloudPipeRequestDto = exports.SaveCloudResponseDto = exports.SaveCloudRequestDto = exports.GetCloudResponseDto = exports.GetCloudRequestDto = exports.FileDto = exports.GetMapListResponseDto = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
@@ -10043,6 +10100,24 @@ __decorate([
     (0, common_1.Optional)(),
     __metadata("design:type", String)
 ], UploadMapRequestDto.prototype, "newMapName", void 0);
+class DeleteMapRequestDto {
+}
+exports.DeleteMapRequestDto = DeleteMapRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: Description.MAPNAME, example: 'map1' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DeleteMapRequestDto.prototype, "mapName", void 0);
+class DeleteMapResponseDto {
+}
+exports.DeleteMapResponseDto = DeleteMapResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: Description.MAPNAME, example: 'map1' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], DeleteMapResponseDto.prototype, "mapName", void 0);
 
 
 /***/ }),

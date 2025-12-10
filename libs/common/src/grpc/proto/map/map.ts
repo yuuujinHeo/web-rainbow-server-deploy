@@ -235,6 +235,14 @@ export interface GetMapTileResponse {
   data: Uint8Array;
 }
 
+export interface DeleteMapRequest {
+  mapName: string;
+}
+
+export interface DeleteMapResponse {
+  mapName: string;
+}
+
 export const MAP_PACKAGE_NAME = "map";
 
 export interface MapGrpcServiceClient {
@@ -263,6 +271,8 @@ export interface MapGrpcServiceClient {
   getMapTileExist(request: GetMapTileRequest, metadata?: Metadata): Observable<GetMapTilesExistResponse>;
 
   getMapTile(request: GetMapTileRequest, metadata?: Metadata): Observable<GetMapTileResponse>;
+
+  deleteMap(request: DeleteMapRequest, metadata?: Metadata): Observable<DeleteMapResponse>;
 }
 
 export interface MapGrpcServiceController {
@@ -327,6 +337,11 @@ export interface MapGrpcServiceController {
     request: GetMapTileRequest,
     metadata?: Metadata,
   ): Promise<GetMapTileResponse> | Observable<GetMapTileResponse> | GetMapTileResponse;
+
+  deleteMap(
+    request: DeleteMapRequest,
+    metadata?: Metadata,
+  ): Promise<DeleteMapResponse> | Observable<DeleteMapResponse> | DeleteMapResponse;
 }
 
 export function MapGrpcServiceControllerMethods() {
@@ -345,6 +360,7 @@ export function MapGrpcServiceControllerMethods() {
       "publishMap",
       "getMapTileExist",
       "getMapTile",
+      "deleteMap",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

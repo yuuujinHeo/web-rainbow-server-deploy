@@ -489,6 +489,7 @@ function MapGrpcServiceControllerMethods() {
             "publishMap",
             "getMapTileExist",
             "getMapTile",
+            "deleteMap",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

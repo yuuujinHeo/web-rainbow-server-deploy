@@ -495,6 +495,7 @@ function MapGrpcServiceControllerMethods() {
             "publishMap",
             "getMapTileExist",
             "getMapTile",
+            "deleteMap",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -1174,6 +1175,9 @@ let MapGrpcInputController = class MapGrpcInputController {
     }
     publishMap(request, metadata) {
         return this.mapService.publishMap(request);
+    }
+    deleteMap(request, metadata) {
+        return this.mapService.deleteMap(request);
     }
     getCurrentMap() {
         return this.mapService.getCurrentMap();
@@ -2603,6 +2607,36 @@ let MapService = class MapService {
             }
         });
     }
+    async deleteMap(request) {
+        return new Promise(async (resolve, reject) => {
+            let command = null;
+            try {
+                this.logger?.info(`[Map] deleteMap ================================`);
+                command = new map_command_domain_1.MapCommandModel({
+                    mapName: request.mapName,
+                    command: map_command_domain_1.MapCommand.deleteMap,
+                });
+                const result = await this.databaseOutput.save(command);
+                command.assignId(result.id.toString());
+                command.checkVariables();
+                await this.mapFileOutput.deleteMap(command);
+                command.statusChange(map_command_domain_1.CommandStatus.success);
+                await this.databaseOutput.update(command);
+                resolve({ mapName: command.mapName });
+            }
+            catch (error) {
+                console.error(error);
+                if (command) {
+                    command.statusChange(map_command_domain_1.CommandStatus.fail);
+                    await this.databaseOutput.update(command);
+                }
+                if (error instanceof microservices_1.RpcException) {
+                    reject(error);
+                }
+                reject(new rpc_code_exception_1.RpcCodeException('맵을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError));
+            }
+        });
+    }
     async loadRequest(request) {
         let command = null;
         let resp = null;
@@ -2806,6 +2840,7 @@ var MapCommand;
     MapCommand["saveTopo"] = "saveTopo";
     MapCommand["loadMap"] = "loadMap";
     MapCommand["loadTopo"] = "loadTopo";
+    MapCommand["deleteMap"] = "deleteMap";
     MapCommand["mappingStart"] = "mappingStart";
     MapCommand["mappingStop"] = "mappingStop";
     MapCommand["mappingSave"] = "mappingSave";
@@ -2882,6 +2917,13 @@ class MapCommandModel {
                 }
                 this.path = this.getMapsDir(this.mapName);
                 this.newPath = this.getMapsDir(this.newMapName);
+                break;
+            }
+            case MapCommand.deleteMap: {
+                if (this.mapName === undefined || this.mapName === '') {
+                    throw new rpc_code_exception_1.RpcCodeException('mapName 값이 비어있습니다', constant_1.GrpcCode.InvalidArgument);
+                }
+                this.path = this.getMapsDir(this.mapName);
                 break;
             }
             case MapCommand.getMapList: {
@@ -4712,6 +4754,22 @@ let MapFileAdapter = class MapFileAdapter {
         this.saveLogService = saveLogService;
         console.log(saveLogService);
         this.logger = this.saveLogService.get('host');
+    }
+    async deleteMap(request) {
+        try {
+            this.logger?.info(`[Map] deleteMap : ${JSON.stringify(request)}`);
+            const mapPath = (0, path_1.join)(this.mapPath, request.mapName);
+            if ((0, fs_1.existsSync)(mapPath)) {
+                (0, fs_1.rmSync)(mapPath, { recursive: true });
+            }
+        }
+        catch (error) {
+            console.error(error);
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[Map] deleteMap : ${(0, log_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('맵을 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
     }
     async readMapList(request) {
         try {
