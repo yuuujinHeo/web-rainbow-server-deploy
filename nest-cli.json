@@ -28,52 +28,7 @@
         "tsConfigPath": "apps/gateway/tsconfig.app.json"
       }
     },
-    "gateway-frs-api": {
-      "type": "application",
-      "root": "apps/gateway/frs/api",
-      "entryFile": "main",
-      "sourceRoot": "apps/gateway/frs/api/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/gateway/frs/api/tsconfig.app.json"
-      }
-    },
-    "gateway-frs-websocket": {
-      "type": "application",
-      "root": "apps/gateway/frs/websocket",
-      "entryFile": "main",
-      "sourceRoot": "apps/gateway/frs/websocket/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/gateway/frs/websocket/tsconfig.app.json"
-      }
-    },
-    "microservice-access": {
-      "type": "application",
-      "root": "apps/access",
-      "entryFile": "main",
-      "sourceRoot": "apps/access/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/access/tsconfig.app.json"
-      }
-    },
-    "microservice-caching": {
-      "type": "application",
-      "root": "apps/caching",
-      "entryFile": "main",
-      "sourceRoot": "apps/caching/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/caching/tsconfig.app.json"
-      }
-    },
-    "microservice-robot": {
-      "type": "application",
-      "root": "apps/robot",
-      "entryFile": "main",
-      "sourceRoot": "apps/robot/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/robot/tsconfig.app.json"
-      }
-    },
-    "microservice-config": {
+    "config": {
       "type": "application",
       "root": "apps/config",
       "entryFile": "main",
@@ -82,7 +37,7 @@
         "tsConfigPath": "apps/config/tsconfig.app.json"
       }
     },
-    "microservice-device": {
+    "device": {
       "type": "application",
       "root": "apps/device",
       "entryFile": "main",
@@ -91,7 +46,7 @@
         "tsConfigPath": "apps/device/tsconfig.app.json"
       }
     },
-    "microservice-monitoring": {
+    "monitoring": {
       "type": "application",
       "root": "apps/monitoring",
       "entryFile": "main",
@@ -100,7 +55,7 @@
         "tsConfigPath": "apps/monitoring/tsconfig.app.json"
       }
     },
-    "microservice-task": {
+    "task": {
       "type": "application",
       "root": "apps/task",
       "entryFile": "main",

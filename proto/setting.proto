@@ -13,6 +13,10 @@ service SettingGrpcService {
     rpc CreatePreset(PresetRequest) returns (PresetResponse);
     rpc DeletePreset(PresetRequest) returns (PresetResponse);
     rpc SavePreset(PresetRequest) returns (PresetResponse);
+
+    //cam
+    rpc GetCameraInfo(Empty) returns (GetCameraInfoResponse);
+    rpc SetCameraOrder(SetCameraOrderRequest) returns (SetCameraOrderResponse);
 }
 
 message Empty {
@@ -64,4 +68,18 @@ message PresetResponse {
     string type = 1;
     string preset = 2;
     optional string data = 3;
+}
+
+message GetCameraInfoResponse {
+    optional string cam1 = 1;
+    optional string cam2 = 2;
+}
+
+message SetCameraOrderRequest {
+    optional string cam1 = 1;
+    optional string cam2 = 2;
+}
+message SetCameraOrderResponse {
+    optional string cam1 = 1;
+    optional string cam2 = 2;
 }

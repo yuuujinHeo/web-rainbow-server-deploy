@@ -38,23 +38,23 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RRSApiModule = void 0;
 const common_1 = __webpack_require__(5);
 const control_api_module_1 = __webpack_require__(6);
-const localization_api_module_1 = __webpack_require__(77);
-const network_api_module_1 = __webpack_require__(83);
-const config_api_module_1 = __webpack_require__(87);
-const setting_api_module_1 = __webpack_require__(93);
-const move_api_module_1 = __webpack_require__(97);
-const map_api_module_1 = __webpack_require__(106);
-const sound_api_module_1 = __webpack_require__(117);
-const log_api_module_1 = __webpack_require__(123);
-const update_api_module_1 = __webpack_require__(128);
-const cobot_api_module_1 = __webpack_require__(136);
-const tcp_api_module_1 = __webpack_require__(140);
-const socket_api_module_1 = __webpack_require__(143);
-const schedule_1 = __webpack_require__(76);
-const log_module_1 = __webpack_require__(74);
-const saveLog_service_1 = __webpack_require__(68);
-const cleanLog_service_1 = __webpack_require__(75);
-const test_api_module_1 = __webpack_require__(218);
+const localization_api_module_1 = __webpack_require__(78);
+const network_api_module_1 = __webpack_require__(84);
+const config_api_module_1 = __webpack_require__(88);
+const setting_api_module_1 = __webpack_require__(94);
+const move_api_module_1 = __webpack_require__(98);
+const map_api_module_1 = __webpack_require__(107);
+const sound_api_module_1 = __webpack_require__(118);
+const log_api_module_1 = __webpack_require__(124);
+const update_api_module_1 = __webpack_require__(129);
+const cobot_api_module_1 = __webpack_require__(137);
+const tcp_api_module_1 = __webpack_require__(141);
+const socket_api_module_1 = __webpack_require__(144);
+const schedule_1 = __webpack_require__(77);
+const log_module_1 = __webpack_require__(75);
+const saveLog_service_1 = __webpack_require__(69);
+const cleanLog_service_1 = __webpack_require__(76);
+const test_api_module_1 = __webpack_require__(154);
 let RRSApiModule = class RRSApiModule {
     constructor(saveLogService, cleanLogService) {
         this.saveLogService = saveLogService;
@@ -111,13 +111,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiModule = void 0;
 const common_1 = __webpack_require__(5);
 const control_api_controller_1 = __webpack_require__(7);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(61);
-const control_api_service_1 = __webpack_require__(60);
-const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const control_api_service_1 = __webpack_require__(61);
+const log_module_1 = __webpack_require__(75);
 let ControlApiModule = class ControlApiModule {
 };
 exports.ControlApiModule = ControlApiModule;
@@ -185,11 +185,11 @@ exports.ControlApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const control_dto_1 = __webpack_require__(9);
-const error_response_dto_1 = __webpack_require__(59);
-const control_api_service_1 = __webpack_require__(60);
-const safety_io_dto_1 = __webpack_require__(72);
+const error_response_dto_1 = __webpack_require__(60);
+const control_api_service_1 = __webpack_require__(61);
+const safety_io_dto_1 = __webpack_require__(73);
 const control_type_1 = __webpack_require__(12);
-const saveLog_service_1 = __webpack_require__(68);
+const saveLog_service_1 = __webpack_require__(69);
 let ControlApiController = class ControlApiController {
     constructor(controlService, saveLogService) {
         this.controlService = controlService;
@@ -1689,11 +1689,11 @@ var date_util_1 = __webpack_require__(16);
 Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
 var file_util_1 = __webpack_require__(18);
 Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(56);
+var parse_util_1 = __webpack_require__(57);
 Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(57);
+var crypto_util_1 = __webpack_require__(58);
 Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(58);
+var validation_util_1 = __webpack_require__(59);
 Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
 
 
@@ -1925,8 +1925,8 @@ const archiver_1 = __webpack_require__(23);
 const csv = __webpack_require__(24);
 const zlib_1 = __webpack_require__(25);
 const common_1 = __webpack_require__(26);
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
 const microservices_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(20);
 class FileUtil {
@@ -2267,8 +2267,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(27), exports);
-__exportStar(__webpack_require__(48), exports);
-__exportStar(__webpack_require__(51), exports);
+__exportStar(__webpack_require__(49), exports);
+__exportStar(__webpack_require__(52), exports);
 
 
 /***/ }),
@@ -2320,7 +2320,7 @@ exports.CobotMicroservice = __webpack_require__(44);
 exports.LogMicroservice = __webpack_require__(45);
 exports.UpdateMicroservice = __webpack_require__(46);
 exports.TcpMicroservice = __webpack_require__(47);
-exports.TestMicroservice = __webpack_require__(217);
+exports.TestMicroservice = __webpack_require__(48);
 
 
 /***/ }),
@@ -2824,6 +2824,8 @@ function SettingGrpcServiceControllerMethods() {
             "createPreset",
             "deletePreset",
             "savePreset",
+            "getCameraInfo",
+            "setCameraOrder",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -3036,6 +3038,45 @@ exports.TCP_GRPC_SERVICE_NAME = "TcpGrpcService";
 
 /***/ }),
 /* 48 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TEST_GRPC_SERVICE_NAME = exports.TEST_PACKAGE_NAME = exports.protobufPackage = void 0;
+exports.TestGrpcServiceControllerMethods = TestGrpcServiceControllerMethods;
+const microservices_1 = __webpack_require__(3);
+exports.protobufPackage = "test";
+exports.TEST_PACKAGE_NAME = "test";
+function TestGrpcServiceControllerMethods() {
+    return function (constructor) {
+        const grpcMethods = [
+            "getTestRecordAll",
+            "getTestRecord",
+            "getTestResultRecent",
+            "getTestResultbySubject",
+            "checkTestRunning",
+            "startTest",
+            "stopTest",
+            "createTestRecord",
+            "updateTestRecord",
+            "updateTestResult",
+        ];
+        for (const method of grpcMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+        const grpcStreamMethods = [];
+        for (const method of grpcStreamMethods) {
+            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+            (0, microservices_1.GrpcStreamMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
+        }
+    };
+}
+exports.TEST_GRPC_SERVICE_NAME = "TestGrpcService";
+
+
+/***/ }),
+/* 49 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3054,17 +3095,17 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(49), exports);
+__exportStar(__webpack_require__(50), exports);
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrpcInterceptor = void 0;
-const rxjs_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(51);
 class GrpcInterceptor {
     intercept(context, next) {
         const data = context.switchToRpc().getData();
@@ -3107,13 +3148,13 @@ exports.GrpcInterceptor = GrpcInterceptor;
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ ((module) => {
 
 module.exports = require("rxjs");
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3132,11 +3173,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(52), exports);
+__exportStar(__webpack_require__(53), exports);
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3167,7 +3208,7 @@ function errorToJson(error) {
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -3184,7 +3225,7 @@ exports.RpcCodeException = RpcCodeException;
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3203,11 +3244,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(55), exports);
+__exportStar(__webpack_require__(56), exports);
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3237,7 +3278,7 @@ var GrpcCode;
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3294,7 +3335,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3306,7 +3347,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3340,7 +3381,7 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3376,7 +3417,7 @@ __decorate([
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3395,15 +3436,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiService = void 0;
-const constant_1 = __webpack_require__(61);
+const constant_1 = __webpack_require__(62);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(51);
 const control_type_1 = __webpack_require__(12);
-const saveLog_service_1 = __webpack_require__(68);
+const saveLog_service_1 = __webpack_require__(69);
 const util_1 = __webpack_require__(13);
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_2 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_2 = __webpack_require__(55);
 let ControlApiService = class ControlApiService {
     constructor(controlMicroservice, cobotMicroservice, saveLogService) {
         this.controlMicroservice = controlMicroservice;
@@ -3492,7 +3533,7 @@ exports.ControlApiService = ControlApiService = __decorate([
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3512,14 +3553,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.message = exports.environment = void 0;
-__exportStar(__webpack_require__(62), exports);
 __exportStar(__webpack_require__(63), exports);
-exports.environment = __webpack_require__(64);
-exports.message = __webpack_require__(66);
+__exportStar(__webpack_require__(64), exports);
+exports.environment = __webpack_require__(65);
+exports.message = __webpack_require__(67);
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3552,7 +3593,7 @@ exports.MQTT_BROKER = 'MQTT_BROKER';
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3560,7 +3601,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3579,11 +3620,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(65), exports);
+__exportStar(__webpack_require__(66), exports);
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3607,7 +3648,7 @@ exports.SYSTEM = {
 
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3626,11 +3667,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(67), exports);
+__exportStar(__webpack_require__(68), exports);
 
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3689,7 +3730,7 @@ exports.SUCCESS_MESSAGES = {
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3705,10 +3746,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SaveLogService = void 0;
 const common_1 = __webpack_require__(5);
-const winston_1 = __webpack_require__(69);
-const DailyRotateFile = __webpack_require__(70);
+const winston_1 = __webpack_require__(70);
+const DailyRotateFile = __webpack_require__(71);
 const util_1 = __webpack_require__(13);
-const chalk_1 = __webpack_require__(71);
+const chalk_1 = __webpack_require__(72);
 const fs_1 = __webpack_require__(19);
 const levelColorMap = {
     error: chalk_1.default.red,
@@ -3852,25 +3893,25 @@ exports.SaveLogService = SaveLogService = __decorate([
 
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ ((module) => {
 
 module.exports = require("chalk");
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3964,13 +4005,13 @@ __decorate([
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/config");
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3983,8 +4024,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogModule = void 0;
 const common_1 = __webpack_require__(5);
-const saveLog_service_1 = __webpack_require__(68);
-const cleanLog_service_1 = __webpack_require__(75);
+const saveLog_service_1 = __webpack_require__(69);
+const cleanLog_service_1 = __webpack_require__(76);
 let LogModule = class LogModule {
 };
 exports.LogModule = LogModule;
@@ -3999,7 +4040,7 @@ exports.LogModule = LogModule = __decorate([
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4015,7 +4056,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(5);
-const schedule_1 = __webpack_require__(76);
+const schedule_1 = __webpack_require__(77);
 const path = __webpack_require__(20);
 const fs_1 = __webpack_require__(19);
 const util_1 = __webpack_require__(13);
@@ -4097,13 +4138,13 @@ exports.CleanLogService = CleanLogService = __decorate([
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/schedule");
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4116,14 +4157,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const localization_api_controller_1 = __webpack_require__(78);
-const localization_api_service_1 = __webpack_require__(79);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
+const localization_api_controller_1 = __webpack_require__(79);
+const localization_api_service_1 = __webpack_require__(80);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
 let LocalizationApiModule = class LocalizationApiModule {
 };
 exports.LocalizationApiModule = LocalizationApiModule;
@@ -4157,7 +4198,7 @@ exports.LocalizationApiModule = LocalizationApiModule = __decorate([
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4178,12 +4219,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const localization_api_service_1 = __webpack_require__(79);
-const localization_dto_1 = __webpack_require__(80);
-const localization_dto_2 = __webpack_require__(80);
-const error_response_dto_1 = __webpack_require__(59);
-const localization_type_1 = __webpack_require__(81);
-const saveLog_service_1 = __webpack_require__(68);
+const localization_api_service_1 = __webpack_require__(80);
+const localization_dto_1 = __webpack_require__(81);
+const localization_dto_2 = __webpack_require__(81);
+const error_response_dto_1 = __webpack_require__(60);
+const localization_type_1 = __webpack_require__(82);
+const saveLog_service_1 = __webpack_require__(69);
 let LocalizationApiController = class LocalizationApiController {
     constructor(localizationService, saveLogService) {
         this.localizationService = localizationService;
@@ -4538,7 +4579,7 @@ exports.LocalizationApiController = LocalizationApiController = __decorate([
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4559,9 +4600,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationApiService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const rxjs_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 let LocalizationApiService = class LocalizationApiService {
     constructor(localizationMicroservice, saveLogService) {
         this.localizationMicroservice = localizationMicroservice;
@@ -4585,7 +4626,7 @@ exports.LocalizationApiService = LocalizationApiService = __decorate([
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4603,9 +4644,9 @@ exports.LocalizationResponseFrs = exports.LocalizationResponseSlamnav = exports.
 const class_validator_1 = __webpack_require__(11);
 const class_transformer_1 = __webpack_require__(10);
 const swagger_1 = __webpack_require__(8);
-const localization_type_1 = __webpack_require__(81);
+const localization_type_1 = __webpack_require__(82);
 const util_1 = __webpack_require__(13);
-const description_1 = __webpack_require__(82);
+const description_1 = __webpack_require__(83);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uC704\uCE58\uCD08\uAE30\uD654 \uBA85\uB839";
@@ -4774,7 +4815,7 @@ __decorate([
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -4792,7 +4833,7 @@ var LocalizationCommand;
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -4807,7 +4848,7 @@ var FrsDescription;
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4820,14 +4861,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const network_api_service_1 = __webpack_require__(84);
-const network_api_controller_1 = __webpack_require__(85);
+const network_api_service_1 = __webpack_require__(85);
+const network_api_controller_1 = __webpack_require__(86);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
 let NetworkApiModule = class NetworkApiModule {
 };
 exports.NetworkApiModule = NetworkApiModule;
@@ -4861,7 +4902,7 @@ exports.NetworkApiModule = NetworkApiModule = __decorate([
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4880,11 +4921,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkApiService = void 0;
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(51);
 let NetworkApiService = class NetworkApiService {
     constructor(networkMicroservice, saveLogService) {
         this.networkMicroservice = networkMicroservice;
@@ -4934,7 +4975,7 @@ exports.NetworkApiService = NetworkApiService = __decorate([
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4955,10 +4996,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const network_api_service_1 = __webpack_require__(84);
-const network_dto_1 = __webpack_require__(86);
-const error_response_dto_1 = __webpack_require__(59);
-const saveLog_service_1 = __webpack_require__(68);
+const network_api_service_1 = __webpack_require__(85);
+const network_dto_1 = __webpack_require__(87);
+const error_response_dto_1 = __webpack_require__(60);
+const saveLog_service_1 = __webpack_require__(69);
 let NetworkApiController = class NetworkApiController {
     constructor(networkService, saveLogService) {
         this.networkService = networkService;
@@ -5132,7 +5173,7 @@ exports.NetworkApiController = NetworkApiController = __decorate([
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5275,7 +5316,7 @@ __decorate([
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5288,14 +5329,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_api_controller_1 = __webpack_require__(88);
+const config_api_controller_1 = __webpack_require__(89);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const path_1 = __webpack_require__(20);
-const config_api_service_1 = __webpack_require__(89);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
+const config_api_service_1 = __webpack_require__(90);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
 let ConfigApiModule = class ConfigApiModule {
 };
 exports.ConfigApiModule = ConfigApiModule;
@@ -5329,7 +5370,7 @@ exports.ConfigApiModule = ConfigApiModule = __decorate([
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5350,12 +5391,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const config_api_service_1 = __webpack_require__(89);
-const set_dto_1 = __webpack_require__(90);
-const error_response_dto_1 = __webpack_require__(59);
-const get_dto_1 = __webpack_require__(91);
-const delete_dto_1 = __webpack_require__(92);
-const saveLog_service_1 = __webpack_require__(68);
+const config_api_service_1 = __webpack_require__(90);
+const set_dto_1 = __webpack_require__(91);
+const error_response_dto_1 = __webpack_require__(60);
+const get_dto_1 = __webpack_require__(92);
+const delete_dto_1 = __webpack_require__(93);
+const saveLog_service_1 = __webpack_require__(69);
 let ConfigApiController = class ConfigApiController {
     constructor(configService, saveLogService) {
         this.configService = configService;
@@ -5539,7 +5580,7 @@ exports.ConfigApiController = ConfigApiController = __decorate([
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5560,9 +5601,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigApiService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const rxjs_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 let ConfigApiService = class ConfigApiService {
     constructor(configMicroservice, saveLogService) {
         this.configMicroservice = configMicroservice;
@@ -5615,7 +5656,7 @@ exports.ConfigApiService = ConfigApiService = __decorate([
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5663,7 +5704,7 @@ exports.SetConfigsResponseDto = SetConfigsResponseDto;
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5715,7 +5756,7 @@ __decorate([
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5758,7 +5799,7 @@ exports.DeleteConfigsResponseDto = DeleteConfigsResponseDto;
 
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5771,14 +5812,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
-const setting_api_controller_1 = __webpack_require__(94);
-const setting_api_service_1 = __webpack_require__(95);
+const setting_api_controller_1 = __webpack_require__(95);
+const setting_api_service_1 = __webpack_require__(96);
 const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
 let SettingApiModule = class SettingApiModule {
 };
 exports.SettingApiModule = SettingApiModule;
@@ -5812,7 +5853,7 @@ exports.SettingApiModule = SettingApiModule = __decorate([
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5828,15 +5869,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiController = void 0;
 const common_1 = __webpack_require__(5);
-const setting_api_service_1 = __webpack_require__(95);
+const setting_api_service_1 = __webpack_require__(96);
 const swagger_1 = __webpack_require__(8);
-const error_response_dto_1 = __webpack_require__(59);
-const setting_dto_1 = __webpack_require__(96);
-const saveLog_service_1 = __webpack_require__(68);
+const error_response_dto_1 = __webpack_require__(60);
+const setting_dto_1 = __webpack_require__(97);
+const saveLog_service_1 = __webpack_require__(69);
+const cam_dto_1 = __webpack_require__(225);
 let SettingApiController = class SettingApiController {
     constructor(saveLogService) {
         this.saveLogService = saveLogService;
@@ -5868,6 +5910,12 @@ let SettingApiController = class SettingApiController {
     }
     async createPreset(dto) {
         return this.settingService.createPreset(dto);
+    }
+    async getCameraInfo() {
+        return this.settingService.getCameraInfo();
+    }
+    async orderChange(data) {
+        return this.settingService.cameraOrderChange(data);
     }
 };
 exports.SettingApiController = SettingApiController;
@@ -6122,6 +6170,53 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_k = typeof setting_dto_1.SettingCreatePresetRequestDto !== "undefined" && setting_dto_1.SettingCreatePresetRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "createPreset", null);
+__decorate([
+    (0, common_1.Get)('cam/info'),
+    (0, swagger_1.ApiOperation)({
+        summary: '카메라 정보 요청',
+        description: '카메라 정보를 요청합니다',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '카메라 정보 요청 성공',
+        type: cam_dto_1.CameraResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SettingApiController.prototype, "getCameraInfo", null);
+__decorate([
+    (0, common_1.Post)('cam/order-change'),
+    (0, swagger_1.ApiOperation)({
+        summary: '카메라 순서 변경',
+        description: '카메라 순서를 변경합니다',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: '카메라 순서 변경 성공',
+        type: cam_dto_1.CameraResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof cam_dto_1.CameraRequestDto !== "undefined" && cam_dto_1.CameraRequestDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", Promise)
+], SettingApiController.prototype, "orderChange", null);
 exports.SettingApiController = SettingApiController = __decorate([
     (0, swagger_1.ApiTags)('세팅 관련 API (setting)'),
     (0, common_1.Controller)('setting'),
@@ -6130,7 +6225,7 @@ exports.SettingApiController = SettingApiController = __decorate([
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6151,9 +6246,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const rxjs_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 let SettingApiService = class SettingApiService {
     constructor(settingMicroservice, saveLogService) {
         this.settingMicroservice = settingMicroservice;
@@ -6199,6 +6294,14 @@ let SettingApiService = class SettingApiService {
         const resp = await (0, rxjs_1.lastValueFrom)(this.settingService.savePreset({ type: dto.type, preset: dto.preset, data: JSON.stringify(dto.data) }));
         return { ...resp, data: JSON.parse(resp.data), preset: dto.preset };
     }
+    async getCameraInfo() {
+        const resp = await (0, rxjs_1.lastValueFrom)(this.settingService.getCameraInfo({}));
+        return { cam1: resp.cam1, cam2: resp.cam2 };
+    }
+    async cameraOrderChange(dto) {
+        const resp = await (0, rxjs_1.lastValueFrom)(this.settingService.setCameraOrder({ cam1: dto.cam1, cam2: dto.cam2 }));
+        return { cam1: resp.cam1, cam2: resp.cam2 };
+    }
 };
 exports.SettingApiService = SettingApiService;
 exports.SettingApiService = SettingApiService = __decorate([
@@ -6209,7 +6312,7 @@ exports.SettingApiService = SettingApiService = __decorate([
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6520,7 +6623,7 @@ exports.SettingSavePresetResponseDto = SettingSavePresetResponseDto;
 
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6533,14 +6636,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(20);
-const move_api_service_1 = __webpack_require__(98);
-const move_api_controller_1 = __webpack_require__(99);
+const move_api_service_1 = __webpack_require__(99);
+const move_api_controller_1 = __webpack_require__(100);
 const common_2 = __webpack_require__(26);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
 let MoveApiModule = class MoveApiModule {
 };
 exports.MoveApiModule = MoveApiModule;
@@ -6577,7 +6680,7 @@ exports.MoveApiModule = MoveApiModule = __decorate([
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6598,10 +6701,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(51);
 const util_1 = __webpack_require__(13);
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 let MoveApiService = class MoveApiService {
     constructor(moveMicroservice, saveLogService) {
         this.moveMicroservice = moveMicroservice;
@@ -6636,7 +6739,7 @@ exports.MoveApiService = MoveApiService = __decorate([
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6657,12 +6760,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const move_dto_1 = __webpack_require__(100);
-const move_dto_2 = __webpack_require__(100);
-const move_dto_3 = __webpack_require__(100);
-const error_response_dto_1 = __webpack_require__(59);
-const move_api_service_1 = __webpack_require__(98);
-const saveLog_service_1 = __webpack_require__(68);
+const move_dto_1 = __webpack_require__(101);
+const move_dto_2 = __webpack_require__(101);
+const move_dto_3 = __webpack_require__(101);
+const error_response_dto_1 = __webpack_require__(60);
+const move_api_service_1 = __webpack_require__(99);
+const saveLog_service_1 = __webpack_require__(69);
 let MoveApiController = class MoveApiController {
     constructor(moveService, saveLogService) {
         this.moveService = moveService;
@@ -7251,7 +7354,7 @@ exports.MoveApiController = MoveApiController = __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7269,10 +7372,10 @@ exports.MoveLinearRequestDto = exports.MoveLogLastResponseDto = exports.MoveLogL
 const class_validator_1 = __webpack_require__(11);
 const class_transformer_1 = __webpack_require__(10);
 const swagger_1 = __webpack_require__(8);
-const move_type_1 = __webpack_require__(101);
+const move_type_1 = __webpack_require__(102);
 const util_1 = __webpack_require__(13);
-const search_request_1 = __webpack_require__(102);
-const pagination_1 = __webpack_require__(104);
+const search_request_1 = __webpack_require__(103);
+const pagination_1 = __webpack_require__(105);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uC774\uB3D9 \uBA85\uB839";
@@ -7697,7 +7800,7 @@ __decorate([
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7718,7 +7821,7 @@ var MoveCommand;
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7734,7 +7837,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SearchRequestDto = void 0;
 const swagger_1 = __webpack_require__(8);
-const pagination_request_1 = __webpack_require__(103);
+const pagination_request_1 = __webpack_require__(104);
 const class_validator_1 = __webpack_require__(11);
 const class_transformer_1 = __webpack_require__(10);
 class SearchRequestDto extends pagination_request_1.PaginationRequest {
@@ -7810,7 +7913,7 @@ __decorate([
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7883,7 +7986,7 @@ function getPaginationLimit(pageSize) {
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7902,12 +8005,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(103), exports);
-__exportStar(__webpack_require__(105), exports);
+__exportStar(__webpack_require__(104), exports);
+__exportStar(__webpack_require__(106), exports);
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7968,7 +8071,7 @@ __decorate([
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7981,14 +8084,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const map_api_controller_1 = __webpack_require__(107);
-const map_api_service_1 = __webpack_require__(108);
-const config_1 = __webpack_require__(73);
+const map_api_controller_1 = __webpack_require__(108);
+const map_api_service_1 = __webpack_require__(109);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(61);
+const constant_1 = __webpack_require__(62);
 const grpc_1 = __webpack_require__(27);
-const log_module_1 = __webpack_require__(74);
+const log_module_1 = __webpack_require__(75);
 let MapApiModule = class MapApiModule {
 };
 exports.MapApiModule = MapApiModule;
@@ -8024,7 +8127,7 @@ exports.MapApiModule = MapApiModule = __decorate([
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8045,18 +8148,18 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const map_api_service_1 = __webpack_require__(108);
+const map_api_service_1 = __webpack_require__(109);
 const path_1 = __webpack_require__(20);
 const zlib_1 = __webpack_require__(25);
-const stream_1 = __webpack_require__(110);
-const express_1 = __webpack_require__(111);
-const mapping_dto_1 = __webpack_require__(112);
+const stream_1 = __webpack_require__(111);
+const express_1 = __webpack_require__(112);
+const mapping_dto_1 = __webpack_require__(113);
 const util_1 = __webpack_require__(13);
-const error_response_dto_1 = __webpack_require__(59);
-const map_dto_1 = __webpack_require__(114);
-const load_dto_1 = __webpack_require__(113);
-const map_dto_2 = __webpack_require__(114);
-const saveLog_service_1 = __webpack_require__(68);
+const error_response_dto_1 = __webpack_require__(60);
+const map_dto_1 = __webpack_require__(115);
+const load_dto_1 = __webpack_require__(114);
+const map_dto_2 = __webpack_require__(115);
+const saveLog_service_1 = __webpack_require__(69);
 let MapApiController = class MapApiController {
     constructor(mapService, saveLogService) {
         this.mapService = mapService;
@@ -8962,7 +9065,7 @@ exports.MapApiController = MapApiController = __decorate([
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8983,11 +9086,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapApiService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-const pagination_1 = __webpack_require__(104);
-const constant_1 = __webpack_require__(61);
-const map_command_domain_1 = __webpack_require__(109);
-const saveLog_service_1 = __webpack_require__(68);
+const rxjs_1 = __webpack_require__(51);
+const pagination_1 = __webpack_require__(105);
+const constant_1 = __webpack_require__(62);
+const map_command_domain_1 = __webpack_require__(110);
+const saveLog_service_1 = __webpack_require__(69);
 let MapApiService = class MapApiService {
     constructor(mapMicroservice, saveLogService) {
         this.mapMicroservice = mapMicroservice;
@@ -9110,14 +9213,14 @@ exports.MapApiService = MapApiService = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapCommandModel = exports.MapCommand = exports.CommandStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
 const path_1 = __webpack_require__(20);
 const fs_1 = __webpack_require__(19);
 var CommandStatus;
@@ -9348,19 +9451,19 @@ exports.MapCommandModel = MapCommandModel;
 
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ ((module) => {
 
 module.exports = require("stream");
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ ((module) => {
 
 module.exports = require("express");
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9379,7 +9482,7 @@ const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const class_transformer_1 = __webpack_require__(10);
 const util_1 = __webpack_require__(13);
-const load_dto_1 = __webpack_require__(113);
+const load_dto_1 = __webpack_require__(114);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD\uD55C \uBA85\uB839\uC758 ID\uAC12\uC785\uB2C8\uB2E4. request\uC2DC \uC790\uB3D9 \uC0DD\uC131\uB429\uB2C8\uB2E4.";
@@ -9521,7 +9624,7 @@ __decorate([
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9539,7 +9642,7 @@ exports.LoadResponseFrs = exports.LoadResponseSlamnav = exports.LoadRequestSlamn
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const util_1 = __webpack_require__(13);
-const description_1 = __webpack_require__(82);
+const description_1 = __webpack_require__(83);
 const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
@@ -9700,7 +9803,7 @@ __decorate([
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9720,9 +9823,9 @@ const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
-const map_type_1 = __webpack_require__(115);
-const pagination_1 = __webpack_require__(104);
-const topo_type_1 = __webpack_require__(116);
+const map_type_1 = __webpack_require__(116);
+const pagination_1 = __webpack_require__(105);
+const topo_type_1 = __webpack_require__(117);
 var Description;
 (function (Description) {
     Description["MAPNAME"] = "\uB9F5 \uC774\uB984";
@@ -9943,7 +10046,7 @@ __decorate([
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9995,7 +10098,7 @@ __decorate([
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10186,7 +10289,7 @@ __decorate([
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10199,14 +10302,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundApiModule = void 0;
 const common_1 = __webpack_require__(26);
-const constant_1 = __webpack_require__(61);
+const constant_1 = __webpack_require__(62);
 const common_2 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(20);
-const sound_api_controller_1 = __webpack_require__(118);
-const sound_api_service_1 = __webpack_require__(119);
-const log_module_1 = __webpack_require__(74);
+const sound_api_controller_1 = __webpack_require__(119);
+const sound_api_service_1 = __webpack_require__(120);
+const log_module_1 = __webpack_require__(75);
 let SoundApiModule = class SoundApiModule {
 };
 exports.SoundApiModule = SoundApiModule;
@@ -10240,7 +10343,7 @@ exports.SoundApiModule = SoundApiModule = __decorate([
 
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10261,15 +10364,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const sound_api_service_1 = __webpack_require__(119);
-const platform_express_1 = __webpack_require__(120);
-const express_1 = __webpack_require__(111);
-const multer_1 = __webpack_require__(121);
-const config_1 = __webpack_require__(73);
-const error_response_dto_1 = __webpack_require__(59);
-const sound_dto_1 = __webpack_require__(122);
-const sound_dto_2 = __webpack_require__(122);
-const saveLog_service_1 = __webpack_require__(68);
+const sound_api_service_1 = __webpack_require__(120);
+const platform_express_1 = __webpack_require__(121);
+const express_1 = __webpack_require__(112);
+const multer_1 = __webpack_require__(122);
+const config_1 = __webpack_require__(74);
+const error_response_dto_1 = __webpack_require__(60);
+const sound_dto_1 = __webpack_require__(123);
+const sound_dto_2 = __webpack_require__(123);
+const saveLog_service_1 = __webpack_require__(69);
 let SoundApiController = class SoundApiController {
     constructor(configService, saveLogService) {
         this.configService = configService;
@@ -10595,7 +10698,7 @@ exports.SoundApiController = SoundApiController = __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10614,11 +10717,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundApiService = void 0;
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(51);
 let SoundApiService = class SoundApiService {
     constructor(settingMicroservice, saveLogService) {
         this.settingMicroservice = settingMicroservice;
@@ -10659,19 +10762,19 @@ exports.SoundApiService = SoundApiService = __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/platform-express");
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ ((module) => {
 
 module.exports = require("multer");
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10763,7 +10866,7 @@ __decorate([
 
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10776,13 +10879,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const log_api_service_1 = __webpack_require__(124);
-const log_api_controller_1 = __webpack_require__(125);
+const log_api_service_1 = __webpack_require__(125);
+const log_api_controller_1 = __webpack_require__(126);
 const microservices_1 = __webpack_require__(3);
 const path_1 = __webpack_require__(20);
-const config_1 = __webpack_require__(73);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
+const config_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
 const common_2 = __webpack_require__(26);
 let LogApiModule = class LogApiModule {
 };
@@ -10826,7 +10929,7 @@ exports.LogApiModule = LogApiModule = __decorate([
 
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10845,11 +10948,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiService = void 0;
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(51);
 let LogApiService = class LogApiService {
     constructor(logMicroservice, serviceLogMicroservice, saveLogService) {
         this.logMicroservice = logMicroservice;
@@ -10912,7 +11015,7 @@ exports.LogApiService = LogApiService = __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10933,11 +11036,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const log_api_service_1 = __webpack_require__(124);
-const semlog_dto_1 = __webpack_require__(126);
-const search_request_1 = __webpack_require__(102);
-const saveLog_service_1 = __webpack_require__(68);
-const servicelog_dto_1 = __webpack_require__(127);
+const log_api_service_1 = __webpack_require__(125);
+const semlog_dto_1 = __webpack_require__(127);
+const search_request_1 = __webpack_require__(103);
+const saveLog_service_1 = __webpack_require__(69);
+const servicelog_dto_1 = __webpack_require__(128);
 let LogApiController = class LogApiController {
     constructor(logService, saveLogService) {
         this.logService = logService;
@@ -11213,7 +11316,7 @@ exports.LogApiController = LogApiController = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11228,7 +11331,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SEMGeneralLogRequestDto = exports.SaveSEMAlarmLogResponseDto = exports.SaveSEMAlarmLogRequestDto = exports.DeleteSEMAlarmRequestDto = exports.SEMAlarmActiveResponseDto = exports.SEMAlarmLogResponseDto = exports.SEMAlarmLogListRequestDto = exports.PostSEMAlarmRequestDto = exports.DeleteAlarmDefineRequestDto = exports.SEMAlarmListResponseDto = exports.SEMAlamrListRequestDto = exports.SEMAlarmLog = exports.SEMAlarm = exports.SEMAlarmActive = void 0;
-const pagination_1 = __webpack_require__(104);
+const pagination_1 = __webpack_require__(105);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const class_validator_2 = __webpack_require__(11);
@@ -11507,7 +11610,7 @@ __decorate([
 
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11522,7 +11625,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GetServiceLogRequestDto = void 0;
-const search_request_1 = __webpack_require__(102);
+const search_request_1 = __webpack_require__(103);
 const class_validator_1 = __webpack_require__(11);
 class GetServiceLogRequestDto extends search_request_1.SearchRequestDto {
 }
@@ -11540,7 +11643,7 @@ __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11553,14 +11656,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(129);
-const update_api_controller_1 = __webpack_require__(132);
-const config_1 = __webpack_require__(73);
+const update_api_service_1 = __webpack_require__(130);
+const update_api_controller_1 = __webpack_require__(133);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
 let UpdateApiModule = class UpdateApiModule {
 };
 exports.UpdateApiModule = UpdateApiModule;
@@ -11594,7 +11697,7 @@ exports.UpdateApiModule = UpdateApiModule = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11615,14 +11718,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiService = void 0;
 const common_1 = __webpack_require__(5);
 const path = __webpack_require__(20);
-const os_1 = __webpack_require__(130);
+const os_1 = __webpack_require__(131);
 const fs = __webpack_require__(19);
-const child_process_1 = __webpack_require__(131);
-const config_1 = __webpack_require__(73);
+const child_process_1 = __webpack_require__(132);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const rxjs_1 = __webpack_require__(50);
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const rxjs_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(69);
 let UpdateApiService = class UpdateApiService {
     constructor(configService, saveLogService, updateMicroservice) {
         this.configService = configService;
@@ -11635,9 +11738,7 @@ let UpdateApiService = class UpdateApiService {
         this.updateService = this.updateMicroservice.getService('UpdateGrpcService');
     }
     async pingSendToTarget(target) {
-        const data = await (0, rxjs_1.lastValueFrom)(this.updateService.testPing({ target }));
-        console.log(data);
-        return data;
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.testPing({ target }));
     }
     async getNewVersion(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.updateService.getNewVersion(dto));
@@ -11729,19 +11830,19 @@ exports.UpdateApiService = UpdateApiService = __decorate([
 
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ ((module) => {
 
 module.exports = require("os");
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ ((module) => {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11761,14 +11862,14 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiController = void 0;
 const common_1 = __webpack_require__(5);
-const update_api_service_1 = __webpack_require__(129);
+const update_api_service_1 = __webpack_require__(130);
 const swagger_1 = __webpack_require__(8);
-const update_dto_1 = __webpack_require__(133);
-const etc_dto_1 = __webpack_require__(134);
-const version_dto_1 = __webpack_require__(135);
-const pagination_response_1 = __webpack_require__(105);
-const version_dto_2 = __webpack_require__(135);
-const saveLog_service_1 = __webpack_require__(68);
+const update_dto_1 = __webpack_require__(134);
+const etc_dto_1 = __webpack_require__(135);
+const version_dto_1 = __webpack_require__(136);
+const pagination_response_1 = __webpack_require__(106);
+const version_dto_2 = __webpack_require__(136);
+const saveLog_service_1 = __webpack_require__(69);
 let UpdateApiController = class UpdateApiController {
     constructor(updateService, saveLogService) {
         this.updateService = updateService;
@@ -11947,14 +12048,13 @@ __decorate([
 ], UpdateApiController.prototype, "webUIAppDelete", null);
 exports.UpdateApiController = UpdateApiController = __decorate([
     (0, swagger_1.ApiTags)('업데이트 관련 API (update)'),
-    (0, swagger_1.ApiExcludeController)(),
     (0, common_1.Controller)('update'),
     __metadata("design:paramtypes", [typeof (_a = typeof update_api_service_1.UpdateApiService !== "undefined" && update_api_service_1.UpdateApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], UpdateApiController);
 
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11969,7 +12069,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ResponseWebUIAppDeleteDto = exports.ResponseWebUIAppAddDto = exports.WebUIAppDeleteDto = exports.WebUIAppAddDto = exports.UpdateResponseSocketDto = exports.UpdateRequestSocketDto = exports.UpdateRequestDto = exports.ResponseReleaseVersionInfoDto = exports.GetReleaseAppsVersionListRequestDto = exports.GetReleaseAppBranchesResponseDto = exports.ResponseReleaseAppsBranches = exports.GetReleaseAppsBranchesRequestDto = exports.CommitDto = exports.GetSoftwareParamDto = void 0;
-const pagination_1 = __webpack_require__(104);
+const pagination_1 = __webpack_require__(105);
 const util_1 = __webpack_require__(13);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
@@ -12310,7 +12410,7 @@ __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12408,7 +12508,7 @@ __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12544,7 +12644,7 @@ __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12557,14 +12657,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const cobot_api_service_1 = __webpack_require__(137);
-const cobot_api_controller_1 = __webpack_require__(138);
-const constant_1 = __webpack_require__(61);
+const cobot_api_service_1 = __webpack_require__(138);
+const cobot_api_controller_1 = __webpack_require__(139);
+const constant_1 = __webpack_require__(62);
 const microservices_1 = __webpack_require__(3);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const path_1 = __webpack_require__(20);
 const grpc_1 = __webpack_require__(27);
-const log_module_1 = __webpack_require__(74);
+const log_module_1 = __webpack_require__(75);
 let CobotApiModule = class CobotApiModule {
 };
 exports.CobotApiModule = CobotApiModule;
@@ -12594,7 +12694,7 @@ exports.CobotApiModule = CobotApiModule = __decorate([
 
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12613,11 +12713,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotApiService = void 0;
-const constant_1 = __webpack_require__(61);
+const constant_1 = __webpack_require__(62);
 const microservices_1 = __webpack_require__(3);
 const common_1 = __webpack_require__(5);
-const rxjs_1 = __webpack_require__(50);
-const saveLog_service_1 = __webpack_require__(68);
+const rxjs_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(69);
 let CobotApiService = class CobotApiService {
     constructor(cobotMicroservice, saveLogService) {
         this.cobotMicroservice = cobotMicroservice;
@@ -12683,7 +12783,7 @@ exports.CobotApiService = CobotApiService = __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12705,12 +12805,12 @@ exports.CobotApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
 const swagger_2 = __webpack_require__(8);
-const cobot_api_service_1 = __webpack_require__(137);
-const cobot_dto_1 = __webpack_require__(139);
-const cobot_dto_2 = __webpack_require__(139);
-const cobot_dto_3 = __webpack_require__(139);
-const cobot_dto_4 = __webpack_require__(139);
-const saveLog_service_1 = __webpack_require__(68);
+const cobot_api_service_1 = __webpack_require__(138);
+const cobot_dto_1 = __webpack_require__(140);
+const cobot_dto_2 = __webpack_require__(140);
+const cobot_dto_3 = __webpack_require__(140);
+const cobot_dto_4 = __webpack_require__(140);
+const saveLog_service_1 = __webpack_require__(69);
 let CobotApiController = class CobotApiController {
     constructor(cobotApiService, saveLogService) {
         this.cobotApiService = cobotApiService;
@@ -13585,7 +13685,7 @@ exports.CobotApiController = CobotApiController = __decorate([
 
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14033,7 +14133,7 @@ __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14046,12 +14146,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const tcp_api_service_1 = __webpack_require__(141);
-const tcp_api_controller_1 = __webpack_require__(142);
-const log_module_1 = __webpack_require__(74);
-const constant_1 = __webpack_require__(61);
+const tcp_api_service_1 = __webpack_require__(142);
+const tcp_api_controller_1 = __webpack_require__(143);
+const log_module_1 = __webpack_require__(75);
+const constant_1 = __webpack_require__(62);
 const microservices_1 = __webpack_require__(3);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const path_1 = __webpack_require__(20);
 const grpc_1 = __webpack_require__(27);
 let TcpApiModule = class TcpApiModule {
@@ -14083,7 +14183,7 @@ exports.TcpApiModule = TcpApiModule = __decorate([
 
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14103,10 +14203,10 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiService = void 0;
 const common_1 = __webpack_require__(5);
-const constant_1 = __webpack_require__(61);
+const constant_1 = __webpack_require__(62);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-const saveLog_service_1 = __webpack_require__(68);
+const rxjs_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(69);
 let TcpApiService = class TcpApiService {
     constructor(tcpMicroservice, saveLogService) {
         this.tcpMicroservice = tcpMicroservice;
@@ -14134,7 +14234,7 @@ exports.TcpApiService = TcpApiService = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14155,9 +14255,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const tcp_api_service_1 = __webpack_require__(141);
-const cobot_dto_1 = __webpack_require__(139);
-const saveLog_service_1 = __webpack_require__(68);
+const tcp_api_service_1 = __webpack_require__(142);
+const cobot_dto_1 = __webpack_require__(140);
+const saveLog_service_1 = __webpack_require__(69);
 let TcpApiController = class TcpApiController {
     constructor(tcpApiService, saveLogService) {
         this.tcpApiService = tcpApiService;
@@ -14225,7 +14325,7 @@ exports.TcpApiController = TcpApiController = __decorate([
 
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14238,13 +14338,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiModule = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
-const socket_api_controller_1 = __webpack_require__(144);
-const socket_api_service_1 = __webpack_require__(145);
+const config_1 = __webpack_require__(74);
+const socket_api_controller_1 = __webpack_require__(145);
+const socket_api_service_1 = __webpack_require__(146);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const socket_mqtt_controller_1 = __webpack_require__(146);
-const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const socket_mqtt_controller_1 = __webpack_require__(147);
+const log_module_1 = __webpack_require__(75);
+const path_1 = __webpack_require__(20);
+const common_2 = __webpack_require__(26);
 let SocketApiModule = class SocketApiModule {
 };
 exports.SocketApiModule = SocketApiModule;
@@ -14268,6 +14370,18 @@ exports.SocketApiModule = SocketApiModule = __decorate([
                             },
                         }),
                     },
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.CONFIG_SERVICE,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.GRPC,
+                            options: {
+                                url: configService.get('CONFIG_GRPC_URL'),
+                                package: common_2.ConfigMicroservice.protobufPackage,
+                                protoPath: (0, path_1.join)(process.cwd(), 'proto/config.proto'),
+                            },
+                        }),
+                    },
                 ],
             }),
         ],
@@ -14278,7 +14392,7 @@ exports.SocketApiModule = SocketApiModule = __decorate([
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14291,13 +14405,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e;
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiController = void 0;
 const common_1 = __webpack_require__(5);
 const swagger_1 = __webpack_require__(8);
-const socket_api_service_1 = __webpack_require__(145);
-const saveLog_service_1 = __webpack_require__(68);
+const socket_api_service_1 = __webpack_require__(146);
+const saveLog_service_1 = __webpack_require__(69);
+const frs_dto_1 = __webpack_require__(223);
 let SocketApiController = class SocketApiController {
     constructor(saveLogService) {
         this.saveLogService = saveLogService;
@@ -14311,6 +14429,12 @@ let SocketApiController = class SocketApiController {
     }
     async getProgramStatus() {
         return this.socketService.getProgramStatus();
+    }
+    async getFrsUrl() {
+        return this.socketService.getFrsUrl();
+    }
+    async updateFrsUrl(dto) {
+        return this.socketService.updateFrsUrl(dto);
     }
 };
 exports.SocketApiController = SocketApiController;
@@ -14554,6 +14678,27 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], SocketApiController.prototype, "getProgramStatus", null);
+__decorate([
+    (0, common_1.Get)('frs/url'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'FRS 상태 조회 (frs)',
+        description: '가장 최신의 FRS 상태를 요청합니다. 현재 상태는 현재 로봇의 FRS 상태를 반환합니다.',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], SocketApiController.prototype, "getFrsUrl", null);
+__decorate([
+    (0, common_1.Put)('frs/url'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'FRS URL 변경',
+        description: '입력된 url 값으로 FRS URL 변경 및 재연결시도',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof frs_dto_1.FrsUrlRequestDto !== "undefined" && frs_dto_1.FrsUrlRequestDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], SocketApiController.prototype, "updateFrsUrl", null);
 exports.SocketApiController = SocketApiController = __decorate([
     (0, swagger_1.ApiTags)('소켓 관련 API (socket)'),
     (0, common_1.Controller)('socket'),
@@ -14562,7 +14707,7 @@ exports.SocketApiController = SocketApiController = __decorate([
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14575,17 +14720,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketApiService = void 0;
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const rxjs_1 = __webpack_require__(51);
 let SocketApiService = class SocketApiService {
-    constructor(saveLogService) {
+    constructor(saveLogService, configMicroservice, mqttMicroservice) {
         this.saveLogService = saveLogService;
+        this.configMicroservice = configMicroservice;
+        this.mqttMicroservice = mqttMicroservice;
         this.logger = this.saveLogService.get('gateway-api');
     }
-    onModuleInit() { }
+    onModuleInit() {
+        this.configService = this.configMicroservice.getService('ConfigGrpcService');
+    }
     async getStatus() {
         return this.lastStatus;
     }
@@ -14607,16 +14762,26 @@ let SocketApiService = class SocketApiService {
     async programStatus(data) {
         this.lastProgramStatus = data;
     }
+    async getFrsUrl() {
+        const response = await (0, rxjs_1.lastValueFrom)(this.mqttMicroservice.send('getFrsUrl', {}));
+        this.logger?.info(`[GATEWAY] getFrsUrl response : ${JSON.stringify(response)}`);
+        return response;
+    }
+    async updateFrsUrl(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.mqttMicroservice.send('updateFrsUrl', dto));
+    }
 };
 exports.SocketApiService = SocketApiService;
 exports.SocketApiService = SocketApiService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object])
+    __param(1, (0, common_1.Inject)(constant_1.CONFIG_SERVICE)),
+    __param(2, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _c : Object])
 ], SocketApiService);
 
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14636,15 +14801,15 @@ var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
-const status_type_1 = __webpack_require__(147);
-const socket_api_service_1 = __webpack_require__(145);
-const websockets_1 = __webpack_require__(149);
-const movestatus_type_1 = __webpack_require__(150);
+const config_1 = __webpack_require__(74);
+const status_type_1 = __webpack_require__(148);
+const socket_api_service_1 = __webpack_require__(146);
+const websockets_1 = __webpack_require__(150);
+const movestatus_type_1 = __webpack_require__(151);
 const microservices_1 = __webpack_require__(3);
-const saveLog_service_1 = __webpack_require__(68);
-const exAccessory_dto_1 = __webpack_require__(151);
-const programStatus_dto_1 = __webpack_require__(152);
+const saveLog_service_1 = __webpack_require__(69);
+const exAccessory_dto_1 = __webpack_require__(152);
+const programStatus_dto_1 = __webpack_require__(153);
 let SocketMqttController = class SocketMqttController {
     constructor(configService, saveLogService) {
         this.configService = configService;
@@ -14704,7 +14869,7 @@ exports.SocketMqttController = SocketMqttController = __decorate([
 
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14722,7 +14887,7 @@ exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = export
 const date_util_1 = __webpack_require__(16);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const state_type_1 = __webpack_require__(148);
+const state_type_1 = __webpack_require__(149);
 const class_transformer_1 = __webpack_require__(10);
 var Description;
 (function (Description) {
@@ -15387,7 +15552,7 @@ __decorate([
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -15448,13 +15613,13 @@ var ChargeState;
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/websockets");
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15472,8 +15637,8 @@ exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.V
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
 const util_1 = __webpack_require__(13);
-const state_type_1 = __webpack_require__(148);
-const state_type_2 = __webpack_require__(148);
+const state_type_1 = __webpack_require__(149);
+const state_type_2 = __webpack_require__(149);
 var Description;
 (function (Description) {
     Description["MOVE_AUTO"] = "\uC790\uC728\uC8FC\uD589 \uC774\uB3D9 \uC0C1\uD0DC";
@@ -15785,7 +15950,7 @@ __decorate([
 
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15957,7 +16122,7 @@ __decorate([
 
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16019,7 +16184,984 @@ __decorate([
 
 
 /***/ }),
-/* 153 */
+/* 154 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestApiModule = void 0;
+const common_1 = __webpack_require__(5);
+const test_api_service_1 = __webpack_require__(155);
+const test_api_controller_1 = __webpack_require__(156);
+const microservices_1 = __webpack_require__(3);
+const common_2 = __webpack_require__(26);
+const config_1 = __webpack_require__(74);
+const path_1 = __webpack_require__(20);
+const constant_1 = __webpack_require__(62);
+const log_module_1 = __webpack_require__(75);
+let TestApiModule = class TestApiModule {
+};
+exports.TestApiModule = TestApiModule;
+exports.TestApiModule = TestApiModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            log_module_1.LogModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: constant_1.TEST_SERVICE,
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.GRPC,
+                        options: {
+                            package: common_2.TestMicroservice.protobufPackage,
+                            protoPath: (0, path_1.join)(process.cwd(), 'proto/test.proto'),
+                            url: configService.get('TEST_GRPC_URL'),
+                        },
+                    }),
+                },
+            ]),
+        ],
+        controllers: [test_api_controller_1.TestApiController],
+        providers: [test_api_service_1.TestApiService],
+    })
+], TestApiModule);
+
+
+/***/ }),
+/* 155 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestApiService = void 0;
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const rxjs_1 = __webpack_require__(51);
+let TestApiService = class TestApiService {
+    constructor(testMicroservice, saveLogService) {
+        this.testMicroservice = testMicroservice;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-api');
+    }
+    onModuleInit() {
+        this.testService = this.testMicroservice.getService('TestGrpcService');
+    }
+    async getTestRecordAll(param) {
+        const data = await (0, rxjs_1.lastValueFrom)(this.testService.getTestRecordAll(param));
+        return {
+            ...data,
+            list: data.list?.map((item) => ({
+                ...item,
+                createdAt: item.createdAt ? new Date(item.createdAt) : null,
+                updatedAt: item.updatedAt ? new Date(item.updatedAt) : null,
+            })),
+        };
+    }
+    async getTestRecord(id) {
+        const data = await (0, rxjs_1.lastValueFrom)(this.testService.getTestRecord({ id }));
+        return {
+            ...data,
+            createdAt: new Date(data.createdAt),
+            updatedAt: new Date(data.updatedAt),
+        };
+    }
+    async getRecentTestResult(param) {
+        return this.testService.getTestResultRecent({ subjects: param.subjects });
+    }
+    async getTestResultBySubject(param) {
+        return this.testService.getTestResultbySubject({ subject: param.subject });
+    }
+    async checkTestRunning(sessionId) {
+        return this.testService.checkTestRunning({ sessionId });
+    }
+    async startTest(param, sessionId) {
+        return this.testService.startTest({ sessionId: sessionId, testRecordId: param.testRecordId.toString(), tester: param.tester });
+    }
+    async endTest(sessionId) {
+        return this.testService.stopTest({ sessionId: sessionId });
+    }
+    async insertTestRecord(param, sessionId) {
+        return this.testService.createTestRecord({ sessionId, tester: param.tester, subjects: param.subjects });
+    }
+    async updateTestRecord(param, sessionId) {
+        return this.testService.updateTestRecord({ sessionId: sessionId, id: param.id.toString(), tester: param.tester });
+    }
+    async updateTestResult(param, sessionId) {
+        return this.testService.updateTestResult({
+            sessionId: sessionId,
+            testRecordId: param.testRecordId.toString(),
+            subject: param.subject,
+            result: param.result,
+        });
+    }
+};
+exports.TestApiService = TestApiService;
+exports.TestApiService = TestApiService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)(constant_1.TEST_SERVICE)),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], TestApiService);
+
+
+/***/ }),
+/* 156 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestApiController = void 0;
+const common_1 = __webpack_require__(5);
+const swagger_1 = __webpack_require__(8);
+const test_api_service_1 = __webpack_require__(155);
+const saveLog_service_1 = __webpack_require__(69);
+const test_entity_1 = __webpack_require__(157);
+const test_dto_1 = __webpack_require__(159);
+const express_1 = __webpack_require__(112);
+let TestApiController = class TestApiController {
+    constructor(testService, saveLogService) {
+        this.testService = testService;
+        this.saveLogService = saveLogService;
+        console.log(':-->', process.env.TEST_SERVICE_URL);
+        this.logger = this.saveLogService.get('gateway-api');
+    }
+    async getTestRecordList(param) {
+        return this.testService.getTestRecordAll(param);
+    }
+    async getTestRecord(id) {
+        return this.testService.getTestRecord(id);
+    }
+    getRecentTestResult(param) {
+        return this.testService.getRecentTestResult(param);
+    }
+    getTestResultBySubject(param) {
+        return this.testService.getTestResultBySubject(param);
+    }
+    checkTestRunning(req) {
+        const sessionId = req.sessionID;
+        return this.testService.checkTestRunning(sessionId);
+    }
+    startTest(req, param) {
+        const sessionId = req.sessionID;
+        return this.testService.startTest(param, sessionId);
+    }
+    endTest(req) {
+        const sessionId = req.sessionID;
+        return this.testService.endTest(sessionId);
+    }
+    insertTestRecord(req, insertTestRecordDto) {
+        const sessionId = req.sessionID;
+        return this.testService.insertTestRecord(insertTestRecordDto, sessionId);
+    }
+    updateTestRecord(req, updateTestRecordDto) {
+        const sessionId = req.sessionID;
+        return this.testService.updateTestRecord(updateTestRecordDto, sessionId);
+    }
+    upsertTestResult(req, updateTestDataDto) {
+        const sessionId = req.sessionID;
+        return this.testService.updateTestResult(updateTestDataDto, sessionId);
+    }
+};
+exports.TestApiController = TestApiController;
+__decorate([
+    (0, common_1.Get)('record'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 결과 목록 조회',
+        description: '페이지네이션과 필터링을 지원하는 테스트 결과 목록을 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({ description: '테스트 기록 조회 성공', type: test_entity_1.TestRecord }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof test_dto_1.GetTestRecordListDto !== "undefined" && test_dto_1.GetTestRecordListDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", Promise)
+], TestApiController.prototype, "getTestRecordList", null);
+__decorate([
+    (0, common_1.Get)('record/:id'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 레코드 조회',
+        description: '테스트 레코드를 조회합니다.',
+    }),
+    (0, swagger_1.ApiOkResponse)({ description: '테스트 기록 조회 성공', type: test_entity_1.TestRecord }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TestApiController.prototype, "getTestRecord", null);
+__decorate([
+    (0, common_1.Get)('recent'),
+    (0, swagger_1.ApiOperation)({
+        summary: '주제별 최근 테스트 결과 조회',
+        description: '지정된 주제들의 최근 테스트 결과를 조회합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '최근 테스트 결과 조회 성공',
+        type: test_dto_1.ResponseTestResultDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 파라미터',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof test_dto_1.GetRecentTestResultDto !== "undefined" && test_dto_1.GetRecentTestResultDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "getRecentTestResult", null);
+__decorate([
+    (0, common_1.Get)('subject'),
+    (0, swagger_1.ApiOperation)({
+        summary: '특정 주제 테스트 결과 조회',
+        description: '특정 주제의 모든 테스트 결과를 조회합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '주제별 테스트 결과 조회 성공',
+        type: test_dto_1.ResponseTestResultDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 파라미터',
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof test_dto_1.GetTestResultBySubjectDto !== "undefined" && test_dto_1.GetTestResultBySubjectDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "getTestResultBySubject", null);
+__decorate([
+    (0, common_1.Get)('running'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 진행 여부 확인',
+        description: '테스트 진행 여부를 확인합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 진행 여부 확인 성공',
+        type: test_dto_1.CheckTestRunningDto,
+    }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _f : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "checkTestRunning", null);
+__decorate([
+    (0, common_1.Post)('start'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 시작',
+        description: '테스트를 시작합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 시작 성공',
+        type: test_dto_1.TestRunningInfoDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '이미 진행중인 테스트가 있습니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _g : Object, typeof (_h = typeof test_dto_1.StartTestDto !== "undefined" && test_dto_1.StartTestDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "startTest", null);
+__decorate([
+    (0, common_1.Post)('end'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 종료',
+        description: '테스트를 종료합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 종료 성공',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '테스트 시작 API를 통해 테스트를 시작하지 않았습니다. 테스트 시작 API를 통해 테스트를 시작하세요.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _j : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "endTest", null);
+__decorate([
+    (0, common_1.Post)('record'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 레코드 생성',
+        description: '새로운 테스트 레코드를 생성합니다.',
+    }),
+    (0, swagger_1.ApiBody)({
+        type: test_dto_1.InsertTestRecordDto,
+        description: '테스트 레코드 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 레코드 생성 성공',
+        type: test_dto_1.TestRecordDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_k = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _k : Object, typeof (_l = typeof test_dto_1.InsertTestRecordDto !== "undefined" && test_dto_1.InsertTestRecordDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "insertTestRecord", null);
+__decorate([
+    (0, common_1.Put)('record'),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 레코드 수정',
+        description: '기존 테스트 레코드를 수정합니다.',
+    }),
+    (0, swagger_1.ApiBody)({
+        type: test_dto_1.UpdateTestRecordDto,
+        description: '테스트 레코드 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '테스트 레코드 수정 성공',
+        type: test_dto_1.TestRecordDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _m : Object, typeof (_o = typeof test_dto_1.UpdateTestRecordDto !== "undefined" && test_dto_1.UpdateTestRecordDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "updateTestRecord", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '테스트 결과 생성/수정',
+        description: '새로운 테스트 결과를 생성하거나 기존 결과를 수정합니다.',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: '테스트 결과 생성/수정 성공',
+        type: test_dto_1.TestResultDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: '잘못된 요청 데이터',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 내부 오류',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_p = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _p : Object, typeof (_q = typeof test_dto_1.UpdateTestDataDto !== "undefined" && test_dto_1.UpdateTestDataDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", void 0)
+], TestApiController.prototype, "upsertTestResult", null);
+exports.TestApiController = TestApiController = __decorate([
+    (0, swagger_1.ApiTags)('테스트 API'),
+    (0, common_1.Controller)('test'),
+    __metadata("design:paramtypes", [typeof (_a = typeof test_api_service_1.TestApiService !== "undefined" && test_api_service_1.TestApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+], TestApiController);
+
+
+/***/ }),
+/* 157 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestRecordSchema = exports.TestRecord = exports.TestResultSchema = exports.TestResult = void 0;
+const mongoose_1 = __webpack_require__(158);
+let TestResult = class TestResult {
+};
+exports.TestResult = TestResult;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "testRecordId", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true, maxlength: 128 }),
+    __metadata("design:type", String)
+], TestResult.prototype, "subject", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        type: String,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], TestResult.prototype, "result", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TestResult.prototype, "testAt", void 0);
+exports.TestResult = TestResult = __decorate([
+    (0, mongoose_1.Schema)({
+        collection: 'test',
+    })
+], TestResult);
+exports.TestResultSchema = mongoose_1.SchemaFactory.createForClass(TestResult);
+let TestRecord = class TestRecord {
+};
+exports.TestRecord = TestRecord;
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], TestRecord.prototype, "id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+        maxlength: 128,
+    }),
+    __metadata("design:type", String)
+], TestRecord.prototype, "tester", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: [exports.TestResultSchema], defulat: [] }),
+    __metadata("design:type", Array)
+], TestRecord.prototype, "tests", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TestRecord.prototype, "createdAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        default: Date.now,
+    }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], TestRecord.prototype, "updatedAt", void 0);
+exports.TestRecord = TestRecord = __decorate([
+    (0, mongoose_1.Schema)({
+        collection: 'test_record',
+    })
+], TestRecord);
+exports.TestRecordSchema = mongoose_1.SchemaFactory.createForClass(TestRecord);
+
+
+/***/ }),
+/* 158 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/mongoose");
+
+/***/ }),
+/* 159 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CheckTestRunningDto = exports.TestRunningInfoDto = exports.StartTestDto = exports.UpdateTestRecordDto = exports.InsertTestRecordDto = exports.ResponseTestRecordListDto = exports.ResponseTestRecordDto = exports.ResponseTestResultDto = exports.UpdateTestDataDto = exports.InsertTestDataDto = exports.GetTestRecordListDto = exports.GetRecentTestResultDto = exports.GetTestResultBySubjectDto = exports.TestRecordDto = exports.TestResultDto = void 0;
+const pagination_request_1 = __webpack_require__(104);
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+const class_transformer_1 = __webpack_require__(10);
+class TestResultDto {
+}
+exports.TestResultDto = TestResultDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 ID',
+    }),
+    __metadata("design:type", Number)
+], TestResultDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 레코드 ID',
+    }),
+    __metadata("design:type", Number)
+], TestResultDto.prototype, "testRecordId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'DISPLAY',
+        description: '테스트 주제',
+    }),
+    __metadata("design:type", String)
+], TestResultDto.prototype, "subject", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'success',
+        description: '테스트 결과',
+        enum: ['success', 'fail'],
+        nullable: true,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], TestResultDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-07-16T07:56:52.000Z',
+        description: '테스트 수행 시간',
+    }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], TestResultDto.prototype, "testAt", void 0);
+class TestRecordDto {
+}
+exports.TestRecordDto = TestRecordDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 레코드 ID',
+    }),
+    __metadata("design:type", Number)
+], TestRecordDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: [],
+        description: '테스트 결과 목록',
+        type: TestResultDto,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], TestRecordDto.prototype, "tests", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        nullable: true,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], TestRecordDto.prototype, "tester", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-07-16T07:56:52.000Z',
+        description: '테스트 레코드 생성 시간',
+    }),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], TestRecordDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-07-16T07:56:52.000Z',
+        description: '테스트 레코드 수정 시간',
+    }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], TestRecordDto.prototype, "updatedAt", void 0);
+class GetTestResultBySubjectDto {
+}
+exports.GetTestResultBySubjectDto = GetTestResultBySubjectDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'DISPLAY',
+        description: '테스트 주제',
+    }),
+    __metadata("design:type", String)
+], GetTestResultBySubjectDto.prototype, "subject", void 0);
+class GetRecentTestResultDto {
+}
+exports.GetRecentTestResultDto = GetRecentTestResultDto;
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (typeof value === 'string') {
+            return value.split(',').map((s) => s.trim());
+        }
+        return value;
+    }),
+    (0, swagger_1.ApiProperty)({
+        example: ['DISPLAY', 'SPEAKER'],
+        description: '테스트 주제 배열 (쉼표로 구분된 문자열도 지원)',
+        required: false,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], GetRecentTestResultDto.prototype, "subjects", void 0);
+class GetTestRecordListDto extends pagination_request_1.PaginationRequest {
+}
+exports.GetTestRecordListDto = GetTestRecordListDto;
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: '',
+        required: false,
+        description: '테스트 주제 배열',
+        enum: ['SPEAKER', 'DISPLAY'],
+    }),
+    __metadata("design:type", Array)
+], GetTestRecordListDto.prototype, "subject", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '일반LOG를 읽어올 시작 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
+        example: '2025-01-01 00:00:00',
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "dateTo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '일반LOG를 읽어올 종료 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
+        example: '2025-12-31 23:59:59',
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "dateFrom", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: '',
+        required: false,
+        description: '검색단어',
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "searchText", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'id',
+        required: false,
+        enum: ['id', 'name'],
+        description: '정렬옵션. id 또는 name 값을 기준으로 정렬합니다.',
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "sortOption", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '정렬 방향. ASC 또는 DESC를 입력해주세요.',
+        example: 'ASC',
+        required: false,
+        enum: ['ASC', 'DESC'],
+    }),
+    __metadata("design:type", String)
+], GetTestRecordListDto.prototype, "sortDirection", void 0);
+class InsertTestDataDto {
+}
+exports.InsertTestDataDto = InsertTestDataDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'DISPLAY',
+        description: '테스트 주제',
+    }),
+    __metadata("design:type", String)
+], InsertTestDataDto.prototype, "subject", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(['success', 'fail']),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'success',
+        description: '테스트 결과',
+        enum: ['success', 'fail'],
+    }),
+    __metadata("design:type", String)
+], InsertTestDataDto.prototype, "result", void 0);
+class UpdateTestDataDto extends InsertTestDataDto {
+}
+exports.UpdateTestDataDto = UpdateTestDataDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], UpdateTestDataDto.prototype, "testRecordId", void 0);
+class ResponseTestResultDto {
+}
+exports.ResponseTestResultDto = ResponseTestResultDto;
+__decorate([
+    (0, class_validator_1.IsArray)({ each: true }),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => TestResultDto),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: [],
+        description: '테스트 결과 목록',
+        type: TestResultDto,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], ResponseTestResultDto.prototype, "items", void 0);
+class ResponseTestRecordDto {
+}
+exports.ResponseTestRecordDto = ResponseTestRecordDto;
+__decorate([
+    (0, class_validator_1.IsArray)({ each: true }),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => TestRecordDto),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: [],
+        description: '테스트 레코드 목록',
+        type: TestRecordDto,
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], ResponseTestRecordDto.prototype, "items", void 0);
+class ResponseTestRecordListDto extends ResponseTestRecordDto {
+}
+exports.ResponseTestRecordListDto = ResponseTestRecordListDto;
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 10,
+        description: '페이지 크기',
+    }),
+    __metadata("design:type", Number)
+], ResponseTestRecordListDto.prototype, "pageSize", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '전체 페이지 수',
+    }),
+    __metadata("design:type", Number)
+], ResponseTestRecordListDto.prototype, "totalPage", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 100,
+        description: '전체 테스트 결과 수',
+    }),
+    __metadata("design:type", Number)
+], ResponseTestRecordListDto.prototype, "totalCount", void 0);
+class InsertTestRecordDto {
+}
+exports.InsertTestRecordDto = InsertTestRecordDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        required: false,
+        nullable: true,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], InsertTestRecordDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    (0, swagger_1.ApiProperty)({
+        example: ['DISPLAY', 'SPEAKER'],
+        description: '테스트 주제 배열',
+        isArray: true,
+    }),
+    __metadata("design:type", Array)
+], InsertTestRecordDto.prototype, "subjects", void 0);
+class UpdateTestRecordDto {
+}
+exports.UpdateTestRecordDto = UpdateTestRecordDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], UpdateTestRecordDto.prototype, "id", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        nullable: true,
+        required: false,
+        default: null,
+    }),
+    __metadata("design:type", String)
+], UpdateTestRecordDto.prototype, "tester", void 0);
+class StartTestDto {
+}
+exports.StartTestDto = StartTestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+    }),
+    __metadata("design:type", String)
+], StartTestDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], StartTestDto.prototype, "testRecordId", void 0);
+class TestRunningInfoDto {
+}
+exports.TestRunningInfoDto = TestRunningInfoDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+    }),
+    __metadata("design:type", String)
+], TestRunningInfoDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 기록 ID',
+    }),
+    __metadata("design:type", String)
+], TestRunningInfoDto.prototype, "testRecordId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'test-session-1234567890',
+        description: '테스트 세션 ID',
+    }),
+    __metadata("design:type", String)
+], TestRunningInfoDto.prototype, "testSessionId", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: '테스트 종료 시간',
+    }),
+    __metadata("design:type", Number)
+], TestRunningInfoDto.prototype, "testEndTimestamp", void 0);
+class CheckTestRunningDto {
+}
+exports.CheckTestRunningDto = CheckTestRunningDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: '1234567890',
+        description: '테스트 레코드 ID',
+        required: false,
+        nullable: true,
+        default: undefined,
+    }),
+    __metadata("design:type", String)
+], CheckTestRunningDto.prototype, "testRecordId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'tester1',
+        description: '테스트 수행자',
+        required: false,
+        nullable: true,
+        default: undefined,
+    }),
+    __metadata("design:type", String)
+], CheckTestRunningDto.prototype, "tester", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        example: true,
+        description: '테스트 진행 여부',
+    }),
+    __metadata("design:type", Boolean)
+], CheckTestRunningDto.prototype, "isRunning", void 0);
+
+
+/***/ }),
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16032,7 +17174,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrpcToHttpFilter = void 0;
 const common_1 = __webpack_require__(5);
-const constant_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
 let GrpcToHttpFilter = class GrpcToHttpFilter {
     catch(exception, host) {
         const ctx = host.switchToHttp();
@@ -16122,7 +17264,7 @@ function mapGrpcToHttpStatus(code) {
 
 
 /***/ }),
-/* 154 */
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16135,16 +17277,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const client_socket_service_1 = __webpack_require__(155);
-const client_socket_gateway_1 = __webpack_require__(156);
+const client_socket_service_1 = __webpack_require__(162);
+const client_socket_gateway_1 = __webpack_require__(163);
 const microservices_1 = __webpack_require__(3);
-const client_socket_mqtt_controller_1 = __webpack_require__(161);
-const constant_1 = __webpack_require__(61);
-const config_1 = __webpack_require__(73);
+const client_socket_mqtt_controller_1 = __webpack_require__(168);
+const constant_1 = __webpack_require__(62);
+const config_1 = __webpack_require__(74);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const log_module_1 = __webpack_require__(74);
+const log_module_1 = __webpack_require__(75);
 let ClientSocketModule = class ClientSocketModule {
 };
 exports.ClientSocketModule = ClientSocketModule;
@@ -16323,7 +17465,7 @@ exports.ClientSocketModule = ClientSocketModule = __decorate([
 
 
 /***/ }),
-/* 155 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16345,13 +17487,13 @@ exports.ClientSocketService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
-const websockets_1 = __webpack_require__(149);
-const constant_1 = __webpack_require__(61);
-const move_type_1 = __webpack_require__(101);
+const websockets_1 = __webpack_require__(150);
+const constant_1 = __webpack_require__(62);
+const move_type_1 = __webpack_require__(102);
 const control_type_1 = __webpack_require__(12);
-const parse_util_1 = __webpack_require__(56);
-const rpc_code_exception_1 = __webpack_require__(53);
-const saveLog_service_1 = __webpack_require__(68);
+const parse_util_1 = __webpack_require__(57);
+const rpc_code_exception_1 = __webpack_require__(54);
+const saveLog_service_1 = __webpack_require__(69);
 let ClientSocketService = class ClientSocketService {
     constructor(saveLogService, mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice, settingMicroservice, soundMicroservice, networkMicroservice, updateMicroservice, taskMicroservice, tcpMicroservice, mapMicroservice) {
         this.saveLogService = saveLogService;
@@ -16651,7 +17793,7 @@ exports.ClientSocketService = ClientSocketService = __decorate([
 
 
 /***/ }),
-/* 156 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16670,19 +17812,19 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ClientSocketGateway = void 0;
-const websockets_1 = __webpack_require__(149);
-const client_socket_service_1 = __webpack_require__(155);
-const socket_io_1 = __webpack_require__(157);
+const websockets_1 = __webpack_require__(150);
+const client_socket_service_1 = __webpack_require__(162);
+const socket_io_1 = __webpack_require__(164);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const subscribe_dto_1 = __webpack_require__(158);
-const move_dto_1 = __webpack_require__(100);
-const localization_dto_1 = __webpack_require__(80);
-const load_dto_1 = __webpack_require__(113);
-const mapping_dto_1 = __webpack_require__(112);
+const subscribe_dto_1 = __webpack_require__(165);
+const move_dto_1 = __webpack_require__(101);
+const localization_dto_1 = __webpack_require__(81);
+const load_dto_1 = __webpack_require__(114);
+const mapping_dto_1 = __webpack_require__(113);
 const control_dto_1 = __webpack_require__(9);
-const safety_io_dto_1 = __webpack_require__(72);
-const path_dto_1 = __webpack_require__(160);
-const saveLog_service_1 = __webpack_require__(68);
+const safety_io_dto_1 = __webpack_require__(73);
+const path_dto_1 = __webpack_require__(167);
+const saveLog_service_1 = __webpack_require__(69);
 let ClientSocketGateway = class ClientSocketGateway {
     constructor(clientService, saveLogService) {
         this.clientService = clientService;
@@ -17057,13 +18199,13 @@ exports.ClientSocketGateway = ClientSocketGateway = __decorate([
 
 
 /***/ }),
-/* 157 */
+/* 164 */
 /***/ ((module) => {
 
 module.exports = require("socket.io");
 
 /***/ }),
-/* 158 */
+/* 165 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17080,7 +18222,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubscribeDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const description_1 = __webpack_require__(159);
+const description_1 = __webpack_require__(166);
 class SubscribeDto {
 }
 exports.SubscribeDto = SubscribeDto;
@@ -17097,7 +18239,7 @@ __decorate([
 
 
 /***/ }),
-/* 159 */
+/* 166 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -17110,7 +18252,7 @@ var client_description;
 
 
 /***/ }),
-/* 160 */
+/* 167 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17183,7 +18325,7 @@ __decorate([
 
 
 /***/ }),
-/* 161 */
+/* 168 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17205,21 +18347,21 @@ exports.ClientSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const websockets_1 = __webpack_require__(149);
+const websockets_1 = __webpack_require__(150);
 const common_2 = __webpack_require__(26);
-const client_socket_service_1 = __webpack_require__(155);
-const move_dto_1 = __webpack_require__(100);
-const localization_dto_1 = __webpack_require__(80);
-const load_dto_1 = __webpack_require__(113);
-const mapping_dto_1 = __webpack_require__(112);
+const client_socket_service_1 = __webpack_require__(162);
+const move_dto_1 = __webpack_require__(101);
+const localization_dto_1 = __webpack_require__(81);
+const load_dto_1 = __webpack_require__(114);
+const mapping_dto_1 = __webpack_require__(113);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(147);
-const movestatus_type_1 = __webpack_require__(150);
-const cloud_type_1 = __webpack_require__(162);
-const cobot_dto_1 = __webpack_require__(139);
-const exAccessory_dto_1 = __webpack_require__(151);
-const path_dto_1 = __webpack_require__(160);
-const systemstatus_type_1 = __webpack_require__(163);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
+const cloud_type_1 = __webpack_require__(169);
+const cobot_dto_1 = __webpack_require__(140);
+const exAccessory_dto_1 = __webpack_require__(152);
+const path_dto_1 = __webpack_require__(167);
+const systemstatus_type_1 = __webpack_require__(170);
 let ClientSocketMqttController = class ClientSocketMqttController {
     constructor(clientService) {
         this.clientService = clientService;
@@ -17560,7 +18702,7 @@ exports.ClientSocketMqttController = ClientSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 162 */
+/* 169 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17578,7 +18720,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MappingCloudDto = exports.LidarCloudDto = exports.CloudDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const movestatus_type_1 = __webpack_require__(150);
+const movestatus_type_1 = __webpack_require__(151);
 const util_1 = __webpack_require__(13);
 var Description;
 (function (Description) {
@@ -17694,7 +18836,7 @@ __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 170 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17861,7 +19003,7 @@ __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 171 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17874,19 +19016,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(165);
+const slamnav_socket_service_1 = __webpack_require__(172);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const taskman_socket_service_1 = __webpack_require__(167);
-const constant_1 = __webpack_require__(61);
-const config_1 = __webpack_require__(73);
-const robot_socket_mqtt_controller_1 = __webpack_require__(168);
-const slamnav_socket_gateway_1 = __webpack_require__(176);
-const taskman_socket_gateway_1 = __webpack_require__(177);
-const ex_accessory_socket_gateway_1 = __webpack_require__(180);
-const ex_accessory_socket_service_1 = __webpack_require__(174);
-const log_module_1 = __webpack_require__(74);
+const taskman_socket_service_1 = __webpack_require__(174);
+const constant_1 = __webpack_require__(62);
+const config_1 = __webpack_require__(74);
+const robot_socket_mqtt_controller_1 = __webpack_require__(175);
+const slamnav_socket_gateway_1 = __webpack_require__(183);
+const taskman_socket_gateway_1 = __webpack_require__(184);
+const ex_accessory_socket_gateway_1 = __webpack_require__(187);
+const ex_accessory_socket_service_1 = __webpack_require__(181);
+const log_module_1 = __webpack_require__(75);
 let RobotSocketModule = class RobotSocketModule {
 };
 exports.RobotSocketModule = RobotSocketModule;
@@ -17951,7 +19093,7 @@ exports.RobotSocketModule = RobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 165 */
+/* 172 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17973,9 +19115,9 @@ exports.SlamnavService = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const lodash_1 = __webpack_require__(166);
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const lodash_1 = __webpack_require__(173);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 let SlamnavService = class SlamnavService {
     constructor(mqttMicroservice, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -18019,6 +19161,10 @@ let SlamnavService = class SlamnavService {
     detectRequest(data) {
         this.logger?.debug(`[SLAMNAV] detectRequest : ${JSON.stringify(data)}`);
         this.slamnav?.emit('detectRequest', data);
+    }
+    cameraRequest(data) {
+        this.logger?.debug(`[SLAMNAV] cameraRequest : ${JSON.stringify(data)}`);
+        this.slamnav?.emit('cameraRequest', data);
     }
     loadRequest(data) {
         this.logger?.debug(`[SLAMNAV] loadRequest : ${JSON.stringify(data)}`);
@@ -18078,6 +19224,13 @@ let SlamnavService = class SlamnavService {
         }
         this.logger?.debug(`[SLAMNAV] detectResponse : ${JSON.stringify(data)}`);
         this.mqttMicroservice.emit('detectResponse', data);
+    }
+    cameraResponse(data) {
+        if (data.id == undefined) {
+            this.logger?.warn(`[SLAMNAV] cameraResponse : id undefined`);
+        }
+        this.logger?.debug(`[SLAMNAV] cameraResponse : ${JSON.stringify(data)}`);
+        this.mqttMicroservice.emit('cameraResponse', data);
     }
     settingResponse(data) {
         if (data.id == undefined) {
@@ -18273,13 +19426,13 @@ exports.SlamnavService = SlamnavService = __decorate([
 
 
 /***/ }),
-/* 166 */
+/* 173 */
 /***/ ((module) => {
 
 module.exports = require("lodash");
 
 /***/ }),
-/* 167 */
+/* 174 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18300,8 +19453,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskmanService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 let TaskmanService = class TaskmanService {
     constructor(mqttMicroservice, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -18363,7 +19516,7 @@ exports.TaskmanService = TaskmanService = __decorate([
 
 
 /***/ }),
-/* 168 */
+/* 175 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18379,34 +19532,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RobotSocketMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const slamnav_socket_service_1 = __webpack_require__(165);
+const slamnav_socket_service_1 = __webpack_require__(172);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const taskman_socket_service_1 = __webpack_require__(167);
-const move_dto_1 = __webpack_require__(100);
-const move_domain_1 = __webpack_require__(169);
-const localization_domain_1 = __webpack_require__(170);
-const control_domain_1 = __webpack_require__(171);
-const move_dto_2 = __webpack_require__(100);
+const taskman_socket_service_1 = __webpack_require__(174);
+const move_dto_1 = __webpack_require__(101);
+const move_domain_1 = __webpack_require__(176);
+const localization_domain_1 = __webpack_require__(177);
+const control_domain_1 = __webpack_require__(178);
+const move_dto_2 = __webpack_require__(101);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(147);
-const movestatus_type_1 = __webpack_require__(150);
-const map_command_domain_1 = __webpack_require__(109);
-const task_dto_1 = __webpack_require__(172);
-const ex_accessory_socket_service_1 = __webpack_require__(174);
-const exAccessory_dto_1 = __webpack_require__(151);
-const version_dto_1 = __webpack_require__(135);
-const setting_dto_1 = __webpack_require__(96);
-const localization_dto_1 = __webpack_require__(80);
-const mapping_dto_1 = __webpack_require__(112);
-const load_dto_1 = __webpack_require__(113);
-const path_dto_1 = __webpack_require__(160);
-const saveLog_service_1 = __webpack_require__(68);
-const detect_domain_1 = __webpack_require__(175);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
+const map_command_domain_1 = __webpack_require__(110);
+const task_dto_1 = __webpack_require__(179);
+const ex_accessory_socket_service_1 = __webpack_require__(181);
+const exAccessory_dto_1 = __webpack_require__(152);
+const version_dto_1 = __webpack_require__(136);
+const setting_dto_1 = __webpack_require__(97);
+const localization_dto_1 = __webpack_require__(81);
+const mapping_dto_1 = __webpack_require__(113);
+const load_dto_1 = __webpack_require__(114);
+const path_dto_1 = __webpack_require__(167);
+const saveLog_service_1 = __webpack_require__(69);
+const detect_domain_1 = __webpack_require__(182);
+const cam_dto_1 = __webpack_require__(225);
 let RobotSocketMqttController = class RobotSocketMqttController {
     constructor(slamnavService, exAccessoryService, taskmanService, saveLogService) {
         this.slamnavService = slamnavService;
@@ -18439,6 +19593,9 @@ let RobotSocketMqttController = class RobotSocketMqttController {
     ControlRequest(data) {
         console.log('mqtt got controlRequest');
         this.slamnavService.controlRequest(data);
+    }
+    CameraRequest(data) {
+        this.slamnavService.cameraRequest(data);
     }
     DetectRequest(data) {
         this.slamnavService.detectRequest(data);
@@ -18560,6 +19717,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "ControlRequest", null);
 __decorate([
+    (0, microservices_1.EventPattern)('cameraRequest'),
+    (0, nestjs_asyncapi_1.AsyncApiPub)({
+        channel: 'cameraRequest',
+        message: {
+            payload: cam_dto_1.CameraResponseSlamnav,
+        },
+        description: 'Camera 요청',
+    }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof cam_dto_1.CameraResponseSlamnav !== "undefined" && cam_dto_1.CameraResponseSlamnav) === "function" ? _l : Object]),
+    __metadata("design:returntype", void 0)
+], RobotSocketMqttController.prototype, "CameraRequest", null);
+__decorate([
     (0, microservices_1.EventPattern)('detectRequest'),
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'detectRequest',
@@ -18570,7 +19741,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_l = typeof detect_domain_1.DetectModel !== "undefined" && detect_domain_1.DetectModel) === "function" ? _l : Object]),
+    __metadata("design:paramtypes", [typeof (_m = typeof detect_domain_1.DetectModel !== "undefined" && detect_domain_1.DetectModel) === "function" ? _m : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "DetectRequest", null);
 __decorate([
@@ -18584,7 +19755,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _m : Object]),
+    __metadata("design:paramtypes", [typeof (_o = typeof map_command_domain_1.MapCommandModel !== "undefined" && map_command_domain_1.MapCommandModel) === "function" ? _o : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "LoadRequest", null);
 __decorate([
@@ -18598,7 +19769,7 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof setting_dto_1.SettingRequestSlamnav !== "undefined" && setting_dto_1.SettingRequestSlamnav) === "function" ? _o : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof setting_dto_1.SettingRequestSlamnav !== "undefined" && setting_dto_1.SettingRequestSlamnav) === "function" ? _p : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "SettingRequest", null);
 __decorate([
@@ -18611,49 +19782,49 @@ __decorate([
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof path_dto_1.PathResponseSlamnav !== "undefined" && path_dto_1.PathResponseSlamnav) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_q = typeof path_dto_1.PathResponseSlamnav !== "undefined" && path_dto_1.PathResponseSlamnav) === "function" ? _q : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "PathResponse", null);
 __decorate([
     (0, microservices_1.EventPattern)('moveResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof move_dto_2.MoveResponseSlamnav !== "undefined" && move_dto_2.MoveResponseSlamnav) === "function" ? _q : Object]),
+    __metadata("design:paramtypes", [typeof (_r = typeof move_dto_2.MoveResponseSlamnav !== "undefined" && move_dto_2.MoveResponseSlamnav) === "function" ? _r : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveResponse", null);
 __decorate([
     (0, microservices_1.EventPattern)('dockResponse'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_r = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _r : Object]),
+    __metadata("design:paramtypes", [typeof (_s = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _s : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getDockResponse", null);
 __decorate([
     (0, microservices_1.EventPattern)('status'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_s = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _s : Object]),
+    __metadata("design:paramtypes", [typeof (_t = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _t : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getStatus", null);
 __decorate([
     (0, microservices_1.EventPattern)('moveStatus'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_u = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _u : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "getMoveStatus", null);
 __decorate([
     (0, microservices_1.EventPattern)('exAccessoryRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof exAccessory_dto_1.ExAccessoryRequestExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryRequestExAccessory) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof exAccessory_dto_1.ExAccessoryRequestExAccessory !== "undefined" && exAccessory_dto_1.ExAccessoryRequestExAccessory) === "function" ? _v : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "exAccessoryRequest", null);
 __decorate([
     (0, microservices_1.EventPattern)('taskman:taskRequest'),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _v : Object]),
+    __metadata("design:paramtypes", [typeof (_w = typeof task_dto_1.TaskRequestDto !== "undefined" && task_dto_1.TaskRequestDto) === "function" ? _w : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "taskRequest", null);
 __decorate([
@@ -18677,15 +19848,15 @@ exports.RobotSocketMqttController = RobotSocketMqttController = __decorate([
 
 
 /***/ }),
-/* 169 */
+/* 176 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveModel = exports.MoveMethod = exports.MoveStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
-const move_type_1 = __webpack_require__(101);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
+const move_type_1 = __webpack_require__(102);
 const util_1 = __webpack_require__(13);
 var MoveStatus;
 (function (MoveStatus) {
@@ -18828,15 +19999,15 @@ exports.MoveModel = MoveModel;
 
 
 /***/ }),
-/* 170 */
+/* 177 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LocalizationModel = exports.LocalizationStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
-const localization_type_1 = __webpack_require__(81);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
+const localization_type_1 = __webpack_require__(82);
 const util_1 = __webpack_require__(13);
 const uuid_1 = __webpack_require__(15);
 var LocalizationStatus;
@@ -18900,14 +20071,14 @@ exports.LocalizationModel = LocalizationModel;
 
 
 /***/ }),
-/* 171 */
+/* 178 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlModel = exports.ControlStatus = void 0;
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
 const control_type_1 = __webpack_require__(12);
 var ControlStatus;
 (function (ControlStatus) {
@@ -19118,7 +20289,7 @@ exports.ControlModel = ControlModel;
 
 
 /***/ }),
-/* 172 */
+/* 179 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19137,7 +20308,7 @@ const url_util_1 = __webpack_require__(14);
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
-const task_type_1 = __webpack_require__(173);
+const task_type_1 = __webpack_require__(180);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uD0DC\uC2A4\uD06C \uBA85\uB839. \uC218\uD589\uD560 \uD0DC\uC2A4\uD06C \uBA85\uB839\uC744 \uC785\uB825\uD558\uC138\uC694.";
@@ -19240,7 +20411,7 @@ __decorate([
 
 
 /***/ }),
-/* 173 */
+/* 180 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19319,7 +20490,7 @@ __decorate([
 
 
 /***/ }),
-/* 174 */
+/* 181 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19340,8 +20511,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessorySocketService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
+const constant_1 = __webpack_require__(62);
+const saveLog_service_1 = __webpack_require__(69);
 let ExAccessorySocketService = class ExAccessorySocketService {
     constructor(mqttMicroservice, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -19387,16 +20558,16 @@ exports.ExAccessorySocketService = ExAccessorySocketService = __decorate([
 
 
 /***/ }),
-/* 175 */
+/* 182 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DetectModel = void 0;
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
 const control_type_1 = __webpack_require__(12);
-const control_domain_1 = __webpack_require__(171);
+const control_domain_1 = __webpack_require__(178);
 class DetectModel {
     constructor(param) {
         this.status = control_domain_1.ControlStatus.pending;
@@ -19448,7 +20619,7 @@ exports.DetectModel = DetectModel;
 
 
 /***/ }),
-/* 176 */
+/* 183 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19464,29 +20635,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SlamnavSocketGateway = void 0;
-const websockets_1 = __webpack_require__(149);
-const socket_io_1 = __webpack_require__(157);
-const slamnav_socket_service_1 = __webpack_require__(165);
-const saveLog_service_1 = __webpack_require__(68);
+const websockets_1 = __webpack_require__(150);
+const socket_io_1 = __webpack_require__(164);
+const slamnav_socket_service_1 = __webpack_require__(172);
+const saveLog_service_1 = __webpack_require__(69);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(61);
-const move_dto_1 = __webpack_require__(100);
-const localization_dto_1 = __webpack_require__(80);
+const constant_1 = __webpack_require__(62);
+const move_dto_1 = __webpack_require__(101);
+const localization_dto_1 = __webpack_require__(81);
 const control_dto_1 = __webpack_require__(9);
-const status_type_1 = __webpack_require__(147);
-const movestatus_type_1 = __webpack_require__(150);
-const cloud_type_1 = __webpack_require__(162);
-const load_dto_1 = __webpack_require__(113);
-const mapping_dto_1 = __webpack_require__(112);
-const version_dto_1 = __webpack_require__(135);
-const setting_dto_1 = __webpack_require__(96);
-const path_dto_1 = __webpack_require__(160);
-const systemstatus_type_1 = __webpack_require__(163);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
+const cloud_type_1 = __webpack_require__(169);
+const load_dto_1 = __webpack_require__(114);
+const mapping_dto_1 = __webpack_require__(113);
+const version_dto_1 = __webpack_require__(136);
+const setting_dto_1 = __webpack_require__(97);
+const path_dto_1 = __webpack_require__(167);
+const systemstatus_type_1 = __webpack_require__(170);
+const cam_dto_1 = __webpack_require__(225);
 let SlamnavSocketGateway = class SlamnavSocketGateway {
     constructor(slamnavService, mqttMicroservice, saveLogService) {
         this.slamnavService = slamnavService;
@@ -19573,6 +20745,14 @@ let SlamnavSocketGateway = class SlamnavSocketGateway {
         }
         else {
             this.logger?.warn(`[SLAMNAV] handleDetectResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
+        }
+    }
+    async handleCameraResponse(data, client) {
+        if (client.id == this.slamnav?.id) {
+            this.slamnavService.cameraResponse(data);
+        }
+        else {
+            this.logger?.warn(`[SLAMNAV] handleCameraResponse : client id not match (${client.id} !== ${this.slamnav?.id})`);
         }
     }
     async handleSettingResponse(data, client) {
@@ -19736,6 +20916,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleDetectResponse", null);
 __decorate([
+    (0, websockets_1.SubscribeMessage)('cameraResponse'),
+    (0, nestjs_asyncapi_1.AsyncApiSub)({
+        channel: 'cameraResponse',
+        message: {
+            payload: cam_dto_1.CameraResponseSlamnav,
+        },
+        description: 'Camera 요청에 따른 응답',
+    }),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_t = typeof cam_dto_1.CameraResponseSlamnav !== "undefined" && cam_dto_1.CameraResponseSlamnav) === "function" ? _t : Object, typeof (_u = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _u : Object]),
+    __metadata("design:returntype", Promise)
+], SlamnavSocketGateway.prototype, "handleCameraResponse", null);
+__decorate([
     (0, websockets_1.SubscribeMessage)('settingResponse'),
     (0, nestjs_asyncapi_1.AsyncApiSub)({
         channel: 'settingResponse',
@@ -19747,7 +20942,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof setting_dto_1.SettingResponseSlamnav !== "undefined" && setting_dto_1.SettingResponseSlamnav) === "function" ? _t : Object, typeof (_u = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof setting_dto_1.SettingResponseSlamnav !== "undefined" && setting_dto_1.SettingResponseSlamnav) === "function" ? _v : Object, typeof (_w = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleSettingResponse", null);
 __decorate([
@@ -19762,7 +20957,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof version_dto_1.GetCurrentVersionResponseSocketDto !== "undefined" && version_dto_1.GetCurrentVersionResponseSocketDto) === "function" ? _v : Object, typeof (_w = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _w : Object]),
+    __metadata("design:paramtypes", [typeof (_x = typeof version_dto_1.GetCurrentVersionResponseSocketDto !== "undefined" && version_dto_1.GetCurrentVersionResponseSocketDto) === "function" ? _x : Object, typeof (_y = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _y : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleVersionResponse", null);
 __decorate([
@@ -19777,7 +20972,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_x = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _x : Object, typeof (_y = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _y : Object]),
+    __metadata("design:paramtypes", [typeof (_z = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _z : Object, typeof (_0 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _0 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleStatus", null);
 __decorate([
@@ -19792,7 +20987,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_z = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _z : Object, typeof (_0 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _0 : Object]),
+    __metadata("design:paramtypes", [typeof (_1 = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _1 : Object, typeof (_2 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _2 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMoveStatus", null);
 __decorate([
@@ -19807,7 +21002,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_1 = typeof systemstatus_type_1.SystemStatusSlamnav !== "undefined" && systemstatus_type_1.SystemStatusSlamnav) === "function" ? _1 : Object, typeof (_2 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _2 : Object]),
+    __metadata("design:paramtypes", [typeof (_3 = typeof systemstatus_type_1.SystemStatusSlamnav !== "undefined" && systemstatus_type_1.SystemStatusSlamnav) === "function" ? _3 : Object, typeof (_4 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _4 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleSystemStatus", null);
 __decorate([
@@ -19822,7 +21017,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_3 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _3 : Object, typeof (_4 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _4 : Object]),
+    __metadata("design:paramtypes", [typeof (_5 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _5 : Object, typeof (_6 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _6 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLocalPath", null);
 __decorate([
@@ -19837,7 +21032,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_5 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _5 : Object, typeof (_6 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _6 : Object]),
+    __metadata("design:paramtypes", [typeof (_7 = typeof path_dto_1.PathSlamnav !== "undefined" && path_dto_1.PathSlamnav) === "function" ? _7 : Object, typeof (_8 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _8 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleGlobalPath", null);
 __decorate([
@@ -19852,7 +21047,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_7 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _7 : Object, typeof (_8 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _8 : Object]),
+    __metadata("design:paramtypes", [typeof (_9 = typeof cloud_type_1.LidarCloudDto !== "undefined" && cloud_type_1.LidarCloudDto) === "function" ? _9 : Object, typeof (_10 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _10 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleLidarCloud", null);
 __decorate([
@@ -19867,7 +21062,7 @@ __decorate([
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_9 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _9 : Object, typeof (_10 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _10 : Object]),
+    __metadata("design:paramtypes", [typeof (_11 = typeof cloud_type_1.MappingCloudDto !== "undefined" && cloud_type_1.MappingCloudDto) === "function" ? _11 : Object, typeof (_12 = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _12 : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleMappingCloud", null);
 exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
@@ -19882,7 +21077,7 @@ exports.SlamnavSocketGateway = SlamnavSocketGateway = __decorate([
 
 
 /***/ }),
-/* 177 */
+/* 184 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19901,18 +21096,18 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskmanSocketGateway = void 0;
-const websockets_1 = __webpack_require__(149);
-const socket_io_1 = __webpack_require__(157);
-const taskman_socket_service_1 = __webpack_require__(167);
+const websockets_1 = __webpack_require__(150);
+const socket_io_1 = __webpack_require__(164);
+const taskman_socket_service_1 = __webpack_require__(174);
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const move_dto_1 = __webpack_require__(100);
+const constant_1 = __webpack_require__(62);
+const move_dto_1 = __webpack_require__(101);
 const control_dto_1 = __webpack_require__(9);
-const task_dto_1 = __webpack_require__(172);
-const variables_dto_1 = __webpack_require__(178);
-const state_dto_1 = __webpack_require__(179);
-const saveLog_service_1 = __webpack_require__(68);
+const task_dto_1 = __webpack_require__(179);
+const variables_dto_1 = __webpack_require__(185);
+const state_dto_1 = __webpack_require__(186);
+const saveLog_service_1 = __webpack_require__(69);
 let TaskmanSocketGateway = class TaskmanSocketGateway {
     constructor(taskmanService, mqttMicroservice, moveMicroservice, controlMicroservice, saveLogService) {
         this.taskmanService = taskmanService;
@@ -20041,7 +21236,7 @@ exports.TaskmanSocketGateway = TaskmanSocketGateway = __decorate([
 
 
 /***/ }),
-/* 178 */
+/* 185 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20058,7 +21253,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskVariablesResponseTaskman = exports.TaskVariablesRequestTaskman = exports.TaskVariablesResponseDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const task_type_1 = __webpack_require__(173);
+const task_type_1 = __webpack_require__(180);
 const util_1 = __webpack_require__(13);
 const class_transformer_1 = __webpack_require__(10);
 class TaskVariablesResponseDto {
@@ -20104,7 +21299,7 @@ __decorate([
 
 
 /***/ }),
-/* 179 */
+/* 186 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20193,7 +21388,7 @@ __decorate([
 
 
 /***/ }),
-/* 180 */
+/* 187 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20212,16 +21407,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExAccessorySocketGateway = void 0;
-const websockets_1 = __webpack_require__(149);
+const websockets_1 = __webpack_require__(150);
 const common_1 = __webpack_require__(5);
-const socket_io_1 = __webpack_require__(157);
-const ex_accessory_socket_service_1 = __webpack_require__(174);
-const constant_1 = __webpack_require__(61);
+const socket_io_1 = __webpack_require__(164);
+const ex_accessory_socket_service_1 = __webpack_require__(181);
+const constant_1 = __webpack_require__(62);
 const microservices_1 = __webpack_require__(3);
-const exAccessory_dto_1 = __webpack_require__(151);
+const exAccessory_dto_1 = __webpack_require__(152);
 const nestjs_asyncapi_1 = __webpack_require__(2);
 const control_dto_1 = __webpack_require__(9);
-const saveLog_service_1 = __webpack_require__(68);
+const saveLog_service_1 = __webpack_require__(69);
 let ExAccessorySocketGateway = class ExAccessorySocketGateway {
     constructor(exAccessoryService, mqttMicroservice, controlMicroservice, saveLogService) {
         this.exAccessoryService = exAccessoryService;
@@ -20353,7 +21548,7 @@ exports.ExAccessorySocketGateway = ExAccessorySocketGateway = __decorate([
 
 
 /***/ }),
-/* 181 */
+/* 188 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20366,17 +21561,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FrsSocketModule = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_1 = __webpack_require__(182);
-const frs_socket_client_1 = __webpack_require__(183);
+const typeorm_1 = __webpack_require__(189);
+const frs_socket_client_1 = __webpack_require__(190);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const config_entity_1 = __webpack_require__(186);
-const constant_1 = __webpack_require__(61);
-const config_1 = __webpack_require__(73);
-const frs_sub_docs_1 = __webpack_require__(188);
-const frs_socket_service_1 = __webpack_require__(185);
-const log_module_1 = __webpack_require__(74);
+const config_entity_1 = __webpack_require__(193);
+const constant_1 = __webpack_require__(62);
+const config_1 = __webpack_require__(74);
+const frs_sub_docs_1 = __webpack_require__(195);
+const frs_socket_service_1 = __webpack_require__(192);
+const log_module_1 = __webpack_require__(75);
+const frs_socket_mqtt_controller_1 = __webpack_require__(224);
 let FrsSocketModule = class FrsSocketModule {
 };
 exports.FrsSocketModule = FrsSocketModule;
@@ -20492,20 +21688,20 @@ exports.FrsSocketModule = FrsSocketModule = __decorate([
                 isGlobal: true,
             }),
         ],
-        controllers: [frs_sub_docs_1.FRSAsyncSub],
+        controllers: [frs_sub_docs_1.FRSAsyncSub, frs_socket_mqtt_controller_1.FRSSocketMqttController],
         providers: [frs_socket_service_1.FRSSocketService, frs_socket_client_1.FRSSocketClient],
     })
 ], FrsSocketModule);
 
 
 /***/ }),
-/* 182 */
+/* 189 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 183 */
+/* 190 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20525,16 +21721,16 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSSocketClient = void 0;
 const common_1 = __webpack_require__(5);
-const socket_io_client_1 = __webpack_require__(184);
-const frs_socket_service_1 = __webpack_require__(185);
-const lodash_1 = __webpack_require__(166);
+const socket_io_client_1 = __webpack_require__(191);
+const frs_socket_service_1 = __webpack_require__(192);
+const lodash_1 = __webpack_require__(173);
 const microservices_1 = __webpack_require__(3);
 const class_validator_1 = __webpack_require__(11);
-const parse_util_1 = __webpack_require__(56);
-const constant_1 = __webpack_require__(61);
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_2 = __webpack_require__(54);
-const saveLog_service_1 = __webpack_require__(68);
+const parse_util_1 = __webpack_require__(57);
+const constant_1 = __webpack_require__(62);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_2 = __webpack_require__(55);
+const saveLog_service_1 = __webpack_require__(69);
 let FRSSocketClient = class FRSSocketClient {
     constructor(frsService, mqttMicroservice, saveLogService) {
         this.frsService = frsService;
@@ -20791,13 +21987,13 @@ exports.FRSSocketClient = FRSSocketClient = __decorate([
 
 
 /***/ }),
-/* 184 */
+/* 191 */
 /***/ ((module) => {
 
 module.exports = require("socket.io-client");
 
 /***/ }),
-/* 185 */
+/* 192 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20818,12 +22014,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSSocketService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-const parse_util_1 = __webpack_require__(56);
-const constant_1 = __webpack_require__(61);
-const constant_2 = __webpack_require__(54);
-const rpc_code_exception_1 = __webpack_require__(53);
-const saveLog_service_1 = __webpack_require__(68);
+const rxjs_1 = __webpack_require__(51);
+const parse_util_1 = __webpack_require__(57);
+const constant_1 = __webpack_require__(62);
+const constant_2 = __webpack_require__(55);
+const rpc_code_exception_1 = __webpack_require__(54);
+const saveLog_service_1 = __webpack_require__(69);
 let FRSSocketService = class FRSSocketService {
     constructor(networkMicroservice, configMicroservice, moveMicroservice, controlMicroservice, mapMicroservice, localizationMicroservice, saveLogService) {
         this.networkMicroservice = networkMicroservice;
@@ -20843,6 +22039,38 @@ let FRSSocketService = class FRSSocketService {
         this.localizationService =
             this.localizationMicroservice.getService('LocalizationGrpcService');
         this.mapService = this.mapMicroservice.getService('MapGrpcService');
+    }
+    async getFrsUrl() {
+        try {
+            const frsUrl = await this.getConfig('frsUrl');
+            const frsApiUrl = await this.getConfig('frsApiUrl');
+            const frsSocketUrl = await this.getConfig('frsSocketUrl');
+            return {
+                url: frsUrl,
+                apiUrl: frsApiUrl,
+                socketUrl: frsSocketUrl,
+            };
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException) {
+                throw error;
+            }
+            throw new rpc_code_exception_1.RpcCodeException('FRS URL 조회 실패', constant_2.GrpcCode.InternalError);
+        }
+    }
+    async updateFrsUrl(dto) {
+        try {
+            await this.setConfig('frsUrl', dto.url);
+            await this.setConfig('frsApiUrl', dto.url + ':3000');
+            await this.setConfig('frsSocketUrl', dto.url + ':3001/socket/robots');
+            return await this.getFrsUrl();
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException) {
+                throw error;
+            }
+            throw new rpc_code_exception_1.RpcCodeException('FRS URL 업데이트 실패', constant_2.GrpcCode.InternalError);
+        }
     }
     async moveRequest(data) {
         try {
@@ -20955,6 +22183,15 @@ let FRSSocketService = class FRSSocketService {
             throw new rpc_code_exception_1.RpcCodeException('config 서비스가 연결되지 않았습니다.', constant_2.GrpcCode.FailedPrecondition);
         }
     }
+    async setConfig(key, value) {
+        if (this.configService) {
+            const response = await (0, rxjs_1.lastValueFrom)(this.configService.setConfig({ key: key, value: value }));
+            return response.value;
+        }
+        else {
+            throw new rpc_code_exception_1.RpcCodeException('config 서비스가 연결되지 않았습니다.', constant_2.GrpcCode.FailedPrecondition);
+        }
+    }
     async InitFRS() {
         try {
             this.logger?.info(`[SERVICE] InitFRS`);
@@ -20990,7 +22227,7 @@ exports.FRSSocketService = FRSSocketService = __decorate([
 
 
 /***/ }),
-/* 186 */
+/* 193 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21006,7 +22243,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Config = void 0;
-const typeorm_1 = __webpack_require__(187);
+const typeorm_1 = __webpack_require__(194);
 let Config = class Config {
 };
 exports.Config = Config;
@@ -21038,13 +22275,13 @@ exports.Config = Config = __decorate([
 
 
 /***/ }),
-/* 187 */
+/* 194 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 188 */
+/* 195 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21061,17 +22298,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FRSAsyncSub = exports.DummyDto = void 0;
 const common_1 = __webpack_require__(5);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const move_dto_1 = __webpack_require__(100);
-const load_dto_1 = __webpack_require__(113);
-const localization_dto_1 = __webpack_require__(80);
+const move_dto_1 = __webpack_require__(101);
+const load_dto_1 = __webpack_require__(114);
+const localization_dto_1 = __webpack_require__(81);
 const control_dto_1 = __webpack_require__(9);
-const init_dto_1 = __webpack_require__(189);
+const init_dto_1 = __webpack_require__(196);
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const move_dto_2 = __webpack_require__(100);
-const localization_dto_2 = __webpack_require__(80);
+const move_dto_2 = __webpack_require__(101);
+const localization_dto_2 = __webpack_require__(81);
 const control_dto_2 = __webpack_require__(9);
-const mapping_dto_1 = __webpack_require__(112);
+const mapping_dto_1 = __webpack_require__(113);
 class DummyDto {
 }
 exports.DummyDto = DummyDto;
@@ -21344,7 +22581,7 @@ exports.FRSAsyncSub = FRSAsyncSub = __decorate([
 
 
 /***/ }),
-/* 189 */
+/* 196 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21396,7 +22633,7 @@ __decorate([
 
 
 /***/ }),
-/* 190 */
+/* 197 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21409,7 +22646,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.APILogInterceptor = void 0;
 const common_1 = __webpack_require__(5);
-const rxjs_1 = __webpack_require__(50);
+const rxjs_1 = __webpack_require__(51);
 let APILogInterceptor = class APILogInterceptor {
     intercept(context, next) {
         const request = context.switchToHttp().getRequest();
@@ -21437,7 +22674,7 @@ exports.APILogInterceptor = APILogInterceptor = __decorate([
 
 
 /***/ }),
-/* 191 */
+/* 198 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21451,19 +22688,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TCPModule = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const config_1 = __webpack_require__(73);
+const constant_1 = __webpack_require__(62);
+const config_1 = __webpack_require__(74);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const tcp_service_1 = __webpack_require__(192);
-const tcp_gateway_1 = __webpack_require__(195);
-const tcp_mqtt_controller_1 = __webpack_require__(197);
-const cobot_tcp_client_adapter_1 = __webpack_require__(198);
-const tcp_grpc_controller_1 = __webpack_require__(199);
-const tcp_custom_server_gateway_1 = __webpack_require__(193);
-const tcp_control_service_1 = __webpack_require__(196);
+const tcp_service_1 = __webpack_require__(199);
+const tcp_gateway_1 = __webpack_require__(202);
+const tcp_mqtt_controller_1 = __webpack_require__(204);
+const cobot_tcp_client_adapter_1 = __webpack_require__(205);
+const tcp_grpc_controller_1 = __webpack_require__(206);
+const tcp_custom_server_gateway_1 = __webpack_require__(200);
+const tcp_control_service_1 = __webpack_require__(203);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const log_module_1 = __webpack_require__(74);
+const log_module_1 = __webpack_require__(75);
 let TCPModule = class TCPModule {
 };
 exports.TCPModule = TCPModule;
@@ -21543,7 +22780,7 @@ exports.TCPModule = TCPModule = __decorate([
 
 
 /***/ }),
-/* 192 */
+/* 199 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21562,15 +22799,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpService = void 0;
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
 const util_1 = __webpack_require__(13);
 const common_1 = __webpack_require__(5);
-const config_1 = __webpack_require__(73);
+const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
-const tcp_custom_server_gateway_1 = __webpack_require__(193);
-const tcp_gateway_1 = __webpack_require__(195);
-const saveLog_service_1 = __webpack_require__(68);
+const tcp_custom_server_gateway_1 = __webpack_require__(200);
+const tcp_gateway_1 = __webpack_require__(202);
+const saveLog_service_1 = __webpack_require__(69);
 let TcpService = class TcpService {
     constructor(configService, tcpMainServer, tcpCustomServerGateway, saveLogService) {
         this.configService = configService;
@@ -21639,7 +22876,7 @@ exports.TcpService = TcpService = __decorate([
 
 
 /***/ }),
-/* 193 */
+/* 200 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21656,12 +22893,12 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpCustomServerGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(194);
+const net_1 = __webpack_require__(201);
 const common_2 = __webpack_require__(26);
 const util_1 = __webpack_require__(13);
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
-const saveLog_service_1 = __webpack_require__(68);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
+const saveLog_service_1 = __webpack_require__(69);
 let TcpCustomServerGateway = class TcpCustomServerGateway {
     constructor(saveLogService) {
         this.saveLogService = saveLogService;
@@ -21797,13 +23034,13 @@ exports.TcpCustomServerGateway = TcpCustomServerGateway = __decorate([
 
 
 /***/ }),
-/* 194 */
+/* 201 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 195 */
+/* 202 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21820,18 +23057,18 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGateway = void 0;
 const common_1 = __webpack_require__(5);
-const net_1 = __webpack_require__(194);
-const rxjs_1 = __webpack_require__(50);
+const net_1 = __webpack_require__(201);
+const rxjs_1 = __webpack_require__(51);
 const common_2 = __webpack_require__(26);
-const config_1 = __webpack_require__(73);
-const move_type_1 = __webpack_require__(101);
+const config_1 = __webpack_require__(74);
+const move_type_1 = __webpack_require__(102);
 const control_type_1 = __webpack_require__(12);
-const localization_type_1 = __webpack_require__(81);
-const load_dto_1 = __webpack_require__(113);
+const localization_type_1 = __webpack_require__(82);
+const load_dto_1 = __webpack_require__(114);
 const util_1 = __webpack_require__(13);
-const tcp_control_service_1 = __webpack_require__(196);
+const tcp_control_service_1 = __webpack_require__(203);
 const nestjs_asyncapi_1 = __webpack_require__(2);
-const saveLog_service_1 = __webpack_require__(68);
+const saveLog_service_1 = __webpack_require__(69);
 let TcpGateway = class TcpGateway {
     constructor(configService, tcpControlService, saveLogService) {
         this.configService = configService;
@@ -22134,7 +23371,7 @@ exports.TcpGateway = TcpGateway = __decorate([
 
 
 /***/ }),
-/* 196 */
+/* 203 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22156,7 +23393,7 @@ exports.TcpControlService = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
 const util_1 = __webpack_require__(13);
-const constant_1 = __webpack_require__(61);
+const constant_1 = __webpack_require__(62);
 let TcpControlService = class TcpControlService {
     constructor(mqttMicroservice, moveMicroservice, controlMicroservice, localizationMicroservice) {
         this.mqttMicroservice = mqttMicroservice;
@@ -22189,7 +23426,7 @@ exports.TcpControlService = TcpControlService = __decorate([
 
 
 /***/ }),
-/* 197 */
+/* 204 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22209,14 +23446,14 @@ var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpMqttController = void 0;
 const common_1 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(192);
+const tcp_service_1 = __webpack_require__(199);
 const microservices_1 = __webpack_require__(3);
-const move_dto_1 = __webpack_require__(100);
+const move_dto_1 = __webpack_require__(101);
 const control_dto_1 = __webpack_require__(9);
-const localization_dto_1 = __webpack_require__(80);
-const load_dto_1 = __webpack_require__(113);
-const status_type_1 = __webpack_require__(147);
-const movestatus_type_1 = __webpack_require__(150);
+const localization_dto_1 = __webpack_require__(81);
+const load_dto_1 = __webpack_require__(114);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
 let TcpMqttController = class TcpMqttController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -22290,7 +23527,7 @@ exports.TcpMqttController = TcpMqttController = __decorate([
 
 
 /***/ }),
-/* 198 */
+/* 205 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22306,9 +23543,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotTcpClientAdapter = void 0;
-const net_1 = __webpack_require__(194);
-const cobot_dto_1 = __webpack_require__(139);
-const saveLog_service_1 = __webpack_require__(68);
+const net_1 = __webpack_require__(201);
+const cobot_dto_1 = __webpack_require__(140);
+const saveLog_service_1 = __webpack_require__(69);
 const common_1 = __webpack_require__(5);
 let CobotTcpClientAdapter = class CobotTcpClientAdapter {
     constructor(saveLogService) {
@@ -22432,7 +23669,7 @@ exports.CobotTcpClientAdapter = CobotTcpClientAdapter = __decorate([
 
 
 /***/ }),
-/* 199 */
+/* 206 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22450,7 +23687,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TcpGrpcController = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
-const tcp_service_1 = __webpack_require__(192);
+const tcp_service_1 = __webpack_require__(199);
 let TcpGrpcController = class TcpGrpcController {
     constructor(tcpService) {
         this.tcpService = tcpService;
@@ -22476,7 +23713,7 @@ exports.TcpGrpcController = TcpGrpcController = __decorate([
 
 
 /***/ }),
-/* 200 */
+/* 207 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22490,16 +23727,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotSocketModule = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const constant_1 = __webpack_require__(61);
-const config_1 = __webpack_require__(73);
-const cobot_service_1 = __webpack_require__(201);
-const cobot_tcp_client_adapter_1 = __webpack_require__(198);
-const cobot_grpc_controller_1 = __webpack_require__(210);
-const cobot_mongo_adapter_1 = __webpack_require__(211);
-const mongoose_1 = __webpack_require__(212);
-const cobot_command_entity_1 = __webpack_require__(214);
-const cobot_connection_entity_1 = __webpack_require__(215);
-const log_module_1 = __webpack_require__(74);
+const constant_1 = __webpack_require__(62);
+const config_1 = __webpack_require__(74);
+const cobot_service_1 = __webpack_require__(208);
+const cobot_tcp_client_adapter_1 = __webpack_require__(205);
+const cobot_grpc_controller_1 = __webpack_require__(217);
+const cobot_mongo_adapter_1 = __webpack_require__(218);
+const mongoose_1 = __webpack_require__(158);
+const cobot_command_entity_1 = __webpack_require__(220);
+const cobot_connection_entity_1 = __webpack_require__(221);
+const log_module_1 = __webpack_require__(75);
 let CobotSocketModule = class CobotSocketModule {
 };
 exports.CobotSocketModule = CobotSocketModule;
@@ -22559,7 +23796,7 @@ exports.CobotSocketModule = CobotSocketModule = __decorate([
 
 
 /***/ }),
-/* 201 */
+/* 208 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22580,19 +23817,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotService = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(26);
-const constant_1 = __webpack_require__(61);
+const constant_1 = __webpack_require__(62);
 const microservices_1 = __webpack_require__(3);
-const cobot_socket_domain_1 = __webpack_require__(202);
-const cobot_client_output_port_1 = __webpack_require__(203);
-const cobot_command_handler_1 = __webpack_require__(204);
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_2 = __webpack_require__(54);
-const cobot_dto_1 = __webpack_require__(139);
-const cobot_data_handler_1 = __webpack_require__(205);
-const cobot_database_output_port_1 = __webpack_require__(207);
-const cobot_domain_1 = __webpack_require__(208);
-const map_command_domain_1 = __webpack_require__(109);
-const saveLog_service_1 = __webpack_require__(68);
+const cobot_socket_domain_1 = __webpack_require__(209);
+const cobot_client_output_port_1 = __webpack_require__(210);
+const cobot_command_handler_1 = __webpack_require__(211);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_2 = __webpack_require__(55);
+const cobot_dto_1 = __webpack_require__(140);
+const cobot_data_handler_1 = __webpack_require__(212);
+const cobot_database_output_port_1 = __webpack_require__(214);
+const cobot_domain_1 = __webpack_require__(215);
+const map_command_domain_1 = __webpack_require__(110);
+const saveLog_service_1 = __webpack_require__(69);
 let CobotService = class CobotService {
     constructor(tcpClientPort, cobotDatabaseOutputPort, mqttMicroservice, saveLogService) {
         this.tcpClientPort = tcpClientPort;
@@ -23190,7 +24427,7 @@ exports.CobotService = CobotService = __decorate([
 
 
 /***/ }),
-/* 202 */
+/* 209 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -23210,7 +24447,7 @@ exports.CobotModel = CobotModel;
 
 
 /***/ }),
-/* 203 */
+/* 210 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -23218,7 +24455,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 204 */
+/* 211 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -23265,13 +24502,13 @@ exports.CobotCommandHandler = CobotCommandHandler;
 
 
 /***/ }),
-/* 205 */
+/* 212 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotDataHandler = void 0;
-const cobot_system_stat_parser_1 = __webpack_require__(206);
+const cobot_system_stat_parser_1 = __webpack_require__(213);
 class CobotDataHandler {
     constructor(id, logger) {
         this.isConnected = false;
@@ -23326,7 +24563,7 @@ exports.CobotDataHandler = CobotDataHandler;
 
 
 /***/ }),
-/* 206 */
+/* 213 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -23532,7 +24769,7 @@ CobotSystemStatParser.INT_SIZE = 4;
 
 
 /***/ }),
-/* 207 */
+/* 214 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -23540,16 +24777,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 208 */
+/* 215 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandModel = void 0;
-const map_command_domain_1 = __webpack_require__(109);
-const rpc_code_exception_1 = __webpack_require__(53);
-const grpc_code_constant_1 = __webpack_require__(55);
-const node_net_1 = __webpack_require__(209);
+const map_command_domain_1 = __webpack_require__(110);
+const rpc_code_exception_1 = __webpack_require__(54);
+const grpc_code_constant_1 = __webpack_require__(56);
+const node_net_1 = __webpack_require__(216);
 class CobotCommandModel {
     constructor(cobotId, command) {
         this.cobotId = cobotId;
@@ -23642,13 +24879,13 @@ exports.CobotCommandModel = CobotCommandModel;
 
 
 /***/ }),
-/* 209 */
+/* 216 */
 /***/ ((module) => {
 
 module.exports = require("node:net");
 
 /***/ }),
-/* 210 */
+/* 217 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23666,7 +24903,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotGrpcController = void 0;
 const common_1 = __webpack_require__(26);
 const common_2 = __webpack_require__(5);
-const cobot_service_1 = __webpack_require__(201);
+const cobot_service_1 = __webpack_require__(208);
 let CobotGrpcController = class CobotGrpcController {
     constructor(cobotService) {
         this.cobotService = cobotService;
@@ -23728,7 +24965,7 @@ exports.CobotGrpcController = CobotGrpcController = __decorate([
 
 
 /***/ }),
-/* 211 */
+/* 218 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23747,16 +24984,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotMongoAdapter = void 0;
-const mongoose_1 = __webpack_require__(212);
-const mongoose_2 = __webpack_require__(213);
+const mongoose_1 = __webpack_require__(158);
+const mongoose_2 = __webpack_require__(219);
 const common_1 = __webpack_require__(26);
-const rpc_code_exception_1 = __webpack_require__(53);
-const constant_1 = __webpack_require__(54);
-const cobot_command_entity_1 = __webpack_require__(214);
-const cobot_connection_entity_1 = __webpack_require__(215);
+const rpc_code_exception_1 = __webpack_require__(54);
+const constant_1 = __webpack_require__(55);
+const cobot_command_entity_1 = __webpack_require__(220);
+const cobot_connection_entity_1 = __webpack_require__(221);
 const util_1 = __webpack_require__(13);
-const saveLog_service_1 = __webpack_require__(68);
-const config_1 = __webpack_require__(73);
+const saveLog_service_1 = __webpack_require__(69);
+const config_1 = __webpack_require__(74);
 let CobotMongoAdapter = class CobotMongoAdapter {
     constructor(CommandRepository, ConnectionRepository, saveLogService, configService) {
         this.CommandRepository = CommandRepository;
@@ -23847,19 +25084,13 @@ exports.CobotMongoAdapter = CobotMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 212 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/mongoose");
-
-/***/ }),
-/* 213 */
+/* 219 */
 /***/ ((module) => {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 214 */
+/* 220 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23874,7 +25105,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotCommandSchema = exports.CobotCommandEntity = void 0;
-const mongoose_1 = __webpack_require__(212);
+const mongoose_1 = __webpack_require__(158);
 let CobotCommandEntity = class CobotCommandEntity {
 };
 exports.CobotCommandEntity = CobotCommandEntity;
@@ -23912,7 +25143,7 @@ exports.CobotCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 215 */
+/* 221 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23927,7 +25158,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CobotConnectionSchema = exports.CobotConnectionEntity = void 0;
-const mongoose_1 = __webpack_require__(212);
+const mongoose_1 = __webpack_require__(158);
 let CobotConnectionEntity = class CobotConnectionEntity {
 };
 exports.CobotConnectionEntity = CobotConnectionEntity;
@@ -23963,106 +25194,13 @@ exports.CobotConnectionSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 216 */
+/* 222 */
 /***/ ((module) => {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 217 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TEST_GRPC_SERVICE_NAME = exports.TEST_PACKAGE_NAME = exports.protobufPackage = void 0;
-exports.TestGrpcServiceControllerMethods = TestGrpcServiceControllerMethods;
-const microservices_1 = __webpack_require__(3);
-exports.protobufPackage = "test";
-exports.TEST_PACKAGE_NAME = "test";
-function TestGrpcServiceControllerMethods() {
-    return function (constructor) {
-        const grpcMethods = [
-            "getTestRecordAll",
-            "getTestRecord",
-            "getTestResultRecent",
-            "getTestResultbySubject",
-            "checkTestRunning",
-            "startTest",
-            "stopTest",
-            "createTestRecord",
-            "updateTestRecord",
-            "updateTestResult",
-        ];
-        for (const method of grpcMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-        const grpcStreamMethods = [];
-        for (const method of grpcStreamMethods) {
-            const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-            (0, microservices_1.GrpcStreamMethod)("TestGrpcService", method)(constructor.prototype[method], method, descriptor);
-        }
-    };
-}
-exports.TEST_GRPC_SERVICE_NAME = "TestGrpcService";
-
-
-/***/ }),
-/* 218 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestApiModule = void 0;
-const common_1 = __webpack_require__(5);
-const test_api_service_1 = __webpack_require__(219);
-const test_api_controller_1 = __webpack_require__(220);
-const microservices_1 = __webpack_require__(3);
-const common_2 = __webpack_require__(26);
-const config_1 = __webpack_require__(73);
-const path_1 = __webpack_require__(20);
-const constant_1 = __webpack_require__(61);
-const log_module_1 = __webpack_require__(74);
-let TestApiModule = class TestApiModule {
-};
-exports.TestApiModule = TestApiModule;
-exports.TestApiModule = TestApiModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            log_module_1.LogModule,
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '.env',
-            }),
-            microservices_1.ClientsModule.registerAsync([
-                {
-                    name: constant_1.TEST_SERVICE,
-                    inject: [config_1.ConfigService],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.GRPC,
-                        options: {
-                            package: common_2.TestMicroservice.protobufPackage,
-                            protoPath: (0, path_1.join)(process.cwd(), 'proto/test.proto'),
-                            url: configService.get('TEST_GRPC_URL'),
-                        },
-                    }),
-                },
-            ]),
-        ],
-        controllers: [test_api_controller_1.TestApiController],
-        providers: [test_api_service_1.TestApiService],
-    })
-], TestApiModule);
-
-
-/***/ }),
-/* 219 */
+/* 223 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24075,907 +25213,286 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestApiService = void 0;
-const constant_1 = __webpack_require__(61);
-const saveLog_service_1 = __webpack_require__(68);
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const rxjs_1 = __webpack_require__(50);
-let TestApiService = class TestApiService {
-    constructor(testMicroservice, saveLogService) {
-        this.testMicroservice = testMicroservice;
-        this.saveLogService = saveLogService;
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    onModuleInit() {
-        this.testService = this.testMicroservice.getService('TestGrpcService');
-    }
-    async getTestRecordAll(param) {
-        const data = await (0, rxjs_1.lastValueFrom)(this.testService.getTestRecordAll(param));
-        return {
-            ...data,
-            list: data.list?.map((item) => ({
-                ...item,
-                createdAt: item.createdAt ? new Date(item.createdAt) : null,
-                updatedAt: item.updatedAt ? new Date(item.updatedAt) : null,
-            })),
-        };
-    }
-    async getTestRecord(id) {
-        const data = await (0, rxjs_1.lastValueFrom)(this.testService.getTestRecord({ id }));
-        return {
-            ...data,
-            createdAt: new Date(data.createdAt),
-            updatedAt: new Date(data.updatedAt),
-        };
-    }
-    async getRecentTestResult(param) {
-        return this.testService.getTestResultRecent({ subjects: param.subjects });
-    }
-    async getTestResultBySubject(param) {
-        return this.testService.getTestResultbySubject({ subject: param.subject });
-    }
-    async checkTestRunning(sessionId) {
-        return this.testService.checkTestRunning({ sessionId });
-    }
-    async startTest(param, sessionId) {
-        return this.testService.startTest({ sessionId: sessionId, testRecordId: param.testRecordId.toString(), tester: param.tester });
-    }
-    async endTest(sessionId) {
-        return this.testService.stopTest({ sessionId: sessionId });
-    }
-    async insertTestRecord(param, sessionId) {
-        return this.testService.createTestRecord({ sessionId, tester: param.tester, subjects: param.subjects });
-    }
-    async updateTestRecord(param, sessionId) {
-        return this.testService.updateTestRecord({ sessionId: sessionId, id: param.id.toString(), tester: param.tester });
-    }
-    async updateTestResult(param, sessionId) {
-        return this.testService.updateTestResult({
-            sessionId: sessionId,
-            testRecordId: param.testRecordId.toString(),
-            subject: param.subject,
-            result: param.result,
-        });
-    }
-};
-exports.TestApiService = TestApiService;
-exports.TestApiService = TestApiService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constant_1.TEST_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], TestApiService);
-
-
-/***/ }),
-/* 220 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestApiController = void 0;
-const common_1 = __webpack_require__(5);
-const swagger_1 = __webpack_require__(8);
-const test_api_service_1 = __webpack_require__(219);
-const saveLog_service_1 = __webpack_require__(68);
-const test_entity_1 = __webpack_require__(221);
-const test_dto_1 = __webpack_require__(222);
-const express_1 = __webpack_require__(111);
-let TestApiController = class TestApiController {
-    constructor(testService, saveLogService) {
-        this.testService = testService;
-        this.saveLogService = saveLogService;
-        console.log(':-->', process.env.TEST_SERVICE_URL);
-        this.logger = this.saveLogService.get('gateway-api');
-    }
-    async getTestRecordList(param) {
-        return this.testService.getTestRecordAll(param);
-    }
-    async getTestRecord(id) {
-        return this.testService.getTestRecord(id);
-    }
-    getRecentTestResult(param) {
-        return this.testService.getRecentTestResult(param);
-    }
-    getTestResultBySubject(param) {
-        return this.testService.getTestResultBySubject(param);
-    }
-    checkTestRunning(req) {
-        const sessionId = req.sessionID;
-        return this.testService.checkTestRunning(sessionId);
-    }
-    startTest(req, param) {
-        const sessionId = req.sessionID;
-        return this.testService.startTest(param, sessionId);
-    }
-    endTest(req) {
-        const sessionId = req.sessionID;
-        return this.testService.endTest(sessionId);
-    }
-    insertTestRecord(req, insertTestRecordDto) {
-        const sessionId = req.sessionID;
-        return this.testService.insertTestRecord(insertTestRecordDto, sessionId);
-    }
-    updateTestRecord(req, updateTestRecordDto) {
-        const sessionId = req.sessionID;
-        return this.testService.updateTestRecord(updateTestRecordDto, sessionId);
-    }
-    upsertTestResult(req, updateTestDataDto) {
-        const sessionId = req.sessionID;
-        return this.testService.updateTestResult(updateTestDataDto, sessionId);
-    }
-};
-exports.TestApiController = TestApiController;
-__decorate([
-    (0, common_1.Get)('record'),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 결과 목록 조회',
-        description: '페이지네이션과 필터링을 지원하는 테스트 결과 목록을 조회합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({ description: '테스트 기록 조회 성공', type: test_entity_1.TestRecord }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof test_dto_1.GetTestRecordListDto !== "undefined" && test_dto_1.GetTestRecordListDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", Promise)
-], TestApiController.prototype, "getTestRecordList", null);
-__decorate([
-    (0, common_1.Get)('record/:id'),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 레코드 조회',
-        description: '테스트 레코드를 조회합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({ description: '테스트 기록 조회 성공', type: test_entity_1.TestRecord }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], TestApiController.prototype, "getTestRecord", null);
-__decorate([
-    (0, common_1.Get)('recent'),
-    (0, swagger_1.ApiOperation)({
-        summary: '주제별 최근 테스트 결과 조회',
-        description: '지정된 주제들의 최근 테스트 결과를 조회합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '최근 테스트 결과 조회 성공',
-        type: test_dto_1.ResponseTestResultDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '잘못된 요청 파라미터',
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof test_dto_1.GetRecentTestResultDto !== "undefined" && test_dto_1.GetRecentTestResultDto) === "function" ? _d : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "getRecentTestResult", null);
-__decorate([
-    (0, common_1.Get)('subject'),
-    (0, swagger_1.ApiOperation)({
-        summary: '특정 주제 테스트 결과 조회',
-        description: '특정 주제의 모든 테스트 결과를 조회합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '주제별 테스트 결과 조회 성공',
-        type: test_dto_1.ResponseTestResultDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '잘못된 요청 파라미터',
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof test_dto_1.GetTestResultBySubjectDto !== "undefined" && test_dto_1.GetTestResultBySubjectDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "getTestResultBySubject", null);
-__decorate([
-    (0, common_1.Get)('running'),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 진행 여부 확인',
-        description: '테스트 진행 여부를 확인합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '테스트 진행 여부 확인 성공',
-        type: test_dto_1.CheckTestRunningDto,
-    }),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _f : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "checkTestRunning", null);
-__decorate([
-    (0, common_1.Post)('start'),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 시작',
-        description: '테스트를 시작합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '테스트 시작 성공',
-        type: test_dto_1.TestRunningInfoDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '이미 진행중인 테스트가 있습니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 내부 오류',
-    }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _g : Object, typeof (_h = typeof test_dto_1.StartTestDto !== "undefined" && test_dto_1.StartTestDto) === "function" ? _h : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "startTest", null);
-__decorate([
-    (0, common_1.Post)('end'),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 종료',
-        description: '테스트를 종료합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '테스트 종료 성공',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '테스트 시작 API를 통해 테스트를 시작하지 않았습니다. 테스트 시작 API를 통해 테스트를 시작하세요.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 내부 오류',
-    }),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _j : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "endTest", null);
-__decorate([
-    (0, common_1.Post)('record'),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 레코드 생성',
-        description: '새로운 테스트 레코드를 생성합니다.',
-    }),
-    (0, swagger_1.ApiBody)({
-        type: test_dto_1.InsertTestRecordDto,
-        description: '테스트 레코드 데이터',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '테스트 레코드 생성 성공',
-        type: test_dto_1.TestRecordDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '잘못된 요청 데이터',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 내부 오류',
-    }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _k : Object, typeof (_l = typeof test_dto_1.InsertTestRecordDto !== "undefined" && test_dto_1.InsertTestRecordDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "insertTestRecord", null);
-__decorate([
-    (0, common_1.Put)('record'),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 레코드 수정',
-        description: '기존 테스트 레코드를 수정합니다.',
-    }),
-    (0, swagger_1.ApiBody)({
-        type: test_dto_1.UpdateTestRecordDto,
-        description: '테스트 레코드 데이터',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '테스트 레코드 수정 성공',
-        type: test_dto_1.TestRecordDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '잘못된 요청 데이터',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 내부 오류',
-    }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_m = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _m : Object, typeof (_o = typeof test_dto_1.UpdateTestRecordDto !== "undefined" && test_dto_1.UpdateTestRecordDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "updateTestRecord", null);
-__decorate([
-    (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({
-        summary: '테스트 결과 생성/수정',
-        description: '새로운 테스트 결과를 생성하거나 기존 결과를 수정합니다.',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 201,
-        description: '테스트 결과 생성/수정 성공',
-        type: test_dto_1.TestResultDto,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: '잘못된 요청 데이터',
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 500,
-        description: '서버 내부 오류',
-    }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof express_1.Request !== "undefined" && express_1.Request) === "function" ? _p : Object, typeof (_q = typeof test_dto_1.UpdateTestDataDto !== "undefined" && test_dto_1.UpdateTestDataDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", void 0)
-], TestApiController.prototype, "upsertTestResult", null);
-exports.TestApiController = TestApiController = __decorate([
-    (0, swagger_1.ApiTags)('테스트 API'),
-    (0, common_1.Controller)('test'),
-    __metadata("design:paramtypes", [typeof (_a = typeof test_api_service_1.TestApiService !== "undefined" && test_api_service_1.TestApiService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
-], TestApiController);
-
-
-/***/ }),
-/* 221 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestRecordSchema = exports.TestRecord = exports.TestResultSchema = exports.TestResult = void 0;
-const mongoose_1 = __webpack_require__(212);
-let TestResult = class TestResult {
-};
-exports.TestResult = TestResult;
-__decorate([
-    (0, mongoose_1.Prop)({
-        required: true,
-    }),
-    __metadata("design:type", String)
-], TestResult.prototype, "id", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({
-        required: true,
-    }),
-    __metadata("design:type", String)
-], TestResult.prototype, "testRecordId", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true, maxlength: 128 }),
-    __metadata("design:type", String)
-], TestResult.prototype, "subject", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({
-        type: String,
-        default: null,
-    }),
-    __metadata("design:type", String)
-], TestResult.prototype, "result", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({
-        default: Date.now,
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], TestResult.prototype, "testAt", void 0);
-exports.TestResult = TestResult = __decorate([
-    (0, mongoose_1.Schema)({
-        collection: 'test',
-    })
-], TestResult);
-exports.TestResultSchema = mongoose_1.SchemaFactory.createForClass(TestResult);
-let TestRecord = class TestRecord {
-};
-exports.TestRecord = TestRecord;
-__decorate([
-    (0, mongoose_1.Prop)({
-        required: true,
-    }),
-    __metadata("design:type", String)
-], TestRecord.prototype, "id", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({
-        required: true,
-        maxlength: 128,
-    }),
-    __metadata("design:type", String)
-], TestRecord.prototype, "tester", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ type: [exports.TestResultSchema], defulat: [] }),
-    __metadata("design:type", Array)
-], TestRecord.prototype, "tests", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({
-        default: Date.now,
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], TestRecord.prototype, "createdAt", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({
-        default: Date.now,
-    }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], TestRecord.prototype, "updatedAt", void 0);
-exports.TestRecord = TestRecord = __decorate([
-    (0, mongoose_1.Schema)({
-        collection: 'test_record',
-    })
-], TestRecord);
-exports.TestRecordSchema = mongoose_1.SchemaFactory.createForClass(TestRecord);
-
-
-/***/ }),
-/* 222 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CheckTestRunningDto = exports.TestRunningInfoDto = exports.StartTestDto = exports.UpdateTestRecordDto = exports.InsertTestRecordDto = exports.ResponseTestRecordListDto = exports.ResponseTestRecordDto = exports.ResponseTestResultDto = exports.UpdateTestDataDto = exports.InsertTestDataDto = exports.GetTestRecordListDto = exports.GetRecentTestResultDto = exports.GetTestResultBySubjectDto = exports.TestRecordDto = exports.TestResultDto = void 0;
-const pagination_request_1 = __webpack_require__(103);
+exports.FrsUrlRequestDto = exports.FrsUrlResponseDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
-const class_transformer_1 = __webpack_require__(10);
-class TestResultDto {
+class FrsUrlResponseDto {
 }
-exports.TestResultDto = TestResultDto;
+exports.FrsUrlResponseDto = FrsUrlResponseDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        example: 1,
-        description: '테스트 ID',
-    }),
-    __metadata("design:type", Number)
-], TestResultDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: 1,
-        description: '테스트 레코드 ID',
-    }),
-    __metadata("design:type", Number)
-], TestResultDto.prototype, "testRecordId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: 'DISPLAY',
-        description: '테스트 주제',
-    }),
-    __metadata("design:type", String)
-], TestResultDto.prototype, "subject", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: 'success',
-        description: '테스트 결과',
-        enum: ['success', 'fail'],
-        nullable: true,
-        default: null,
-    }),
-    __metadata("design:type", String)
-], TestResultDto.prototype, "result", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: '2025-07-16T07:56:52.000Z',
-        description: '테스트 수행 시간',
-    }),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], TestResultDto.prototype, "testAt", void 0);
-class TestRecordDto {
-}
-exports.TestRecordDto = TestRecordDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: 1,
-        description: '테스트 레코드 ID',
-    }),
-    __metadata("design:type", Number)
-], TestRecordDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: [],
-        description: '테스트 결과 목록',
-        type: TestResultDto,
-        isArray: true,
-    }),
-    __metadata("design:type", Array)
-], TestRecordDto.prototype, "tests", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: 'tester1',
-        description: '테스트 수행자',
-        nullable: true,
-        default: null,
-    }),
-    __metadata("design:type", String)
-], TestRecordDto.prototype, "tester", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: '2025-07-16T07:56:52.000Z',
-        description: '테스트 레코드 생성 시간',
-    }),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], TestRecordDto.prototype, "createdAt", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: '2025-07-16T07:56:52.000Z',
-        description: '테스트 레코드 수정 시간',
-    }),
-    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], TestRecordDto.prototype, "updatedAt", void 0);
-class GetTestResultBySubjectDto {
-}
-exports.GetTestResultBySubjectDto = GetTestResultBySubjectDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'DISPLAY',
-        description: '테스트 주제',
-    }),
-    __metadata("design:type", String)
-], GetTestResultBySubjectDto.prototype, "subject", void 0);
-class GetRecentTestResultDto {
-}
-exports.GetRecentTestResultDto = GetRecentTestResultDto;
-__decorate([
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    (0, class_transformer_1.Transform)(({ value }) => {
-        if (typeof value === 'string') {
-            return value.split(',').map((s) => s.trim());
-        }
-        return value;
-    }),
-    (0, swagger_1.ApiProperty)({
-        example: ['DISPLAY', 'SPEAKER'],
-        description: '테스트 주제 배열 (쉼표로 구분된 문자열도 지원)',
-        required: false,
-        isArray: true,
-    }),
-    __metadata("design:type", Array)
-], GetRecentTestResultDto.prototype, "subjects", void 0);
-class GetTestRecordListDto extends pagination_request_1.PaginationRequest {
-}
-exports.GetTestRecordListDto = GetTestRecordListDto;
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        example: '',
-        required: false,
-        description: '테스트 주제 배열',
-        enum: ['SPEAKER', 'DISPLAY'],
-    }),
-    __metadata("design:type", Array)
-], GetTestRecordListDto.prototype, "subject", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '일반LOG를 읽어올 시작 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
-        example: '2025-01-01 00:00:00',
+        description: 'FRS URL',
+        example: 'http://192.168.0.100',
         required: true,
     }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], GetTestRecordListDto.prototype, "dateTo", void 0);
+], FrsUrlResponseDto.prototype, "url", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '일반LOG를 읽어올 종료 날짜를 입력해주세요. 날짜의 형식은 yyyy-mm-dd hh:mm:ss형식으로 입력해주세요.',
-        example: '2025-12-31 23:59:59',
+        description: 'FRS API URL',
+        example: 'http://192.168.0.100:3000',
         required: true,
     }),
-    __metadata("design:type", String)
-], GetTestRecordListDto.prototype, "dateFrom", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        example: '',
-        required: false,
-        description: '검색단어',
-    }),
     __metadata("design:type", String)
-], GetTestRecordListDto.prototype, "searchText", void 0);
+], FrsUrlResponseDto.prototype, "apiUrl", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'FRS Socket URL',
+        example: 'http://192.168.0.100:3001/socket/robots',
+        required: true,
+    }),
     (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'id',
-        required: false,
-        enum: ['id', 'name'],
-        description: '정렬옵션. id 또는 name 값을 기준으로 정렬합니다.',
-    }),
     __metadata("design:type", String)
-], GetTestRecordListDto.prototype, "sortOption", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '정렬 방향. ASC 또는 DESC를 입력해주세요.',
-        example: 'ASC',
-        required: false,
-        enum: ['ASC', 'DESC'],
-    }),
-    __metadata("design:type", String)
-], GetTestRecordListDto.prototype, "sortDirection", void 0);
-class InsertTestDataDto {
+], FrsUrlResponseDto.prototype, "socketUrl", void 0);
+class FrsUrlRequestDto {
 }
-exports.InsertTestDataDto = InsertTestDataDto;
+exports.FrsUrlRequestDto = FrsUrlRequestDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'FRS URL',
+        example: 'http://192.168.0.100',
+        required: true,
+    }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'DISPLAY',
-        description: '테스트 주제',
-    }),
     __metadata("design:type", String)
-], InsertTestDataDto.prototype, "subject", void 0);
+], FrsUrlRequestDto.prototype, "url", void 0);
+
+
+/***/ }),
+/* 224 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FRSSocketMqttController = void 0;
+const common_1 = __webpack_require__(5);
+const frs_socket_service_1 = __webpack_require__(192);
+const frs_socket_client_1 = __webpack_require__(190);
+const microservices_1 = __webpack_require__(3);
+const status_type_1 = __webpack_require__(148);
+const movestatus_type_1 = __webpack_require__(151);
+const move_dto_1 = __webpack_require__(101);
+const load_dto_1 = __webpack_require__(114);
+const mapping_dto_1 = __webpack_require__(113);
+const control_dto_1 = __webpack_require__(9);
+const localization_dto_1 = __webpack_require__(81);
+const saveLog_service_1 = __webpack_require__(69);
+const frs_dto_1 = __webpack_require__(223);
+let FRSSocketMqttController = class FRSSocketMqttController {
+    constructor(frsService, frsGateway, saveLogService) {
+        this.frsService = frsService;
+        this.frsGateway = frsGateway;
+        this.saveLogService = saveLogService;
+        this.logger = this.saveLogService.get('gateway-frs');
+    }
+    connectSlamnav() {
+        this.logger?.info(`[FRS] connectSlamnav`);
+        this.frsGateway.connectSlamanv();
+    }
+    disconnectSlamnav() {
+        this.frsGateway.disconnectSlamanv();
+    }
+    async getFrsUrl() {
+        this.logger?.info(`[FRS] getFrsUrl`);
+        return await this.frsService.getFrsUrl();
+    }
+    async updateFrsUrl(data) {
+        this.logger?.info(`[FRS] updateFrsUrl : ${JSON.stringify(data)}`);
+        const resp = await this.frsService.updateFrsUrl(data);
+        this.frsGateway.connectFRSWithRetry(3);
+        return resp;
+    }
+    status(data) {
+        this.frsGateway.sendStatus(data);
+    }
+    moveStatus(data) {
+        this.frsGateway.sendMoveStatus(data);
+    }
+    moveResponse(data) {
+        this.frsGateway.sendMoveResponse(data);
+    }
+    loadResponse(data) {
+        this.frsGateway.sendLoadResponse(data);
+    }
+    controlResponse(data) {
+        this.frsGateway.sendControlResponse(data);
+    }
+    localizationResponse(data) {
+        this.frsGateway.sendLocalizationResponse(data);
+    }
+    mappingResponse(data) {
+        this.frsGateway.sendMappingResponse(data);
+    }
+};
+exports.FRSSocketMqttController = FRSSocketMqttController;
 __decorate([
-    (0, class_validator_1.IsEnum)(['success', 'fail']),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'success',
-        description: '테스트 결과',
-        enum: ['success', 'fail'],
-    }),
-    __metadata("design:type", String)
-], InsertTestDataDto.prototype, "result", void 0);
-class UpdateTestDataDto extends InsertTestDataDto {
+    (0, microservices_1.EventPattern)('con:slamnav'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "connectSlamnav", null);
+__decorate([
+    (0, microservices_1.EventPattern)('discon:slamnav'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "disconnectSlamnav", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('getFrsUrl'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], FRSSocketMqttController.prototype, "getFrsUrl", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('updateFrsUrl'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof frs_dto_1.FrsUrlRequestDto !== "undefined" && frs_dto_1.FrsUrlRequestDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], FRSSocketMqttController.prototype, "updateFrsUrl", null);
+__decorate([
+    (0, microservices_1.EventPattern)('status'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_g = typeof status_type_1.StatusSlamnav !== "undefined" && status_type_1.StatusSlamnav) === "function" ? _g : Object]),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "status", null);
+__decorate([
+    (0, microservices_1.EventPattern)('moveStatus'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_h = typeof movestatus_type_1.MoveStatusSlamnav !== "undefined" && movestatus_type_1.MoveStatusSlamnav) === "function" ? _h : Object]),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "moveStatus", null);
+__decorate([
+    (0, microservices_1.EventPattern)('moveResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof move_dto_1.MoveResponseSlamnav !== "undefined" && move_dto_1.MoveResponseSlamnav) === "function" ? _j : Object]),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "moveResponse", null);
+__decorate([
+    (0, microservices_1.EventPattern)('loadResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_k = typeof load_dto_1.LoadResponseSlamnav !== "undefined" && load_dto_1.LoadResponseSlamnav) === "function" ? _k : Object]),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "loadResponse", null);
+__decorate([
+    (0, microservices_1.EventPattern)('controlResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_l = typeof control_dto_1.ControlResponseSlamnav !== "undefined" && control_dto_1.ControlResponseSlamnav) === "function" ? _l : Object]),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "controlResponse", null);
+__decorate([
+    (0, microservices_1.EventPattern)('localizationResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof localization_dto_1.LocalizationResponseSlamnav !== "undefined" && localization_dto_1.LocalizationResponseSlamnav) === "function" ? _m : Object]),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "localizationResponse", null);
+__decorate([
+    (0, microservices_1.EventPattern)('mappingResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_o = typeof mapping_dto_1.MappingResponseSlamnav !== "undefined" && mapping_dto_1.MappingResponseSlamnav) === "function" ? _o : Object]),
+    __metadata("design:returntype", void 0)
+], FRSSocketMqttController.prototype, "mappingResponse", null);
+exports.FRSSocketMqttController = FRSSocketMqttController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof frs_socket_service_1.FRSSocketService !== "undefined" && frs_socket_service_1.FRSSocketService) === "function" ? _a : Object, typeof (_b = typeof frs_socket_client_1.FRSSocketClient !== "undefined" && frs_socket_client_1.FRSSocketClient) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
+], FRSSocketMqttController);
+
+
+/***/ }),
+/* 225 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CameraResponseSlamnav = exports.CameraRequestDto = exports.CameraResponseDto = void 0;
+const swagger_1 = __webpack_require__(8);
+const class_validator_1 = __webpack_require__(11);
+class CameraResponseDto {
 }
-exports.UpdateTestDataDto = UpdateTestDataDto;
+exports.CameraResponseDto = CameraResponseDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, swagger_1.ApiProperty)({
+        description: '카메라 1 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraResponseDto.prototype, "cam1", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 2 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraResponseDto.prototype, "cam2", void 0);
+class CameraRequestDto {
+}
+exports.CameraRequestDto = CameraRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 1 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraRequestDto.prototype, "cam1", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 2 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraRequestDto.prototype, "cam2", void 0);
+class CameraResponseSlamnav extends CameraResponseDto {
+}
+exports.CameraResponseSlamnav = CameraResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청 고유 아이디',
         example: '1234567890',
-        description: '테스트 기록 ID',
     }),
-    __metadata("design:type", String)
-], UpdateTestDataDto.prototype, "testRecordId", void 0);
-class ResponseTestResultDto {
-}
-exports.ResponseTestResultDto = ResponseTestResultDto;
-__decorate([
-    (0, class_validator_1.IsArray)({ each: true }),
-    (0, class_validator_1.ValidateNested)({ each: true }),
-    (0, class_transformer_1.Type)(() => TestResultDto),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: [],
-        description: '테스트 결과 목록',
-        type: TestResultDto,
-        isArray: true,
-    }),
-    __metadata("design:type", Array)
-], ResponseTestResultDto.prototype, "items", void 0);
-class ResponseTestRecordDto {
-}
-exports.ResponseTestRecordDto = ResponseTestRecordDto;
-__decorate([
-    (0, class_validator_1.IsArray)({ each: true }),
-    (0, class_validator_1.ValidateNested)({ each: true }),
-    (0, class_transformer_1.Type)(() => TestRecordDto),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: [],
-        description: '테스트 레코드 목록',
-        type: TestRecordDto,
-        isArray: true,
-    }),
-    __metadata("design:type", Array)
-], ResponseTestRecordDto.prototype, "items", void 0);
-class ResponseTestRecordListDto extends ResponseTestRecordDto {
-}
-exports.ResponseTestRecordListDto = ResponseTestRecordListDto;
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: 10,
-        description: '페이지 크기',
-    }),
-    __metadata("design:type", Number)
-], ResponseTestRecordListDto.prototype, "pageSize", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: 1,
-        description: '전체 페이지 수',
-    }),
-    __metadata("design:type", Number)
-], ResponseTestRecordListDto.prototype, "totalPage", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: 100,
-        description: '전체 테스트 결과 수',
-    }),
-    __metadata("design:type", Number)
-], ResponseTestRecordListDto.prototype, "totalCount", void 0);
-class InsertTestRecordDto {
-}
-exports.InsertTestRecordDto = InsertTestRecordDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'tester1',
-        description: '테스트 수행자',
-        required: false,
-        nullable: true,
-        default: null,
-    }),
-    __metadata("design:type", String)
-], InsertTestRecordDto.prototype, "tester", void 0);
-__decorate([
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    (0, swagger_1.ApiProperty)({
-        example: ['DISPLAY', 'SPEAKER'],
-        description: '테스트 주제 배열',
-        isArray: true,
-    }),
-    __metadata("design:type", Array)
-], InsertTestRecordDto.prototype, "subjects", void 0);
-class UpdateTestRecordDto {
-}
-exports.UpdateTestRecordDto = UpdateTestRecordDto;
-__decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: '1234567890',
-        description: '테스트 기록 ID',
-    }),
     __metadata("design:type", String)
-], UpdateTestRecordDto.prototype, "id", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'tester1',
-        description: '테스트 수행자',
-        nullable: true,
-        required: false,
-        default: null,
-    }),
-    __metadata("design:type", String)
-], UpdateTestRecordDto.prototype, "tester", void 0);
-class StartTestDto {
-}
-exports.StartTestDto = StartTestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'tester1',
-        description: '테스트 수행자',
-    }),
-    __metadata("design:type", String)
-], StartTestDto.prototype, "tester", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: '1234567890',
-        description: '테스트 기록 ID',
-    }),
-    __metadata("design:type", String)
-], StartTestDto.prototype, "testRecordId", void 0);
-class TestRunningInfoDto {
-}
-exports.TestRunningInfoDto = TestRunningInfoDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'tester1',
-        description: '테스트 수행자',
-    }),
-    __metadata("design:type", String)
-], TestRunningInfoDto.prototype, "tester", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: '1234567890',
-        description: '테스트 기록 ID',
-    }),
-    __metadata("design:type", String)
-], TestRunningInfoDto.prototype, "testRecordId", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'test-session-1234567890',
-        description: '테스트 세션 ID',
-    }),
-    __metadata("design:type", String)
-], TestRunningInfoDto.prototype, "testSessionId", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: 1,
-        description: '테스트 종료 시간',
-    }),
-    __metadata("design:type", Number)
-], TestRunningInfoDto.prototype, "testEndTimestamp", void 0);
-class CheckTestRunningDto {
-}
-exports.CheckTestRunningDto = CheckTestRunningDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: '1234567890',
-        description: '테스트 레코드 ID',
-        required: false,
-        nullable: true,
-        default: undefined,
-    }),
-    __metadata("design:type", String)
-], CheckTestRunningDto.prototype, "testRecordId", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-        example: 'tester1',
-        description: '테스트 수행자',
-        required: false,
-        nullable: true,
-        default: undefined,
-    }),
-    __metadata("design:type", String)
-], CheckTestRunningDto.prototype, "tester", void 0);
-__decorate([
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        example: true,
-        description: '테스트 진행 여부',
-    }),
-    __metadata("design:type", Boolean)
-], CheckTestRunningDto.prototype, "isRunning", void 0);
+], CameraResponseSlamnav.prototype, "id", void 0);
 
 
 /***/ })
@@ -25017,17 +25534,17 @@ const nestjs_asyncapi_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
 const api_module_1 = __webpack_require__(4);
 const common_1 = __webpack_require__(5);
-const grpc_to_http_filter_1 = __webpack_require__(153);
+const grpc_to_http_filter_1 = __webpack_require__(160);
 const swagger_1 = __webpack_require__(8);
-const client_socket_module_1 = __webpack_require__(154);
-const robot_socket_module_1 = __webpack_require__(164);
-const frs_socket_module_1 = __webpack_require__(181);
-const api_interceptor_1 = __webpack_require__(190);
-const tcp_socket_module_1 = __webpack_require__(191);
-const cobot_socket_module_1 = __webpack_require__(200);
+const client_socket_module_1 = __webpack_require__(161);
+const robot_socket_module_1 = __webpack_require__(171);
+const frs_socket_module_1 = __webpack_require__(188);
+const api_interceptor_1 = __webpack_require__(197);
+const tcp_socket_module_1 = __webpack_require__(198);
+const cobot_socket_module_1 = __webpack_require__(207);
 const common_2 = __webpack_require__(26);
 const path_1 = __webpack_require__(20);
-const bodyParser = __webpack_require__(216);
+const bodyParser = __webpack_require__(222);
 async function bootstrap() {
     const apiModule = await core_1.NestFactory.create(api_module_1.RRSApiModule);
     apiModule.enableCors({
@@ -25118,7 +25635,7 @@ async function bootstrap() {
         .setDefaultContentType('application/json')
         .addSecurity('user-password', { type: 'userPassword' })
         .addServer('frs_socket', {
-        url: 'ws://{frs_url}:5002',
+        url: 'ws://{frsSocketUrl}:5002',
         protocol: 'socket.io',
     })
         .build();

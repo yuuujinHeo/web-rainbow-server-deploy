@@ -62,6 +62,21 @@ export interface PresetResponse {
   data?: string | undefined;
 }
 
+export interface GetCameraInfoResponse {
+  cam1?: string | undefined;
+  cam2?: string | undefined;
+}
+
+export interface SetCameraOrderRequest {
+  cam1?: string | undefined;
+  cam2?: string | undefined;
+}
+
+export interface SetCameraOrderResponse {
+  cam1?: string | undefined;
+  cam2?: string | undefined;
+}
+
 export const SETTING_PACKAGE_NAME = "setting";
 
 export interface SettingGrpcServiceClient {
@@ -84,6 +99,12 @@ export interface SettingGrpcServiceClient {
   deletePreset(request: PresetRequest, metadata?: Metadata): Observable<PresetResponse>;
 
   savePreset(request: PresetRequest, metadata?: Metadata): Observable<PresetResponse>;
+
+  /** cam */
+
+  getCameraInfo(request: Empty, metadata?: Metadata): Observable<GetCameraInfoResponse>;
+
+  setCameraOrder(request: SetCameraOrderRequest, metadata?: Metadata): Observable<SetCameraOrderResponse>;
 }
 
 export interface SettingGrpcServiceController {
@@ -133,6 +154,18 @@ export interface SettingGrpcServiceController {
     request: PresetRequest,
     metadata?: Metadata,
   ): Promise<PresetResponse> | Observable<PresetResponse> | PresetResponse;
+
+  /** cam */
+
+  getCameraInfo(
+    request: Empty,
+    metadata?: Metadata,
+  ): Promise<GetCameraInfoResponse> | Observable<GetCameraInfoResponse> | GetCameraInfoResponse;
+
+  setCameraOrder(
+    request: SetCameraOrderRequest,
+    metadata?: Metadata,
+  ): Promise<SetCameraOrderResponse> | Observable<SetCameraOrderResponse> | SetCameraOrderResponse;
 }
 
 export function SettingGrpcServiceControllerMethods() {
@@ -147,6 +180,8 @@ export function SettingGrpcServiceControllerMethods() {
       "createPreset",
       "deletePreset",
       "savePreset",
+      "getCameraInfo",
+      "setCameraOrder",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     depends_on:
-      microservice-device:
+      device:
         condition: service_healthy
     network_mode: host
     privileged: true
@@ -28,8 +28,8 @@ services:
       - ${HOST_DATA_DIR}:/data
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-  microservice-monitoring:
-    container_name: microservice-monitoring
+  monitoring:
+    container_name: monitoring
     image: rainbowyujin/node_host_root:latest
     command: pnpm nodemon dist/apps/monitoring/main.js
     network_mode: host
@@ -48,8 +48,8 @@ services:
       - ./proto:/usr/src/app/proto
       - /usr/src/app/node_modules
       - ${HOST_DATA_DIR}/log:/data/log
-  microservice-device:
-    container_name: microservice-device
+  device:
+    container_name: device
     image: rainbowyujin/node_host_root:latest
     command: pnpm nodemon dist/apps/device/main.js
     network_mode: host
@@ -75,8 +75,8 @@ services:
       timeout: 3s
       retries: 10
       start_period: 5s
-  microservice-config:
-    container_name: microservice-config
+  config:
+    container_name: config
     image: rainbowyujin/node_host_root:latest
     command: pnpm nodemon dist/apps/config/main.js
     network_mode: host
@@ -103,7 +103,7 @@ services:
       timeout: 3s
       retries: 10
       start_period: 5s
-  # microservice-file:
+  # file:
   #   container_name: microservice-file
   #   image: rainbowyujin/node_host_root:latest
   #   command: pnpm nodemon dist/apps/file/main.js
@@ -141,8 +141,8 @@ services:
   #     timeout: 3s
   #     retries: 10
   #     start_period: 5s
-  # microservice-task:
-  #   container_name: microservice-task
+  # task:
+  #   container_name: task
   #   image: rainbowyujin/node_host_root:latest
   #   command: pnpm nodemon dist/apps/task/main.js
   #   network_mode: host
