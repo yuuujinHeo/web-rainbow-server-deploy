@@ -11792,10 +11792,6 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateApiService = void 0;
 const common_1 = __webpack_require__(5);
-const path = __webpack_require__(20);
-const os_1 = __webpack_require__(131);
-const fs = __webpack_require__(19);
-const child_process_1 = __webpack_require__(132);
 const config_1 = __webpack_require__(74);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(62);
@@ -11830,70 +11826,11 @@ let UpdateApiService = class UpdateApiService {
     async updateSoftware(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.updateService.updateProgram(dto));
     }
-    rrsUpdate({ branch, version } = {}) {
-        const updateScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/rrs-server`, 'rrs-update.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(updateScript)) {
-            this.logger?.error(`[UPDATE] rrsUpdate: ${updateScript} 파일을 찾을 수 없습니다.`);
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/rrs-server/rrs-update.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        (0, child_process_1.execSync)('git pull', {
-            cwd: rainbowDeployKitDir,
-            stdio: 'pipe',
-        });
-        (0, child_process_1.exec)(`nohup bash ${updateScript} --mode=${branch || 'main'} --version=${version} > /tmp/rrs-update.log 2>&1 &`);
-        return { applyReqUpdate: true, version: version || '', rejectReason: '' };
+    async webUIAppAdd(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.addWebUi(dto));
     }
-    otherSwUpdate({ branch, version } = {}) {
-        return new Promise((resolve, reject) => {
-            reject(new common_1.GatewayTimeoutException('프로그램이 연결되지 않았습니다'));
-        });
-    }
-    async webUIAppAdd({ appNames, branch, fo }) {
-        const appAddScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-add-app.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(appAddScript)) {
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/web-ui/fe-add-app.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        try {
-            (0, child_process_1.execSync)('git pull', {
-                cwd: rainbowDeployKitDir,
-                stdio: 'pipe',
-            });
-            (0, child_process_1.execSync)(`bash ${appAddScript}${branch ? ` --mode=${branch}` : ''}${fo ? ` --fo=${fo}` : ''} ${appNames.join(' ')}`);
-            return { appNames, branch, fo };
-        }
-        catch (error) {
-            throw new common_1.BadRequestException({
-                message: error.message,
-            });
-        }
-    }
-    async webUIAppDelete({ appNames }) {
-        const appDeleteScript = path.join((0, os_1.homedir)(), `rainbow-deploy-kit/web-ui`, 'fe-delete-app.sh');
-        const rainbowDeployKitDir = path.join((0, os_1.homedir)(), 'rainbow-deploy-kit');
-        if (!fs.existsSync(appDeleteScript)) {
-            throw new common_1.NotFoundException({
-                message: `~/rainbow-deploy-kit/web-ui/fe-delete-app.sh 파일을 찾을 수 없습니다.`,
-            });
-        }
-        try {
-            (0, child_process_1.execSync)('git pull', {
-                cwd: rainbowDeployKitDir,
-                stdio: 'pipe',
-            });
-            (0, child_process_1.execSync)(`bash ${appDeleteScript} ${appNames.join(' ')}`);
-            return { appNames };
-        }
-        catch (error) {
-            throw new common_1.BadRequestException({
-                message: error.message,
-            });
-        }
+    async webUIAppDelete(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.updateService.deleteWebUi(dto));
     }
 };
 exports.UpdateApiService = UpdateApiService;
@@ -11905,18 +11842,8 @@ exports.UpdateApiService = UpdateApiService = __decorate([
 
 
 /***/ }),
-/* 131 */
-/***/ ((module) => {
-
-module.exports = require("os");
-
-/***/ }),
-/* 132 */
-/***/ ((module) => {
-
-module.exports = require("child_process");
-
-/***/ }),
+/* 131 */,
+/* 132 */,
 /* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -11967,7 +11894,13 @@ let UpdateApiController = class UpdateApiController {
         return this.updateService.getReleaseAppsVersionList(dto);
     }
     webUIAppAdd(webUIAppAddDto) {
-        return this.updateService.webUIAppAdd(webUIAppAddDto);
+        return this.updateService.webUIAppAdd(webUIAppAddDto).then((resp) => {
+            return {
+                appNames: resp.appNames,
+                branch: resp.branch,
+                fo: resp.fo,
+            };
+        });
     }
     updateSoftware(reqUpdateSoftwareDto) {
         return this.updateService.updateSoftware(reqUpdateSoftwareDto);

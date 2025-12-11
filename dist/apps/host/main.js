@@ -6794,10 +6794,10 @@ let UpdateGrpcController = class UpdateGrpcController {
         return this.updateService.getReleaseAppsVersionList(request);
     }
     addWebUi(request, metadata) {
-        throw new Error('Method not implemented.');
+        return this.updateService.addWebUI(request);
     }
     deleteWebUi(request, metadata) {
-        throw new Error('Method not implemented.');
+        return this.updateService.deleteWebUI(request);
     }
     updateProgram(request, metadata) {
         return this.updateService.updateProgram(request);
@@ -7131,6 +7131,7 @@ let UpdateService = class UpdateService {
                 return this.updateShOutputPort.updateRRS(updateModel);
             }
             else if (request.software.toLowerCase().includes('slamnav')) {
+                return this.updateSlamnavOutputPort.updateSLAMNAV(updateModel);
             }
             else {
                 throw new rpc_code_exception_1.RpcCodeException(`검색 불가능한 소프트웨어입니다. ${request.software}`, constant_1.GrpcCode.InvalidArgument);
@@ -7141,6 +7142,62 @@ let UpdateService = class UpdateService {
                 throw error;
             this.logger?.error(`[UPDATE] updateProgram : ${(0, common_1.errorToJson)(error)}`);
             throw new rpc_code_exception_1.RpcCodeException('프로그램을 업데이트할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async addWebUI(request) {
+        let model;
+        try {
+            model = new update_domain_1.UpdateModel({
+                command: update_domain_1.UpdateCommand.AddWebUi,
+                appNames: request.appNames,
+                branch: request.branch,
+                fo: request.fo,
+            });
+            const updateCommand = await this.updateDatabaseOutputPort.save(model);
+            model.assignId(updateCommand._id);
+            model.checkVariables();
+            const resp = await this.updateShOutputPort.addWebUI(model);
+            model.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.updateDatabaseOutputPort.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.message = error.error.details;
+                model.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.updateDatabaseOutputPort.update(model);
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[UPDATE] addWebUI : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('웹 UI를 추가할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async deleteWebUI(request) {
+        let model;
+        try {
+            model = new update_domain_1.UpdateModel({
+                command: update_domain_1.UpdateCommand.DeleteWebUi,
+                appNames: request.appNames,
+            });
+            const updateCommand = await this.updateDatabaseOutputPort.save(model);
+            model.assignId(updateCommand._id);
+            model.checkVariables();
+            const resp = await this.updateShOutputPort.deleteWebUI(model);
+            model.statusChange(map_command_domain_1.CommandStatus.success);
+            await this.updateDatabaseOutputPort.update(model);
+            return resp;
+        }
+        catch (error) {
+            if (model) {
+                model.message = error.error.details;
+                model.statusChange(map_command_domain_1.CommandStatus.fail);
+                await this.updateDatabaseOutputPort.update(model);
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[UPDATE] deleteWebUI : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('웹 UI를 삭제할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
 };
@@ -7360,6 +7417,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateShAdapter = void 0;
+const common_1 = __webpack_require__(4);
 const rpc_code_exception_1 = __webpack_require__(51);
 const grpc_code_constant_1 = __webpack_require__(53);
 const config_1 = __webpack_require__(2);
@@ -7368,7 +7426,7 @@ const fs_1 = __webpack_require__(45);
 const os_1 = __webpack_require__(120);
 const path_1 = __webpack_require__(32);
 const saveLog_service_1 = __webpack_require__(36);
-const common_1 = __webpack_require__(34);
+const common_2 = __webpack_require__(34);
 let UpdateShAdapter = class UpdateShAdapter {
     constructor(configService, saveLogService) {
         this.configService = configService;
@@ -7389,10 +7447,52 @@ let UpdateShAdapter = class UpdateShAdapter {
         (0, child_process_1.execSync)(`nohup bash ${updateScript} --mode=${request.branch || 'main'} --version=${request.version} > /tmp/rrs-update.log 2>&1 &`);
         return { software: 'rrs', branch: request.branch, version: request.version, result: 'true', message: '' };
     }
+    async addWebUI(model) {
+        const addWebUIScript = (0, path_1.join)(this.deployKitDir, 'web-ui', 'fe-add-app.sh');
+        if (!(0, fs_1.existsSync)(addWebUIScript)) {
+            this.logger?.error(`[UPDATE] addWebUI: ${addWebUIScript} 파일을 찾을 수 없습니다.`);
+            throw new rpc_code_exception_1.RpcCodeException(`fe-add-app.sh 파일을 찾을 수 없습니다.`, grpc_code_constant_1.GrpcCode.NotFound);
+        }
+        try {
+            (0, child_process_1.execSync)('git pull', {
+                cwd: this.deployKitDir,
+                stdio: 'pipe',
+            });
+            (0, child_process_1.execSync)(`bash ${addWebUIScript}${model.branch ? ` --mode=${model.branch}` : ''}${model.fo ? ` --fo=${model.fo}` : ''} ${model.appNames.join(' ')}`);
+            return { appNames: model.appNames, branch: model.branch, fo: model.fo };
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[UPDATE] addWebUI : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('웹 UI를 추가할 수 없습니다.', grpc_code_constant_1.GrpcCode.InternalError);
+        }
+    }
+    async deleteWebUI(model) {
+        const deleteWebUIScript = (0, path_1.join)(this.deployKitDir, 'web-ui', 'fe-delete-app.sh');
+        if (!(0, fs_1.existsSync)(deleteWebUIScript)) {
+            this.logger?.error(`[UPDATE] deleteWebUI: ${deleteWebUIScript} 파일을 찾을 수 없습니다.`);
+            throw new rpc_code_exception_1.RpcCodeException(`fe-delete-app.sh 파일을 찾을 수 없습니다.`, grpc_code_constant_1.GrpcCode.NotFound);
+        }
+        try {
+            (0, child_process_1.execSync)('git pull', {
+                cwd: this.deployKitDir,
+                stdio: 'pipe',
+            });
+            (0, child_process_1.execSync)(`bash ${deleteWebUIScript} ${model.appNames.join(' ')}`);
+            return { appNames: model.appNames };
+        }
+        catch (error) {
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[UPDATE] deleteWebUI : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('웹 UI를 삭제할 수 없습니다.', grpc_code_constant_1.GrpcCode.InternalError);
+        }
+    }
 };
 exports.UpdateShAdapter = UpdateShAdapter;
 exports.UpdateShAdapter = UpdateShAdapter = __decorate([
-    (0, common_1.Injectable)(),
+    (0, common_2.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
 ], UpdateShAdapter);
 
