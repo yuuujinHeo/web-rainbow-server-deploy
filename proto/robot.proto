@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package robot;
+
+service RobotGrpcService {
+  rpc ReadRobotList(ReadRobotListRequest) returns (ReadRobotListResponse);
+  rpc ReadRobot(ReadRobotRequest) returns (ReadRobotResponse);
+  rpc CreateRobot(CreateRobotRequest) returns (CreateRobotResponse);
+  rpc UpdateRobot(UpdateRobotRequest) returns (UpdateRobotResponse);
+  rpc DeleteRobot(DeleteRobotRequest) returns (DeleteRobotResponse);
+}
+
+message ReadRobotRequest {
+  optional string robotSerial = 1;
+  optional string robotType = 2;
+  optional string robotName = 3;
+  optional string robotIpAddress = 4;
+  optional string robotUri = 5;
+  optional string robotApproveYn = 6;
+  optional string createdAt = 7;
+  optional string updatedAt = 8;
+  optional string createdBy = 9;
+  optional string updatedBy = 10;
+}
+
+message ReadRobotListRequest {
+  optional int32 pageNo = 1;
+  optional int32 pageSize = 2;
+  optional string searchType = 3;
+  optional string searchText = 4;
+  optional string robotSerial = 5;
+  optional string robotType = 6;
+  optional string robotName = 7;
+  optional string robotIpAddress = 8;
+  optional string robotUri = 9;
+  optional string robotApproveYn = 10;
+  optional string createdAt = 11;
+  optional string updatedAt = 12;
+  optional string createdAtStart = 13;
+  optional string createdAtEnd = 14;
+  optional string updatedAtStart = 15;
+  optional string updatedAtEnd = 16;
+  optional string createdBy = 17;
+  optional string updatedBy = 18;
+}
+
+message ReadRobotResponse {
+  optional string robotSerial = 1;
+  optional string robotType = 2;
+  optional string robotName = 3;
+  optional string robotIpAddress = 4;
+  optional string robotUri = 5;
+  optional string robotApproveYn = 6;
+  optional string createdAt = 7;
+  optional string updatedAt = 8;
+  optional string createdBy = 9;
+  optional string updatedBy = 10;
+}
+
+message ReadRobotListResponse {
+  int32 pageNo = 1;
+  int32 pageSize = 2;
+  int32 totalCount = 3;
+  int32 totalPage = 4;
+  optional string searchType = 5;
+  optional string searchText = 6;
+  optional string createdAtStart = 7;
+  optional string createdAtEnd = 8;
+  optional string updatedAtStart = 9;
+  optional string updatedAtEnd = 10;
+
+  repeated Robot data = 11;
+
+  message Robot {
+    string robotSerial = 1;
+    string robotType = 2;
+    string robotName = 3;
+    string robotIpAddress = 4;
+    string robotUri = 5;
+    string robotApproveYn = 6;
+    string createdAt = 7;
+    string updatedAt = 8;
+    string createdBy = 9;
+    string updatedBy = 10;
+  }
+}
+
+message CreateRobotRequest {
+  string robotSerial = 1;
+  string robotType = 2;
+  string robotName = 3;
+  optional string robotIpAddress = 4;
+  optional string robotUri = 5;
+  string robotApproveYn = 6;
+  string createdAt = 7;
+  optional string createdBy = 8;
+}
+
+message CreateRobotResponse {
+  string robotSerial = 1;
+  string robotType = 2;
+  string robotName = 3;
+  string robotIpAddress = 4;
+  string robotUri = 5;
+  string robotApproveYn = 6;
+  string createdAt = 7;
+  string createdBy = 8;
+}
+
+message UpdateRobotRequest {
+  string robotSerial = 1;
+  optional Robot data = 2;
+
+  message Robot {
+    optional string robotSerial = 1;
+    optional string robotType = 2;
+    optional string robotName = 3;
+    optional string robotIpAddress = 4;
+    optional string robotUri = 5;
+    optional string robotApproveYn = 6;
+    optional string updatedAt = 7;
+    optional string updatedBy = 8;
+  }
+}
+
+message UpdateRobotResponse {
+  string robotSerial = 1;
+  string robotType = 2;
+  string robotName = 3;
+  string robotIpAddress = 4;
+  string robotUri = 5;
+  string robotApproveYn = 6;
+  string updatedAt = 7;
+  string updatedBy = 8;
+}
+
+message DeleteRobotRequest {
+  string robotSerial = 1;
+}
+
+message DeleteRobotResponse {
+  string robotSerial = 1;
+  string robotType = 2;
+  string robotName = 3;
+  string robotIpAddress = 4;
+  string robotUri = 5;
+  string robotApproveYn = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+  string createdBy = 9;
+  string updatedBy = 10;
+}

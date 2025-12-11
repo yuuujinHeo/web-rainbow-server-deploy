@@ -942,633 +942,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(30), exports);
+__exportStar(__webpack_require__(54), exports);
 
 
 /***/ }),
 /* 30 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.errorToJson = errorToJson;
-function errorToJson(error) {
-    try {
-        if (error instanceof Error) {
-            const errorJson = {
-                name: error.name,
-                message: JSON.stringify(error.message),
-            };
-            if (error['error'] && error['error'].details) {
-                errorJson['details'] = error['error'].details;
-                errorJson['code'] = error['error'].code;
-            }
-            return JSON.stringify(errorJson);
-        }
-        else {
-            const json = JSON.parse(error);
-            return JSON.stringify(json);
-        }
-    }
-    catch (err) {
-        return JSON.stringify(error);
-    }
-}
-
-
-/***/ }),
-/* 31 */
-/***/ ((module) => {
-
-module.exports = require("path");
-
-/***/ }),
-/* 32 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/config");
-
-/***/ }),
-/* 33 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigDBModule = void 0;
-const common_1 = __webpack_require__(34);
-const typeorm_1 = __webpack_require__(35);
-const config_service_1 = __webpack_require__(36);
-const db_grpc_controller_1 = __webpack_require__(68);
-const db_api_controller_1 = __webpack_require__(69);
-const config_entity_1 = __webpack_require__(38);
-const pg_1 = __webpack_require__(75);
-const config_1 = __webpack_require__(32);
-const microservices_1 = __webpack_require__(2);
-const constant_1 = __webpack_require__(42);
-const log_module_1 = __webpack_require__(76);
-let ConfigDBModule = class ConfigDBModule {
-};
-exports.ConfigDBModule = ConfigDBModule;
-exports.ConfigDBModule = ConfigDBModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            log_module_1.LogModule,
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                envFilePath: '.env',
-            }),
-            typeorm_1.TypeOrmModule.forRootAsync({
-                inject: [config_1.ConfigService],
-                useFactory: async (configService) => {
-                    await ensureConfigDatabase();
-                    return {
-                        type: 'postgres',
-                        url: configService.get('POSTGRES_URL') + '/config',
-                        autoLoadEntities: true,
-                        synchronize: true,
-                    };
-                },
-            }),
-            microservices_1.ClientsModule.registerAsync({
-                clients: [
-                    {
-                        inject: [config_1.ConfigService],
-                        name: constant_1.MQTT_BROKER,
-                        useFactory: (configService) => ({
-                            transport: microservices_1.Transport.MQTT,
-                            options: {
-                                url: configService.get('MQTT_URL'),
-                            },
-                        }),
-                    },
-                ],
-            }),
-            typeorm_1.TypeOrmModule.forFeature([config_entity_1.Config]),
-        ],
-        controllers: [db_grpc_controller_1.DBGrpcController, db_api_controller_1.DBConfigAPIController],
-        providers: [config_service_1.ConfigDBService],
-        exports: [config_service_1.ConfigDBService],
-    })
-], ConfigDBModule);
-async function ensureConfigDatabase() {
-    const client = new pg_1.Client({
-        host: process.env.POSTGRES_HOST || 'localhost',
-        port: parseInt(process.env.POSTGRES_PORT || '7000'),
-        user: process.env.POSTGRES_USER || 'postgres',
-        password: process.env.POSTGRES_PASSWORD || 'postgres',
-        database: 'postgres',
-    });
-    try {
-        await client.connect();
-        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'config'");
-        if (result.rows.length === 0) {
-            await client.query('CREATE DATABASE config');
-            console.log('🎉 config 데이터베이스 생성 완료');
-        }
-        else {
-            console.log('✅ config 데이터베이스 이미 존재');
-        }
-    }
-    catch (error) {
-        console.warn('⚠️ semlog DB 생성 실패:', error.message);
-    }
-    finally {
-        await client.end();
-    }
-}
-
-
-/***/ }),
-/* 34 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/common");
-
-/***/ }),
-/* 35 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/typeorm");
-
-/***/ }),
-/* 36 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigDBService = void 0;
-const common_1 = __webpack_require__(34);
-const typeorm_1 = __webpack_require__(37);
-const typeorm_2 = __webpack_require__(35);
-const common_2 = __webpack_require__(3);
-const config_entity_1 = __webpack_require__(38);
-const rpc_code_exception_1 = __webpack_require__(39);
-const constant_1 = __webpack_require__(40);
-const microservices_1 = __webpack_require__(2);
-const constant_2 = __webpack_require__(42);
-const saveLog_service_1 = __webpack_require__(49);
-let ConfigDBService = class ConfigDBService {
-    constructor(configRepository, mqttMicroservice, saveLogService) {
-        this.configRepository = configRepository;
-        this.mqttMicroservice = mqttMicroservice;
-        this.saveLogService = saveLogService;
-        this.fired = false;
-        this.logger = this.saveLogService.get('config');
-    }
-    async onApplicationBootstrap() {
-        this.mqttMicroservice.emit('ready:config', {});
-    }
-    async getConfig(request) {
-        try {
-            if (request.key === undefined || request.key === '') {
-                throw new rpc_code_exception_1.RpcCodeException('key값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-            const resp = await this.configRepository.findOneBy({ key: request.key });
-            return { key: request.key, value: resp ? resp.value : null };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[DB] getConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async getConfigAll() {
-        try {
-            const resp = await this.configRepository.find();
-            return { configs: resp };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[DB] getConfigAll : ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async setConfigs(dto) {
-        try {
-            if (dto.configs === undefined || dto.configs.length === 0) {
-                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            for (const config of dto.configs) {
-                await this.setConfig(config);
-            }
-            return { ...dto, result: 'success' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[DB] setConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async setConfig(request) {
-        try {
-            this.logger?.debug(`[DB] setConfig : ${JSON.stringify(request)}`);
-            if (request.key === undefined || request.key === '') {
-                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            if (request.value === undefined || request.value === '') {
-                throw new rpc_code_exception_1.RpcCodeException(`value 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            const resp = await this.configRepository.save(request);
-            this.logger?.info(`[DB] setConfig : ${JSON.stringify(resp)} done`);
-            return { ...request, result: resp ? 'success' : 'fail' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[DB] setConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async deleteConfig(key) {
-        try {
-            this.logger?.debug(`[DB] deleteConfig : ${key}`);
-            if (key === undefined || key === '') {
-                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            const resp = await this.configRepository.delete({ key: key });
-            if (!resp.affected || resp.affected == 0) {
-                throw new rpc_code_exception_1.RpcCodeException(`key 값에 해당하는 객체가 없습니다 (${key})`, constant_1.GrpcCode.NotFound);
-            }
-            return { key: key, result: 'success' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[DB] deleteConfig : ${key} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-    async deleteConfigs(dto) {
-        try {
-            if (dto.configs === undefined || dto.configs.length === 0) {
-                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
-            }
-            for (const config of dto.configs) {
-                await this.deleteConfig(config.key);
-            }
-            return { ...dto, result: 'success' };
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[DB] deleteConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
-        }
-    }
-};
-exports.ConfigDBService = ConfigDBService;
-exports.ConfigDBService = ConfigDBService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(config_entity_1.Config)),
-    __param(1, (0, common_1.Inject)(constant_2.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
-], ConfigDBService);
-
-
-/***/ }),
-/* 37 */
-/***/ ((module) => {
-
-module.exports = require("typeorm");
-
-/***/ }),
-/* 38 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Config = void 0;
-const typeorm_1 = __webpack_require__(37);
-let Config = class Config {
-};
-exports.Config = Config;
-__decorate([
-    (0, typeorm_1.PrimaryColumn)({
-        unique: true,
-    }),
-    __metadata("design:type", String)
-], Config.prototype, "key", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Config.prototype, "value", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
-], Config.prototype, "createAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Config.prototype, "updateAt", void 0);
-__decorate([
-    (0, typeorm_1.VersionColumn)(),
-    __metadata("design:type", Number)
-], Config.prototype, "version", void 0);
-exports.Config = Config = __decorate([
-    (0, typeorm_1.Entity)()
-], Config);
-
-
-/***/ }),
-/* 39 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RpcCodeException = void 0;
-const microservices_1 = __webpack_require__(2);
-class RpcCodeException extends microservices_1.RpcException {
-    constructor(details, statusCode) {
-        super({ details: details, code: statusCode });
-        this.statusCode = statusCode;
-    }
-}
-exports.RpcCodeException = RpcCodeException;
-
-
-/***/ }),
-/* 40 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(41), exports);
-
-
-/***/ }),
-/* 41 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcCode = void 0;
-var GrpcCode;
-(function (GrpcCode) {
-    GrpcCode[GrpcCode["OK"] = 0] = "OK";
-    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
-    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
-    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
-    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
-    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
-    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
-    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
-    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
-    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
-    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
-    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
-    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
-    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
-    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
-    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
-    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
-    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
-})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
-
-
-/***/ }),
-/* 42 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.message = exports.environment = void 0;
-__exportStar(__webpack_require__(43), exports);
-__exportStar(__webpack_require__(44), exports);
-exports.environment = __webpack_require__(45);
-exports.message = __webpack_require__(47);
-
-
-/***/ }),
-/* 43 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MQTT_BROKER = exports.SERVICE_LOG_SERVICE = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.TEST_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
-exports.AUTH_SERVICE = 'AUTH_SERVICE';
-exports.USER_SERVICE = 'USER_SERVICE';
-exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
-exports.ROLE_SERVICE = 'ROLE_SERVICE';
-exports.GROUP_SERVICE = 'GROUP_SERVICE';
-exports.AMR_SERVICE = 'AMR_SERVICE';
-exports.REDIS_SERVICE = 'REDIS_SERVICE';
-exports.CODE_SERVICE = 'CODE_SERVICE';
-exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
-exports.SETTING_SERVICE = 'SETTING_SERVICE';
-exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
-exports.MOVE_SERVICE = 'MOVE_SERVICE';
-exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
-exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
-exports.TEST_SERVICE = 'TEST_SERVICE';
-exports.MAP_SERVICE = 'MAP_SERVICE';
-exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
-exports.SOUND_SERVICE = 'SOUND_SERVICE';
-exports.TASK_SERVICE = 'TASK_SERVICE';
-exports.COBOT_SERVICE = 'COBOT_SERVICE';
-exports.TCP_SERVICE = 'TCP_SERVICE';
-exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
-exports.SERVICE_LOG_SERVICE = 'SERVICE_LOG_SERVICE';
-exports.MQTT_BROKER = 'MQTT_BROKER';
-
-
-/***/ }),
-/* 44 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 45 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(46), exports);
-
-
-/***/ }),
-/* 46 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SYSTEM = void 0;
-exports.SYSTEM = {
-    INTERACTIVE: {
-        FMS: 'FMS',
-        FRS: 'FRS',
-        ACS: 'ACS',
-        IMS: 'IMS',
-    },
-    CONTROL: {
-        RRS: 'RRS',
-    },
-    CONNECTION: {
-        CLIENT: 'CLIENT',
-        AMR: 'AMR',
-    },
-};
-
-
-/***/ }),
-/* 47 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(48), exports);
-
-
-/***/ }),
-/* 48 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SUCCESS_MESSAGES = exports.ERROR_MESSAGE = void 0;
-exports.ERROR_MESSAGE = {
-    USER: {
-        ID_REQUIRED: '사용자 아이디는 필수입니다.',
-        NOT_FOUND: '사용자를 찾을 수 없습니다.',
-        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
-        INVALID_PASSWORD: '비밀번호가 올바르지 않습니다.',
-    },
-    ROBOT: {
-        SERIAL_REQUIRED: '로봇 시리얼은 필수입니다.',
-        NOT_FOUND: '로봇을 찾을 수 없습니다.',
-        ALREADY_EXISTS: '이미 존재하는 로봇입니다.',
-    },
-    AUTH: {
-        TOKEN_REQUIRED: '인증 토큰이 필요합니다.',
-        TOKEN_INVALID: '유효하지 않은 토큰입니다.',
-        TOKEN_EXPIRED: '토큰이 만료되었습니다.',
-        UNAUTHORIZED: '인증이 필요합니다.',
-        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
-    },
-    CODE: {
-        NOT_FOUND: '코드를 찾을 수 없습니다.',
-        ALREADY_EXISTS: '이미 존재하는 코드입니다.',
-    },
-    SOCKET: {
-        NOT_FOUND: 'Socket정보를 찾을 수 없습니다.',
-    },
-    MAP: {
-        NOT_FOUND: '맵을 찾을 수 없습니다.',
-        INVALID_FORMAT: '올바르지 않은 맵 형식입니다.',
-        SAVE_FAILED: '맵 저장에 실패했습니다.',
-    },
-    COMMON: {
-        BAD_REQUEST: '잘못된 요청입니다.',
-        INTERNAL_SERVER_ERROR: '서버 내부 오류가 발생했습니다.',
-        VALIDATION_FAILED: '유효성 검사에 실패했습니다.',
-        FORBIDDEN: '권한이 없습니다.',
-    },
-};
-exports.SUCCESS_MESSAGES = {
-    USER: {
-        CREATED: '사용자가 성공적으로 생성되었습니다.',
-        UPDATED: '사용자 정보가 성공적으로 업데이트되었습니다.',
-        DELETED: '사용자가 성공적으로 삭제되었습니다.',
-    },
-    MAP: {
-        SAVED: '맵이 성공적으로 저장되었습니다.',
-        LOADED: '맵이 성공적으로 로드되었습니다.',
-        UPDATED: '맵이 성공적으로 업데이트되었습니다.',
-    },
-};
-
-
-/***/ }),
-/* 49 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1583,12 +961,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SaveLogService = void 0;
-const common_1 = __webpack_require__(34);
-const winston_1 = __webpack_require__(50);
-const DailyRotateFile = __webpack_require__(51);
-const util_1 = __webpack_require__(52);
-const chalk_1 = __webpack_require__(67);
-const fs_1 = __webpack_require__(58);
+const common_1 = __webpack_require__(31);
+const winston_1 = __webpack_require__(32);
+const DailyRotateFile = __webpack_require__(33);
+const util_1 = __webpack_require__(34);
+const chalk_1 = __webpack_require__(53);
+const fs_1 = __webpack_require__(40);
 const levelColorMap = {
     error: chalk_1.default.red,
     warn: chalk_1.default.magenta,
@@ -1731,46 +1109,52 @@ exports.SaveLogService = SaveLogService = __decorate([
 
 
 /***/ }),
-/* 50 */
+/* 31 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/common");
+
+/***/ }),
+/* 32 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 51 */
+/* 33 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
 
 /***/ }),
-/* 52 */
+/* 34 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(53);
+var url_util_1 = __webpack_require__(35);
 Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(55);
+var date_util_1 = __webpack_require__(37);
 Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(57);
+var file_util_1 = __webpack_require__(39);
 Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(64);
+var parse_util_1 = __webpack_require__(50);
 Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(65);
+var crypto_util_1 = __webpack_require__(51);
 Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(66);
+var validation_util_1 = __webpack_require__(52);
 Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
 
 
 /***/ }),
-/* 53 */
+/* 35 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(54);
+const uuid_1 = __webpack_require__(36);
 class UrlUtil {
     static generateUUID() {
         return (0, uuid_1.v4)();
@@ -1780,19 +1164,19 @@ exports.UrlUtil = UrlUtil;
 
 
 /***/ }),
-/* 54 */
+/* 36 */
 /***/ ((module) => {
 
 module.exports = require("uuid");
 
 /***/ }),
-/* 55 */
+/* 37 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(56);
+const date_fns_1 = __webpack_require__(38);
 class DateUtil {
     static nowKST() {
         const now = new Date();
@@ -1970,31 +1354,31 @@ exports.DateUtil = DateUtil;
 
 
 /***/ }),
-/* 56 */
+/* 38 */
 /***/ ((module) => {
 
 module.exports = require("date-fns");
 
 /***/ }),
-/* 57 */
+/* 39 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUtil = void 0;
-const fs = __webpack_require__(58);
-const path = __webpack_require__(31);
-const unzipper = __webpack_require__(59);
-const il = __webpack_require__(60);
-const uuid_1 = __webpack_require__(54);
-const archiver_1 = __webpack_require__(61);
-const csv = __webpack_require__(62);
-const zlib_1 = __webpack_require__(63);
+const fs = __webpack_require__(40);
+const path = __webpack_require__(41);
+const unzipper = __webpack_require__(42);
+const il = __webpack_require__(43);
+const uuid_1 = __webpack_require__(36);
+const archiver_1 = __webpack_require__(44);
+const csv = __webpack_require__(45);
+const zlib_1 = __webpack_require__(46);
 const common_1 = __webpack_require__(3);
-const rpc_code_exception_1 = __webpack_require__(39);
-const constant_1 = __webpack_require__(40);
+const rpc_code_exception_1 = __webpack_require__(47);
+const constant_1 = __webpack_require__(48);
 const microservices_1 = __webpack_require__(2);
-const path_1 = __webpack_require__(31);
+const path_1 = __webpack_require__(41);
 class FileUtil {
     static checkBasePath() {
         this.basePath = '';
@@ -2271,43 +1655,119 @@ exports.FileUtil = FileUtil;
 
 
 /***/ }),
-/* 58 */
+/* 40 */
 /***/ ((module) => {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 59 */
+/* 41 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 42 */
 /***/ ((module) => {
 
 module.exports = require("unzipper");
 
 /***/ }),
-/* 60 */
+/* 43 */
 /***/ ((module) => {
 
 module.exports = require("iconv-lite");
 
 /***/ }),
-/* 61 */
+/* 44 */
 /***/ ((module) => {
 
 module.exports = require("archiver");
 
 /***/ }),
-/* 62 */
+/* 45 */
 /***/ ((module) => {
 
 module.exports = require("csv");
 
 /***/ }),
-/* 63 */
+/* 46 */
 /***/ ((module) => {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 64 */
+/* 47 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcCodeException = void 0;
+const microservices_1 = __webpack_require__(2);
+class RpcCodeException extends microservices_1.RpcException {
+    constructor(details, statusCode) {
+        super({ details: details, code: statusCode });
+        this.statusCode = statusCode;
+    }
+}
+exports.RpcCodeException = RpcCodeException;
+
+
+/***/ }),
+/* 48 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(49), exports);
+
+
+/***/ }),
+/* 49 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcCode = void 0;
+var GrpcCode;
+(function (GrpcCode) {
+    GrpcCode[GrpcCode["OK"] = 0] = "OK";
+    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
+    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
+    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
+    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
+    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
+    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
+    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
+    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
+    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
+    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
+    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
+    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
+    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
+    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
+    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
+    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
+    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
+})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
+
+
+/***/ }),
+/* 50 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2364,7 +1824,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 65 */
+/* 51 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2376,7 +1836,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 66 */
+/* 52 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2410,10 +1870,551 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 67 */
+/* 53 */
 /***/ ((module) => {
 
 module.exports = require("chalk");
+
+/***/ }),
+/* 54 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
+
+
+/***/ }),
+/* 55 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/config");
+
+/***/ }),
+/* 56 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigDBModule = void 0;
+const common_1 = __webpack_require__(31);
+const typeorm_1 = __webpack_require__(57);
+const config_service_1 = __webpack_require__(58);
+const db_grpc_controller_1 = __webpack_require__(68);
+const db_api_controller_1 = __webpack_require__(69);
+const config_entity_1 = __webpack_require__(60);
+const pg_1 = __webpack_require__(75);
+const config_1 = __webpack_require__(55);
+const microservices_1 = __webpack_require__(2);
+const constant_1 = __webpack_require__(61);
+const log_module_1 = __webpack_require__(76);
+let ConfigDBModule = class ConfigDBModule {
+};
+exports.ConfigDBModule = ConfigDBModule;
+exports.ConfigDBModule = ConfigDBModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            log_module_1.LogModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            typeorm_1.TypeOrmModule.forRootAsync({
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => {
+                    await ensureConfigDatabase();
+                    return {
+                        type: 'postgres',
+                        url: configService.get('POSTGRES_URL') + '/config',
+                        autoLoadEntities: true,
+                        synchronize: true,
+                    };
+                },
+            }),
+            microservices_1.ClientsModule.registerAsync({
+                clients: [
+                    {
+                        inject: [config_1.ConfigService],
+                        name: constant_1.MQTT_BROKER,
+                        useFactory: (configService) => ({
+                            transport: microservices_1.Transport.MQTT,
+                            options: {
+                                url: configService.get('MQTT_URL'),
+                            },
+                        }),
+                    },
+                ],
+            }),
+            typeorm_1.TypeOrmModule.forFeature([config_entity_1.Config]),
+        ],
+        controllers: [db_grpc_controller_1.DBGrpcController, db_api_controller_1.DBConfigAPIController],
+        providers: [config_service_1.ConfigDBService],
+        exports: [config_service_1.ConfigDBService],
+    })
+], ConfigDBModule);
+async function ensureConfigDatabase() {
+    const client = new pg_1.Client({
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '7000'),
+        user: process.env.POSTGRES_USER || 'postgres',
+        password: process.env.POSTGRES_PASSWORD || 'postgres',
+        database: 'postgres',
+    });
+    try {
+        await client.connect();
+        const result = await client.query("SELECT 1 FROM pg_database WHERE datname = 'config'");
+        if (result.rows.length === 0) {
+            await client.query('CREATE DATABASE config');
+            console.log('🎉 config 데이터베이스 생성 완료');
+        }
+        else {
+            console.log('✅ config 데이터베이스 이미 존재');
+        }
+    }
+    catch (error) {
+        console.warn('⚠️ semlog DB 생성 실패:', error.message);
+    }
+    finally {
+        await client.end();
+    }
+}
+
+
+/***/ }),
+/* 57 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/typeorm");
+
+/***/ }),
+/* 58 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigDBService = void 0;
+const common_1 = __webpack_require__(31);
+const typeorm_1 = __webpack_require__(59);
+const typeorm_2 = __webpack_require__(57);
+const common_2 = __webpack_require__(3);
+const config_entity_1 = __webpack_require__(60);
+const rpc_code_exception_1 = __webpack_require__(47);
+const constant_1 = __webpack_require__(48);
+const microservices_1 = __webpack_require__(2);
+const constant_2 = __webpack_require__(61);
+const saveLog_service_1 = __webpack_require__(30);
+let ConfigDBService = class ConfigDBService {
+    constructor(configRepository, mqttMicroservice, saveLogService) {
+        this.configRepository = configRepository;
+        this.mqttMicroservice = mqttMicroservice;
+        this.saveLogService = saveLogService;
+        this.fired = false;
+        this.logger = this.saveLogService.get('config');
+    }
+    async onApplicationBootstrap() {
+        this.mqttMicroservice.emit('ready:config', {});
+    }
+    async getConfig(request) {
+        try {
+            if (request.key === undefined || request.key === '') {
+                throw new rpc_code_exception_1.RpcCodeException('key값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            const resp = await this.configRepository.findOneBy({ key: request.key });
+            return { key: request.key, value: resp ? resp.value : null };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[DB] getConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getConfigAll() {
+        try {
+            const resp = await this.configRepository.find();
+            return { configs: resp };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[DB] getConfigAll : ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 조회할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async setConfigs(dto) {
+        try {
+            if (dto.configs === undefined || dto.configs.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            for (const config of dto.configs) {
+                await this.setConfig(config);
+            }
+            return { ...dto, result: 'success' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[DB] setConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async setConfig(request) {
+        try {
+            this.logger?.debug(`[DB] setConfig : ${JSON.stringify(request)}`);
+            if (request.key === undefined || request.key === '') {
+                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.value === undefined || request.value === '') {
+                throw new rpc_code_exception_1.RpcCodeException(`value 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            const resp = await this.configRepository.save(request);
+            this.logger?.info(`[DB] setConfig : ${JSON.stringify(resp)} done`);
+            return { ...request, result: resp ? 'success' : 'fail' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[DB] setConfig : ${JSON.stringify(request)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 저장할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async deleteConfig(key) {
+        try {
+            this.logger?.debug(`[DB] deleteConfig : ${key}`);
+            if (key === undefined || key === '') {
+                throw new rpc_code_exception_1.RpcCodeException(`key 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            const resp = await this.configRepository.delete({ key: key });
+            if (!resp.affected || resp.affected == 0) {
+                throw new rpc_code_exception_1.RpcCodeException(`key 값에 해당하는 객체가 없습니다 (${key})`, constant_1.GrpcCode.NotFound);
+            }
+            return { key: key, result: 'success' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[DB] deleteConfig : ${key} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+    async deleteConfigs(dto) {
+        try {
+            if (dto.configs === undefined || dto.configs.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException(`configs 값이 없습니다`, constant_1.GrpcCode.InvalidArgument);
+            }
+            for (const config of dto.configs) {
+                await this.deleteConfig(config.key);
+            }
+            return { ...dto, result: 'success' };
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[DB] deleteConfigs : ${JSON.stringify(dto)} -> ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException(`DB 값을 삭제할 수 없습니다`, constant_1.GrpcCode.InternalError);
+        }
+    }
+};
+exports.ConfigDBService = ConfigDBService;
+exports.ConfigDBService = ConfigDBService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_2.InjectRepository)(config_entity_1.Config)),
+    __param(1, (0, common_1.Inject)(constant_2.MQTT_BROKER)),
+    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
+], ConfigDBService);
+
+
+/***/ }),
+/* 59 */
+/***/ ((module) => {
+
+module.exports = require("typeorm");
+
+/***/ }),
+/* 60 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Config = void 0;
+const typeorm_1 = __webpack_require__(59);
+let Config = class Config {
+};
+exports.Config = Config;
+__decorate([
+    (0, typeorm_1.PrimaryColumn)({
+        unique: true,
+    }),
+    __metadata("design:type", String)
+], Config.prototype, "key", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Config.prototype, "value", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Config.prototype, "createAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Config.prototype, "updateAt", void 0);
+__decorate([
+    (0, typeorm_1.VersionColumn)(),
+    __metadata("design:type", Number)
+], Config.prototype, "version", void 0);
+exports.Config = Config = __decorate([
+    (0, typeorm_1.Entity)()
+], Config);
+
+
+/***/ }),
+/* 61 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.message = exports.environment = void 0;
+__exportStar(__webpack_require__(62), exports);
+__exportStar(__webpack_require__(63), exports);
+exports.environment = __webpack_require__(64);
+exports.message = __webpack_require__(66);
+
+
+/***/ }),
+/* 62 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MQTT_BROKER = exports.SERVICE_LOG_SERVICE = exports.SEMLOG_SERVICE = exports.TCP_SERVICE = exports.COBOT_SERVICE = exports.TASK_SERVICE = exports.SOUND_SERVICE = exports.UPDATE_SERVICE = exports.MAP_SERVICE = exports.TEST_SERVICE = exports.NETWORK_SERVICE = exports.LOCALIZATION_SERVICE = exports.MOVE_SERVICE = exports.CONTROL_SERVICE = exports.SETTING_SERVICE = exports.CONFIG_SERVICE = exports.CODE_SERVICE = exports.REDIS_SERVICE = exports.AMR_SERVICE = exports.GROUP_SERVICE = exports.ROLE_SERVICE = exports.PERMISSION_SERVICE = exports.USER_SERVICE = exports.AUTH_SERVICE = void 0;
+exports.AUTH_SERVICE = 'AUTH_SERVICE';
+exports.USER_SERVICE = 'USER_SERVICE';
+exports.PERMISSION_SERVICE = 'PERMISSION_SERVICE';
+exports.ROLE_SERVICE = 'ROLE_SERVICE';
+exports.GROUP_SERVICE = 'GROUP_SERVICE';
+exports.AMR_SERVICE = 'AMR_SERVICE';
+exports.REDIS_SERVICE = 'REDIS_SERVICE';
+exports.CODE_SERVICE = 'CODE_SERVICE';
+exports.CONFIG_SERVICE = 'CONFIG_SERVICE';
+exports.SETTING_SERVICE = 'SETTING_SERVICE';
+exports.CONTROL_SERVICE = 'CONTROL_SERVICE';
+exports.MOVE_SERVICE = 'MOVE_SERVICE';
+exports.LOCALIZATION_SERVICE = 'LOCALIZATION_SERVICE';
+exports.NETWORK_SERVICE = 'NETWORK_SERVICE';
+exports.TEST_SERVICE = 'TEST_SERVICE';
+exports.MAP_SERVICE = 'MAP_SERVICE';
+exports.UPDATE_SERVICE = 'UPDATE_SERVICE';
+exports.SOUND_SERVICE = 'SOUND_SERVICE';
+exports.TASK_SERVICE = 'TASK_SERVICE';
+exports.COBOT_SERVICE = 'COBOT_SERVICE';
+exports.TCP_SERVICE = 'TCP_SERVICE';
+exports.SEMLOG_SERVICE = 'SEMLOG_SERVICE';
+exports.SERVICE_LOG_SERVICE = 'SERVICE_LOG_SERVICE';
+exports.MQTT_BROKER = 'MQTT_BROKER';
+
+
+/***/ }),
+/* 63 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 64 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(65), exports);
+
+
+/***/ }),
+/* 65 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SYSTEM = void 0;
+exports.SYSTEM = {
+    INTERACTIVE: {
+        FMS: 'FMS',
+        FRS: 'FRS',
+        ACS: 'ACS',
+        IMS: 'IMS',
+    },
+    CONTROL: {
+        RRS: 'RRS',
+    },
+    CONNECTION: {
+        CLIENT: 'CLIENT',
+        AMR: 'AMR',
+    },
+};
+
+
+/***/ }),
+/* 66 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(67), exports);
+
+
+/***/ }),
+/* 67 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SUCCESS_MESSAGES = exports.ERROR_MESSAGE = void 0;
+exports.ERROR_MESSAGE = {
+    USER: {
+        ID_REQUIRED: '사용자 아이디는 필수입니다.',
+        NOT_FOUND: '사용자를 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
+        INVALID_PASSWORD: '비밀번호가 올바르지 않습니다.',
+    },
+    ROBOT: {
+        SERIAL_REQUIRED: '로봇 시리얼은 필수입니다.',
+        NOT_FOUND: '로봇을 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 로봇입니다.',
+    },
+    AUTH: {
+        TOKEN_REQUIRED: '인증 토큰이 필요합니다.',
+        TOKEN_INVALID: '유효하지 않은 토큰입니다.',
+        TOKEN_EXPIRED: '토큰이 만료되었습니다.',
+        UNAUTHORIZED: '인증이 필요합니다.',
+        ALREADY_EXISTS: '이미 존재하는 사용자입니다.',
+    },
+    CODE: {
+        NOT_FOUND: '코드를 찾을 수 없습니다.',
+        ALREADY_EXISTS: '이미 존재하는 코드입니다.',
+    },
+    SOCKET: {
+        NOT_FOUND: 'Socket정보를 찾을 수 없습니다.',
+    },
+    MAP: {
+        NOT_FOUND: '맵을 찾을 수 없습니다.',
+        INVALID_FORMAT: '올바르지 않은 맵 형식입니다.',
+        SAVE_FAILED: '맵 저장에 실패했습니다.',
+    },
+    COMMON: {
+        BAD_REQUEST: '잘못된 요청입니다.',
+        INTERNAL_SERVER_ERROR: '서버 내부 오류가 발생했습니다.',
+        VALIDATION_FAILED: '유효성 검사에 실패했습니다.',
+        FORBIDDEN: '권한이 없습니다.',
+    },
+};
+exports.SUCCESS_MESSAGES = {
+    USER: {
+        CREATED: '사용자가 성공적으로 생성되었습니다.',
+        UPDATED: '사용자 정보가 성공적으로 업데이트되었습니다.',
+        DELETED: '사용자가 성공적으로 삭제되었습니다.',
+    },
+    MAP: {
+        SAVED: '맵이 성공적으로 저장되었습니다.',
+        LOADED: '맵이 성공적으로 로드되었습니다.',
+        UPDATED: '맵이 성공적으로 업데이트되었습니다.',
+    },
+};
+
 
 /***/ }),
 /* 68 */
@@ -2432,10 +2433,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DBGrpcController = void 0;
-const common_1 = __webpack_require__(34);
+const common_1 = __webpack_require__(31);
 const src_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(3);
-const config_service_1 = __webpack_require__(36);
+const config_service_1 = __webpack_require__(58);
 let DBGrpcController = class DBGrpcController {
     constructor(configService) {
         this.configService = configService;
@@ -2488,9 +2489,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DBConfigAPIController = void 0;
-const common_1 = __webpack_require__(34);
+const common_1 = __webpack_require__(31);
 const swagger_1 = __webpack_require__(70);
-const config_service_1 = __webpack_require__(36);
+const config_service_1 = __webpack_require__(58);
 const set_dto_1 = __webpack_require__(71);
 const set_dto_2 = __webpack_require__(71);
 const delete_dto_1 = __webpack_require__(73);
@@ -2765,8 +2766,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogModule = void 0;
-const common_1 = __webpack_require__(34);
-const saveLog_service_1 = __webpack_require__(49);
+const common_1 = __webpack_require__(31);
+const saveLog_service_1 = __webpack_require__(30);
 const cleanLog_service_1 = __webpack_require__(77);
 let LogModule = class LogModule {
 };
@@ -2797,11 +2798,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
-const common_1 = __webpack_require__(34);
+const common_1 = __webpack_require__(31);
 const schedule_1 = __webpack_require__(78);
-const path = __webpack_require__(31);
-const fs_1 = __webpack_require__(58);
-const util_1 = __webpack_require__(52);
+const path = __webpack_require__(41);
+const fs_1 = __webpack_require__(40);
+const util_1 = __webpack_require__(34);
 let CleanLogService = class CleanLogService {
     constructor() {
         this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
@@ -2922,10 +2923,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(1);
 const microservices_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(3);
-const path_1 = __webpack_require__(31);
-const config_1 = __webpack_require__(32);
-const config_module_1 = __webpack_require__(33);
-const common_2 = __webpack_require__(34);
+const path_1 = __webpack_require__(41);
+const config_1 = __webpack_require__(55);
+const config_module_1 = __webpack_require__(56);
+const common_2 = __webpack_require__(31);
 const swagger_1 = __webpack_require__(70);
 async function bootstrap() {
     const configModule = await core_1.NestFactory.create(config_module_1.ConfigDBModule);

@@ -100,8 +100,8 @@ exports.TsdbService = void 0;
 const common_1 = __webpack_require__(6);
 const influxdb_client_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(3);
-const influxdb_client_apis_1 = __webpack_require__(35);
-const saveLog_service_1 = __webpack_require__(36);
+const influxdb_client_apis_1 = __webpack_require__(58);
+const saveLog_service_1 = __webpack_require__(34);
 let TsdbService = class TsdbService {
     constructor(db, saveLogService) {
         this.db = db;
@@ -1343,47 +1343,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(34), exports);
+__exportStar(__webpack_require__(57), exports);
 
 
 /***/ }),
 /* 34 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.errorToJson = errorToJson;
-function errorToJson(error) {
-    try {
-        if (error instanceof Error) {
-            const errorJson = {
-                name: error.name,
-                message: JSON.stringify(error.message),
-            };
-            if (error['error'] && error['error'].details) {
-                errorJson['details'] = error['error'].details;
-                errorJson['code'] = error['error'].code;
-            }
-            return JSON.stringify(errorJson);
-        }
-        else {
-            const json = JSON.parse(error);
-            return JSON.stringify(json);
-        }
-    }
-    catch (err) {
-        return JSON.stringify(error);
-    }
-}
-
-
-/***/ }),
-/* 35 */
-/***/ ((module) => {
-
-module.exports = require("@influxdata/influxdb-client-apis");
-
-/***/ }),
-/* 36 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1399,11 +1363,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SaveLogService = void 0;
 const common_1 = __webpack_require__(3);
-const winston_1 = __webpack_require__(37);
-const DailyRotateFile = __webpack_require__(38);
-const util_1 = __webpack_require__(39);
-const chalk_1 = __webpack_require__(58);
-const fs_1 = __webpack_require__(45);
+const winston_1 = __webpack_require__(35);
+const DailyRotateFile = __webpack_require__(36);
+const util_1 = __webpack_require__(37);
+const chalk_1 = __webpack_require__(56);
+const fs_1 = __webpack_require__(43);
 const levelColorMap = {
     error: chalk_1.default.red,
     warn: chalk_1.default.magenta,
@@ -1546,46 +1510,46 @@ exports.SaveLogService = SaveLogService = __decorate([
 
 
 /***/ }),
-/* 37 */
+/* 35 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 38 */
+/* 36 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
 
 /***/ }),
-/* 39 */
+/* 37 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(40);
+var url_util_1 = __webpack_require__(38);
 Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(42);
+var date_util_1 = __webpack_require__(40);
 Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(44);
+var file_util_1 = __webpack_require__(42);
 Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(55);
+var parse_util_1 = __webpack_require__(53);
 Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(56);
+var crypto_util_1 = __webpack_require__(54);
 Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(57);
+var validation_util_1 = __webpack_require__(55);
 Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
 
 
 /***/ }),
-/* 40 */
+/* 38 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(41);
+const uuid_1 = __webpack_require__(39);
 class UrlUtil {
     static generateUUID() {
         return (0, uuid_1.v4)();
@@ -1595,19 +1559,19 @@ exports.UrlUtil = UrlUtil;
 
 
 /***/ }),
-/* 41 */
+/* 39 */
 /***/ ((module) => {
 
 module.exports = require("uuid");
 
 /***/ }),
-/* 42 */
+/* 40 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(43);
+const date_fns_1 = __webpack_require__(41);
 class DateUtil {
     static nowKST() {
         const now = new Date();
@@ -1785,31 +1749,31 @@ exports.DateUtil = DateUtil;
 
 
 /***/ }),
-/* 43 */
+/* 41 */
 /***/ ((module) => {
 
 module.exports = require("date-fns");
 
 /***/ }),
-/* 44 */
+/* 42 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUtil = void 0;
-const fs = __webpack_require__(45);
-const path = __webpack_require__(46);
-const unzipper = __webpack_require__(47);
-const il = __webpack_require__(48);
-const uuid_1 = __webpack_require__(41);
-const archiver_1 = __webpack_require__(49);
-const csv = __webpack_require__(50);
-const zlib_1 = __webpack_require__(51);
+const fs = __webpack_require__(43);
+const path = __webpack_require__(44);
+const unzipper = __webpack_require__(45);
+const il = __webpack_require__(46);
+const uuid_1 = __webpack_require__(39);
+const archiver_1 = __webpack_require__(47);
+const csv = __webpack_require__(48);
+const zlib_1 = __webpack_require__(49);
 const common_1 = __webpack_require__(6);
-const rpc_code_exception_1 = __webpack_require__(52);
-const constant_1 = __webpack_require__(53);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
 const microservices_1 = __webpack_require__(10);
-const path_1 = __webpack_require__(46);
+const path_1 = __webpack_require__(44);
 class FileUtil {
     static checkBasePath() {
         this.basePath = '';
@@ -2086,49 +2050,49 @@ exports.FileUtil = FileUtil;
 
 
 /***/ }),
-/* 45 */
+/* 43 */
 /***/ ((module) => {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 46 */
+/* 44 */
 /***/ ((module) => {
 
 module.exports = require("path");
 
 /***/ }),
-/* 47 */
+/* 45 */
 /***/ ((module) => {
 
 module.exports = require("unzipper");
 
 /***/ }),
-/* 48 */
+/* 46 */
 /***/ ((module) => {
 
 module.exports = require("iconv-lite");
 
 /***/ }),
-/* 49 */
+/* 47 */
 /***/ ((module) => {
 
 module.exports = require("archiver");
 
 /***/ }),
-/* 50 */
+/* 48 */
 /***/ ((module) => {
 
 module.exports = require("csv");
 
 /***/ }),
-/* 51 */
+/* 49 */
 /***/ ((module) => {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 52 */
+/* 50 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2145,7 +2109,7 @@ exports.RpcCodeException = RpcCodeException;
 
 
 /***/ }),
-/* 53 */
+/* 51 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2164,11 +2128,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(54), exports);
+__exportStar(__webpack_require__(52), exports);
 
 
 /***/ }),
-/* 54 */
+/* 52 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2198,7 +2162,7 @@ var GrpcCode;
 
 
 /***/ }),
-/* 55 */
+/* 53 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2255,7 +2219,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 56 */
+/* 54 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2267,7 +2231,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 57 */
+/* 55 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2301,10 +2265,47 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 58 */
+/* 56 */
 /***/ ((module) => {
 
 module.exports = require("chalk");
+
+/***/ }),
+/* 57 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
+
+
+/***/ }),
+/* 58 */
+/***/ ((module) => {
+
+module.exports = require("@influxdata/influxdb-client-apis");
 
 /***/ }),
 /* 59 */
@@ -2338,7 +2339,7 @@ const microservices_1 = __webpack_require__(10);
 const status_type_1 = __webpack_require__(61);
 const movestatus_type_1 = __webpack_require__(66);
 const exAccessory_dto_1 = __webpack_require__(67);
-const saveLog_service_1 = __webpack_require__(36);
+const saveLog_service_1 = __webpack_require__(34);
 let TsdbMqttInputController = class TsdbMqttInputController {
     constructor(tsdbService, saveLogService) {
         this.tsdbService = tsdbService;
@@ -2399,7 +2400,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatusSlamnav = exports.StatusMapDto = exports.StatusSettingDto = exports.StatusPowerDto = exports.StatusStateDto = exports.StatusConditionDto = exports.StatuMotorDto = exports.StatusLidarDto = exports.StatusIMUDto = void 0;
-const date_util_1 = __webpack_require__(42);
+const date_util_1 = __webpack_require__(40);
 const swagger_1 = __webpack_require__(62);
 const class_validator_1 = __webpack_require__(63);
 const state_type_1 = __webpack_require__(64);
@@ -3163,7 +3164,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MoveStatusSlamnav = exports.CurNodeDto = exports.GoalNodeDto = exports.VelocityStatusDto = exports.PoseStatusDto = exports.MoveStateDto = void 0;
 const swagger_1 = __webpack_require__(62);
 const class_validator_1 = __webpack_require__(63);
-const util_1 = __webpack_require__(39);
+const util_1 = __webpack_require__(37);
 const state_type_1 = __webpack_require__(64);
 const state_type_2 = __webpack_require__(64);
 var Description;
@@ -3713,7 +3714,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogModule = void 0;
 const common_1 = __webpack_require__(3);
-const saveLog_service_1 = __webpack_require__(36);
+const saveLog_service_1 = __webpack_require__(34);
 const cleanLog_service_1 = __webpack_require__(70);
 let LogModule = class LogModule {
 };
@@ -3746,9 +3747,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(3);
 const schedule_1 = __webpack_require__(71);
-const path = __webpack_require__(46);
-const fs_1 = __webpack_require__(45);
-const util_1 = __webpack_require__(39);
+const path = __webpack_require__(44);
+const fs_1 = __webpack_require__(43);
+const util_1 = __webpack_require__(37);
 let CleanLogService = class CleanLogService {
     constructor() {
         this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
@@ -3943,10 +3944,10 @@ exports.SemLogService = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
 const sem_log_database_output_port_1 = __webpack_require__(74);
-const rpc_code_exception_1 = __webpack_require__(52);
-const constant_1 = __webpack_require__(53);
-const date_util_1 = __webpack_require__(42);
-const saveLog_service_1 = __webpack_require__(36);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const date_util_1 = __webpack_require__(40);
+const saveLog_service_1 = __webpack_require__(34);
 let SemLogService = class SemLogService {
     constructor(databaseOutput, saveLogService) {
         this.databaseOutput = databaseOutput;
@@ -4391,8 +4392,8 @@ exports.SemLogGrpcController = void 0;
 const common_1 = __webpack_require__(6);
 const common_2 = __webpack_require__(3);
 const sem_log_service_1 = __webpack_require__(73);
-const rpc_code_exception_1 = __webpack_require__(52);
-const constant_1 = __webpack_require__(53);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
 let SemLogGrpcController = class SemLogGrpcController {
     constructor(semlogService) {
         this.semlogService = semlogService;
@@ -4473,11 +4474,11 @@ const typeorm_1 = __webpack_require__(77);
 const sem_log_alarm_dto_1 = __webpack_require__(78);
 const sem_log_alarm_log_dto_1 = __webpack_require__(75);
 const typeorm_2 = __webpack_require__(76);
-const util_1 = __webpack_require__(39);
-const rpc_code_exception_1 = __webpack_require__(52);
-const constant_1 = __webpack_require__(53);
+const util_1 = __webpack_require__(37);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
 const pagination_1 = __webpack_require__(83);
-const saveLog_service_1 = __webpack_require__(36);
+const saveLog_service_1 = __webpack_require__(34);
 const common_1 = __webpack_require__(3);
 let SemLogPostgresAdapter = class SemLogPostgresAdapter {
     constructor(alarmListRepository, alarmLogRepository, saveLogService) {
@@ -5303,11 +5304,11 @@ exports.ServiceLogModule = ServiceLogModule = __decorate([
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ServiceLogFileAdapter = void 0;
-const rpc_code_exception_1 = __webpack_require__(52);
-const constant_1 = __webpack_require__(53);
-const path = __webpack_require__(46);
-const fs = __webpack_require__(45);
-const util_1 = __webpack_require__(39);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const path = __webpack_require__(44);
+const fs = __webpack_require__(43);
+const util_1 = __webpack_require__(37);
 class ServiceLogFileAdapter {
     getServiceLogPath(serviceName) {
         return path.join('/data', 'log', serviceName);
@@ -5316,7 +5317,6 @@ class ServiceLogFileAdapter {
         try {
             console.log('request', request);
             const logPath = this.getServiceLogPath(request.serviceName);
-            console.log('logPath', logPath);
             if (!fs.existsSync(logPath)) {
                 throw new rpc_code_exception_1.RpcCodeException(`${request.serviceName} 서비스 로그 경로가 존재하지 않습니다.`, constant_1.GrpcCode.NotFound);
             }
@@ -5383,7 +5383,7 @@ class ServiceLogFileAdapter {
             const skip = (request.pageNo - 1) * request.pageSize;
             const totalCount = logdata.length;
             const totalPage = Math.ceil(totalCount / request.pageSize);
-            const logs = logdata.slice(request.pageNo * request.pageSize, request.pageSize + request.pageNo * request.pageSize);
+            const logs = logdata.slice(skip, request.pageSize + skip);
             return {
                 list: logs,
                 pageSize: request.pageSize,
@@ -5464,11 +5464,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ServiceLogService = void 0;
-const common_1 = __webpack_require__(6);
-const common_2 = __webpack_require__(3);
-const rpc_code_exception_1 = __webpack_require__(52);
-const constant_1 = __webpack_require__(53);
-const saveLog_service_1 = __webpack_require__(36);
+const common_1 = __webpack_require__(3);
+const rpc_code_exception_1 = __webpack_require__(50);
+const constant_1 = __webpack_require__(51);
+const log_1 = __webpack_require__(33);
 const servicelog_output_port_1 = __webpack_require__(90);
 let ServiceLogService = class ServiceLogService {
     constructor(logOutputPort, saveLogService) {
@@ -5487,7 +5486,7 @@ let ServiceLogService = class ServiceLogService {
                 throw error;
             }
             else {
-                this.logger?.error(`[ServiceLog] getServiceLog : ${(0, common_1.errorToJson)(error)}`);
+                this.logger?.error(`[ServiceLog] getServiceLog : ${(0, log_1.errorToJson)(error)}`);
                 throw new rpc_code_exception_1.RpcCodeException('서비스 로그를 가져올 수 없습니다.', constant_1.GrpcCode.InternalError);
             }
         }
@@ -5495,9 +5494,9 @@ let ServiceLogService = class ServiceLogService {
 };
 exports.ServiceLogService = ServiceLogService;
 exports.ServiceLogService = ServiceLogService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)('logOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof servicelog_output_port_1.ServiceLogOutputPort !== "undefined" && servicelog_output_port_1.ServiceLogOutputPort) === "function" ? _a : Object, typeof (_b = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _b : Object])
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)('logOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof servicelog_output_port_1.ServiceLogOutputPort !== "undefined" && servicelog_output_port_1.ServiceLogOutputPort) === "function" ? _a : Object, typeof (_b = typeof log_1.SaveLogService !== "undefined" && log_1.SaveLogService) === "function" ? _b : Object])
 ], ServiceLogService);
 
 
@@ -5548,7 +5547,7 @@ const tsdb_module_1 = __webpack_require__(2);
 const config_1 = __webpack_require__(59);
 const microservices_1 = __webpack_require__(10);
 const semlog_module_1 = __webpack_require__(72);
-const path_1 = __webpack_require__(46);
+const path_1 = __webpack_require__(44);
 const proto_1 = __webpack_require__(8);
 const servicelog_module_1 = __webpack_require__(86);
 async function bootstrap() {

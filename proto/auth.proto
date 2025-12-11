@@ -13,7 +13,7 @@ message JoinUserRequest {
   string userPassword = 2;
   optional string userName = 3;
   optional string userStatus = 4;
-  string createdAt = 5;
+  string createdAt = 5;>>
   optional string createdBy = 6;
 }
 

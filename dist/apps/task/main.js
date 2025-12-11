@@ -37,7 +37,7 @@ const mongoose_1 = __webpack_require__(6);
 const task_entity_1 = __webpack_require__(7);
 const microservices_1 = __webpack_require__(2);
 const task_grpc_controller_1 = __webpack_require__(8);
-const task_service_1 = __webpack_require__(37);
+const task_service_1 = __webpack_require__(59);
 const task_mongo_adapter_1 = __webpack_require__(67);
 const task_mqtt_controller_1 = __webpack_require__(70);
 const task_socket_io_adapter_1 = __webpack_require__(77);
@@ -211,7 +211,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskGrpcInputController = void 0;
 const common_1 = __webpack_require__(9);
 const common_2 = __webpack_require__(5);
-const task_service_1 = __webpack_require__(37);
+const task_service_1 = __webpack_require__(59);
 const task_parser_service_1 = __webpack_require__(66);
 let TaskGrpcInputController = class TaskGrpcInputController {
     constructor(taskService, fileService) {
@@ -1177,502 +1177,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(36), exports);
+__exportStar(__webpack_require__(58), exports);
 
 
 /***/ }),
 /* 36 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.errorToJson = errorToJson;
-function errorToJson(error) {
-    try {
-        if (error instanceof Error) {
-            const errorJson = {
-                name: error.name,
-                message: JSON.stringify(error.message),
-            };
-            if (error['error'] && error['error'].details) {
-                errorJson['details'] = error['error'].details;
-                errorJson['code'] = error['error'].code;
-            }
-            return JSON.stringify(errorJson);
-        }
-        else {
-            const json = JSON.parse(error);
-            return JSON.stringify(json);
-        }
-    }
-    catch (err) {
-        return JSON.stringify(error);
-    }
-}
-
-
-/***/ }),
-/* 37 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TaskService = void 0;
-const common_1 = __webpack_require__(9);
-const common_2 = __webpack_require__(5);
-const task_database_output_port_1 = __webpack_require__(38);
-const task_taskman_output_port_1 = __webpack_require__(39);
-const task_domain_1 = __webpack_require__(40);
-const microservices_1 = __webpack_require__(2);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(45);
-const fs_1 = __webpack_require__(47);
-const path_1 = __webpack_require__(3);
-const task_type_1 = __webpack_require__(41);
-const saveLog_service_1 = __webpack_require__(48);
-let TaskService = class TaskService {
-    constructor(databaseOutput, taskmanOutput, saveLogService) {
-        this.databaseOutput = databaseOutput;
-        this.taskmanOutput = taskmanOutput;
-        this.saveLogService = saveLogService;
-        this.slamnav_connection = false;
-        this.taskman_connection = false;
-        this.logger = this.saveLogService.get('task');
-    }
-    onModuleInit() {
-        this.logger?.debug(`[Task] Module Init`);
-        this.taskmanOutput.checkSocketConnection();
-    }
-    slamConnect() {
-        this.logger?.debug(`[Task] SLAMNAV Connnected`);
-        this.slamnav_connection = true;
-    }
-    slamDisconnect() {
-        this.logger?.debug(`[Task] SLAMNAV Disconnnected`);
-        this.slamnav_connection = false;
-    }
-    taskConnect() {
-        this.logger?.debug(`[Task] Taskman Connnected`);
-        this.taskman_connection = true;
-    }
-    taskDisconnect() {
-        this.logger?.debug(`[Task] Taskman Disconnnected`);
-        this.taskman_connection = false;
-    }
-    async getState() {
-        const state = await this.databaseOutput.getStateLast();
-        return {
-            mapName: state.mapName,
-            taskName: state.taskName,
-            taskId: state.taskId,
-            running: state.running,
-            connection: this.taskman_connection,
-        };
-    }
-    async stateRequest() {
-        try {
-            if (!this.taskman_connection) {
-                throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다.', constant_1.GrpcCode.FailedPrecondition);
-            }
-            const resp = await this.taskmanOutput.stateSocketRequest();
-            this.logger?.info(`[Task] State Response : ${JSON.stringify(resp)}`);
-            return resp;
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[Task] stateRequest : ${(0, common_1.errorToJson)(error)}`);
-            return this.getState();
-        }
-    }
-    async variablesRequest() {
-        try {
-            if (!this.taskman_connection) {
-                throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
-            }
-            const resp = await this.taskmanOutput.variableSocketRequest();
-            return resp;
-        }
-        catch (error) {
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.error(`[Task] variablesRequest : ${(0, common_1.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException('Variables 값을 가져올 수 없습니다', constant_1.GrpcCode.InternalError);
-        }
-    }
-    async taskRequest(request) {
-        let command = null;
-        try {
-            this.logger?.info(`[Task] taskRequest : ${JSON.stringify(request)}`);
-            command = new task_domain_1.TaskModel(request);
-            command.checkVariables();
-            const result = await this.databaseOutput.save(command);
-            this.logger?.info(`[APP] Task DB Save : ${result._id.toString()}`);
-            command.assignId(result._id.toString());
-            if (command.command === task_type_1.TaskCommand.taskLoad ||
-                command.command === task_type_1.TaskCommand.taskRun ||
-                command.command === task_type_1.TaskCommand.taskDelete) {
-                if (!(0, fs_1.existsSync)((0, path_1.join)('/data/maps', command.mapName, command.taskName))) {
-                    throw new rpc_code_exception_1.RpcCodeException(`파일이 존재하지 않습니다 (${command.mapName}/${command.taskName})`, constant_1.GrpcCode.NotFound);
-                }
-            }
-            if (this.taskman_connection) {
-                const resp = await this.taskmanOutput.taskSocketRequest(command);
-                this.logger?.info(`[APP] Task Response : ${JSON.stringify(resp)}`);
-                command.statusChange('accept');
-                const result = await this.databaseOutput.update(command);
-                this.logger?.info(`[APP] Task DB Update : ${result?._id.toString()}`);
-                return resp;
-            }
-            else {
-                this.logger?.warn(`[APP] taskRequest : Taskman disconnected`);
-                throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
-            }
-        }
-        catch (error) {
-            if (command) {
-                if (error.error?.details) {
-                    command.statusChange(task_domain_1.TaskStatus.fail, error.error.details);
-                }
-                else {
-                    command.statusChange(task_domain_1.TaskStatus.fail, error.message);
-                }
-                await this.databaseOutput.update(command);
-            }
-            if (error instanceof microservices_1.RpcException)
-                throw error;
-            this.logger?.warn(`[APP] taskRequest : ${(0, common_1.errorToJson)(error)}`);
-            throw new rpc_code_exception_1.RpcCodeException('Task 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
-        }
-    }
-    async updateResponse(resp) {
-        try {
-            this.logger?.info(`[Task] updateResponse : ${JSON.stringify(resp)}`);
-            if (resp.id) {
-                const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
-                if (dbmodel) {
-                    const model = new task_domain_1.TaskModel(dbmodel);
-                    model.assignId(dbmodel.id);
-                    model.statusChange('accept');
-                    this.databaseOutput.update(model);
-                }
-            }
-        }
-        catch (error) {
-            this.logger?.error(`[Task] updateResponse : ${(0, common_1.errorToJson)(error)}`);
-        }
-    }
-    async stateResponse(data) {
-        try {
-            this.databaseOutput.saveState({ ...data });
-        }
-        catch (error) {
-            this.logger?.error(`[Task] stateResponse : ${(0, common_1.errorToJson)(error)}`);
-        }
-    }
-};
-exports.TaskService = TaskService;
-exports.TaskService = TaskService = __decorate([
-    (0, common_2.Injectable)(),
-    __param(0, (0, common_2.Inject)('DatabaseOutputPort')),
-    __param(1, (0, common_2.Inject)('TaskmanOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof task_database_output_port_1.TaskDatabaseOutputPort !== "undefined" && task_database_output_port_1.TaskDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof task_taskman_output_port_1.TaskTaskmanOutputPort !== "undefined" && task_taskman_output_port_1.TaskTaskmanOutputPort) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
-], TaskService);
-
-
-/***/ }),
-/* 38 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 39 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-/* 40 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TaskModel = exports.TaskStatus = void 0;
-const task_type_1 = __webpack_require__(41);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(45);
-var TaskStatus;
-(function (TaskStatus) {
-    TaskStatus["pending"] = "pending";
-    TaskStatus["accept"] = "accept";
-    TaskStatus["reject"] = "reject";
-    TaskStatus["running"] = "running";
-    TaskStatus["fail"] = "fail";
-    TaskStatus["cancelled"] = "cancelled";
-    TaskStatus["done"] = "done";
-    TaskStatus["unknown"] = "unknown";
-})(TaskStatus || (exports.TaskStatus = TaskStatus = {}));
-class TaskModel {
-    constructor(param) {
-        this.status = TaskStatus.pending;
-        this.command = param.command;
-        this.mapName = param.mapName;
-        this.taskName = param.taskName;
-        this.tree = param.data;
-    }
-    assignId(id) {
-        this.id = id;
-    }
-    checkVariables() {
-        if (this.taskName) {
-            if (this.taskName.split('.').length === 1) {
-                this.taskName = this.taskName + '.task';
-            }
-        }
-        if (this.command == task_type_1.TaskCommand.taskLoad) {
-            if (this.mapName === '') {
-                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (this.taskName === '' || this.taskName === undefined) {
-                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-        }
-        else if (this.command === task_type_1.TaskCommand.taskRun) {
-            if (this.mapName === '') {
-                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (this.taskName === '' || this.taskName === undefined) {
-                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-        }
-        else if (this.command === task_type_1.TaskCommand.taskStop) {
-        }
-        else if (this.command === task_type_1.TaskCommand.taskSave) {
-            if (this.mapName === '') {
-                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (this.taskName === '' || this.taskName === undefined) {
-                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (this.tree === undefined || this.tree.children.length == 0) {
-                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-        }
-        else if (this.command === task_type_1.TaskCommand.taskDelete) {
-            if (this.mapName === '') {
-                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-            if (this.taskName === '' || this.taskName === undefined) {
-                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
-            }
-        }
-        else {
-            throw new rpc_code_exception_1.RpcCodeException('command 값을 알 수 없습니다', constant_1.GrpcCode.InvalidArgument);
-        }
-    }
-    statusChange(status, message) {
-        if (!this.id) {
-            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.NotFound);
-        }
-        this.status = this.parseStatus(status);
-        this.message = message;
-    }
-    parseStatus(value) {
-        if (Object.values(TaskStatus).includes(value)) {
-            return value;
-        }
-        return TaskStatus.unknown;
-    }
-}
-exports.TaskModel = TaskModel;
-
-
-/***/ }),
-/* 41 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TaskFileDto = exports.TaskVariableDto = exports.TaskCommand = void 0;
-const swagger_1 = __webpack_require__(42);
-const class_validator_1 = __webpack_require__(43);
-var Description;
-(function (Description) {
-    Description["MAPNAME"] = "\uB9F5 \uC774\uB984";
-    Description["TASKNAME"] = "\uD0DC\uC2A4\uD06C \uC774\uB984";
-    Description["VARIABLE_NAME"] = "\uBCC0\uC218 \uC774\uB984";
-    Description["VARIABLE_TYPE"] = "\uBCC0\uC218 \uD0C0\uC785";
-})(Description || (Description = {}));
-var TaskCommand;
-(function (TaskCommand) {
-    TaskCommand["taskLoad"] = "taskLoad";
-    TaskCommand["taskRun"] = "taskRun";
-    TaskCommand["taskStop"] = "taskStop";
-    TaskCommand["taskSave"] = "taskSave";
-    TaskCommand["taskDelete"] = "taskDelete";
-})(TaskCommand || (exports.TaskCommand = TaskCommand = {}));
-class TaskVariableDto {
-}
-exports.TaskVariableDto = TaskVariableDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        description: Description.VARIABLE_NAME,
-        example: 'test',
-        required: false,
-    }),
-    __metadata("design:type", String)
-], TaskVariableDto.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        description: Description.VARIABLE_TYPE,
-        example: 'string',
-        required: false,
-    }),
-    __metadata("design:type", String)
-], TaskVariableDto.prototype, "type", void 0);
-class TaskFileDto {
-}
-exports.TaskFileDto = TaskFileDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MAPNAME,
-        example: 'Test',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], TaskFileDto.prototype, "mapName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.TASKNAME,
-        example: 'moveTest.task',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(1, 50),
-    __metadata("design:type", String)
-], TaskFileDto.prototype, "taskName", void 0);
-
-
-/***/ }),
-/* 42 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/swagger");
-
-/***/ }),
-/* 43 */
-/***/ ((module) => {
-
-module.exports = require("class-validator");
-
-/***/ }),
-/* 44 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RpcCodeException = void 0;
-const microservices_1 = __webpack_require__(2);
-class RpcCodeException extends microservices_1.RpcException {
-    constructor(details, statusCode) {
-        super({ details: details, code: statusCode });
-        this.statusCode = statusCode;
-    }
-}
-exports.RpcCodeException = RpcCodeException;
-
-
-/***/ }),
-/* 45 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(46), exports);
-
-
-/***/ }),
-/* 46 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GrpcCode = void 0;
-var GrpcCode;
-(function (GrpcCode) {
-    GrpcCode[GrpcCode["OK"] = 0] = "OK";
-    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
-    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
-    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
-    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
-    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
-    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
-    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
-    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
-    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
-    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
-    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
-    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
-    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
-    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
-    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
-    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
-    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
-})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
-
-
-/***/ }),
-/* 47 */
-/***/ ((module) => {
-
-module.exports = require("fs");
-
-/***/ }),
-/* 48 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1688,11 +1197,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SaveLogService = void 0;
 const common_1 = __webpack_require__(5);
-const winston_1 = __webpack_require__(49);
-const DailyRotateFile = __webpack_require__(50);
-const util_1 = __webpack_require__(51);
-const chalk_1 = __webpack_require__(65);
-const fs_1 = __webpack_require__(47);
+const winston_1 = __webpack_require__(37);
+const DailyRotateFile = __webpack_require__(38);
+const util_1 = __webpack_require__(39);
+const chalk_1 = __webpack_require__(57);
+const fs_1 = __webpack_require__(45);
 const levelColorMap = {
     error: chalk_1.default.red,
     warn: chalk_1.default.magenta,
@@ -1835,46 +1344,46 @@ exports.SaveLogService = SaveLogService = __decorate([
 
 
 /***/ }),
-/* 49 */
+/* 37 */
 /***/ ((module) => {
 
 module.exports = require("winston");
 
 /***/ }),
-/* 50 */
+/* 38 */
 /***/ ((module) => {
 
 module.exports = require("winston-daily-rotate-file");
 
 /***/ }),
-/* 51 */
+/* 39 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValidationUtil = exports.CryptoUtil = exports.ParseUtil = exports.FileUtil = exports.DateUtil = exports.UrlUtil = void 0;
-var url_util_1 = __webpack_require__(52);
+var url_util_1 = __webpack_require__(40);
 Object.defineProperty(exports, "UrlUtil", ({ enumerable: true, get: function () { return url_util_1.UrlUtil; } }));
-var date_util_1 = __webpack_require__(54);
+var date_util_1 = __webpack_require__(42);
 Object.defineProperty(exports, "DateUtil", ({ enumerable: true, get: function () { return date_util_1.DateUtil; } }));
-var file_util_1 = __webpack_require__(56);
+var file_util_1 = __webpack_require__(44);
 Object.defineProperty(exports, "FileUtil", ({ enumerable: true, get: function () { return file_util_1.FileUtil; } }));
-var parse_util_1 = __webpack_require__(62);
+var parse_util_1 = __webpack_require__(54);
 Object.defineProperty(exports, "ParseUtil", ({ enumerable: true, get: function () { return parse_util_1.ParseUtil; } }));
-var crypto_util_1 = __webpack_require__(63);
+var crypto_util_1 = __webpack_require__(55);
 Object.defineProperty(exports, "CryptoUtil", ({ enumerable: true, get: function () { return crypto_util_1.CryptoUtil; } }));
-var validation_util_1 = __webpack_require__(64);
+var validation_util_1 = __webpack_require__(56);
 Object.defineProperty(exports, "ValidationUtil", ({ enumerable: true, get: function () { return validation_util_1.ValidationUtil; } }));
 
 
 /***/ }),
-/* 52 */
+/* 40 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UrlUtil = void 0;
-const uuid_1 = __webpack_require__(53);
+const uuid_1 = __webpack_require__(41);
 class UrlUtil {
     static generateUUID() {
         return (0, uuid_1.v4)();
@@ -1884,19 +1393,19 @@ exports.UrlUtil = UrlUtil;
 
 
 /***/ }),
-/* 53 */
+/* 41 */
 /***/ ((module) => {
 
 module.exports = require("uuid");
 
 /***/ }),
-/* 54 */
+/* 42 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DateUtil = void 0;
-const date_fns_1 = __webpack_require__(55);
+const date_fns_1 = __webpack_require__(43);
 class DateUtil {
     static nowKST() {
         const now = new Date();
@@ -2074,29 +1583,29 @@ exports.DateUtil = DateUtil;
 
 
 /***/ }),
-/* 55 */
+/* 43 */
 /***/ ((module) => {
 
 module.exports = require("date-fns");
 
 /***/ }),
-/* 56 */
+/* 44 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FileUtil = void 0;
-const fs = __webpack_require__(47);
+const fs = __webpack_require__(45);
 const path = __webpack_require__(3);
-const unzipper = __webpack_require__(57);
-const il = __webpack_require__(58);
-const uuid_1 = __webpack_require__(53);
-const archiver_1 = __webpack_require__(59);
-const csv = __webpack_require__(60);
-const zlib_1 = __webpack_require__(61);
+const unzipper = __webpack_require__(46);
+const il = __webpack_require__(47);
+const uuid_1 = __webpack_require__(41);
+const archiver_1 = __webpack_require__(48);
+const csv = __webpack_require__(49);
+const zlib_1 = __webpack_require__(50);
 const common_1 = __webpack_require__(9);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(45);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
 const microservices_1 = __webpack_require__(2);
 const path_1 = __webpack_require__(3);
 class FileUtil {
@@ -2375,37 +1884,113 @@ exports.FileUtil = FileUtil;
 
 
 /***/ }),
-/* 57 */
+/* 45 */
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 46 */
 /***/ ((module) => {
 
 module.exports = require("unzipper");
 
 /***/ }),
-/* 58 */
+/* 47 */
 /***/ ((module) => {
 
 module.exports = require("iconv-lite");
 
 /***/ }),
-/* 59 */
+/* 48 */
 /***/ ((module) => {
 
 module.exports = require("archiver");
 
 /***/ }),
-/* 60 */
+/* 49 */
 /***/ ((module) => {
 
 module.exports = require("csv");
 
 /***/ }),
-/* 61 */
+/* 50 */
 /***/ ((module) => {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 62 */
+/* 51 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RpcCodeException = void 0;
+const microservices_1 = __webpack_require__(2);
+class RpcCodeException extends microservices_1.RpcException {
+    constructor(details, statusCode) {
+        super({ details: details, code: statusCode });
+        this.statusCode = statusCode;
+    }
+}
+exports.RpcCodeException = RpcCodeException;
+
+
+/***/ }),
+/* 52 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(53), exports);
+
+
+/***/ }),
+/* 53 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GrpcCode = void 0;
+var GrpcCode;
+(function (GrpcCode) {
+    GrpcCode[GrpcCode["OK"] = 0] = "OK";
+    GrpcCode[GrpcCode["Cancelled"] = 1] = "Cancelled";
+    GrpcCode[GrpcCode["Unknown"] = 2] = "Unknown";
+    GrpcCode[GrpcCode["InvalidArgument"] = 3] = "InvalidArgument";
+    GrpcCode[GrpcCode["DeadlineExceeded"] = 4] = "DeadlineExceeded";
+    GrpcCode[GrpcCode["NotFound"] = 5] = "NotFound";
+    GrpcCode[GrpcCode["AlreadyExists"] = 6] = "AlreadyExists";
+    GrpcCode[GrpcCode["PermissionDenied"] = 7] = "PermissionDenied";
+    GrpcCode[GrpcCode["ResourceExhausted"] = 8] = "ResourceExhausted";
+    GrpcCode[GrpcCode["FailedPrecondition"] = 9] = "FailedPrecondition";
+    GrpcCode[GrpcCode["Aborted"] = 10] = "Aborted";
+    GrpcCode[GrpcCode["OutOfRange"] = 11] = "OutOfRange";
+    GrpcCode[GrpcCode["Unimplemented"] = 12] = "Unimplemented";
+    GrpcCode[GrpcCode["InternalError"] = 13] = "InternalError";
+    GrpcCode[GrpcCode["Unavailable"] = 14] = "Unavailable";
+    GrpcCode[GrpcCode["DataLoss"] = 15] = "DataLoss";
+    GrpcCode[GrpcCode["Unauthenticated"] = 16] = "Unauthenticated";
+    GrpcCode[GrpcCode["DBError"] = 17] = "DBError";
+})(GrpcCode || (exports.GrpcCode = GrpcCode = {}));
+
+
+/***/ }),
+/* 54 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2462,7 +2047,7 @@ exports.ParseUtil = ParseUtil;
 
 
 /***/ }),
-/* 63 */
+/* 55 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2474,7 +2059,7 @@ exports.CryptoUtil = CryptoUtil;
 
 
 /***/ }),
-/* 64 */
+/* 56 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2508,10 +2093,426 @@ exports.ValidationUtil = ValidationUtil;
 
 
 /***/ }),
-/* 65 */
+/* 57 */
 /***/ ((module) => {
 
 module.exports = require("chalk");
+
+/***/ }),
+/* 58 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToJson = errorToJson;
+function errorToJson(error) {
+    try {
+        if (error instanceof Error) {
+            const errorJson = {
+                name: error.name,
+                message: JSON.stringify(error.message),
+            };
+            if (error['error'] && error['error'].details) {
+                errorJson['details'] = error['error'].details;
+                errorJson['code'] = error['error'].code;
+            }
+            return JSON.stringify(errorJson);
+        }
+        else {
+            const json = JSON.parse(error);
+            return JSON.stringify(json);
+        }
+    }
+    catch (err) {
+        return JSON.stringify(error);
+    }
+}
+
+
+/***/ }),
+/* 59 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TaskService = void 0;
+const common_1 = __webpack_require__(9);
+const common_2 = __webpack_require__(5);
+const task_database_output_port_1 = __webpack_require__(60);
+const task_taskman_output_port_1 = __webpack_require__(61);
+const task_domain_1 = __webpack_require__(62);
+const microservices_1 = __webpack_require__(2);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
+const fs_1 = __webpack_require__(45);
+const path_1 = __webpack_require__(3);
+const task_type_1 = __webpack_require__(63);
+const saveLog_service_1 = __webpack_require__(36);
+let TaskService = class TaskService {
+    constructor(databaseOutput, taskmanOutput, saveLogService) {
+        this.databaseOutput = databaseOutput;
+        this.taskmanOutput = taskmanOutput;
+        this.saveLogService = saveLogService;
+        this.slamnav_connection = false;
+        this.taskman_connection = false;
+        this.logger = this.saveLogService.get('task');
+    }
+    onModuleInit() {
+        this.logger?.debug(`[Task] Module Init`);
+        this.taskmanOutput.checkSocketConnection();
+    }
+    slamConnect() {
+        this.logger?.debug(`[Task] SLAMNAV Connnected`);
+        this.slamnav_connection = true;
+    }
+    slamDisconnect() {
+        this.logger?.debug(`[Task] SLAMNAV Disconnnected`);
+        this.slamnav_connection = false;
+    }
+    taskConnect() {
+        this.logger?.debug(`[Task] Taskman Connnected`);
+        this.taskman_connection = true;
+    }
+    taskDisconnect() {
+        this.logger?.debug(`[Task] Taskman Disconnnected`);
+        this.taskman_connection = false;
+    }
+    async getState() {
+        const state = await this.databaseOutput.getStateLast();
+        return {
+            mapName: state.mapName,
+            taskName: state.taskName,
+            taskId: state.taskId,
+            running: state.running,
+            connection: this.taskman_connection,
+        };
+    }
+    async stateRequest() {
+        try {
+            if (!this.taskman_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다.', constant_1.GrpcCode.FailedPrecondition);
+            }
+            const resp = await this.taskmanOutput.stateSocketRequest();
+            this.logger?.info(`[Task] State Response : ${JSON.stringify(resp)}`);
+            return resp;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Task] stateRequest : ${(0, common_1.errorToJson)(error)}`);
+            return this.getState();
+        }
+    }
+    async variablesRequest() {
+        try {
+            if (!this.taskman_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            const resp = await this.taskmanOutput.variableSocketRequest();
+            return resp;
+        }
+        catch (error) {
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.error(`[Task] variablesRequest : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('Variables 값을 가져올 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async taskRequest(request) {
+        let command = null;
+        try {
+            this.logger?.info(`[Task] taskRequest : ${JSON.stringify(request)}`);
+            command = new task_domain_1.TaskModel(request);
+            command.checkVariables();
+            const result = await this.databaseOutput.save(command);
+            this.logger?.info(`[APP] Task DB Save : ${result._id.toString()}`);
+            command.assignId(result._id.toString());
+            if (command.command === task_type_1.TaskCommand.taskLoad ||
+                command.command === task_type_1.TaskCommand.taskRun ||
+                command.command === task_type_1.TaskCommand.taskDelete) {
+                if (!(0, fs_1.existsSync)((0, path_1.join)('/data/maps', command.mapName, command.taskName))) {
+                    throw new rpc_code_exception_1.RpcCodeException(`파일이 존재하지 않습니다 (${command.mapName}/${command.taskName})`, constant_1.GrpcCode.NotFound);
+                }
+            }
+            if (this.taskman_connection) {
+                const resp = await this.taskmanOutput.taskSocketRequest(command);
+                this.logger?.info(`[APP] Task Response : ${JSON.stringify(resp)}`);
+                command.statusChange('accept');
+                const result = await this.databaseOutput.update(command);
+                this.logger?.info(`[APP] Task DB Update : ${result?._id.toString()}`);
+                return resp;
+            }
+            else {
+                this.logger?.warn(`[APP] taskRequest : Taskman disconnected`);
+                throw new rpc_code_exception_1.RpcCodeException('Taskman이 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+        }
+        catch (error) {
+            if (command) {
+                if (error.error?.details) {
+                    command.statusChange(task_domain_1.TaskStatus.fail, error.error.details);
+                }
+                else {
+                    command.statusChange(task_domain_1.TaskStatus.fail, error.message);
+                }
+                await this.databaseOutput.update(command);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            this.logger?.warn(`[APP] taskRequest : ${(0, common_1.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('Task 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async updateResponse(resp) {
+        try {
+            this.logger?.info(`[Task] updateResponse : ${JSON.stringify(resp)}`);
+            if (resp.id) {
+                const dbmodel = await this.databaseOutput.getNodebyId(resp.id);
+                if (dbmodel) {
+                    const model = new task_domain_1.TaskModel(dbmodel);
+                    model.assignId(dbmodel.id);
+                    model.statusChange('accept');
+                    this.databaseOutput.update(model);
+                }
+            }
+        }
+        catch (error) {
+            this.logger?.error(`[Task] updateResponse : ${(0, common_1.errorToJson)(error)}`);
+        }
+    }
+    async stateResponse(data) {
+        try {
+            this.databaseOutput.saveState({ ...data });
+        }
+        catch (error) {
+            this.logger?.error(`[Task] stateResponse : ${(0, common_1.errorToJson)(error)}`);
+        }
+    }
+};
+exports.TaskService = TaskService;
+exports.TaskService = TaskService = __decorate([
+    (0, common_2.Injectable)(),
+    __param(0, (0, common_2.Inject)('DatabaseOutputPort')),
+    __param(1, (0, common_2.Inject)('TaskmanOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof task_database_output_port_1.TaskDatabaseOutputPort !== "undefined" && task_database_output_port_1.TaskDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof task_taskman_output_port_1.TaskTaskmanOutputPort !== "undefined" && task_taskman_output_port_1.TaskTaskmanOutputPort) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
+], TaskService);
+
+
+/***/ }),
+/* 60 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 61 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 62 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TaskModel = exports.TaskStatus = void 0;
+const task_type_1 = __webpack_require__(63);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
+var TaskStatus;
+(function (TaskStatus) {
+    TaskStatus["pending"] = "pending";
+    TaskStatus["accept"] = "accept";
+    TaskStatus["reject"] = "reject";
+    TaskStatus["running"] = "running";
+    TaskStatus["fail"] = "fail";
+    TaskStatus["cancelled"] = "cancelled";
+    TaskStatus["done"] = "done";
+    TaskStatus["unknown"] = "unknown";
+})(TaskStatus || (exports.TaskStatus = TaskStatus = {}));
+class TaskModel {
+    constructor(param) {
+        this.status = TaskStatus.pending;
+        this.command = param.command;
+        this.mapName = param.mapName;
+        this.taskName = param.taskName;
+        this.tree = param.data;
+    }
+    assignId(id) {
+        this.id = id;
+    }
+    checkVariables() {
+        if (this.taskName) {
+            if (this.taskName.split('.').length === 1) {
+                this.taskName = this.taskName + '.task';
+            }
+        }
+        if (this.command == task_type_1.TaskCommand.taskLoad) {
+            if (this.mapName === '') {
+                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.taskName === '' || this.taskName === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        else if (this.command === task_type_1.TaskCommand.taskRun) {
+            if (this.mapName === '') {
+                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.taskName === '' || this.taskName === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        else if (this.command === task_type_1.TaskCommand.taskStop) {
+        }
+        else if (this.command === task_type_1.TaskCommand.taskSave) {
+            if (this.mapName === '') {
+                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.taskName === '' || this.taskName === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.tree === undefined || this.tree.children.length == 0) {
+                throw new rpc_code_exception_1.RpcCodeException('data 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        else if (this.command === task_type_1.TaskCommand.taskDelete) {
+            if (this.mapName === '') {
+                throw new rpc_code_exception_1.RpcCodeException('mapName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (this.taskName === '' || this.taskName === undefined) {
+                throw new rpc_code_exception_1.RpcCodeException('taskName 값이 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
+        else {
+            throw new rpc_code_exception_1.RpcCodeException('command 값을 알 수 없습니다', constant_1.GrpcCode.InvalidArgument);
+        }
+    }
+    statusChange(status, message) {
+        if (!this.id) {
+            throw new rpc_code_exception_1.RpcCodeException('ID가 없습니다', constant_1.GrpcCode.NotFound);
+        }
+        this.status = this.parseStatus(status);
+        this.message = message;
+    }
+    parseStatus(value) {
+        if (Object.values(TaskStatus).includes(value)) {
+            return value;
+        }
+        return TaskStatus.unknown;
+    }
+}
+exports.TaskModel = TaskModel;
+
+
+/***/ }),
+/* 63 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TaskFileDto = exports.TaskVariableDto = exports.TaskCommand = void 0;
+const swagger_1 = __webpack_require__(64);
+const class_validator_1 = __webpack_require__(65);
+var Description;
+(function (Description) {
+    Description["MAPNAME"] = "\uB9F5 \uC774\uB984";
+    Description["TASKNAME"] = "\uD0DC\uC2A4\uD06C \uC774\uB984";
+    Description["VARIABLE_NAME"] = "\uBCC0\uC218 \uC774\uB984";
+    Description["VARIABLE_TYPE"] = "\uBCC0\uC218 \uD0C0\uC785";
+})(Description || (Description = {}));
+var TaskCommand;
+(function (TaskCommand) {
+    TaskCommand["taskLoad"] = "taskLoad";
+    TaskCommand["taskRun"] = "taskRun";
+    TaskCommand["taskStop"] = "taskStop";
+    TaskCommand["taskSave"] = "taskSave";
+    TaskCommand["taskDelete"] = "taskDelete";
+})(TaskCommand || (exports.TaskCommand = TaskCommand = {}));
+class TaskVariableDto {
+}
+exports.TaskVariableDto = TaskVariableDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: Description.VARIABLE_NAME,
+        example: 'test',
+        required: false,
+    }),
+    __metadata("design:type", String)
+], TaskVariableDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: Description.VARIABLE_TYPE,
+        example: 'string',
+        required: false,
+    }),
+    __metadata("design:type", String)
+], TaskVariableDto.prototype, "type", void 0);
+class TaskFileDto {
+}
+exports.TaskFileDto = TaskFileDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.MAPNAME,
+        example: 'Test',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], TaskFileDto.prototype, "mapName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.TASKNAME,
+        example: 'moveTest.task',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 50),
+    __metadata("design:type", String)
+], TaskFileDto.prototype, "taskName", void 0);
+
+
+/***/ }),
+/* 64 */
+/***/ ((module) => {
+
+module.exports = require("@nestjs/swagger");
+
+/***/ }),
+/* 65 */
+/***/ ((module) => {
+
+module.exports = require("class-validator");
 
 /***/ }),
 /* 66 */
@@ -2530,13 +2531,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskParserService = void 0;
-const fs = __webpack_require__(47);
+const fs = __webpack_require__(45);
 const path = __webpack_require__(3);
 const microservices_1 = __webpack_require__(2);
-const parse_util_1 = __webpack_require__(62);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(45);
-const saveLog_service_1 = __webpack_require__(48);
+const parse_util_1 = __webpack_require__(54);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
+const saveLog_service_1 = __webpack_require__(36);
 const common_1 = __webpack_require__(5);
 let TaskParserService = class TaskParserService {
     constructor(saveLogService) {
@@ -3091,10 +3092,10 @@ const task_entity_1 = __webpack_require__(7);
 const task_state_entity_1 = __webpack_require__(69);
 const microservices_1 = __webpack_require__(2);
 const common_1 = __webpack_require__(9);
-const util_1 = __webpack_require__(51);
-const constant_1 = __webpack_require__(45);
-const rpc_code_exception_1 = __webpack_require__(44);
-const saveLog_service_1 = __webpack_require__(48);
+const util_1 = __webpack_require__(39);
+const constant_1 = __webpack_require__(52);
+const rpc_code_exception_1 = __webpack_require__(51);
+const saveLog_service_1 = __webpack_require__(36);
 const common_2 = __webpack_require__(5);
 let TaskMongoController = class TaskMongoController {
     constructor(Repository, StateRepository, saveLogService) {
@@ -3229,9 +3230,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskMqttInputController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(2);
-const task_service_1 = __webpack_require__(37);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_1 = __webpack_require__(45);
+const task_service_1 = __webpack_require__(59);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_1 = __webpack_require__(52);
 const task_pending_service_1 = __webpack_require__(71);
 const state_dto_1 = __webpack_require__(73);
 const task_dto_1 = __webpack_require__(74);
@@ -3385,8 +3386,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskStateResponseTaskman = exports.TaskStateRequestTaskman = exports.TaskStateResponseDto = void 0;
-const class_validator_1 = __webpack_require__(43);
-const swagger_1 = __webpack_require__(42);
+const class_validator_1 = __webpack_require__(65);
+const swagger_1 = __webpack_require__(64);
 const common_1 = __webpack_require__(5);
 var Description;
 (function (Description) {
@@ -3474,11 +3475,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskResponseTaskman = exports.TaskRequestTaskman = exports.TaskResponseDto = exports.TaskRequestDto = void 0;
-const url_util_1 = __webpack_require__(52);
-const swagger_1 = __webpack_require__(42);
+const url_util_1 = __webpack_require__(40);
+const swagger_1 = __webpack_require__(64);
 const class_transformer_1 = __webpack_require__(75);
-const class_validator_1 = __webpack_require__(43);
-const task_type_1 = __webpack_require__(41);
+const class_validator_1 = __webpack_require__(65);
+const task_type_1 = __webpack_require__(63);
 var Description;
 (function (Description) {
     Description["COMMAND"] = "\uD0DC\uC2A4\uD06C \uBA85\uB839. \uC218\uD589\uD560 \uD0DC\uC2A4\uD06C \uBA85\uB839\uC744 \uC785\uB825\uD558\uC138\uC694.";
@@ -3602,10 +3603,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TaskVariablesResponseTaskman = exports.TaskVariablesRequestTaskman = exports.TaskVariablesResponseDto = void 0;
-const swagger_1 = __webpack_require__(42);
-const class_validator_1 = __webpack_require__(43);
-const task_type_1 = __webpack_require__(41);
-const util_1 = __webpack_require__(51);
+const swagger_1 = __webpack_require__(64);
+const class_validator_1 = __webpack_require__(65);
+const task_type_1 = __webpack_require__(63);
+const util_1 = __webpack_require__(39);
 const class_transformer_1 = __webpack_require__(75);
 class TaskVariablesResponseDto {
 }
@@ -3672,12 +3673,12 @@ exports.TaskSocketioOutputController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const microservices_1 = __webpack_require__(2);
-const util_1 = __webpack_require__(51);
+const util_1 = __webpack_require__(39);
 const constant_1 = __webpack_require__(78);
 const task_pending_service_1 = __webpack_require__(71);
-const rpc_code_exception_1 = __webpack_require__(44);
-const constant_2 = __webpack_require__(45);
-const saveLog_service_1 = __webpack_require__(48);
+const rpc_code_exception_1 = __webpack_require__(51);
+const constant_2 = __webpack_require__(52);
+const saveLog_service_1 = __webpack_require__(36);
 let TaskSocketioOutputController = class TaskSocketioOutputController {
     constructor(mqttMicroservice, pendingService, saveLogService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -3985,7 +3986,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LogModule = void 0;
 const common_1 = __webpack_require__(5);
-const saveLog_service_1 = __webpack_require__(48);
+const saveLog_service_1 = __webpack_require__(36);
 const cleanLog_service_1 = __webpack_require__(87);
 let LogModule = class LogModule {
 };
@@ -4019,8 +4020,8 @@ exports.CleanLogService = void 0;
 const common_1 = __webpack_require__(5);
 const schedule_1 = __webpack_require__(88);
 const path = __webpack_require__(3);
-const fs_1 = __webpack_require__(47);
-const util_1 = __webpack_require__(51);
+const fs_1 = __webpack_require__(45);
+const util_1 = __webpack_require__(39);
 let CleanLogService = class CleanLogService {
     constructor() {
         this.LOG_ROOT = process.env.LOG_ROOT ?? '/data/log';
