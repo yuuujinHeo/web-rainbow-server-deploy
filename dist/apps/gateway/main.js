@@ -11116,6 +11116,7 @@ let LogApiService = class LogApiService {
     }
     async getServiceLog(serviceName, dto) {
         console.log('gateway getServiceLog');
+        console.log('dto', dto);
         return await (0, rxjs_1.lastValueFrom)(this.serviceLogService.getServiceLog({ serviceName, ...dto, levels: dto.levels || [] }));
     }
     async getAlarmDefinedList(dto) {
@@ -11241,9 +11242,6 @@ __decorate([
     (0, swagger_1.ApiOperation)({
         summary: '서비스 로그 요청',
         description: '서비스 로그 리스트를 요청합니다.',
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '서비스 로그 리스트 요청 성공',
     }),
     __param(0, (0, common_1.Param)('serviceName')),
     __param(1, (0, common_1.Query)()),
@@ -11776,6 +11774,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GetServiceLogRequestDto = void 0;
 const search_request_1 = __webpack_require__(104);
+const swagger_1 = __webpack_require__(8);
+const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
 class GetServiceLogRequestDto extends search_request_1.SearchRequestDto {
 }
@@ -11783,11 +11783,36 @@ exports.GetServiceLogRequestDto = GetServiceLogRequestDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'category',
+        description: '카테고리',
+        required: false,
+    }),
     __metadata("design:type", String)
 ], GetServiceLogRequestDto.prototype, "category", void 0);
 __decorate([
-    (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({
+        example: ['INFO', 'WARN', 'ERROR'],
+        description: '레벨',
+        required: false,
+    }),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === undefined || value === null || value === '') {
+            return undefined;
+        }
+        if (Array.isArray(value)) {
+            return value.map((v) => String(v).trim()).filter(Boolean);
+        }
+        if (typeof value === 'string') {
+            return value
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean);
+        }
+        return undefined;
+    }),
+    (0, class_validator_1.IsArray)(),
     __metadata("design:type", Array)
 ], GetServiceLogRequestDto.prototype, "levels", void 0);
 

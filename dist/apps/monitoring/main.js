@@ -5344,6 +5344,10 @@ class ServiceLogFileAdapter {
                                     if (!request.levels.includes(level))
                                         continue;
                                 }
+                                if (request.category) {
+                                    if (!request.category.includes(category))
+                                        continue;
+                                }
                                 if (request.searchType == 'category') {
                                     if (request.searchText != '') {
                                         if (!category || !category.includes(request.searchText)) {
@@ -5479,6 +5483,15 @@ let ServiceLogService = class ServiceLogService {
     async getServiceLog(request) {
         try {
             this.logger?.info(`[ServiceLog] getServiceLog : ${JSON.stringify(request)}`);
+            if (request.serviceName === undefined || request.serviceName === '') {
+                throw new rpc_code_exception_1.RpcCodeException('serviceName 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.dateFrom === undefined || request.dateFrom === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dateFrom 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
+            if (request.dateTo === undefined || request.dateTo === '') {
+                throw new rpc_code_exception_1.RpcCodeException('dateTo 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            }
             return this.logOutputPort.getServiceLog(request);
         }
         catch (error) {
