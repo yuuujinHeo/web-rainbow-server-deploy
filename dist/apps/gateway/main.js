@@ -14929,7 +14929,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'FRS Socket URL',
-        example: 'http://192.168.0.100:3001/socket/robots',
+        example: 'http://192.168.0.100:3001/amr',
         required: true,
     }),
     (0, class_validator_1.IsString)(),
@@ -21901,7 +21901,7 @@ const parse_util_1 = __webpack_require__(61);
 const constant_1 = __webpack_require__(66);
 const rpc_code_exception_1 = __webpack_require__(58);
 const constant_2 = __webpack_require__(59);
-const saveLog_service_1 = __webpack_require__(53);
+const log_1 = __webpack_require__(52);
 let FRSSocketClient = class FRSSocketClient {
     constructor(frsService, mqttMicroservice, saveLogService) {
         this.frsService = frsService;
@@ -22033,7 +22033,6 @@ let FRSSocketClient = class FRSSocketClient {
                 const sendData = { robotSerial: this.robotSerial };
                 this.mqttMicroservice.emit('con:frs', sendData);
                 this.logger?.info(`[Frs] FRS Connect and init : ${JSON.stringify(sendData)}`);
-                this.socket.emit('initRequest', sendData);
             }
             catch (error) {
                 this.logger?.error(`[Frs] FRS connect : ${parse_util_1.ParseUtil.errorToJson(error)}`);
@@ -22152,7 +22151,7 @@ exports.FRSSocketClient = FRSSocketClient;
 exports.FRSSocketClient = FRSSocketClient = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, common_1.Inject)(constant_1.MQTT_BROKER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof frs_socket_service_1.FRSSocketService !== "undefined" && frs_socket_service_1.FRSSocketService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof frs_socket_service_1.FRSSocketService !== "undefined" && frs_socket_service_1.FRSSocketService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof log_1.SaveLogService !== "undefined" && log_1.SaveLogService) === "function" ? _c : Object])
 ], FRSSocketClient);
 
 
@@ -22189,7 +22188,7 @@ const parse_util_1 = __webpack_require__(61);
 const constant_1 = __webpack_require__(66);
 const constant_2 = __webpack_require__(59);
 const rpc_code_exception_1 = __webpack_require__(58);
-const saveLog_service_1 = __webpack_require__(53);
+const log_1 = __webpack_require__(52);
 let FRSSocketService = class FRSSocketService {
     constructor(networkMicroservice, configMicroservice, moveMicroservice, controlMicroservice, mapMicroservice, localizationMicroservice, saveLogService) {
         this.networkMicroservice = networkMicroservice;
@@ -22232,7 +22231,7 @@ let FRSSocketService = class FRSSocketService {
         try {
             await this.setConfig('frsUrl', dto.url);
             await this.setConfig('frsApiUrl', dto.url + ':3000');
-            await this.setConfig('frsSocketUrl', dto.url + ':3001/socket/robots');
+            await this.setConfig('frsSocketUrl', dto.url + ':3001/amr');
             return await this.getFrsUrl();
         }
         catch (error) {
@@ -22392,7 +22391,7 @@ exports.FRSSocketService = FRSSocketService = __decorate([
     __param(3, (0, common_1.Inject)(constant_1.CONTROL_SERVICE)),
     __param(4, (0, common_1.Inject)(constant_1.MAP_SERVICE)),
     __param(5, (0, common_1.Inject)(constant_1.LOCALIZATION_SERVICE)),
-    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object, typeof (_g = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _g : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _c : Object, typeof (_d = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _d : Object, typeof (_e = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _e : Object, typeof (_f = typeof microservices_1.ClientGrpc !== "undefined" && microservices_1.ClientGrpc) === "function" ? _f : Object, typeof (_g = typeof log_1.SaveLogService !== "undefined" && log_1.SaveLogService) === "function" ? _g : Object])
 ], FRSSocketService);
 
 

@@ -20,7 +20,7 @@ export class FrsUrlResponseDto {
 
   @ApiProperty({
     description: 'FRS Socket URL',
-    example: 'http://192.168.0.100:3001/socket/robots',
+    example: 'http://192.168.0.100:3001/amr',
     required: true,
   })
   @IsString()
