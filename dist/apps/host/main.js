@@ -2134,8 +2134,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MapService = void 0;
-const common_1 = __webpack_require__(4);
-const common_2 = __webpack_require__(32);
+const common_1 = __webpack_require__(32);
 const map_database_output_port_1 = __webpack_require__(59);
 const map_slamnav_output_port_1 = __webpack_require__(60);
 const map_command_domain_1 = __webpack_require__(61);
@@ -2149,7 +2148,7 @@ const axios_1 = __webpack_require__(65);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
 const map_file_output_port_1 = __webpack_require__(66);
-const saveLog_service_1 = __webpack_require__(31);
+const log_1 = __webpack_require__(30);
 let MapService = class MapService {
     constructor(databaseOutput, slamnavOutput, mapFileOutput, saveLogService) {
         this.databaseOutput = databaseOutput;
@@ -2251,12 +2250,6 @@ let MapService = class MapService {
         try {
             this.logger?.debug(`[Map] saveTopology : ${JSON.stringify(request)})`);
             command = new map_command_domain_1.MapCommandModel({
-                command: map_command_domain_1.MapCommand.saveTopo,
-                topo: request.data,
-                mapName: request.mapName,
-                fileName: request.fileName,
-            });
-            command.setTopology({
                 command: map_command_domain_1.MapCommand.saveTopo,
                 topo: request.data,
                 mapName: request.mapName,
@@ -2657,7 +2650,7 @@ let MapService = class MapService {
             return resp;
         }
         catch (error) {
-            this.logger?.error(`[Map] loadRequest : ${(0, common_1.errorToJson)(error)}`);
+            this.logger?.error(`[Map] loadRequest : ${(0, log_1.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(resp?.result ?? map_command_domain_1.CommandStatus.fail);
             }
@@ -2785,10 +2778,10 @@ let MapService = class MapService {
 };
 exports.MapService = MapService;
 exports.MapService = MapService = __decorate([
-    __param(0, (0, common_2.Inject)('DatabaseOutputPort')),
-    __param(1, (0, common_2.Inject)('SlamnavOutputPort')),
-    __param(2, (0, common_2.Inject)('MapFileOutputPort')),
-    __metadata("design:paramtypes", [typeof (_a = typeof map_database_output_port_1.MapDatabaseOutputPort !== "undefined" && map_database_output_port_1.MapDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof map_slamnav_output_port_1.MapSlamnavOutputPort !== "undefined" && map_slamnav_output_port_1.MapSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof map_file_output_port_1.MapFileOutputPort !== "undefined" && map_file_output_port_1.MapFileOutputPort) === "function" ? _c : Object, typeof (_d = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _d : Object])
+    __param(0, (0, common_1.Inject)('DatabaseOutputPort')),
+    __param(1, (0, common_1.Inject)('SlamnavOutputPort')),
+    __param(2, (0, common_1.Inject)('MapFileOutputPort')),
+    __metadata("design:paramtypes", [typeof (_a = typeof map_database_output_port_1.MapDatabaseOutputPort !== "undefined" && map_database_output_port_1.MapDatabaseOutputPort) === "function" ? _a : Object, typeof (_b = typeof map_slamnav_output_port_1.MapSlamnavOutputPort !== "undefined" && map_slamnav_output_port_1.MapSlamnavOutputPort) === "function" ? _b : Object, typeof (_c = typeof map_file_output_port_1.MapFileOutputPort !== "undefined" && map_file_output_port_1.MapFileOutputPort) === "function" ? _c : Object, typeof (_d = typeof log_1.SaveLogService !== "undefined" && log_1.SaveLogService) === "function" ? _d : Object])
 ], MapService);
 
 

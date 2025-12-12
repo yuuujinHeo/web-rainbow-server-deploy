@@ -24,7 +24,7 @@ COPY tsconfig.json ./
 COPY .env ./
 RUN npm i -g pnpm
 RUN npm i -g nodemon
-RUN pnpm i
+RUN pnpm i 
 
 COPY dist ./dist
 COPY libs ./libs
