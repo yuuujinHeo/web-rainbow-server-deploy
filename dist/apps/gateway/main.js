@@ -20053,6 +20053,8 @@ class MoveModel {
         this.result = param.result;
         this.preset = param.preset;
         this.goalId = param.goalId;
+        this.goalName = param.goalName;
+        this.mapName = param.mapName;
         this.x = param.x;
         this.y = param.y;
         this.z = param.z;

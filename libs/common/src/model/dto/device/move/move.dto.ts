@@ -262,6 +262,8 @@ export class MoveResponseSlamnav extends MoveResponseDto {
   @Expose()
   id: string;
 
+  goalName?: string;
+
   @ApiProperty({
     description: Description.RESULT,
     example: 'accept',
