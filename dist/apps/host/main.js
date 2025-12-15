@@ -8273,7 +8273,7 @@ let NetworkService = class NetworkService {
         catch (error) {
             if (model) {
                 model.statusChange(network_domain_1.NetworkStatus.fail);
-                model.message = error.error.details;
+                model.message = error.error?.details || error.message;
                 await this.networkDatabase.update(model);
             }
             if (error instanceof microservices_1.RpcException)
@@ -8660,6 +8660,9 @@ let NetworkNmcliAdapter = class NetworkNmcliAdapter {
                     this.curWifi[0].quality = wifi_detail[i].quality;
                     this.curWifi[0].security = wifi_detail[i].security;
                 }
+            }
+            if (this.curWifi.length == 0) {
+                throw new rpc_code_exception_1.RpcCodeException('와이파이 정보를 가져올 수 없습니다.', constant_1.GrpcCode.NotFound);
             }
             return this.curWifi[0];
         }
