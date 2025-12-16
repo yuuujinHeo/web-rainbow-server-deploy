@@ -80,6 +80,11 @@ export class ControlRequestDto {
   @IsOptional()
   @Expose()
   safetyField?: string;
+
+  @ApiProperty({
+    description: '초기화할 세이프티 플래그'
+  })
+  resetFlag?: string;
 }
 
 export class ControlResponseDto extends ControlRequestDto {
@@ -611,3 +616,39 @@ export class SafetyFieldRequestDto {
 }
 
 export class SafetyFieldResponseDto extends SafetyFieldRequestDto {}
+
+
+export class ResetSafetyFlagRequestDto {
+  @IsString()
+  @ApiProperty({
+    description: '리셋할 플래그 이름을 입력하세요.',
+    example: 'bumper',
+    enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+  })
+  resetFlag: string;
+}
+
+export class ResetSafetyFlagRequestSlamnav extends ResetSafetyFlagRequestDto{
+  id: string;
+
+  command: string;
+}
+
+export class ResetSafetyFlagResponseDto {
+  @IsString()
+  @ApiProperty({
+    description: '리셋할 플래그 이름을 입력하세요.',
+    example: 'bumper',
+    enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+  })
+  resetFlag: string;
+
+  result?: string;
+
+  message?: string;
+}
+
+export class ResetSafetyFlagResponseSlamnav extends ResetSafetyFlagResponseDto {
+  id: string;
+  command: string;
+}

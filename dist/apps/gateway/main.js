@@ -179,7 +179,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ControlApiController = void 0;
 const common_1 = __webpack_require__(5);
@@ -216,6 +216,9 @@ let ControlApiController = class ControlApiController {
     }
     async SetSafetyField(dto) {
         return this.controlService.SetSafetyField(dto);
+    }
+    async resetSafetyFlag(dto) {
+        return this.controlService.ResetSafetyFlag(dto);
     }
     async Led(dto) {
         return this.controlService.LED(dto);
@@ -581,6 +584,64 @@ __decorate([
     __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], ControlApiController.prototype, "SetSafetyField", null);
 __decorate([
+    (0, common_1.Post)('safetyFlag'),
+    (0, swagger_1.ApiOperation)({
+        summary: '세이프티 플래그 초기화',
+        description: `
+세이프티 플래그를 초기화합니다.
+
+## 📌 기능 설명
+- 세이프티영역을 지원하는 모델만 사용가능합니다.
+- 세이프티영역은 라이다 센서의 장애물 인식 영역을 설정하는 기능입니다.
+- 세이프티기능으로 트리거된 플래그를 초기화할 수 있습니다.
+- 초기화 가능한 기능은 아래와 같습니다. (버전에 따라 변경될 수 있음)
+  - bumper : 범퍼 감지(충돌)로 멈춤
+  - interlock : 
+  - obstacle : 장애물 감지로 멈춤
+  - operationStop : 
+
+## 📌 요청 바디(JSON)
+
+| 필드명 | 타입 | 필수 | 단위 | 설명 | 예시 |
+|-|-|-|-|-|-|
+| resetFlag | string | ✅ | - | 초기화할 세이프티 플래그 | 'obstacle' |
+ 
+## 📌 응답 바디(JSON)
+
+| 필드명       | 타입    | 설명                          | 예시 |
+|-------------|---------|-------------------------------|--------|
+| command | string | 요청 명령 | 'resetFlag' |
+| resetFlag | string | 초기화할 세이프티 플래그 | 'obstacle' |
+| result | string | 요청한 명령에 대한 결과입니다. | 'accept', 'reject' |
+| message | string | result값이 reject 인 경우 SLAMNAV에서 보내는 메시지 입니다. | '' |
+ 
+## ⚠️ 에러 케이스
+### **409** CONFLICT
+  - 요청한 명령을 수행할 수 없을 때
+  - SLAMNAV에서 거절했을 때
+### **500** INTERNAL_SERVER_ERROR
+  - DB관련 에러 등 서버 내부적인 에러
+### **502** BAD_GATEWAY
+  - SLAMNAV와 연결되지 않았을 때
+### **504** DEADLINE_EXCEEDED
+  - SLAMNAV로부터 응답을 받지 못했을 때
+    `,
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: '설정 요청 성공',
+        type: control_dto_1.ResetSafetyFlagResponseDto,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 500,
+        description: '서버 에러',
+        type: error_response_dto_1.ErrorResponseDto,
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_o = typeof control_dto_1.ResetSafetyFlagRequestDto !== "undefined" && control_dto_1.ResetSafetyFlagRequestDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+], ControlApiController.prototype, "resetSafetyFlag", null);
+__decorate([
     (0, common_1.Post)('led'),
     (0, swagger_1.ApiOperation)({
         summary: 'LED 제어 요청',
@@ -633,8 +694,8 @@ LED의 수동 제어를 요청합니다.
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof Promise !== "undefined" && Promise) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_q = typeof control_dto_1.LEDRequestDto !== "undefined" && control_dto_1.LEDRequestDto) === "function" ? _q : Object]),
+    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
 ], ControlApiController.prototype, "Led", null);
 __decorate([
     (0, common_1.Post)('safetyIo'),
@@ -683,8 +744,8 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_q = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _q : Object]),
-    __metadata("design:returntype", typeof (_r = typeof Promise !== "undefined" && Promise) === "function" ? _r : Object)
+    __metadata("design:paramtypes", [typeof (_s = typeof safety_io_dto_1.SafetyIoRequestDto !== "undefined" && safety_io_dto_1.SafetyIoRequestDto) === "function" ? _s : Object]),
+    __metadata("design:returntype", typeof (_t = typeof Promise !== "undefined" && Promise) === "function" ? _t : Object)
 ], ControlApiController.prototype, "SafetyIo", null);
 __decorate([
     (0, common_1.Get)('safetyIo'),
@@ -728,7 +789,7 @@ __decorate([
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_s = typeof Promise !== "undefined" && Promise) === "function" ? _s : Object)
+    __metadata("design:returntype", typeof (_u = typeof Promise !== "undefined" && Promise) === "function" ? _u : Object)
 ], ControlApiController.prototype, "GetSafetyIo", null);
 __decorate([
     (0, common_1.Get)('obsbox'),
@@ -824,7 +885,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_t = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _t : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof control_dto_1.ObsBoxRequestDto !== "undefined" && control_dto_1.ObsBoxRequestDto) === "function" ? _v : Object]),
     __metadata("design:returntype", Promise)
 ], ControlApiController.prototype, "setObsboxControl", null);
 __decorate([
@@ -883,7 +944,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_u = typeof control_dto_1.DetectRequestDto !== "undefined" && control_dto_1.DetectRequestDto) === "function" ? _u : Object]),
+    __metadata("design:paramtypes", [typeof (_w = typeof control_dto_1.DetectRequestDto !== "undefined" && control_dto_1.DetectRequestDto) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
 ], ControlApiController.prototype, "detectRequest", null);
 exports.ControlApiController = ControlApiController = __decorate([
@@ -915,7 +976,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
+exports.ResetSafetyFlagResponseSlamnav = exports.ResetSafetyFlagResponseDto = exports.ResetSafetyFlagRequestSlamnav = exports.ResetSafetyFlagRequestDto = exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_transformer_1 = __webpack_require__(10);
 const class_validator_1 = __webpack_require__(11);
@@ -1006,6 +1067,12 @@ __decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
 ], ControlRequestDto.prototype, "safetyField", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '초기화할 세이프티 플래그'
+    }),
+    __metadata("design:type", String)
+], ControlRequestDto.prototype, "resetFlag", void 0);
 class ControlResponseDto extends ControlRequestDto {
 }
 exports.ControlResponseDto = ControlResponseDto;
@@ -1611,6 +1678,36 @@ __decorate([
 class SafetyFieldResponseDto extends SafetyFieldRequestDto {
 }
 exports.SafetyFieldResponseDto = SafetyFieldResponseDto;
+class ResetSafetyFlagRequestDto {
+}
+exports.ResetSafetyFlagRequestDto = ResetSafetyFlagRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: '리셋할 플래그 이름을 입력하세요.',
+        example: 'bumper',
+        enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+    }),
+    __metadata("design:type", String)
+], ResetSafetyFlagRequestDto.prototype, "resetFlag", void 0);
+class ResetSafetyFlagRequestSlamnav extends ResetSafetyFlagRequestDto {
+}
+exports.ResetSafetyFlagRequestSlamnav = ResetSafetyFlagRequestSlamnav;
+class ResetSafetyFlagResponseDto {
+}
+exports.ResetSafetyFlagResponseDto = ResetSafetyFlagResponseDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: '리셋할 플래그 이름을 입력하세요.',
+        example: 'bumper',
+        enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+    }),
+    __metadata("design:type", String)
+], ResetSafetyFlagResponseDto.prototype, "resetFlag", void 0);
+class ResetSafetyFlagResponseSlamnav extends ResetSafetyFlagResponseDto {
+}
+exports.ResetSafetyFlagResponseSlamnav = ResetSafetyFlagResponseSlamnav;
 
 
 /***/ }),
@@ -2542,6 +2639,7 @@ function ControlGrpcServiceControllerMethods() {
             "ledControl",
             "setSafetyField",
             "getSafetyField",
+            "resetSafetyFlag",
             "exAccessoryControl",
             "safetyIoControl",
             "setObsBox",
@@ -3656,6 +3754,9 @@ let ControlApiService = class ControlApiService {
     }
     async SetSafetyField(dto) {
         return await (0, rxjs_1.lastValueFrom)(this.controlService.setSafetyField(dto));
+    }
+    async ResetSafetyFlag(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.controlService.resetSafetyFlag(dto));
     }
     async SafetyIo(dto) {
         const response = await (0, rxjs_1.lastValueFrom)(this.controlService.safetyIoControl(dto));
@@ -20349,6 +20450,11 @@ class ControlModel {
     getSafetyFieldRequest() {
         this.status = ControlStatus.pending;
         this.command = control_type_1.ControlCommand.getSafetyField;
+    }
+    resetSafetyField(param) {
+        this.status = ControlStatus.pending;
+        this.command = control_type_1.ControlCommand.resetSafetyFlag;
+        this.resetFlag = param.resetFlag;
     }
     assignId(id) {
         this.id = id;

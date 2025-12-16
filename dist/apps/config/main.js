@@ -309,6 +309,7 @@ function ControlGrpcServiceControllerMethods() {
             "ledControl",
             "setSafetyField",
             "getSafetyField",
+            "resetSafetyFlag",
             "exAccessoryControl",
             "safetyIoControl",
             "setObsBox",

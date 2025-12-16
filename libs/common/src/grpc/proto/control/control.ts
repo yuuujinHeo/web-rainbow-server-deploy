@@ -137,6 +137,16 @@ export interface DetectResponse {
   message?: string | undefined;
 }
 
+export interface ResetSafetyFlagRequest {
+  resetFlag: string;
+}
+
+export interface ResetSafetyFlagResponse {
+  resetFlag: string;
+  result?: string | undefined;
+  message?: string | undefined;
+}
+
 export const CONTROL_PACKAGE_NAME = "control";
 
 /** led, */
@@ -151,6 +161,8 @@ export interface ControlGrpcServiceClient {
   setSafetyField(request: SafetyField, metadata?: Metadata): Observable<SafetyField>;
 
   getSafetyField(request: Empty, metadata?: Metadata): Observable<SafetyField>;
+
+  resetSafetyFlag(request: ResetSafetyFlagRequest, metadata?: Metadata): Observable<ResetSafetyFlagResponse>;
 
   exAccessoryControl(request: ExAccessoryControlRequest, metadata?: Metadata): Observable<ExAccessoryControlResponse>;
 
@@ -188,6 +200,11 @@ export interface ControlGrpcServiceController {
 
   getSafetyField(request: Empty, metadata?: Metadata): Promise<SafetyField> | Observable<SafetyField> | SafetyField;
 
+  resetSafetyFlag(
+    request: ResetSafetyFlagRequest,
+    metadata?: Metadata,
+  ): Promise<ResetSafetyFlagResponse> | Observable<ResetSafetyFlagResponse> | ResetSafetyFlagResponse;
+
   exAccessoryControl(
     request: ExAccessoryControlRequest,
     metadata?: Metadata,
@@ -222,6 +239,7 @@ export function ControlGrpcServiceControllerMethods() {
       "ledControl",
       "setSafetyField",
       "getSafetyField",
+      "resetSafetyFlag",
       "exAccessoryControl",
       "safetyIoControl",
       "setObsBox",

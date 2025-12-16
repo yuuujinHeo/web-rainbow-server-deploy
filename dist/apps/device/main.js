@@ -309,6 +309,7 @@ function ControlGrpcServiceControllerMethods() {
             "ledControl",
             "setSafetyField",
             "getSafetyField",
+            "resetSafetyFlag",
             "exAccessoryControl",
             "safetyIoControl",
             "setObsBox",
@@ -2261,6 +2262,9 @@ let ControlGrpcInputController = class ControlGrpcInputController {
     getSafetyField(request, metadata) {
         return this.controlService.getSafetyField();
     }
+    resetSafetyFlag(request, metadata) {
+        return this.controlService.resetFlag(request);
+    }
     workControl(request) {
         return this.controlService.WorkControl(request);
     }
@@ -2690,6 +2694,39 @@ let ControlService = class ControlService {
             }
         }
     }
+    async resetFlag(request) {
+        let command = null;
+        let resp = null;
+        try {
+            this.logger?.info(`[Control] resetFlag`);
+            command = new control_domain_1.ControlModel();
+            command.resetSafetyField(request);
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result._id.toString());
+            command.checkVariables();
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            resp = await this.slamnavOutput.resetFlagRequest(command);
+            this.logger?.info(`[Control] resetFlag Response : ${JSON.stringify(resp)}`);
+            await command.checkResult(resp.result, resp.message);
+            return { ...resp, resetFlag: resp.resetFlag };
+        }
+        catch (error) {
+            this.logger?.error(`[Control] resetFlag : ${(0, common_2.errorToJson)(error)}`);
+            if (command) {
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('resetFlag 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
+    }
     async detect(request) {
         let command = null;
         let resp = null;
@@ -2833,6 +2870,11 @@ class ControlModel {
     getSafetyFieldRequest() {
         this.status = ControlStatus.pending;
         this.command = control_type_1.ControlCommand.getSafetyField;
+    }
+    resetSafetyField(param) {
+        this.status = ControlStatus.pending;
+        this.command = control_type_1.ControlCommand.resetSafetyFlag;
+        this.resetFlag = param.resetFlag;
     }
     assignId(id) {
         this.id = id;
@@ -3179,6 +3221,14 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
         this.mqttMicroservice.emit('controlRequest', data);
         const resp = await response;
         this.logger?.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(resp)}`);
+        return resp;
+    }
+    async resetFlagRequest(data) {
+        this.logger?.debug(`[Control] Socket resetFlagRequest : ${JSON.stringify(data)}`);
+        const response = this.waitForResponse(data.id, 5000);
+        this.mqttMicroservice.emit('controlRequest', data);
+        const resp = await response;
+        this.logger?.debug(`[Control] Socket resetFlagRequest : ${JSON.stringify(resp)}`);
         return resp;
     }
     async detect(data) {
@@ -3607,7 +3657,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
+exports.ResetSafetyFlagResponseSlamnav = exports.ResetSafetyFlagResponseDto = exports.ResetSafetyFlagRequestSlamnav = exports.ResetSafetyFlagRequestDto = exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
 const swagger_1 = __webpack_require__(81);
 const class_transformer_1 = __webpack_require__(82);
 const class_validator_1 = __webpack_require__(83);
@@ -3698,6 +3748,12 @@ __decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
 ], ControlRequestDto.prototype, "safetyField", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '초기화할 세이프티 플래그'
+    }),
+    __metadata("design:type", String)
+], ControlRequestDto.prototype, "resetFlag", void 0);
 class ControlResponseDto extends ControlRequestDto {
 }
 exports.ControlResponseDto = ControlResponseDto;
@@ -4303,6 +4359,36 @@ __decorate([
 class SafetyFieldResponseDto extends SafetyFieldRequestDto {
 }
 exports.SafetyFieldResponseDto = SafetyFieldResponseDto;
+class ResetSafetyFlagRequestDto {
+}
+exports.ResetSafetyFlagRequestDto = ResetSafetyFlagRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: '리셋할 플래그 이름을 입력하세요.',
+        example: 'bumper',
+        enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+    }),
+    __metadata("design:type", String)
+], ResetSafetyFlagRequestDto.prototype, "resetFlag", void 0);
+class ResetSafetyFlagRequestSlamnav extends ResetSafetyFlagRequestDto {
+}
+exports.ResetSafetyFlagRequestSlamnav = ResetSafetyFlagRequestSlamnav;
+class ResetSafetyFlagResponseDto {
+}
+exports.ResetSafetyFlagResponseDto = ResetSafetyFlagResponseDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: '리셋할 플래그 이름을 입력하세요.',
+        example: 'bumper',
+        enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+    }),
+    __metadata("design:type", String)
+], ResetSafetyFlagResponseDto.prototype, "resetFlag", void 0);
+class ResetSafetyFlagResponseSlamnav extends ResetSafetyFlagResponseDto {
+}
+exports.ResetSafetyFlagResponseSlamnav = ResetSafetyFlagResponseSlamnav;
 
 
 /***/ }),
