@@ -829,6 +829,9 @@ function SettingGrpcServiceControllerMethods() {
             "savePreset",
             "getCameraInfo",
             "setCameraOrder",
+            "getPduParam",
+            "setPduParam",
+            "getPduDriveParam",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

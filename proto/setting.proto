@@ -17,6 +17,12 @@ service SettingGrpcService {
     //cam
     rpc GetCameraInfo(Empty) returns (GetCameraInfoResponse);
     rpc SetCameraOrder(SetCameraOrderRequest) returns (SetCameraOrderResponse);
+
+    //pdu
+    rpc GetPduParam(Empty) returns (GetPduParamResponse);
+    rpc SetPduParam(SetPduParamRequest) returns (GetPduParamResponse);
+    rpc GetPduDriveParam(Empty) returns (GetPduParamResponse);
+
 }
 
 message Empty {
@@ -82,4 +88,20 @@ message SetCameraOrderRequest {
 message SetCameraOrderResponse {
     optional string cam1 = 1;
     optional string cam2 = 2;
+}
+
+message PduParam {
+    string name = 1;
+    string value = 2;
+    string type = 3;
+}
+
+message SetPduParamRequest {
+    repeated PduParam params = 1;
+}
+
+message GetPduParamResponse {
+    repeated PduParam params = 1;
+    optional string result = 2;
+    optional string message = 3;
 }

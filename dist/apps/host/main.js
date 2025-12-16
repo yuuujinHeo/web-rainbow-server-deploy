@@ -600,6 +600,9 @@ function SettingGrpcServiceControllerMethods() {
             "savePreset",
             "getCameraInfo",
             "setCameraOrder",
+            "getPduParam",
+            "setPduParam",
+            "getPduDriveParam",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -5727,6 +5730,15 @@ let SettingGrpcInputController = class SettingGrpcInputController {
         this.settingService = settingService;
         this.settingSlamnavService = settingSlamnavService;
     }
+    getPduParam(request, metadata) {
+        throw new rpc_code_exception_1.RpcCodeException('지원하지 않는 기능입니다', constant_1.GrpcCode.Unimplemented);
+    }
+    setPduParam(request, metadata) {
+        throw new rpc_code_exception_1.RpcCodeException('지원하지 않는 기능입니다', constant_1.GrpcCode.Unimplemented);
+    }
+    getPduDriveParam(request, metadata) {
+        return this.settingSlamnavService.getPduDriveParam();
+    }
     getCameraInfo(request, metadata) {
         return this.settingSlamnavService.getCameraInfo();
     }
@@ -5849,7 +5861,70 @@ let SettingSlamnavService = class SettingSlamnavService {
             throw new rpc_code_exception_1.RpcCodeException('setCameraOrder 명령을 수행할 수 없습니다.', constant_1.GrpcCode.InternalError);
         }
     }
+    async getPduDriveParam() {
+        let resp = null;
+        let command = null;
+        try {
+            command = new setting_domain_1.SettingCommandModel({ command: setting_domain_1.SettingCommand.getDriveParam });
+            command.checkVariables();
+            resp = await this.slamnavOutput.settingRequest(command);
+            command.checkResult(resp.result, resp.message);
+            return resp;
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange('fail');
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[Setting] getPduDriveParam : ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('PDU Drive Param 설정 명령을 수행할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async getPduParam() {
+        let resp = null;
+        let command = null;
+        try {
+            command = new setting_domain_1.SettingCommandModel({ command: setting_domain_1.SettingCommand.getPduParam });
+            command.checkVariables();
+            resp = await this.slamnavOutput.settingRequest(command);
+            command.checkResult(resp.result, resp.message);
+            return resp;
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange('fail');
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[Setting] getPduParam : ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('PDU Param 요청 명령을 수행할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
+    async setPduParam(request) {
+        let resp = null;
+        let command = null;
+        try {
+            command = new setting_domain_1.SettingCommandModel({ command: setting_domain_1.SettingCommand.setPduParam, params: request.params });
+            command.checkVariables();
+            resp = await this.slamnavOutput.settingRequest(command);
+            command.statusChange(resp.result);
+            command.checkResult(resp.result, resp.message);
+            return resp;
+        }
+        catch (error) {
+            if (command) {
+                command.statusChange('fail');
+            }
+            if (error instanceof rpc_code_exception_1.RpcCodeException)
+                throw error;
+            this.logger?.error(`[Setting] setPduParam : ${(0, common_2.errorToJson)(error)}`);
+            throw new rpc_code_exception_1.RpcCodeException('PDU Param 설정 명령을 수행할 수 없습니다.', constant_1.GrpcCode.InternalError);
+        }
+    }
     async updateResponse(resp) {
+    }
+    async settingResponse(resp) {
     }
 };
 exports.SettingSlamnavService = SettingSlamnavService;
@@ -5877,20 +5952,32 @@ exports.SettingCommandModel = exports.SettingCommand = void 0;
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
 const util_1 = __webpack_require__(35);
+const map_command_domain_1 = __webpack_require__(61);
 var SettingCommand;
 (function (SettingCommand) {
     SettingCommand["getCameraInfo"] = "getCameraInfo";
     SettingCommand["setCameraOrder"] = "setCameraOrder";
+    SettingCommand["getPduParam"] = "getPduParam";
+    SettingCommand["getDriveParam"] = "getDriveParam";
+    SettingCommand["setPduParam"] = "setPduParam";
 })(SettingCommand || (exports.SettingCommand = SettingCommand = {}));
 class SettingCommandModel {
     constructor(param) {
         this.command = param.command;
+        this.status = map_command_domain_1.CommandStatus.pending;
         this.id = util_1.UrlUtil.generateUUID();
         this.cam1 = param.cam1;
         this.cam2 = param.cam2;
+        this.params = param.params;
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
     }
     assignId(id) {
         this.id = id;
+    }
+    statusChange(status) {
+        this.status = status;
+        this.updatedAt = new Date();
     }
     checkVariables() {
         if (this.command === SettingCommand.getCameraInfo) {
@@ -5900,8 +5987,25 @@ class SettingCommandModel {
                 throw new rpc_code_exception_1.RpcCodeException('cam1 또는 cam2가 없습니다', constant_1.GrpcCode.InvalidArgument);
             }
         }
+        else if (this.command === SettingCommand.getPduParam) {
+        }
+        else if (this.command === SettingCommand.getDriveParam) {
+        }
+        else if (this.command === SettingCommand.setPduParam) {
+            if (!this.params || this.params.length === 0) {
+                throw new rpc_code_exception_1.RpcCodeException('parameters가 없습니다', constant_1.GrpcCode.InvalidArgument);
+            }
+        }
         else {
             throw new rpc_code_exception_1.RpcCodeException('command 값이 존재하지 않습니다', constant_1.GrpcCode.InvalidArgument);
+        }
+    }
+    checkResult(result, message) {
+        this.statusChange(result);
+        this.message = message;
+        this.result = result;
+        if (result === 'reject' || result === 'fail') {
+            throw new rpc_code_exception_1.RpcCodeException(message ?? '명령 수행 실패', constant_1.GrpcCode.Aborted);
         }
     }
 }
@@ -5956,8 +6060,17 @@ let SettingSocketioAdapter = class SettingSocketioAdapter {
         this.pendingService = pendingService;
         this.saveLogService = saveLogService;
     }
-    settingRequest(request) {
-        throw new Error('Method not implemented.');
+    async settingRequest(request) {
+        this.logger?.debug(`[Setting] settingRequest: ${JSON.stringify(request)}`);
+        const response = this.waitForResponse(request.id, 5000);
+        this.mqttService.emit('settingRequest', {
+            id: request.id,
+            command: request.command,
+            params: request.params
+        });
+        const resp = await response;
+        this.logger?.debug(`[Setting] settingRequest : ${JSON.stringify(resp)}`);
+        return resp;
     }
     async cameraRequest(request) {
         this.logger?.debug(`[Setting] cameraRequest`);
@@ -6042,7 +6155,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingMqttInputController = void 0;
 const common_1 = __webpack_require__(32);
@@ -6054,6 +6167,7 @@ const saveLog_service_1 = __webpack_require__(31);
 const setting_slamnav_service_1 = __webpack_require__(98);
 const setting_pending_service_1 = __webpack_require__(103);
 const cam_dto_1 = __webpack_require__(105);
+const setting_pdu_dto_1 = __webpack_require__(106);
 let SettingMqttInputController = class SettingMqttInputController {
     constructor(settingSlamnavService, pendingService, saveLogService) {
         this.settingSlamnavService = settingSlamnavService;
@@ -6090,6 +6204,23 @@ let SettingMqttInputController = class SettingMqttInputController {
             this.logger?.error(`[Setting] getCameraResponse : ${(0, common_2.errorToJson)(error)}`);
         }
     }
+    getSettingResponse(data) {
+        try {
+            const { id } = data;
+            const listener = this.pendingService.pendingResponses.get(id);
+            if (listener) {
+                listener.received.push(data);
+                listener.resolve(data);
+                this.pendingService.pendingResponses.delete(id);
+            }
+            else {
+                this.settingSlamnavService.settingResponse(data);
+            }
+        }
+        catch (error) {
+            this.logger?.error(`[Setting] getSettingResponse : ${(0, common_2.errorToJson)(error)}`);
+        }
+    }
 };
 exports.SettingMqttInputController = SettingMqttInputController;
 __decorate([
@@ -6111,6 +6242,13 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_d = typeof cam_dto_1.CameraResponseSlamnav !== "undefined" && cam_dto_1.CameraResponseSlamnav) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], SettingMqttInputController.prototype, "getCameraResponse", null);
+__decorate([
+    (0, microservices_1.EventPattern)('settingResponse'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof setting_pdu_dto_1.SettingResponseSlamnav !== "undefined" && setting_pdu_dto_1.SettingResponseSlamnav) === "function" ? _e : Object]),
+    __metadata("design:returntype", void 0)
+], SettingMqttInputController.prototype, "getSettingResponse", null);
 exports.SettingMqttInputController = SettingMqttInputController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [typeof (_a = typeof setting_slamnav_service_1.SettingSlamnavService !== "undefined" && setting_slamnav_service_1.SettingSlamnavService) === "function" ? _a : Object, typeof (_b = typeof setting_pending_service_1.SettingPendingResponseService !== "undefined" && setting_pending_service_1.SettingPendingResponseService) === "function" ? _b : Object, typeof (_c = typeof saveLog_service_1.SaveLogService !== "undefined" && saveLog_service_1.SaveLogService) === "function" ? _c : Object])
@@ -6202,16 +6340,297 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SettingSavePresetResponseDto = exports.SettingSavePresetRequestDto = exports.SettingDeletePresetResponseDto = exports.SettingDeletePresetRequestDto = exports.SettingCreatePresetResponseDto = exports.SettingCreatePresetRequestDto = exports.SettingGetPresetResponseDto = exports.SettingGetPresetRequestDto = exports.SettingGetPresetListResponseDto = exports.SettingGetPresetListRequestDto = exports.SettingSaveSettingAllResponseDto = exports.SettingSaveSettingAllRequestDto = exports.SettingSaveSettingResponseDto = exports.SettingSaveSettingRequestDto = exports.SettingGetSettingResponseDto = exports.SettingGetSettingRequestDto = exports.SettingGetTypeResponseDto = exports.SettingResponseSlamnav = exports.SettingRequestSlamnav = exports.SettingResponseDto = exports.SettingRequestDto = exports.SettingParam = exports.SettingParameterType = void 0;
+const class_validator_1 = __webpack_require__(80);
+const swagger_1 = __webpack_require__(79);
+const class_transformer_1 = __webpack_require__(81);
+var SettingParameterType;
+(function (SettingParameterType) {
+    SettingParameterType["float"] = "float";
+    SettingParameterType["string"] = "string";
+    SettingParameterType["boolean"] = "boolean";
+    SettingParameterType["int"] = "int";
+})(SettingParameterType || (exports.SettingParameterType = SettingParameterType = {}));
+class SettingParam {
+}
+exports.SettingParam = SettingParam;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '세팅 필드 이름',
+        example: 'SPEAKER',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingParam.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '세팅 필드 값',
+        example: 'true',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingParam.prototype, "value", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '세팅 필드 타입',
+        example: 'float',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingParam.prototype, "type", void 0);
+class SettingRequestDto {
+}
+exports.SettingRequestDto = SettingRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '파라미터 목록',
+        example: [
+            {
+                name: 'v_limit_jog',
+                value: '0.1',
+                type: SettingParameterType.float,
+            },
+        ],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_transformer_1.Type)(() => SettingParam),
+    __metadata("design:type", Array)
+], SettingRequestDto.prototype, "params", void 0);
+class SettingResponseDto extends SettingRequestDto {
+}
+exports.SettingResponseDto = SettingResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '결과 상태',
+        example: 'accept',
+        enum: ['accept', 'reject', 'fail', 'success'],
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SettingResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '결과 메시지. result값이 reject, fail일 경우 메시지 내용을 확인하세요.',
+        example: '파라미터의 값이 범위를 벗어났습니다.',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingResponseDto.prototype, "message", void 0);
+class SettingRequestSlamnav extends SettingRequestDto {
+}
+exports.SettingRequestSlamnav = SettingRequestSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청 고유 아이디',
+        example: '1234567890',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SettingRequestSlamnav.prototype, "id", void 0);
+class SettingResponseSlamnav extends SettingResponseDto {
+}
+exports.SettingResponseSlamnav = SettingResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청 고유 아이디',
+        example: '1234567890',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SettingResponseSlamnav.prototype, "id", void 0);
+var Description;
+(function (Description) {
+    Description["ID"] = "\uC694\uCCAD \uACE0\uC720 \uC544\uC774\uB514. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uADF8\uB300\uB85C \uBC18\uD658.";
+    Description["COMMAND"] = "\uC138\uD305 \uBA85\uB839\uC5B4.";
+    Description["TYPE"] = "\uB85C\uBD07 \uD0C0\uC785. \uD0C0\uC785\uBCC4\uB85C \uC138\uD305 \uD30C\uC77C \uB0B4\uC6A9\uC774 \uB2E4\uB984";
+    Description["DATA"] = "\uC138\uD305 \uD30C\uC77C \uB0B4\uC6A9. json \uD615\uC2DD\uC73C\uB85C \uC800\uC7A5\uB418\uC5B4 \uC788\uC74C";
+    Description["KEY"] = "\uC138\uD305 \uD0A4. \uD30C\uC77C \uB0B4\uC6A9\uC744 \uC218\uC815\uD560 \uB54C \uC138\uD305 \uBCC0\uC218\uC758 \uC774\uB984";
+    Description["VALUE"] = "\uC138\uD305 \uAC12. \uD30C\uC77C \uB0B4\uC6A9\uC744 \uC218\uC815\uD560 \uB54C \uC138\uD305 \uBCC0\uC218\uC758 \uAC12. \uBAA8\uB4E0 \uAC12\uC740 string \uD615\uC2DD\uC73C\uB85C \uC9C0\uC815\uD558\uC5EC \uC1A1\uC2E0";
+    Description["RESULT"] = "\uC138\uD305 \uACB0\uACFC. success, fail";
+    Description["MESSAGE"] = "\uC138\uD305 \uACB0\uACFC \uBA54\uC2DC\uC9C0";
+    Description["PRESET"] = "\uD504\uB9AC\uC14B \uC774\uB984. \uD504\uB9AC\uC14B \uD30C\uC77C\uC774\uB984\uC774 preset_1.json \uC774\uB77C\uBA74 1\uB85C \uBCF4\uB0B4\uC8FC\uC138\uC694.";
+    Description["PRESET_LIST"] = "\uD504\uB9AC\uC14B \uB9AC\uC2A4\uD2B8. \uD504\uB9AC\uC14B \uD30C\uC77C\uC774\uB984\uC774 preset_1.json \uC774\uB77C\uBA74 1\uB85C \uBCF4\uB0B4\uC8FC\uC138\uC694.";
+})(Description || (Description = {}));
+class SettingGetTypeResponseDto {
+}
+exports.SettingGetTypeResponseDto = SettingGetTypeResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.TYPE,
+        example: 'SRV',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingGetTypeResponseDto.prototype, "type", void 0);
+class SettingGetSettingRequestDto {
+}
+exports.SettingGetSettingRequestDto = SettingGetSettingRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.TYPE,
+        example: 'SRV',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingGetSettingRequestDto.prototype, "type", void 0);
+class SettingGetSettingResponseDto extends SettingGetSettingRequestDto {
+}
+exports.SettingGetSettingResponseDto = SettingGetSettingResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DATA,
+        example: '{"USE_RRS": "true"}',
+    }),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", typeof (_a = typeof JSON !== "undefined" && JSON) === "function" ? _a : Object)
+], SettingGetSettingResponseDto.prototype, "data", void 0);
+class SettingSaveSettingRequestDto extends SettingGetSettingRequestDto {
+}
+exports.SettingSaveSettingRequestDto = SettingSaveSettingRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.KEY,
+        example: 'USE_RRS',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingSaveSettingRequestDto.prototype, "key", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.VALUE,
+        example: 'true',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingSaveSettingRequestDto.prototype, "value", void 0);
+class SettingSaveSettingResponseDto extends SettingSaveSettingRequestDto {
+}
+exports.SettingSaveSettingResponseDto = SettingSaveSettingResponseDto;
+class SettingSaveSettingAllRequestDto extends SettingGetSettingRequestDto {
+}
+exports.SettingSaveSettingAllRequestDto = SettingSaveSettingAllRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DATA,
+        example: '{"USE_RRS": "true"}',
+    }),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", typeof (_b = typeof JSON !== "undefined" && JSON) === "function" ? _b : Object)
+], SettingSaveSettingAllRequestDto.prototype, "data", void 0);
+class SettingSaveSettingAllResponseDto extends SettingSaveSettingAllRequestDto {
+}
+exports.SettingSaveSettingAllResponseDto = SettingSaveSettingAllResponseDto;
+class SettingGetPresetListRequestDto extends SettingGetSettingRequestDto {
+}
+exports.SettingGetPresetListRequestDto = SettingGetPresetListRequestDto;
+class SettingGetPresetListResponseDto extends SettingGetPresetListRequestDto {
+}
+exports.SettingGetPresetListResponseDto = SettingGetPresetListResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.PRESET_LIST,
+        example: ['0', '1'],
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", Array)
+], SettingGetPresetListResponseDto.prototype, "list", void 0);
+class SettingGetPresetRequestDto extends SettingGetSettingRequestDto {
+}
+exports.SettingGetPresetRequestDto = SettingGetPresetRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.PRESET,
+        example: '1',
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingGetPresetRequestDto.prototype, "preset", void 0);
+class SettingGetPresetResponseDto extends SettingGetPresetRequestDto {
+}
+exports.SettingGetPresetResponseDto = SettingGetPresetResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DATA,
+        example: { LIMIT_V: 1.2 },
+    }),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", typeof (_c = typeof JSON !== "undefined" && JSON) === "function" ? _c : Object)
+], SettingGetPresetResponseDto.prototype, "data", void 0);
+class SettingCreatePresetRequestDto extends SettingGetPresetRequestDto {
+}
+exports.SettingCreatePresetRequestDto = SettingCreatePresetRequestDto;
+class SettingCreatePresetResponseDto extends SettingCreatePresetRequestDto {
+}
+exports.SettingCreatePresetResponseDto = SettingCreatePresetResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DATA,
+        example: { LIMIT_V: 1.2 },
+    }),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", typeof (_d = typeof JSON !== "undefined" && JSON) === "function" ? _d : Object)
+], SettingCreatePresetResponseDto.prototype, "data", void 0);
+class SettingDeletePresetRequestDto extends SettingGetPresetRequestDto {
+}
+exports.SettingDeletePresetRequestDto = SettingDeletePresetRequestDto;
+class SettingDeletePresetResponseDto extends SettingDeletePresetRequestDto {
+}
+exports.SettingDeletePresetResponseDto = SettingDeletePresetResponseDto;
+class SettingSavePresetRequestDto extends SettingGetPresetRequestDto {
+}
+exports.SettingSavePresetRequestDto = SettingSavePresetRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: Description.DATA,
+        example: { LIMIT_V: 1.2 },
+    }),
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", typeof (_e = typeof JSON !== "undefined" && JSON) === "function" ? _e : Object)
+], SettingSavePresetRequestDto.prototype, "data", void 0);
+class SettingSavePresetResponseDto extends SettingSavePresetRequestDto {
+}
+exports.SettingSavePresetResponseDto = SettingSavePresetResponseDto;
+
+
+/***/ }),
+/* 107 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundModule = void 0;
 const common_1 = __webpack_require__(32);
 const config_1 = __webpack_require__(2);
-const typeorm_1 = __webpack_require__(107);
+const typeorm_1 = __webpack_require__(108);
 const pg_1 = __webpack_require__(86);
-const sound_entity_1 = __webpack_require__(108);
-const sound_grpc_controller_1 = __webpack_require__(110);
-const sound_service_1 = __webpack_require__(111);
-const sound_play_sound_adapter_1 = __webpack_require__(113);
+const sound_entity_1 = __webpack_require__(109);
+const sound_grpc_controller_1 = __webpack_require__(111);
+const sound_service_1 = __webpack_require__(112);
+const sound_play_sound_adapter_1 = __webpack_require__(114);
 const log_module_1 = __webpack_require__(88);
 let SoundModule = class SoundModule {
 };
@@ -6277,13 +6696,13 @@ async function ensureSoundDatabase() {
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ ((module) => {
 
 module.exports = require("@nestjs/typeorm");
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6299,7 +6718,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Sound = void 0;
-const typeorm_1 = __webpack_require__(109);
+const typeorm_1 = __webpack_require__(110);
 let Sound = class Sound {
 };
 exports.Sound = Sound;
@@ -6341,13 +6760,13 @@ exports.Sound = Sound = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ ((module) => {
 
 module.exports = require("typeorm");
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6366,7 +6785,7 @@ exports.SoundGrpcController = void 0;
 const common_1 = __webpack_require__(4);
 const grpc_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(32);
-const sound_service_1 = __webpack_require__(111);
+const sound_service_1 = __webpack_require__(112);
 let SoundGrpcController = class SoundGrpcController {
     constructor(soundService) {
         this.soundService = soundService;
@@ -6400,7 +6819,7 @@ exports.SoundGrpcController = SoundGrpcController = __decorate([
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6421,7 +6840,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundService = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(32);
-const sound_output_port_1 = __webpack_require__(112);
+const sound_output_port_1 = __webpack_require__(113);
 const microservices_1 = __webpack_require__(3);
 const fs_1 = __webpack_require__(41);
 const path_1 = __webpack_require__(42);
@@ -6553,7 +6972,7 @@ exports.SoundService = SoundService = __decorate([
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -6561,7 +6980,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6579,9 +6998,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoundPlaySoundAdapter = void 0;
 const common_1 = __webpack_require__(4);
 const fs_1 = __webpack_require__(41);
-const PlaySound = __webpack_require__(114);
+const PlaySound = __webpack_require__(115);
 const microservices_1 = __webpack_require__(3);
-const child_process_1 = __webpack_require__(115);
+const child_process_1 = __webpack_require__(116);
 const path_1 = __webpack_require__(42);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
@@ -6694,19 +7113,19 @@ exports.SoundPlaySoundAdapter = SoundPlaySoundAdapter = __decorate([
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ ((module) => {
 
 module.exports = require("play-sound");
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ ((module) => {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6720,20 +7139,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateModule = void 0;
 const common_1 = __webpack_require__(32);
 const config_1 = __webpack_require__(2);
-const typeorm_1 = __webpack_require__(107);
+const typeorm_1 = __webpack_require__(108);
 const microservices_1 = __webpack_require__(3);
 const pg_1 = __webpack_require__(86);
-const update_command_entity_1 = __webpack_require__(117);
-const update_grpc_controller_1 = __webpack_require__(118);
-const update_service_1 = __webpack_require__(119);
-const update_sh_adapter_1 = __webpack_require__(127);
-const update_socketio_adapter_1 = __webpack_require__(128);
+const update_command_entity_1 = __webpack_require__(118);
+const update_grpc_controller_1 = __webpack_require__(119);
+const update_service_1 = __webpack_require__(120);
+const update_sh_adapter_1 = __webpack_require__(128);
+const update_socketio_adapter_1 = __webpack_require__(129);
 const constant_1 = __webpack_require__(68);
-const update_pending_service_1 = __webpack_require__(129);
-const update_database_adapter_1 = __webpack_require__(130);
+const update_pending_service_1 = __webpack_require__(130);
+const update_database_adapter_1 = __webpack_require__(131);
 const mongoose_1 = __webpack_require__(91);
-const update_version_entity_1 = __webpack_require__(131);
-const update_log_entity_1 = __webpack_require__(132);
+const update_version_entity_1 = __webpack_require__(132);
+const update_log_entity_1 = __webpack_require__(133);
 const log_module_1 = __webpack_require__(88);
 let UpdateModule = class UpdateModule {
 };
@@ -6838,7 +7257,7 @@ async function ensureHostDatabase() {
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6915,7 +7334,7 @@ exports.UpdateCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6933,7 +7352,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateGrpcController = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(32);
-const update_service_1 = __webpack_require__(119);
+const update_service_1 = __webpack_require__(120);
 let UpdateGrpcController = class UpdateGrpcController {
     constructor(updateService) {
         this.updateService = updateService;
@@ -6973,7 +7392,7 @@ exports.UpdateGrpcController = UpdateGrpcController = __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6994,22 +7413,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateService = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(32);
-const net = __webpack_require__(120);
-const child_process_1 = __webpack_require__(115);
+const net = __webpack_require__(121);
+const child_process_1 = __webpack_require__(116);
 const common_3 = __webpack_require__(32);
 const config_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(3);
-const crypto = __webpack_require__(121);
+const crypto = __webpack_require__(122);
 const fs_1 = __webpack_require__(41);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
-const os_1 = __webpack_require__(122);
+const os_1 = __webpack_require__(123);
 const path_1 = __webpack_require__(42);
-const update_domain_1 = __webpack_require__(123);
-const update_slamnav_output_port_1 = __webpack_require__(124);
-const update_database_output_port_1 = __webpack_require__(125);
+const update_domain_1 = __webpack_require__(124);
+const update_slamnav_output_port_1 = __webpack_require__(125);
+const update_database_output_port_1 = __webpack_require__(126);
 const map_command_domain_1 = __webpack_require__(61);
-const update_sh_output_port_1 = __webpack_require__(126);
+const update_sh_output_port_1 = __webpack_require__(127);
 const saveLog_service_1 = __webpack_require__(31);
 let UpdateService = class UpdateService {
     constructor(configService, updateShOutputPort, updateSlamnavOutputPort, updateDatabaseOutputPort, saveLogService) {
@@ -7376,25 +7795,25 @@ exports.UpdateService = UpdateService = __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ ((module) => {
 
 module.exports = require("net");
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ ((module) => {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ ((module) => {
 
 module.exports = require("os");
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -7541,14 +7960,6 @@ exports.UpdateModel = UpdateModel;
 
 
 /***/ }),
-/* 124 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
 /* 125 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -7566,6 +7977,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 /* 127 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7585,9 +8004,9 @@ const common_1 = __webpack_require__(4);
 const rpc_code_exception_1 = __webpack_require__(48);
 const grpc_code_constant_1 = __webpack_require__(50);
 const config_1 = __webpack_require__(2);
-const child_process_1 = __webpack_require__(115);
+const child_process_1 = __webpack_require__(116);
 const fs_1 = __webpack_require__(41);
-const os_1 = __webpack_require__(122);
+const os_1 = __webpack_require__(123);
 const path_1 = __webpack_require__(42);
 const saveLog_service_1 = __webpack_require__(31);
 const common_2 = __webpack_require__(32);
@@ -7662,7 +8081,7 @@ exports.UpdateShAdapter = UpdateShAdapter = __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7687,7 +8106,7 @@ const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
 const common_2 = __webpack_require__(32);
 const constant_2 = __webpack_require__(68);
-const update_pending_service_1 = __webpack_require__(129);
+const update_pending_service_1 = __webpack_require__(130);
 const saveLog_service_1 = __webpack_require__(31);
 let UpdateSocketioAdapter = class UpdateSocketioAdapter {
     constructor(mqttService, pendingService, saveLogService) {
@@ -7765,7 +8184,7 @@ exports.UpdateSocketioAdapter = UpdateSocketioAdapter = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7788,7 +8207,7 @@ exports.UpdatePendingResponseService = UpdatePendingResponseService = __decorate
 
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7809,12 +8228,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateDatabaseAdapter = void 0;
 const mongoose_1 = __webpack_require__(91);
 const mongoose_2 = __webpack_require__(93);
-const typeorm_1 = __webpack_require__(107);
+const typeorm_1 = __webpack_require__(108);
 const parse_util_1 = __webpack_require__(51);
-const typeorm_2 = __webpack_require__(109);
+const typeorm_2 = __webpack_require__(110);
 const util_1 = __webpack_require__(35);
-const update_command_entity_1 = __webpack_require__(117);
-const update_version_entity_1 = __webpack_require__(131);
+const update_command_entity_1 = __webpack_require__(118);
+const update_version_entity_1 = __webpack_require__(132);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
 const saveLog_service_1 = __webpack_require__(31);
@@ -7909,7 +8328,7 @@ exports.UpdateDatabaseAdapter = UpdateDatabaseAdapter = __decorate([
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7925,7 +8344,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateVersion = void 0;
-const typeorm_1 = __webpack_require__(109);
+const typeorm_1 = __webpack_require__(110);
 let UpdateVersion = class UpdateVersion {
 };
 exports.UpdateVersion = UpdateVersion;
@@ -7963,7 +8382,7 @@ exports.UpdateVersion = UpdateVersion = __decorate([
 
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8026,7 +8445,7 @@ exports.UpdateLogSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8039,15 +8458,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkModule = void 0;
 const common_1 = __webpack_require__(32);
-const network_grpc_controller_1 = __webpack_require__(134);
-const network_service_1 = __webpack_require__(135);
+const network_grpc_controller_1 = __webpack_require__(135);
+const network_service_1 = __webpack_require__(136);
 const microservices_1 = __webpack_require__(3);
 const config_1 = __webpack_require__(2);
 const constant_1 = __webpack_require__(68);
-const network_nmcli_adapter_1 = __webpack_require__(139);
-const network_mongo_adapter_1 = __webpack_require__(141);
-const network_mqtt_controller_1 = __webpack_require__(143);
-const network_command_entity_1 = __webpack_require__(142);
+const network_nmcli_adapter_1 = __webpack_require__(140);
+const network_mongo_adapter_1 = __webpack_require__(142);
+const network_mqtt_controller_1 = __webpack_require__(144);
+const network_command_entity_1 = __webpack_require__(143);
 const mongoose_1 = __webpack_require__(91);
 const log_module_1 = __webpack_require__(88);
 let NetworkModule = class NetworkModule {
@@ -8103,7 +8522,7 @@ exports.NetworkModule = NetworkModule = __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8121,7 +8540,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkGrpcInputController = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(32);
-const network_service_1 = __webpack_require__(135);
+const network_service_1 = __webpack_require__(136);
 let NetworkGrpcInputController = class NetworkGrpcInputController {
     constructor(networkService) {
         this.networkService = networkService;
@@ -8164,7 +8583,7 @@ exports.NetworkGrpcInputController = NetworkGrpcInputController = __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8187,9 +8606,9 @@ const parse_util_1 = __webpack_require__(51);
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(3);
 const constant_1 = __webpack_require__(68);
-const network_output_port_1 = __webpack_require__(136);
-const network_database_output_port_1 = __webpack_require__(137);
-const network_domain_1 = __webpack_require__(138);
+const network_output_port_1 = __webpack_require__(137);
+const network_database_output_port_1 = __webpack_require__(138);
+const network_domain_1 = __webpack_require__(139);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_2 = __webpack_require__(49);
 const saveLog_service_1 = __webpack_require__(31);
@@ -8444,14 +8863,6 @@ exports.NetworkService = NetworkService = __decorate([
 
 
 /***/ }),
-/* 136 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
 /* 137 */
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -8461,6 +8872,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 /* 138 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+/* 139 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -8574,7 +8993,7 @@ exports.NetworkModel = NetworkModel;
 
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8590,12 +9009,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkNmcliAdapter = void 0;
-const wifi = __webpack_require__(140);
+const wifi = __webpack_require__(141);
 const microservices_1 = __webpack_require__(3);
 const parse_util_1 = __webpack_require__(51);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
-const child_process_1 = __webpack_require__(115);
+const child_process_1 = __webpack_require__(116);
 const saveLog_service_1 = __webpack_require__(31);
 const common_1 = __webpack_require__(32);
 let NetworkNmcliAdapter = class NetworkNmcliAdapter {
@@ -9037,13 +9456,13 @@ exports.NetworkNmcliAdapter = NetworkNmcliAdapter = __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ ((module) => {
 
 module.exports = require("node-wifi");
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9066,7 +9485,7 @@ const mongoose_1 = __webpack_require__(91);
 const mongoose_2 = __webpack_require__(93);
 const parse_util_1 = __webpack_require__(51);
 const util_1 = __webpack_require__(35);
-const network_command_entity_1 = __webpack_require__(142);
+const network_command_entity_1 = __webpack_require__(143);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
 const saveLog_service_1 = __webpack_require__(31);
@@ -9135,7 +9554,7 @@ exports.NetworkMongoAdapter = NetworkMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9178,7 +9597,7 @@ exports.NetworkCommandSchema.set('timestamps', true);
 
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9200,7 +9619,7 @@ exports.NetworkMqttController = void 0;
 const constant_1 = __webpack_require__(68);
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(3);
-const network_service_1 = __webpack_require__(135);
+const network_service_1 = __webpack_require__(136);
 let NetworkMqttController = class NetworkMqttController {
     constructor(mqttMicroservice, networkService) {
         this.mqttMicroservice = mqttMicroservice;
@@ -9225,7 +9644,7 @@ exports.NetworkMqttController = NetworkMqttController = __decorate([
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9238,19 +9657,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifModule = void 0;
 const common_1 = __webpack_require__(32);
-const onvif_api_controller_1 = __webpack_require__(145);
-const onvif_device_service_1 = __webpack_require__(151);
-const onvif_ptz_service_1 = __webpack_require__(154);
-const onvif_media_service_1 = __webpack_require__(148);
-const onvif_event_service_1 = __webpack_require__(157);
-const onvif_deviceio_service_1 = __webpack_require__(156);
+const onvif_api_controller_1 = __webpack_require__(146);
+const onvif_device_service_1 = __webpack_require__(152);
+const onvif_ptz_service_1 = __webpack_require__(155);
+const onvif_media_service_1 = __webpack_require__(149);
+const onvif_event_service_1 = __webpack_require__(158);
+const onvif_deviceio_service_1 = __webpack_require__(157);
 const microservices_1 = __webpack_require__(3);
 const common_2 = __webpack_require__(4);
 const path_1 = __webpack_require__(42);
-const onvif_mqtt_controller_1 = __webpack_require__(158);
+const onvif_mqtt_controller_1 = __webpack_require__(159);
 const constant_1 = __webpack_require__(68);
 const config_1 = __webpack_require__(2);
-const onvif_pending_service_1 = __webpack_require__(159);
+const onvif_pending_service_1 = __webpack_require__(160);
 const log_module_1 = __webpack_require__(88);
 let OnvifModule = class OnvifModule {
 };
@@ -9313,7 +9732,7 @@ exports.OnvifModule = OnvifModule = __decorate([
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9333,14 +9752,14 @@ var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifApiController = void 0;
 const common_1 = __webpack_require__(32);
-const xml2js = __webpack_require__(146);
-const express_1 = __webpack_require__(147);
-const onvif_media_service_1 = __webpack_require__(148);
-const onvif_device_service_1 = __webpack_require__(151);
+const xml2js = __webpack_require__(147);
+const express_1 = __webpack_require__(148);
+const onvif_media_service_1 = __webpack_require__(149);
+const onvif_device_service_1 = __webpack_require__(152);
 const fs_1 = __webpack_require__(41);
-const onvif_ptz_service_1 = __webpack_require__(154);
-const onvif_deviceio_service_1 = __webpack_require__(156);
-const onvif_event_service_1 = __webpack_require__(157);
+const onvif_ptz_service_1 = __webpack_require__(155);
+const onvif_deviceio_service_1 = __webpack_require__(157);
+const onvif_event_service_1 = __webpack_require__(158);
 const parse_util_1 = __webpack_require__(51);
 const saveLog_service_1 = __webpack_require__(31);
 let OnvifApiController = class OnvifApiController {
@@ -9618,19 +10037,19 @@ exports.OnvifApiController = OnvifApiController = __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ ((module) => {
 
 module.exports = require("xml2js");
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ ((module) => {
 
 module.exports = require("express");
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9654,9 +10073,9 @@ const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(29);
 const parse_util_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(68);
-const template_1 = __webpack_require__(149);
-const wsdl_util_1 = __webpack_require__(150);
-const os_1 = __webpack_require__(122);
+const template_1 = __webpack_require__(150);
+const wsdl_util_1 = __webpack_require__(151);
+const os_1 = __webpack_require__(123);
 const saveLog_service_1 = __webpack_require__(31);
 let OnvifMediaService = class OnvifMediaService {
     constructor(configMicroservice, saveLogService) {
@@ -9793,7 +10212,7 @@ exports.OnvifMediaService = OnvifMediaService = __decorate([
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10000,7 +10419,7 @@ exports.MediaWSDLTemplate = {
 
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10069,7 +10488,7 @@ exports.WsdlUtil = WsdlUtil;
 
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10088,17 +10507,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifDeviceService = void 0;
-const dgram = __webpack_require__(152);
-const xml2js = __webpack_require__(146);
+const dgram = __webpack_require__(153);
+const xml2js = __webpack_require__(147);
 const common_1 = __webpack_require__(32);
-const os_1 = __webpack_require__(122);
+const os_1 = __webpack_require__(123);
 const microservices_1 = __webpack_require__(3);
 const rxjs_1 = __webpack_require__(29);
 const date_util_1 = __webpack_require__(38);
 const parse_util_1 = __webpack_require__(51);
 const constant_1 = __webpack_require__(68);
-const template_1 = __webpack_require__(153);
-const wsdl_util_1 = __webpack_require__(150);
+const template_1 = __webpack_require__(154);
+const wsdl_util_1 = __webpack_require__(151);
 const url_util_1 = __webpack_require__(36);
 const saveLog_service_1 = __webpack_require__(31);
 let OnvifDeviceService = class OnvifDeviceService {
@@ -10470,13 +10889,13 @@ exports.OnvifDeviceService = OnvifDeviceService = __decorate([
 
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ ((module) => {
 
 module.exports = require("dgram");
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10885,7 +11304,7 @@ exports.NetworkWSDLTemplate = {
 
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10902,7 +11321,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifPtzService = void 0;
 const parse_util_1 = __webpack_require__(51);
-const template_1 = __webpack_require__(155);
+const template_1 = __webpack_require__(156);
 const saveLog_service_1 = __webpack_require__(31);
 const common_1 = __webpack_require__(32);
 let OnvifPtzService = class OnvifPtzService {
@@ -10947,7 +11366,7 @@ exports.OnvifPtzService = OnvifPtzService = __decorate([
 
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10980,7 +11399,7 @@ exports.PTZWSDLTemplate = {
 
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -10992,7 +11411,7 @@ exports.OnvifDeviceIOService = OnvifDeviceIOService;
 
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -11004,7 +11423,7 @@ exports.OnvifEventService = OnvifEventService;
 
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11025,7 +11444,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OnvifMqttController = void 0;
 const common_1 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(3);
-const onvif_device_service_1 = __webpack_require__(151);
+const onvif_device_service_1 = __webpack_require__(152);
 const constant_1 = __webpack_require__(68);
 let OnvifMqttController = class OnvifMqttController {
     constructor(mqttMicroservice, deviceService) {
@@ -11061,7 +11480,7 @@ exports.OnvifMqttController = OnvifMqttController = __decorate([
 
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11084,19 +11503,19 @@ exports.OnvifPendingService = OnvifPendingService = __decorate([
 
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ ((module) => {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ ((module) => {
 
 module.exports = require("express-xml-bodyparser");
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11109,13 +11528,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestModule = void 0;
 const common_1 = __webpack_require__(32);
-const test_service_1 = __webpack_require__(163);
+const test_service_1 = __webpack_require__(164);
 const log_module_1 = __webpack_require__(88);
 const config_1 = __webpack_require__(2);
 const mongoose_1 = __webpack_require__(91);
-const test_entity_1 = __webpack_require__(167);
-const test_mongo_adapter_1 = __webpack_require__(168);
-const test_grpc_controller_1 = __webpack_require__(169);
+const test_entity_1 = __webpack_require__(168);
+const test_mongo_adapter_1 = __webpack_require__(169);
+const test_grpc_controller_1 = __webpack_require__(170);
 let TestModule = class TestModule {
 };
 exports.TestModule = TestModule;
@@ -11158,7 +11577,7 @@ exports.TestModule = TestModule = __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11181,12 +11600,12 @@ const common_1 = __webpack_require__(32);
 const common_2 = __webpack_require__(32);
 const microservices_1 = __webpack_require__(3);
 const saveLog_service_1 = __webpack_require__(31);
-const test_database_output_port_1 = __webpack_require__(164);
+const test_database_output_port_1 = __webpack_require__(165);
 const common_3 = __webpack_require__(4);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
-const test_record_domain_1 = __webpack_require__(165);
-const test_domain_1 = __webpack_require__(166);
+const test_record_domain_1 = __webpack_require__(166);
+const test_domain_1 = __webpack_require__(167);
 let TestService = class TestService {
     constructor(database, saveLogService) {
         this.database = database;
@@ -11510,7 +11929,7 @@ exports.TestService = TestService = __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -11518,7 +11937,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -11548,7 +11967,7 @@ exports.RecordModel = RecordModel;
 
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -11573,7 +11992,7 @@ exports.TestModel = TestModel;
 
 
 /***/ }),
-/* 167 */
+/* 168 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11669,7 +12088,7 @@ exports.TestRecordSchema = mongoose_1.SchemaFactory.createForClass(TestRecord);
 
 
 /***/ }),
-/* 168 */
+/* 169 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11691,8 +12110,8 @@ exports.TestMongoAdapter = void 0;
 const mongoose_1 = __webpack_require__(91);
 const mongoose_2 = __webpack_require__(93);
 const parse_util_1 = __webpack_require__(51);
-const test_entity_1 = __webpack_require__(167);
-const test_entity_2 = __webpack_require__(167);
+const test_entity_1 = __webpack_require__(168);
+const test_entity_2 = __webpack_require__(168);
 const rpc_code_exception_1 = __webpack_require__(48);
 const constant_1 = __webpack_require__(49);
 const saveLog_service_1 = __webpack_require__(31);
@@ -11857,7 +12276,7 @@ exports.TestMongoAdapter = TestMongoAdapter = __decorate([
 
 
 /***/ }),
-/* 169 */
+/* 170 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11875,7 +12294,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestGrpcInputController = void 0;
 const common_1 = __webpack_require__(4);
 const common_2 = __webpack_require__(32);
-const test_service_1 = __webpack_require__(163);
+const test_service_1 = __webpack_require__(164);
 let TestGrpcInputController = class TestGrpcInputController {
     constructor(testService) {
         this.testService = testService;
@@ -11961,15 +12380,15 @@ const common_1 = __webpack_require__(4);
 const path_1 = __webpack_require__(42);
 const map_module_1 = __webpack_require__(56);
 const setting_module_1 = __webpack_require__(95);
-const sound_module_1 = __webpack_require__(106);
-const update_module_1 = __webpack_require__(116);
-const network_module_1 = __webpack_require__(133);
-const onvif_module_1 = __webpack_require__(144);
-const bodyParser = __webpack_require__(160);
-const xmlParser = __webpack_require__(161);
+const sound_module_1 = __webpack_require__(107);
+const update_module_1 = __webpack_require__(117);
+const network_module_1 = __webpack_require__(134);
+const onvif_module_1 = __webpack_require__(145);
+const bodyParser = __webpack_require__(161);
+const xmlParser = __webpack_require__(162);
 const common_2 = __webpack_require__(32);
 const constant_1 = __webpack_require__(68);
-const test_module_1 = __webpack_require__(162);
+const test_module_1 = __webpack_require__(163);
 async function bootstrap() {
     console.log('🚀 호스트 서버 시작...');
     const mapModule = await core_1.NestFactory.create(map_module_1.MapModule);

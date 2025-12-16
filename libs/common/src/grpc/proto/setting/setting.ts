@@ -77,6 +77,22 @@ export interface SetCameraOrderResponse {
   cam2?: string | undefined;
 }
 
+export interface PduParam {
+  name: string;
+  value: string;
+  type: string;
+}
+
+export interface SetPduParamRequest {
+  params: PduParam[];
+}
+
+export interface GetPduParamResponse {
+  params: PduParam[];
+  result?: string | undefined;
+  message?: string | undefined;
+}
+
 export const SETTING_PACKAGE_NAME = "setting";
 
 export interface SettingGrpcServiceClient {
@@ -105,6 +121,14 @@ export interface SettingGrpcServiceClient {
   getCameraInfo(request: Empty, metadata?: Metadata): Observable<GetCameraInfoResponse>;
 
   setCameraOrder(request: SetCameraOrderRequest, metadata?: Metadata): Observable<SetCameraOrderResponse>;
+
+  /** pdu */
+
+  getPduParam(request: Empty, metadata?: Metadata): Observable<GetPduParamResponse>;
+
+  setPduParam(request: SetPduParamRequest, metadata?: Metadata): Observable<GetPduParamResponse>;
+
+  getPduDriveParam(request: Empty, metadata?: Metadata): Observable<GetPduParamResponse>;
 }
 
 export interface SettingGrpcServiceController {
@@ -166,6 +190,23 @@ export interface SettingGrpcServiceController {
     request: SetCameraOrderRequest,
     metadata?: Metadata,
   ): Promise<SetCameraOrderResponse> | Observable<SetCameraOrderResponse> | SetCameraOrderResponse;
+
+  /** pdu */
+
+  getPduParam(
+    request: Empty,
+    metadata?: Metadata,
+  ): Promise<GetPduParamResponse> | Observable<GetPduParamResponse> | GetPduParamResponse;
+
+  setPduParam(
+    request: SetPduParamRequest,
+    metadata?: Metadata,
+  ): Promise<GetPduParamResponse> | Observable<GetPduParamResponse> | GetPduParamResponse;
+
+  getPduDriveParam(
+    request: Empty,
+    metadata?: Metadata,
+  ): Promise<GetPduParamResponse> | Observable<GetPduParamResponse> | GetPduParamResponse;
 }
 
 export function SettingGrpcServiceControllerMethods() {
@@ -182,6 +223,9 @@ export function SettingGrpcServiceControllerMethods() {
       "savePreset",
       "getCameraInfo",
       "setCameraOrder",
+      "getPduParam",
+      "setPduParam",
+      "getPduDriveParam",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

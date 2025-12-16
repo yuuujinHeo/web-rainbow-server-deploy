@@ -2827,6 +2827,9 @@ function SettingGrpcServiceControllerMethods() {
             "savePreset",
             "getCameraInfo",
             "setCameraOrder",
+            "getPduParam",
+            "setPduParam",
+            "getPduDriveParam",
         ];
         for (const method of grpcMethods) {
             const descriptor = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
@@ -5871,16 +5874,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SettingApiController = void 0;
 const common_1 = __webpack_require__(5);
 const setting_api_service_1 = __webpack_require__(96);
 const swagger_1 = __webpack_require__(8);
 const error_response_dto_1 = __webpack_require__(64);
-const setting_dto_1 = __webpack_require__(97);
 const saveLog_service_1 = __webpack_require__(53);
-const cam_dto_1 = __webpack_require__(98);
+const cam_dto_1 = __webpack_require__(97);
+const setting_pdu_dto_1 = __webpack_require__(98);
 let SettingApiController = class SettingApiController {
     constructor(saveLogService) {
         this.saveLogService = saveLogService;
@@ -5919,6 +5922,15 @@ let SettingApiController = class SettingApiController {
     async orderChange(data) {
         return this.settingService.cameraOrderChange(data);
     }
+    async getPduParameter() {
+        return this.settingService.getPduParameter();
+    }
+    async getDriveConfig() {
+        return this.settingService.getDriveConfig();
+    }
+    async setPduParameter(dto) {
+        return this.settingService.setPduParameter(dto);
+    }
 };
 exports.SettingApiController = SettingApiController;
 __decorate([
@@ -5955,7 +5967,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '로봇 타입 요청 성공',
-        type: setting_dto_1.SettingGetTypeResponseDto,
+        type: setting_pdu_dto_1.SettingGetTypeResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -5998,7 +6010,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 파일 요청 성공',
-        type: setting_dto_1.SettingGetSettingResponseDto,
+        type: setting_pdu_dto_1.SettingGetSettingResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6007,7 +6019,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof setting_dto_1.SettingGetSettingRequestDto !== "undefined" && setting_dto_1.SettingGetSettingRequestDto) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [typeof (_c = typeof setting_pdu_dto_1.SettingGetSettingRequestDto !== "undefined" && setting_pdu_dto_1.SettingGetSettingRequestDto) === "function" ? _c : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "getSetting", null);
 __decorate([
@@ -6015,7 +6027,7 @@ __decorate([
     (0, swagger_1.ApiExcludeEndpoint)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof setting_dto_1.SettingSaveSettingRequestDto !== "undefined" && setting_dto_1.SettingSaveSettingRequestDto) === "function" ? _d : Object]),
+    __metadata("design:paramtypes", [typeof (_d = typeof setting_pdu_dto_1.SettingSaveSettingRequestDto !== "undefined" && setting_pdu_dto_1.SettingSaveSettingRequestDto) === "function" ? _d : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "saveSetting", null);
 __decorate([
@@ -6046,7 +6058,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 파일 저장 성공',
-        type: setting_dto_1.SettingSaveSettingResponseDto,
+        type: setting_pdu_dto_1.SettingSaveSettingResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6055,7 +6067,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 파일 전체 저장 성공',
-        type: setting_dto_1.SettingSaveSettingAllResponseDto,
+        type: setting_pdu_dto_1.SettingSaveSettingAllResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6064,7 +6076,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_e = typeof setting_dto_1.SettingSaveSettingAllRequestDto !== "undefined" && setting_dto_1.SettingSaveSettingAllRequestDto) === "function" ? _e : Object]),
+    __metadata("design:paramtypes", [typeof (_e = typeof setting_pdu_dto_1.SettingSaveSettingAllRequestDto !== "undefined" && setting_pdu_dto_1.SettingSaveSettingAllRequestDto) === "function" ? _e : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "saveSettingAll", null);
 __decorate([
@@ -6076,7 +6088,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 프리셋 리스트 요청 성공',
-        type: setting_dto_1.SettingGetPresetListResponseDto,
+        type: setting_pdu_dto_1.SettingGetPresetListResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6085,7 +6097,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof setting_dto_1.SettingGetPresetListRequestDto !== "undefined" && setting_dto_1.SettingGetPresetListRequestDto) === "function" ? _f : Object]),
+    __metadata("design:paramtypes", [typeof (_f = typeof setting_pdu_dto_1.SettingGetPresetListRequestDto !== "undefined" && setting_pdu_dto_1.SettingGetPresetListRequestDto) === "function" ? _f : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "getPresetList", null);
 __decorate([
@@ -6097,7 +6109,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 프리셋 요청 성공',
-        type: setting_dto_1.SettingGetPresetResponseDto,
+        type: setting_pdu_dto_1.SettingGetPresetResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6106,7 +6118,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof setting_dto_1.SettingGetPresetRequestDto !== "undefined" && setting_dto_1.SettingGetPresetRequestDto) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [typeof (_g = typeof setting_pdu_dto_1.SettingGetPresetRequestDto !== "undefined" && setting_pdu_dto_1.SettingGetPresetRequestDto) === "function" ? _g : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "getPreset", null);
 __decorate([
@@ -6118,7 +6130,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 프리셋 저장 성공',
-        type: setting_dto_1.SettingSavePresetResponseDto,
+        type: setting_pdu_dto_1.SettingSavePresetResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6127,7 +6139,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof setting_dto_1.SettingSavePresetRequestDto !== "undefined" && setting_dto_1.SettingSavePresetRequestDto) === "function" ? _h : Object]),
+    __metadata("design:paramtypes", [typeof (_h = typeof setting_pdu_dto_1.SettingSavePresetRequestDto !== "undefined" && setting_pdu_dto_1.SettingSavePresetRequestDto) === "function" ? _h : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "savePreset", null);
 __decorate([
@@ -6139,7 +6151,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 프리셋 삭제 성공',
-        type: setting_dto_1.SettingDeletePresetResponseDto,
+        type: setting_pdu_dto_1.SettingDeletePresetResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6148,7 +6160,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_j = typeof setting_dto_1.SettingDeletePresetRequestDto !== "undefined" && setting_dto_1.SettingDeletePresetRequestDto) === "function" ? _j : Object]),
+    __metadata("design:paramtypes", [typeof (_j = typeof setting_pdu_dto_1.SettingDeletePresetRequestDto !== "undefined" && setting_pdu_dto_1.SettingDeletePresetRequestDto) === "function" ? _j : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "deletePreset", null);
 __decorate([
@@ -6160,7 +6172,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: '세팅 프리셋 파일 생성 성공',
-        type: setting_dto_1.SettingCreatePresetResponseDto,
+        type: setting_pdu_dto_1.SettingCreatePresetResponseDto,
     }),
     (0, swagger_1.ApiResponse)({
         status: 500,
@@ -6169,7 +6181,7 @@ __decorate([
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_k = typeof setting_dto_1.SettingCreatePresetRequestDto !== "undefined" && setting_dto_1.SettingCreatePresetRequestDto) === "function" ? _k : Object]),
+    __metadata("design:paramtypes", [typeof (_k = typeof setting_pdu_dto_1.SettingCreatePresetRequestDto !== "undefined" && setting_pdu_dto_1.SettingCreatePresetRequestDto) === "function" ? _k : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "createPreset", null);
 __decorate([
@@ -6219,6 +6231,37 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_l = typeof cam_dto_1.CameraRequestDto !== "undefined" && cam_dto_1.CameraRequestDto) === "function" ? _l : Object]),
     __metadata("design:returntype", Promise)
 ], SettingApiController.prototype, "orderChange", null);
+__decorate([
+    (0, common_1.Get)('pdu'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'PDU 파라미터 조회',
+        description: 'PDU 파라미터 조회 명령을 전달합니다',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SettingApiController.prototype, "getPduParameter", null);
+__decorate([
+    (0, common_1.Get)('pdu/drive'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'PDU 파라미터 조회',
+        description: 'PDU 파라미터 조회 명령을 전달합니다',
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SettingApiController.prototype, "getDriveConfig", null);
+__decorate([
+    (0, common_1.Post)('pdu'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'PDU 파라미터 설정',
+        description: 'PDU 파라미터 설정 명령을 전달합니다',
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_m = typeof setting_pdu_dto_1.SettingRequestDto !== "undefined" && setting_pdu_dto_1.SettingRequestDto) === "function" ? _m : Object]),
+    __metadata("design:returntype", Promise)
+], SettingApiController.prototype, "setPduParameter", null);
 exports.SettingApiController = SettingApiController = __decorate([
     (0, swagger_1.ApiTags)('세팅 관련 API (setting)'),
     (0, common_1.Controller)('setting'),
@@ -6304,6 +6347,15 @@ let SettingApiService = class SettingApiService {
         const resp = await (0, rxjs_1.lastValueFrom)(this.settingService.setCameraOrder({ cam1: dto.cam1, cam2: dto.cam2 }));
         return { cam1: resp.cam1, cam2: resp.cam2 };
     }
+    async getPduParameter() {
+        return await (0, rxjs_1.lastValueFrom)(this.settingService.getPduParam({}));
+    }
+    async getDriveConfig() {
+        return await (0, rxjs_1.lastValueFrom)(this.settingService.getPduDriveParam({}));
+    }
+    async setPduParameter(dto) {
+        return await (0, rxjs_1.lastValueFrom)(this.settingService.setPduParam(dto));
+    }
 };
 exports.SettingApiService = SettingApiService;
 exports.SettingApiService = SettingApiService = __decorate([
@@ -6327,11 +6379,192 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SettingSavePresetResponseDto = exports.SettingSavePresetRequestDto = exports.SettingDeletePresetResponseDto = exports.SettingDeletePresetRequestDto = exports.SettingCreatePresetResponseDto = exports.SettingCreatePresetRequestDto = exports.SettingGetPresetResponseDto = exports.SettingGetPresetRequestDto = exports.SettingGetPresetListResponseDto = exports.SettingGetPresetListRequestDto = exports.SettingSaveSettingAllResponseDto = exports.SettingSaveSettingAllRequestDto = exports.SettingSaveSettingResponseDto = exports.SettingSaveSettingRequestDto = exports.SettingGetSettingResponseDto = exports.SettingGetSettingRequestDto = exports.SettingGetTypeResponseDto = exports.SettingResponseSlamnav = exports.SettingRequestSlamnav = exports.SettingResponseDto = exports.SettingRequestDto = exports.SettingCommand = void 0;
+exports.CameraResponseSlamnav = exports.CameraRequestDto = exports.CameraResponseDto = void 0;
 const swagger_1 = __webpack_require__(8);
 const class_validator_1 = __webpack_require__(11);
+class CameraResponseDto {
+}
+exports.CameraResponseDto = CameraResponseDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 1 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraResponseDto.prototype, "cam1", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 2 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraResponseDto.prototype, "cam2", void 0);
+class CameraRequestDto {
+}
+exports.CameraRequestDto = CameraRequestDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 1 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraRequestDto.prototype, "cam1", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '카메라 2 시리얼 번호',
+        example: 'serial_number',
+    }),
+    __metadata("design:type", String)
+], CameraRequestDto.prototype, "cam2", void 0);
+class CameraResponseSlamnav extends CameraResponseDto {
+}
+exports.CameraResponseSlamnav = CameraResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청 고유 아이디',
+        example: '1234567890',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CameraResponseSlamnav.prototype, "id", void 0);
+
+
+/***/ }),
+/* 98 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b, _c, _d, _e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SettingSavePresetResponseDto = exports.SettingSavePresetRequestDto = exports.SettingDeletePresetResponseDto = exports.SettingDeletePresetRequestDto = exports.SettingCreatePresetResponseDto = exports.SettingCreatePresetRequestDto = exports.SettingGetPresetResponseDto = exports.SettingGetPresetRequestDto = exports.SettingGetPresetListResponseDto = exports.SettingGetPresetListRequestDto = exports.SettingSaveSettingAllResponseDto = exports.SettingSaveSettingAllRequestDto = exports.SettingSaveSettingResponseDto = exports.SettingSaveSettingRequestDto = exports.SettingGetSettingResponseDto = exports.SettingGetSettingRequestDto = exports.SettingGetTypeResponseDto = exports.SettingResponseSlamnav = exports.SettingRequestSlamnav = exports.SettingResponseDto = exports.SettingRequestDto = exports.SettingParam = exports.SettingParameterType = void 0;
+const class_validator_1 = __webpack_require__(11);
+const swagger_1 = __webpack_require__(8);
+const class_transformer_1 = __webpack_require__(10);
+var SettingParameterType;
+(function (SettingParameterType) {
+    SettingParameterType["float"] = "float";
+    SettingParameterType["string"] = "string";
+    SettingParameterType["boolean"] = "boolean";
+    SettingParameterType["int"] = "int";
+})(SettingParameterType || (exports.SettingParameterType = SettingParameterType = {}));
+class SettingParam {
+}
+exports.SettingParam = SettingParam;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '세팅 필드 이름',
+        example: 'SPEAKER',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingParam.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '세팅 필드 값',
+        example: 'true',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingParam.prototype, "value", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '세팅 필드 타입',
+        example: 'float',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingParam.prototype, "type", void 0);
+class SettingRequestDto {
+}
+exports.SettingRequestDto = SettingRequestDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '파라미터 목록',
+        example: [
+            {
+                name: 'v_limit_jog',
+                value: '0.1',
+                type: SettingParameterType.float,
+            },
+        ],
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_transformer_1.Type)(() => SettingParam),
+    __metadata("design:type", Array)
+], SettingRequestDto.prototype, "params", void 0);
+class SettingResponseDto extends SettingRequestDto {
+}
+exports.SettingResponseDto = SettingResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '결과 상태',
+        example: 'accept',
+        enum: ['accept', 'reject', 'fail', 'success'],
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SettingResponseDto.prototype, "result", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '결과 메시지. result값이 reject, fail일 경우 메시지 내용을 확인하세요.',
+        example: '파라미터의 값이 범위를 벗어났습니다.',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SettingResponseDto.prototype, "message", void 0);
+class SettingRequestSlamnav extends SettingRequestDto {
+}
+exports.SettingRequestSlamnav = SettingRequestSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청 고유 아이디',
+        example: '1234567890',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SettingRequestSlamnav.prototype, "id", void 0);
+class SettingResponseSlamnav extends SettingResponseDto {
+}
+exports.SettingResponseSlamnav = SettingResponseSlamnav;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '요청 고유 아이디',
+        example: '1234567890',
+        required: true,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SettingResponseSlamnav.prototype, "id", void 0);
 var Description;
 (function (Description) {
     Description["ID"] = "\uC694\uCCAD \uACE0\uC720 \uC544\uC774\uB514. \uC11C\uBC84\uC5D0\uC11C \uC790\uB3D9\uC0DD\uC131\uB418\uBA70 \uADF8\uB300\uB85C \uBC18\uD658.";
@@ -6345,142 +6578,6 @@ var Description;
     Description["PRESET"] = "\uD504\uB9AC\uC14B \uC774\uB984. \uD504\uB9AC\uC14B \uD30C\uC77C\uC774\uB984\uC774 preset_1.json \uC774\uB77C\uBA74 1\uB85C \uBCF4\uB0B4\uC8FC\uC138\uC694.";
     Description["PRESET_LIST"] = "\uD504\uB9AC\uC14B \uB9AC\uC2A4\uD2B8. \uD504\uB9AC\uC14B \uD30C\uC77C\uC774\uB984\uC774 preset_1.json \uC774\uB77C\uBA74 1\uB85C \uBCF4\uB0B4\uC8FC\uC138\uC694.";
 })(Description || (Description = {}));
-var SettingCommand;
-(function (SettingCommand) {
-    SettingCommand["getType"] = "getType";
-    SettingCommand["getSetting"] = "getSetting";
-    SettingCommand["saveSetting"] = "saveSetting";
-    SettingCommand["saveSettingAll"] = "saveSettingAll";
-    SettingCommand["getPresetList"] = "getPresetList";
-    SettingCommand["getPreset"] = "getPreset";
-    SettingCommand["deletePreset"] = "deletePreset";
-    SettingCommand["createPreset"] = "createPreset";
-    SettingCommand["savePreset"] = "savePreset";
-})(SettingCommand || (exports.SettingCommand = SettingCommand = {}));
-class SettingRequestDto {
-}
-exports.SettingRequestDto = SettingRequestDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.TYPE,
-        example: 'SRV',
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingRequestDto.prototype, "type", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.PRESET,
-        example: '1',
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingRequestDto.prototype, "preset", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.KEY,
-        example: 'USE_RRS',
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingRequestDto.prototype, "key", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.VALUE,
-        example: 'true',
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingRequestDto.prototype, "value", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.DATA,
-        example: '{"USE_RRS": "true"}',
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingRequestDto.prototype, "data", void 0);
-class SettingResponseDto extends SettingRequestDto {
-}
-exports.SettingResponseDto = SettingResponseDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.PRESET_LIST,
-        example: ['0', '1'],
-        required: false,
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", Array)
-], SettingResponseDto.prototype, "list", void 0);
-class SettingRequestSlamnav extends SettingRequestDto {
-}
-exports.SettingRequestSlamnav = SettingRequestSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ID,
-        example: '1234567890',
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingRequestSlamnav.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.COMMAND,
-        example: SettingCommand.getSetting,
-        enum: SettingCommand,
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingRequestSlamnav.prototype, "command", void 0);
-class SettingResponseSlamnav extends SettingResponseDto {
-}
-exports.SettingResponseSlamnav = SettingResponseSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.ID,
-        example: '1234567890',
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingResponseSlamnav.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.COMMAND,
-        example: SettingCommand.getSetting,
-        enum: SettingCommand,
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingResponseSlamnav.prototype, "command", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.RESULT,
-        example: 'success',
-    }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SettingResponseSlamnav.prototype, "result", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: Description.MESSAGE,
-        example: '세팅 완료',
-        required: false,
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], SettingResponseSlamnav.prototype, "message", void 0);
 class SettingGetTypeResponseDto {
 }
 exports.SettingGetTypeResponseDto = SettingGetTypeResponseDto;
@@ -6501,7 +6598,6 @@ __decorate([
         example: 'SRV',
         required: true,
     }),
-    (0, class_validator_1.Length)(1, 20),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SettingGetSettingRequestDto.prototype, "type", void 0);
@@ -6622,80 +6718,6 @@ __decorate([
 class SettingSavePresetResponseDto extends SettingSavePresetRequestDto {
 }
 exports.SettingSavePresetResponseDto = SettingSavePresetResponseDto;
-
-
-/***/ }),
-/* 98 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CameraResponseSlamnav = exports.CameraRequestDto = exports.CameraResponseDto = void 0;
-const swagger_1 = __webpack_require__(8);
-const class_validator_1 = __webpack_require__(11);
-class CameraResponseDto {
-}
-exports.CameraResponseDto = CameraResponseDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 1 시리얼 번호',
-        example: 'serial_number',
-    }),
-    __metadata("design:type", String)
-], CameraResponseDto.prototype, "cam1", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 2 시리얼 번호',
-        example: 'serial_number',
-    }),
-    __metadata("design:type", String)
-], CameraResponseDto.prototype, "cam2", void 0);
-class CameraRequestDto {
-}
-exports.CameraRequestDto = CameraRequestDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 1 시리얼 번호',
-        example: 'serial_number',
-    }),
-    __metadata("design:type", String)
-], CameraRequestDto.prototype, "cam1", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, swagger_1.ApiProperty)({
-        description: '카메라 2 시리얼 번호',
-        example: 'serial_number',
-    }),
-    __metadata("design:type", String)
-], CameraRequestDto.prototype, "cam2", void 0);
-class CameraResponseSlamnav extends CameraResponseDto {
-}
-exports.CameraResponseSlamnav = CameraResponseSlamnav;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '요청 고유 아이디',
-        example: '1234567890',
-    }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CameraResponseSlamnav.prototype, "id", void 0);
 
 
 /***/ }),
@@ -19722,14 +19744,14 @@ const task_dto_1 = __webpack_require__(179);
 const ex_accessory_socket_service_1 = __webpack_require__(181);
 const exAccessory_dto_1 = __webpack_require__(152);
 const version_dto_1 = __webpack_require__(135);
-const setting_dto_1 = __webpack_require__(97);
 const localization_dto_1 = __webpack_require__(81);
 const mapping_dto_1 = __webpack_require__(114);
 const load_dto_1 = __webpack_require__(115);
 const path_dto_1 = __webpack_require__(167);
 const saveLog_service_1 = __webpack_require__(53);
 const detect_domain_1 = __webpack_require__(182);
-const cam_dto_1 = __webpack_require__(98);
+const cam_dto_1 = __webpack_require__(97);
+const setting_pdu_dto_1 = __webpack_require__(98);
 let RobotSocketMqttController = class RobotSocketMqttController {
     constructor(slamnavService, exAccessoryService, taskmanService, saveLogService) {
         this.slamnavService = slamnavService;
@@ -19904,7 +19926,7 @@ __decorate([
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'detectRequest',
         message: {
-            payload: setting_dto_1.SettingRequestSlamnav,
+            payload: control_dto_1.DetectRequestDto,
         },
         description: 'Detect 요청',
     }),
@@ -19932,13 +19954,13 @@ __decorate([
     (0, nestjs_asyncapi_1.AsyncApiPub)({
         channel: 'settingRequest',
         message: {
-            payload: setting_dto_1.SettingRequestSlamnav,
+            payload: setting_pdu_dto_1.SettingRequestSlamnav,
         },
         description: 'Setting 요청',
     }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_p = typeof setting_dto_1.SettingRequestSlamnav !== "undefined" && setting_dto_1.SettingRequestSlamnav) === "function" ? _p : Object]),
+    __metadata("design:paramtypes", [typeof (_p = typeof setting_pdu_dto_1.SettingRequestSlamnav !== "undefined" && setting_pdu_dto_1.SettingRequestSlamnav) === "function" ? _p : Object]),
     __metadata("design:returntype", void 0)
 ], RobotSocketMqttController.prototype, "SettingRequest", null);
 __decorate([
@@ -20826,10 +20848,10 @@ const cloud_type_1 = __webpack_require__(169);
 const load_dto_1 = __webpack_require__(115);
 const mapping_dto_1 = __webpack_require__(114);
 const version_dto_1 = __webpack_require__(135);
-const setting_dto_1 = __webpack_require__(97);
 const path_dto_1 = __webpack_require__(167);
 const systemstatus_type_1 = __webpack_require__(170);
-const cam_dto_1 = __webpack_require__(98);
+const cam_dto_1 = __webpack_require__(97);
+const setting_pdu_dto_1 = __webpack_require__(98);
 let SlamnavSocketGateway = class SlamnavSocketGateway {
     constructor(slamnavService, mqttMicroservice, saveLogService) {
         this.slamnavService = slamnavService;
@@ -21106,14 +21128,14 @@ __decorate([
     (0, nestjs_asyncapi_1.AsyncApiSub)({
         channel: 'settingResponse',
         message: {
-            payload: setting_dto_1.SettingResponseSlamnav,
+            payload: setting_pdu_dto_1.SettingResponseSlamnav,
         },
         description: 'Control 요청에 따른 응답',
     }),
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_v = typeof setting_dto_1.SettingResponseSlamnav !== "undefined" && setting_dto_1.SettingResponseSlamnav) === "function" ? _v : Object, typeof (_w = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _w : Object]),
+    __metadata("design:paramtypes", [typeof (_v = typeof setting_pdu_dto_1.SettingResponseSlamnav !== "undefined" && setting_pdu_dto_1.SettingResponseSlamnav) === "function" ? _v : Object, typeof (_w = typeof socket_io_1.Socket !== "undefined" && socket_io_1.Socket) === "function" ? _w : Object]),
     __metadata("design:returntype", Promise)
 ], SlamnavSocketGateway.prototype, "handleSettingResponse", null);
 __decorate([
