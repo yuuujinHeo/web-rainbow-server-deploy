@@ -9,7 +9,10 @@ service ControlGrpcService {
     rpc LEDControl(LEDControlRequest) returns (LEDControlResponse);
     rpc SetSafetyField(SafetyField) returns (SafetyField);
     rpc GetSafetyField(Empty) returns (SafetyField);
-    rpc ResetSafetyFlag(ResetSafetyFlagRequest) returns (ResetSafetyFlagResponse);
+
+    rpc SetSafetyFlag(SetSafetyFlagRequest) returns (SetSafetyFlagResponse);
+    rpc GetSafetyFlag(Empty) returns (GetSafetyFlagResponse);
+
     rpc ExAccessoryControl(ExAccessoryControlRequest) returns (ExAccessoryControlResponse);
     rpc SafetyIoControl(SafetyIoControlRequest) returns (SafetyIoControlResponse);
     rpc SetObsBox(SetObsBoxRequest) returns (SetObsBoxResponse);
@@ -149,6 +152,27 @@ message ResetSafetyFlagRequest {
 
 message ResetSafetyFlagResponse {
     string resetFlag = 1;
+    optional string result = 2;
+    optional string message = 3;
+}
+
+message SafetyFlag {
+    string name = 1;
+    bool value = 2;
+}
+
+message SetSafetyFlagRequest {
+    repeated SafetyFlag safetyFlags = 1;
+}
+
+message SetSafetyFlagResponse {
+    repeated SafetyFlag safetyFlags = 1;
+    optional string result = 2;
+    optional string message = 3;
+}
+
+message GetSafetyFlagResponse {
+    repeated SafetyFlag safetyFlags = 1;
     optional string result = 2;
     optional string message = 3;
 }

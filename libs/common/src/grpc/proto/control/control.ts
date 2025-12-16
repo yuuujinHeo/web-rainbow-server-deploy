@@ -147,6 +147,27 @@ export interface ResetSafetyFlagResponse {
   message?: string | undefined;
 }
 
+export interface SafetyFlag {
+  name: string;
+  value: boolean;
+}
+
+export interface SetSafetyFlagRequest {
+  safetyFlags: SafetyFlag[];
+}
+
+export interface SetSafetyFlagResponse {
+  safetyFlags: SafetyFlag[];
+  result?: string | undefined;
+  message?: string | undefined;
+}
+
+export interface GetSafetyFlagResponse {
+  safetyFlags: SafetyFlag[];
+  result?: string | undefined;
+  message?: string | undefined;
+}
+
 export const CONTROL_PACKAGE_NAME = "control";
 
 /** led, */
@@ -162,7 +183,9 @@ export interface ControlGrpcServiceClient {
 
   getSafetyField(request: Empty, metadata?: Metadata): Observable<SafetyField>;
 
-  resetSafetyFlag(request: ResetSafetyFlagRequest, metadata?: Metadata): Observable<ResetSafetyFlagResponse>;
+  setSafetyFlag(request: SetSafetyFlagRequest, metadata?: Metadata): Observable<SetSafetyFlagResponse>;
+
+  getSafetyFlag(request: Empty, metadata?: Metadata): Observable<GetSafetyFlagResponse>;
 
   exAccessoryControl(request: ExAccessoryControlRequest, metadata?: Metadata): Observable<ExAccessoryControlResponse>;
 
@@ -200,10 +223,15 @@ export interface ControlGrpcServiceController {
 
   getSafetyField(request: Empty, metadata?: Metadata): Promise<SafetyField> | Observable<SafetyField> | SafetyField;
 
-  resetSafetyFlag(
-    request: ResetSafetyFlagRequest,
+  setSafetyFlag(
+    request: SetSafetyFlagRequest,
     metadata?: Metadata,
-  ): Promise<ResetSafetyFlagResponse> | Observable<ResetSafetyFlagResponse> | ResetSafetyFlagResponse;
+  ): Promise<SetSafetyFlagResponse> | Observable<SetSafetyFlagResponse> | SetSafetyFlagResponse;
+
+  getSafetyFlag(
+    request: Empty,
+    metadata?: Metadata,
+  ): Promise<GetSafetyFlagResponse> | Observable<GetSafetyFlagResponse> | GetSafetyFlagResponse;
 
   exAccessoryControl(
     request: ExAccessoryControlRequest,
@@ -239,7 +267,8 @@ export function ControlGrpcServiceControllerMethods() {
       "ledControl",
       "setSafetyField",
       "getSafetyField",
-      "resetSafetyFlag",
+      "setSafetyFlag",
+      "getSafetyFlag",
       "exAccessoryControl",
       "safetyIoControl",
       "setObsBox",

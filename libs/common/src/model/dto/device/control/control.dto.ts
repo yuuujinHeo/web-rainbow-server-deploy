@@ -3,6 +3,7 @@ import { Expose, Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { ControlCommand, LEDColor } from './type/control.type';
 import { UrlUtil } from '@app/common/util';
+import { SafetyFlag } from '@app/common/grpc/proto/control';
 
 enum Description {
   COMMAND = '실행할 컨트롤 명령',
@@ -84,7 +85,16 @@ export class ControlRequestDto {
   @ApiProperty({
     description: '초기화할 세이프티 플래그'
   })
-  resetFlag?: string;
+  safetyFlags?: SafetyFlagDto[];
+}
+
+export class SafetyFlagDto {
+  @ApiProperty({
+    example: 'obstacle',
+    required: true,
+  })
+  name: string;
+  value: boolean;
 }
 
 export class ControlResponseDto extends ControlRequestDto {
@@ -618,37 +628,61 @@ export class SafetyFieldRequestDto {
 export class SafetyFieldResponseDto extends SafetyFieldRequestDto {}
 
 
-export class ResetSafetyFlagRequestDto {
-  @IsString()
+export class SetSafetyFlagRequestDto {
   @ApiProperty({
-    description: '리셋할 플래그 이름을 입력하세요.',
-    example: 'bumper',
-    enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+    example:[
+      {
+        name:'test',
+        value:false
+      }
+    ]
   })
-  resetFlag: string;
+  safetyFlags: SafetyFlagDto[];
 }
 
-export class ResetSafetyFlagRequestSlamnav extends ResetSafetyFlagRequestDto{
-  id: string;
-
-  command: string;
-}
-
-export class ResetSafetyFlagResponseDto {
-  @IsString()
-  @ApiProperty({
-    description: '리셋할 플래그 이름을 입력하세요.',
-    example: 'bumper',
-    enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
-  })
-  resetFlag: string;
-
+export class SetSafetyFlagResponseDto {
+  safetyFlags: SafetyFlagDto[];
   result?: string;
-
   message?: string;
 }
 
-export class ResetSafetyFlagResponseSlamnav extends ResetSafetyFlagResponseDto {
-  id: string;
-  command: string;
+export class GetSafetyFlagResponseDto {
+  safetyFlags: SafetyFlagDto[];
+  result?: string;
+  message?: string;
 }
+
+// export class ResetSafetyFlagRequestDto {
+//   @IsString()
+//   @ApiProperty({
+//     description: '리셋할 플래그 이름을 입력하세요.',
+//     example: 'bumper',
+//     enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+//   })
+//   resetFlag: string;
+// }
+
+// export class ResetSafetyFlagRequestSlamnav extends ResetSafetyFlagRequestDto{
+//   id: string;
+
+//   command: string;
+// }
+
+// export class ResetSafetyFlagResponseDto {
+//   @IsString()
+//   @ApiProperty({
+//     description: '리셋할 플래그 이름을 입력하세요.',
+//     example: 'bumper',
+//     enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+//   })
+//   resetFlag: string;
+
+//   result?: string;
+
+//   message?: string;
+// }
+
+// export class ResetSafetyFlagResponseSlamnav extends ResetSafetyFlagResponseDto {
+//   id: string;
+//   command: string;
+// }

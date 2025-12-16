@@ -309,7 +309,8 @@ function ControlGrpcServiceControllerMethods() {
             "ledControl",
             "setSafetyField",
             "getSafetyField",
-            "resetSafetyFlag",
+            "setSafetyFlag",
+            "getSafetyFlag",
             "exAccessoryControl",
             "safetyIoControl",
             "setObsBox",
@@ -2163,10 +2164,6 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
-], Control.prototype, "resetFlag", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
 ], Control.prototype, "position", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
@@ -2253,6 +2250,12 @@ let ControlGrpcInputController = class ControlGrpcInputController {
     constructor(controlService) {
         this.controlService = controlService;
     }
+    setSafetyFlag(request, metadata) {
+        return this.controlService.setSafetyFlag(request);
+    }
+    getSafetyFlag(request, metadata) {
+        return this.controlService.getSafetyFlag();
+    }
     safetyIoControl(request, metadata) {
         return this.controlService.SafetyIoControl(request);
     }
@@ -2261,9 +2264,6 @@ let ControlGrpcInputController = class ControlGrpcInputController {
     }
     getSafetyField(request, metadata) {
         return this.controlService.getSafetyField();
-    }
-    resetSafetyFlag(request, metadata) {
-        return this.controlService.resetFlag(request);
     }
     workControl(request) {
         return this.controlService.WorkControl(request);
@@ -2694,32 +2694,65 @@ let ControlService = class ControlService {
             }
         }
     }
-    async resetFlag(request) {
+    async getSafetyFlag() {
         let command = null;
         let resp = null;
         try {
-            this.logger?.info(`[Control] resetFlag`);
+            this.logger?.info(`[Control] getSafetyFlag`);
             command = new control_domain_1.ControlModel();
-            command.resetSafetyField(request);
+            command.getSafetyFlag();
             const result = await this.databaseOutput.save(command);
             command.assignId(result._id.toString());
             command.checkVariables();
             if (!this.slamnav_connection) {
                 throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
             }
-            resp = await this.slamnavOutput.resetFlagRequest(command);
-            this.logger?.info(`[Control] resetFlag Response : ${JSON.stringify(resp)}`);
+            resp = await this.slamnavOutput.SafetyFlag(command);
+            this.logger?.info(`[Control] getSafetyFlag Response : ${JSON.stringify(resp)}`);
             await command.checkResult(resp.result, resp.message);
-            return { ...resp, resetFlag: resp.resetFlag };
+            return { ...resp, safetyFlags: resp.safetyFlags };
         }
         catch (error) {
-            this.logger?.error(`[Control] resetFlag : ${(0, common_2.errorToJson)(error)}`);
+            this.logger?.error(`[Control] getSafetyFlag : ${(0, common_2.errorToJson)(error)}`);
             if (command) {
                 command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
             }
             if (error instanceof microservices_1.RpcException)
                 throw error;
-            throw new rpc_code_exception_1.RpcCodeException('resetFlag 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+            throw new rpc_code_exception_1.RpcCodeException('getSafetyFlag 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
+        }
+        finally {
+            if (command) {
+                await this.databaseOutput.update(command);
+            }
+        }
+    }
+    async setSafetyFlag(request) {
+        let command = null;
+        let resp = null;
+        try {
+            this.logger?.info(`[Control] setSafetyFlag : ${JSON.stringify(request)}`);
+            command = new control_domain_1.ControlModel();
+            command.setSafetyFlag(request);
+            const result = await this.databaseOutput.save(command);
+            command.assignId(result._id.toString());
+            command.checkVariables();
+            if (!this.slamnav_connection) {
+                throw new rpc_code_exception_1.RpcCodeException('SLAMNAV가 연결되지 않았습니다', constant_1.GrpcCode.FailedPrecondition);
+            }
+            resp = await this.slamnavOutput.SafetyFlag(command);
+            this.logger?.info(`[Control] setSafetyFlag Response : ${JSON.stringify(resp)}`);
+            await command.checkResult(resp.result, resp.message);
+            return { ...resp, safetyFlags: resp.safetyFlags };
+        }
+        catch (error) {
+            this.logger?.error(`[Control] setSafetyFlag : ${(0, common_2.errorToJson)(error)}`);
+            if (command) {
+                command.statusChange(resp?.result ?? control_domain_1.ControlStatus.fail);
+            }
+            if (error instanceof microservices_1.RpcException)
+                throw error;
+            throw new rpc_code_exception_1.RpcCodeException('setSafetyFlag 명령을 수행할 수 없습니다', constant_1.GrpcCode.InternalError);
         }
         finally {
             if (command) {
@@ -2790,7 +2823,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ControlModel = exports.ControlStatus = void 0;
+exports.ControlModel = exports.ControlParam = exports.ControlStatus = void 0;
 const rpc_code_exception_1 = __webpack_require__(47);
 const constant_1 = __webpack_require__(48);
 const control_type_1 = __webpack_require__(66);
@@ -2802,6 +2835,9 @@ var ControlStatus;
     ControlStatus["fail"] = "fail";
     ControlStatus["unknown"] = "unknown";
 })(ControlStatus || (exports.ControlStatus = ControlStatus = {}));
+class ControlParam {
+}
+exports.ControlParam = ControlParam;
 class ControlModel {
     constructor(param) {
         this.status = ControlStatus.pending;
@@ -2810,7 +2846,7 @@ class ControlModel {
         this.frequency = param?.frequency;
         this.color = this.parseColor(param?.color);
         this.safetyField = param?.safetyField;
-        this.resetFlag = param?.resetFlag;
+        this.safetyFlags = param?.safetyFlags;
         this.position = param?.position;
         this.mcuDio = param?.mcuDio;
         this.minX = param?.minX;
@@ -2871,10 +2907,14 @@ class ControlModel {
         this.status = ControlStatus.pending;
         this.command = control_type_1.ControlCommand.getSafetyField;
     }
-    resetSafetyField(param) {
+    getSafetyFlag() {
         this.status = ControlStatus.pending;
-        this.command = control_type_1.ControlCommand.resetSafetyFlag;
-        this.resetFlag = param.resetFlag;
+        this.command = control_type_1.ControlCommand.getSafetyFlag;
+    }
+    setSafetyFlag(request) {
+        this.status = ControlStatus.pending;
+        this.command = control_type_1.ControlCommand.setSafetyFlag;
+        this.safetyFlags = request.safetyFlags;
     }
     assignId(id) {
         this.id = id;
@@ -2958,9 +2998,12 @@ class ControlModel {
             case control_type_1.ControlCommand.getSafetyField: {
                 break;
             }
-            case control_type_1.ControlCommand.resetSafetyFlag: {
-                if (this.resetFlag === undefined) {
-                    throw new rpc_code_exception_1.RpcCodeException('resetFlag 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
+            case control_type_1.ControlCommand.getSafetyFlag: {
+                break;
+            }
+            case control_type_1.ControlCommand.setSafetyFlag: {
+                if (this.safetyFlags === undefined || this.safetyFlags.length === 0) {
+                    throw new rpc_code_exception_1.RpcCodeException('safetyFlags 값이 없습니다.', constant_1.GrpcCode.InvalidArgument);
                 }
                 break;
             }
@@ -3027,7 +3070,8 @@ var ControlCommand;
     ControlCommand["safetyFieldControl"] = "safetyFieldControl";
     ControlCommand["setSafetyField"] = "setSafetyField";
     ControlCommand["getSafetyField"] = "getSafetyField";
-    ControlCommand["resetSafetyFlag"] = "resetSafetyFlag";
+    ControlCommand["getSafetyFlag"] = "getSafetyFlag";
+    ControlCommand["setSafetyFlag"] = "setSafetyFlag";
     ControlCommand["footMove"] = "footMove";
     ControlCommand["footStop"] = "footStop";
     ControlCommand["getDigitalIO"] = "getDigitalIO";
@@ -3223,12 +3267,16 @@ let ControlSocketIoAdapter = class ControlSocketIoAdapter {
         this.logger?.debug(`[Control] Socket safetyFieldControl : ${JSON.stringify(resp)}`);
         return resp;
     }
-    async resetFlagRequest(data) {
-        this.logger?.debug(`[Control] Socket resetFlagRequest : ${JSON.stringify(data)}`);
+    async SafetyFlag(data) {
+        this.logger?.debug(`[Control] Socket SafetyFlag : ${JSON.stringify(data)}`);
         const response = this.waitForResponse(data.id, 5000);
-        this.mqttMicroservice.emit('controlRequest', data);
+        this.mqttMicroservice.emit('controlRequest', {
+            id: data.id,
+            command: data.command,
+            safetyFlags: data.safetyFlags
+        });
         const resp = await response;
-        this.logger?.debug(`[Control] Socket resetFlagRequest : ${JSON.stringify(resp)}`);
+        this.logger?.debug(`[Control] Socket SafetyFlag : ${JSON.stringify(resp)}`);
         return resp;
     }
     async detect(data) {
@@ -3657,7 +3705,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ResetSafetyFlagResponseSlamnav = exports.ResetSafetyFlagResponseDto = exports.ResetSafetyFlagRequestSlamnav = exports.ResetSafetyFlagRequestDto = exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.ControlRequestDto = void 0;
+exports.GetSafetyFlagResponseDto = exports.SetSafetyFlagResponseDto = exports.SetSafetyFlagRequestDto = exports.SafetyFieldResponseDto = exports.SafetyFieldRequestDto = exports.WorkResponseDto = exports.WorkRequestDto = exports.OnOffResponseDto = exports.OnOffRequestDto = exports.LEDResponseDto = exports.LEDRequestDto = exports.ObsBoxResponseSlamnav = exports.ObsBoxRequestSlamnav = exports.ObsBoxResponseDto = exports.ObsBoxRequestDto = exports.DetectResponseSlamnav = exports.DetectResponseDto = exports.DetectRequestDto = exports.ControlResponseFrs = exports.ControlResponseSlamnav = exports.ControlRequestSlamnav = exports.ControlResponseDto = exports.SafetyFlagDto = exports.ControlRequestDto = void 0;
 const swagger_1 = __webpack_require__(81);
 const class_transformer_1 = __webpack_require__(82);
 const class_validator_1 = __webpack_require__(83);
@@ -3752,8 +3800,18 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: '초기화할 세이프티 플래그'
     }),
+    __metadata("design:type", Array)
+], ControlRequestDto.prototype, "safetyFlags", void 0);
+class SafetyFlagDto {
+}
+exports.SafetyFlagDto = SafetyFlagDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'obstacle',
+        required: true,
+    }),
     __metadata("design:type", String)
-], ControlRequestDto.prototype, "resetFlag", void 0);
+], SafetyFlagDto.prototype, "name", void 0);
 class ControlResponseDto extends ControlRequestDto {
 }
 exports.ControlResponseDto = ControlResponseDto;
@@ -4359,36 +4417,26 @@ __decorate([
 class SafetyFieldResponseDto extends SafetyFieldRequestDto {
 }
 exports.SafetyFieldResponseDto = SafetyFieldResponseDto;
-class ResetSafetyFlagRequestDto {
+class SetSafetyFlagRequestDto {
 }
-exports.ResetSafetyFlagRequestDto = ResetSafetyFlagRequestDto;
+exports.SetSafetyFlagRequestDto = SetSafetyFlagRequestDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
     (0, swagger_1.ApiProperty)({
-        description: '리셋할 플래그 이름을 입력하세요.',
-        example: 'bumper',
-        enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
+        example: [
+            {
+                name: 'test',
+                value: false
+            }
+        ]
     }),
-    __metadata("design:type", String)
-], ResetSafetyFlagRequestDto.prototype, "resetFlag", void 0);
-class ResetSafetyFlagRequestSlamnav extends ResetSafetyFlagRequestDto {
+    __metadata("design:type", Array)
+], SetSafetyFlagRequestDto.prototype, "safetyFlags", void 0);
+class SetSafetyFlagResponseDto {
 }
-exports.ResetSafetyFlagRequestSlamnav = ResetSafetyFlagRequestSlamnav;
-class ResetSafetyFlagResponseDto {
+exports.SetSafetyFlagResponseDto = SetSafetyFlagResponseDto;
+class GetSafetyFlagResponseDto {
 }
-exports.ResetSafetyFlagResponseDto = ResetSafetyFlagResponseDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({
-        description: '리셋할 플래그 이름을 입력하세요.',
-        example: 'bumper',
-        enum: ['bumper', 'interlock', 'obstacle', 'operationStop'],
-    }),
-    __metadata("design:type", String)
-], ResetSafetyFlagResponseDto.prototype, "resetFlag", void 0);
-class ResetSafetyFlagResponseSlamnav extends ResetSafetyFlagResponseDto {
-}
-exports.ResetSafetyFlagResponseSlamnav = ResetSafetyFlagResponseSlamnav;
+exports.GetSafetyFlagResponseDto = GetSafetyFlagResponseDto;
 
 
 /***/ }),

@@ -710,7 +710,8 @@ function ControlGrpcServiceControllerMethods() {
             "ledControl",
             "setSafetyField",
             "getSafetyField",
-            "resetSafetyFlag",
+            "setSafetyFlag",
+            "getSafetyFlag",
             "exAccessoryControl",
             "safetyIoControl",
             "setObsBox",
@@ -3673,7 +3674,8 @@ var ControlCommand;
     ControlCommand["safetyFieldControl"] = "safetyFieldControl";
     ControlCommand["setSafetyField"] = "setSafetyField";
     ControlCommand["getSafetyField"] = "getSafetyField";
-    ControlCommand["resetSafetyFlag"] = "resetSafetyFlag";
+    ControlCommand["getSafetyFlag"] = "getSafetyFlag";
+    ControlCommand["setSafetyFlag"] = "setSafetyFlag";
     ControlCommand["footMove"] = "footMove";
     ControlCommand["footStop"] = "footStop";
     ControlCommand["getDigitalIO"] = "getDigitalIO";
